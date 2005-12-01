@@ -53,8 +53,6 @@ extern void RememberINC(char *str);
 extern void mysighandler(int rc);
 extern void myinit(void);
 extern void myexit(int rc);
-extern struct option options[];
-extern int main(int argc, char **argv, char **env);
 
 /* eperl_parse.c */
 extern char *ePerl_begin_delimiter;
