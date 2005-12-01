@@ -1,0 +1,235 @@
+  __        ___  __ _     
+  \ \      / / \/  | |    
+   \ \ /\ / / |\/| | |    
+    \ V  V /| |  | | |___   ``WML is the Unix toolkit for getting
+     \_/\_/ |_|  |_|_____|    your webdesigner's HTML job done.''
+
+  Website META Language,
+
+                   CHANGES INTRODUCED BY MP4H
+                         22 May 2000
+
+  Denis Barbier <barbier@engelschall.com>
+
+  Introduction
+  ============
+
+    This document describes implications of the replacement of Meta-HTML
+    by mp4h for macro expansion.  I tried to minimize this impact, but
+    some issues can not be handled automagically and will be discussed
+    below.
+    If you followed recommendations on good WML writing, all macros
+    definitions are grouped into templates files, and those files only
+    need attention.  So again i believe this change has very limited
+    consequences.
+
+  How to update without breaking everything?
+  ==========================================
+
+    After reading next paragraphs, you may fear that upgrading templates
+    will break everything.  Fortunately, there is a solution to write
+    templates which are compatible both  with WML 1.x and WML 2.0.
+
+    In WML 1.x, the -I and -S option flags are read from left to right
+    on command line, whereas they are read from right to left in WML 2.0
+    Thus if your templates reside in a directory called `templates',
+    create a directory named `templates-2.0' and replace in top .wmlrc
+      -I templates
+    by
+      -I templates
+      -I templates-2.0
+      -i wml::sys::compat1
+
+    and create an empty file templates/sys/compat1.wml.
+    So your site may be built with WML 1.x, and when you want to try
+    to use WML 2.x, you just have to check which templates have to be
+    modified, copy these files into templates-2.0 and perform
+    appropriate changes.
+
+  What was wrong with Meta-HTML?
+  ==============================
+
+    There were several points which decided me to give it away.  One
+    important point was its license.  Meta-HTML is undoubtedly free
+    software, but its license restricts hacking, which i do not like, and
+    make this license incompatible with the GNU GPL (do not ask me why
+    a program supported by the GNU project has a licence incompatible with
+    the GNU GPL).  Ralf and i were contacted in summer 1999 by the FSF to
+    include WML into the GNU project, so this legal issue was quite
+    important IMHO.
+
+    There are technical reasons too.  I was asked several times how to
+    pass attributes with expressions like <foo name=<get-var name>>
+    With WML 1.x, the ``name'' attribute has an empty value.  This is
+    not a bug in Meta-HTML, but a problem with our modified version.
+    I could not let it work without breaking backward compatibility.
+
+    Any person who wrote macros to show examples of WML code know that
+    this is a painful task.  I wanted a syntax which is elegant and
+    clear.
+
+  So what has changed?
+  ====================
+
+      a. Functions
+
+            MACRO DEFINITION
+    Mp4h provides only one tag for macro definition : <define-tag>
+    Here is how to transform Meta-HTML tags within mp4h.
+             Meta-HTML            mp4h
+           define-container     define-tag endtag=required
+           defmacro             define-tag endtag=required
+           defsubst             define-tag
+
+    NOTE: the define-function and defun tags are not supported, but it
+          is fairly easy to replace them by define-tag. The defweakmacro
+          is not supported and will never unless someone points me to its
+          advantages.
+
+            ARITHMETIC OPERATORS
+    Meta-HTML defines the <div> tag for arithmetic division. This is
+    a very bad idea since this tag is already defined in HTML 4.0.
+    The following arithmetic operators have been changed:
+          Meta-HTML    mp4h
+            div        divide
+            sub        substract
+            mul        multiply
+            mod        modulo
+
+             GROUPING
+    The <prog> and <concat> tags are replaced by <group>. In Meta-HTML,
+    <group> is a synonym for <prog>.
+    But there is an important difference between Meta-HTML and mp4h
+    about the <group> tag.  With Meta-HTML, all spaces were preserved
+    (including tabulations and newlines), but mp4h gobbles them.
+
+             EVALUATION
+    The <%%eval> tag is obsolete, because expansion scheme is different
+    in Meta-HTML and mp4h. You may safely remove this tag.
+
+    NOTE: the wml::sys::compat1 module provides backward compatibility with
+          WML 1.x.  This module defines the tags which have been removed
+          and listed above, except for defun, define-function, div and
+          %%eval.
+
+             PACKAGES AND ASSOCIATIVE LISTS
+    Mp4h does not contain any support for packages and associative lists.
+    As WML never uses these features, they have been removed.
+
+             ARRAYS
+    The <array-append> tag has been renamed into <array-push>.
+    Arguments of <array-append> (a.k.a array-push), <array-add-unique>,
+    <array-member> and <array-shift> are not handled the same way with
+    Meta-HTML and mp4h.  Within mp4h, first argument is always the name
+    of the variable containing the array this tag acts on.
+
+             MISCELLANEOUS
+    The <real?> and <integer?> tags have been removed too.  They are
+    easy to implement, and i will if there is demand.
+    The <set-output-radix> has been renamed into <mp4h-output-radix>.
+
+      b. Special strings
+
+    In replacement text, some strings have a special meaning. Meta-HTML
+    uses the following strings: %body, %qbody, %xbody, %attributes.
+    In mp4h, the %qbody and %xbody are obsolete, but are still recognized
+    for compatibility reason.
+
+    Documentation explains that %body must be escaped in nested definitions,
+    like
+      <define-container foo>
+          foo body: %body
+          <define-container bar>bar body:%\body</define-container>
+      </define-container>
+    With mp4h, it is more intuitive, percent signs are escaped with %, so
+    example above becomes
+      <define-tag foo endtag=required>
+          foo body: %body
+          <define-tag bar endtag=required>bar body:%%body</define-tag>
+      </define-tag>
+
+    Meta-HTML use special &<key> expressions when defining new tags.
+    These expressions are _not_ supported by mp4h, and macros that are
+    defined with these expressions have to be rewritten. The &unevalled
+    key is replaced by ``attributes=verbatim'', and expressions for named
+    parameters (&optional, &key, &body) are replaced by the
+    <preserve>/<restore> mechanism.
+
+      c. Implicit variables
+
+    There are two cases where ``<get-var i>'' could be replaced by ``i''
+    with Meta-HTML: inside arithmetic expression (e.g. <add i j 10>)
+    and array indices (e.g. <get-var foo[i]>).
+    Mp4h implements the latter for compatibility reasons, but its use is
+    discouraged.
+
+      d. Input expansion
+
+    How tokens are read and expanded is completely different in Meta-HTML
+    and mp4h. I will not explain what this scheme is with Meta-HTML, since
+    i had no clear idea about it. But i will focus on some problems i
+    encounter when migrating to mp4h.
+
+      e. Trailing slash in attributes
+
+    Mp4h recognizes a trailing slash in attributes to conform to XHTML
+    syntax.
+
+             ESCAPED QUOTES
+    Double quotes within strings must be escaped with Meta-HTML, like in
+     <subst-in-string
+       "== <subst-in-string \"Q W E R T Y\" \"Q \" \"A \"> =="
+       "W " "Z ">
+
+    With mp4h, escaped double quotes are used only when this sign must appear
+    on output. You do not have to escape them in the previous example, because
+    tokens are expanded from inner to outer.
+    So one may write with mp4h:
+     <subst-in-string
+       "== <subst-in-string "Q W E R T Y" "Q " "A "> =="
+       "W " "Z ">
+
+    Another example:
+      <define-tag foo>Arg1:%1 Attrs:%attributes!!</define-tag>
+      <foo "x <foo \"1\" \"2\">" y>
+    gives
+      Arg1:y Attrs "x Arg1:"2" Attrs \"1\" \"2\"!!" y!!
+
+    Quotes are removed in %<digit> expressions, but not in %attributes!?
+
+    With mp4h, 
+      <define-tag foo>Arg1:%1 Attrs:%attributes!!</define-tag>
+      <foo "x <foo "1" "2">" y>
+    gives 
+      Arg1:y Attrs:x Arg1:2 Attrs:1 2!! y!!
+
+    In one word, unescape all double quotes when quotes are used to group
+    characters into expressions.
+
+             UNKNOWN TAGS
+    Meta-HTML is smart enough to allow expressions like
+      <ifeq 0 0 <img src="foo.png" alt="">>
+    or even
+      <ifeq 0 0 <: print "Ok"; :>>
+    The ``<: ... :>'' tag is considered as a single expression. But 
+    consider now
+      <ifeq 0 0 <: print "Ok" if $value > 0; :>>
+      <ifeq 0 0 <: print $var->{"name"}; :>>
+      <ifeq 0 0 <: print $var->  {"name"}; :>>
+    Give it a try and you will conclude that this is more complicated that
+    it looks.
+
+    In mp4h, unknown tags are handled in a different way.  When a left
+    angle bracket is followed by an invalid name (i.e. characters which
+    can not produce a valid name), it is considered like normal text. So
+      <ifeq 0 0 <: print "img src=\"foo.png\""; :>>
+    will only print
+      <:>
+    after pass 2 and thus cause an error in pass 3.
+    On the other hand, unknown tags which are valid (i.e. whose name
+    allow them to be defined) are treated like single tags, and their
+    attributes are expanded (note: with -X flag, it is possible to
+    define unknown tags as being complex).
+    So
+      <ifeq 0 0 <img src="foo.png" alt="">>
+    will give the desired output.

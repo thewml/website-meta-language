@@ -1,0 +1,69 @@
+##
+##  wml::imp::csmap - Import External Server-Side Map as Inlined Client-Side Map
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<define-tag csmap>
+<preserve from type name />
+<set-var %attributes />
+<perl>
+    $from = '<get-var from />';
+    $type = '<get-var type />';
+    $name = '<get-var name />';
+
+    $type = 'ncsa' if $type eq '';
+    $name = $from  if $name eq '';
+
+    open(FP, "$(WML_LOC_LIBDIR)/exec/wml_aux_map2html -t $type -n $name $from |");
+    while (<*FP>) {
+        <perl:print: $_ />
+    }
+    close(FP);
+</perl>
+<restore  from type name />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::imp::csmap - Import External Server-Side Map as Inlined Client-Side Map
+
+=head1 SYNOPSIS
+
+ #use wml::imp::csmap
+
+ <a href="foo.map">
+ <img src="foo.gif" alt="test" ismap usemap="#foo.cmap" border=0></a>
+ <csmap from="foo.map" type="ncsa" name="foo.cmap">
+
+=head1 DESCRIPTION
+
+This tag converts a externally stored server-side map (either NCSA or CERN
+format) to an inlined client-side map. This is done via the external program
+wml_aux_map2html(1).
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: wml_aux_map2html (PATH)
+
+=head1 SEEALSO
+
+wml_aux_map2html(3)
+
+=cut
+

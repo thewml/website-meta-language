@@ -1,0 +1,197 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+
+#
+#  wml1to2 --  Upgrade input files from WML 1.x to WML 2.x
+#  Copyright 2000 Denis Barbier. All rights reserved.
+#  This program is free software released under the GNU General
+#  Public License v2.
+#
+#     This tool updates input files to make them suitable with WML 2.x
+#     Transformation is made in place, so making backups before running
+#     this script is a wise idea.
+#
+#     Documentation can be viewed with
+#         perldoc wml1to2
+#
+
+sub usage {
+    print STDERR "Usage: wml1to2 file1 file2 ...\n\n";
+    print STDERR "   Warning: files are written in place, so make sure you\n";
+    print STDERR "            performed backups before running this script\n\n";
+}
+
+$warn = 0;
+sub WarnIfPresent {
+    my ($pattern, $string) = @_;
+    if ($string =~ m|\b$pattern\b|s) {
+        print STDERR "Warning: $pattern found\n";
+        $warn = 1;
+    }
+}
+
+if ($#ARGV == -1) {
+    &usage;
+    exit(1);
+}
+
+foreach (@ARGV) {
+    if (m/^-/) {
+        &usage;
+        exit(1);
+    } elsif (! -f) {
+        print STDERR "File " . $_ . " not found: skipped\n";
+        next;
+    }
+
+    #   Okay, processing can take place
+    my ($infile, $outfile) = ($_, $_ . ".".$$);
+    if (-e $outfile) {
+        print STDERR "File " . $outfile . " does already exist, so input file "
+                     . $infile . " is skipped\n";
+    }
+
+    #   Read input file
+    local($/) = undef;
+    open(IN, "< $infile") or die "Unable to read file " . $infile;;
+    my ($text) = <IN>;
+    close(IN);
+
+    $_ = $text;
+
+    #   Perform substitution.  See README.mp4h for details
+    #      Macro definitions
+    s|<defsubst|<define-tag|g;
+    s|</defsubst|</define-tag|g;
+
+    s|<define-container(\s+[^\s>]+)|<define-tag$1 endtag=required|sg;
+    s|</define-container|</define-tag|g;
+
+    s|<defmacro(\s+[^\s>]+)|<define-tag$1 endtag=required|sg;
+    s|</defmacro|</define-tag|g;
+
+    s|\%[qx]body|\%body|g;
+
+    #      Grouping
+    s|<prog\b|<group|g;
+    s|<concat\b|<group|g;
+
+    #      Arithmetic functions
+    s|<sub\b|<substract|g;
+    s|<mul\b|<multiply|g;
+    s|<mod\b|<modulo|g;
+
+    #      Diversion tags
+    s|<<([a-zA-Z][a-zA-Z0-9_]*)>>|{#$1#}|g;
+    s|\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|{#$1#:|g;
+    s|<<\.\.|:##}|g;
+    s|<<(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)\.\.|:#$1#}|g;
+
+    s|({#\!?[a-zA-Z][a-zA-Z0-9_]*\!?):|$1#:|g;
+    s|:#}|:##}|g;
+    s|:(\!?[a-zA-Z][a-zA-Z0-9_]*\!?#})|:#$1|g;
+
+    #      Detect possible cause of problems
+    &WarnIfPresent('define-container', $_);
+    &WarnIfPresent('<define-function', $_);
+    &WarnIfPresent('<defun', $_);
+    &WarnIfPresent('<defweakmacro', $_);
+    &WarnIfPresent('<div', $_);
+    &WarnIfPresent('<%%eval', $_);
+
+    $text = $_;
+
+    #   And prints text to file
+    open(OUT, "> $outfile") or die "Unable to write to file " . $outfile;
+    print OUT $text;
+    close(OUT);
+    rename($outfile, $infile) or die "Unable to write to file " .  $infile;
+}
+
+if ($warn) {
+    print STDERR "Check previous warnings carefully and make sure there is no trouble with them.\n";
+}
+
+1;
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml1to2 - Make WML input files ready for WML 2.x
+
+=head1 SYNOPSIS
+
+B<wml1to2>
+I<inputfile>
+[I<inputfile>]
+...
+
+To apply this script recursively on all files of a directory, call
+
+    find my_path -type f -exec wml1to2 {} \;
+
+It is also possible to process only WML input files, e.g.
+
+    find my_path -name \*.wml -exec wml1to2 {} \;
+
+See the find(1) manpage for details.
+
+=head1 DESCRIPTION
+
+This program transforms files to make them suitable for WML 2.x.  As
+transformations are performed in place, you should always backup your
+datas before applying this program.  You have been warned.
+
+This paragraph explains which operations are performed to input text.
+For more details on incompatibilities between WML 1.x and WML 2.x, read
+the C<README.mp4h> file shipped with the distribution.
+
+=over 4
+
+=item Macro Functions
+
+The C<E<lt>define-tagE<gt>> command replaces C<E<lt>defsubstE<gt>>, C<E<lt>define-containerE<gt>> and
+C<E<lt>defmacroE<gt>>.  On the other hand, C<E<lt>define-functionE<gt>>, C<E<lt>defunE<gt>> and 
+C<E<lt>defweakmacroE<gt>> have no equivalent and should be rewritten.
+
+Special sequences C<%qbody> and C<%xbody> are replaced by C<%body>.
+
+=item Group Functions
+
+The C<E<lt>groupE<gt>> command replaces C<E<lt>progE<gt>> and C<E<lt>concatE<gt>>.
+
+=item Arithmetic Functions
+
+This was necessary because C<E<lt>divE<gt>> is a valid HTML tag, so division is
+now performed with C<E<lt>divideE<gt>>.  But it is not an easy task to
+determine if a C<E<lt>divE<gt>> tag has to be replaced by
+C<E<lt>divideE<gt>>, so a warning is raised and no transformations are
+performed.
+
+Other mathematical functions also use a longer name: C<E<lt>mulE<gt>> is
+replaced by C<E<lt>multiplyE<gt>>, C<E<lt>subE<gt>> by C<E<lt>substractE<gt>>
+and C<E<lt>modE<gt>> by C<E<lt>moduloE<gt>>.
+
+=item Diversion Tags
+
+In WML 1.x, casual diversion commands are
+C<E<lt>E<lt>NAMEE<gt>E<gt>>, C<..NAMEE<gt>E<gt>> and C<E<lt>E<lt>NAME..>,
+but strange results may occur if these names have been defined by
+wml_p2_mp4h.
+For this reason, these forms have been deprecated since WML 1.7.3 in
+favor of C<{#NAME#}>, C<{#NAME:> and C<:NAME#}>.  This caused some
+performance problems, and eventually WML 2.x use C<{#NAME#}>,
+C<{#NAME#:> and C<:#NAME#}>.
+
+=back
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+

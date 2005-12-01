@@ -1,0 +1,187 @@
+##
+##  wml::std::box - Easily Create Rectangular Box
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::des::space
+
+<define-tag box endtag=required>
+<preserve bgcolor fgcolor bdcolor bdwidth bdspace width summary header />
+<set-var %attributes />
+<when <not <get-var header /> />>
+#
+#  The standard box created via just two nested tables
+#
+<defvar bdwidth 1 />
+<defvar bdspace 4 />
+<if <get-var bdcolor /> <group "
+<table* cellspacing=0 cellpadding=<get-var bdwidth /> \
+       bgcolor=<get-var bdcolor /> border=0 \
+       <if <get-var summary /> "summary=\"<get-var summary />\"" />\
+>
+<tr*>
+<td*>\
+" /> />
+<table <if <get-var bgcolor /> "bgcolor=<get-var bgcolor />" /> \
+       <if <get-var width /> "width=<get-var width />" /> \
+       cellspacing=0 cellpadding=<get-var bdspace /> \
+       border=0>
+<tr>
+<td>\
+<if <get-var fgcolor /> "<font* color=<get-var fgcolor />>" />\
+%body\
+<if <get-var fgcolor /> "</font*>" />\
+</td>
+</tr>
+</table>
+<if <get-var bdcolor /> <group "
+</td*>
+</tr*>
+</table*>
+" /> />
+</when>
+#
+#  The headlined box created via one table and space GIFs
+#
+<when <get-var header />>
+<defvar bdcolor "#000000" />
+<defvar bdspace 4 />
+<defvar width 300 />
+<table border=0 cellpadding=0 cellspacing=0\
+       <if <get-var summary /> " summary=\"<get-var summary />\"" />>
+    <tr>
+        <td colspan=2><space width=1 height=8 /></td>
+        <td rowspan=3>&nbsp;&nbsp;<get-var header />&nbsp;&nbsp;</td>
+        <td colspan=2><space width=1 height=1 /></td>
+    </tr>
+    <tr>
+        <td bgcolor="<get-var bdcolor />" colspan=2><space width=1 height=1 /></td>
+        <td bgcolor="<get-var bdcolor />" colspan=2><space width=1 height=1 /></td>
+    </tr>
+    <tr>
+         <td bgcolor="<get-var bdcolor />"><space width=1 height=5 /></td>
+         <td <if <get-var bgcolor /> "bgcolor=<get-var bgcolor />" />>\
+             <space width=40 height=1 /></td>
+         <td <if <get-var bgcolor /> "bgcolor=<get-var bgcolor />" />>\
+             <space width=<get-var width /> height=1 /></td>
+         <td bgcolor="<get-var bdcolor />"><space width=1 height=5 /></td>
+    </tr>
+    <tr>
+         <td bgcolor="<get-var bdcolor />"><space width=1 height=1 /></td>
+         <td colspan=3 <if <get-var bgcolor /> "bgcolor=<get-var bgcolor />" />>
+             <table border=0 cellspacing=<get-var bdspace />>
+                 <tr>
+                     <td>%body</td>
+                 </tr>
+             </table>
+         </td>
+         <td bgcolor="<get-var bdcolor />"><space width=1 height=1 /></td>
+    </tr>
+    <tr>
+         <td colspan=5 bgcolor="<get-var bdcolor />"><space width=1 height=1 /></td>
+    </tr>
+</table>
+</when>
+<restore  bgcolor fgcolor bdcolor bdwidth bdspace width summary header />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::box - Easily Create Rectangular Box
+
+=head1 SYNOPSIS
+
+ #use wml::std::box
+
+ <box [attributes]>
+ ...
+ </box>
+
+=head1 DESCRIPTION
+
+The C<E<lt>boxE<gt>> container tag puts its body into a nice rectangular box
+which itself is build via a HTML C<E<lt>tableE<gt>> construct.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item C<header>
+
+This attribute switches between two totally different box variants.  When it
+is present, a headlined box is created by the use of one single table but with
+space GIFs. When this attribute is missing a standard box is created by the
+use of two nested tables but without any space GIFs.
+
+=item C<bgcolor>
+
+This sets the background color of the box.
+
+=item C<fgcolor>
+
+This sets the foreground (text) color of the box.
+
+=item C<bdcolor>
+
+This sets the color for the border of the box. The effect of this attribute is
+the automatic generation of a nested table construct to achieve the optical
+effect.
+
+=item C<bdspace>
+
+This sets the space between the border and the body of the box in pixels.
+Default is 4 pixel.
+
+=item C<bdwidth>
+
+This sets the border width in pixels. Default is 1 pixel.
+
+=item C<width>
+
+This sets the total table width in pixels. Default is no specific width for
+the standard box and 300 pixels for the headlined box (because the headlined
+variant needs to know a fixed size to create the GIFs accordingly).
+
+=item C<summary>
+
+Add a description of this table.  This attribute is recommended in HTML
+4.0.
+
+=back
+
+=head1 EXAMPLE
+
+ <box bdcolor="#000000" bdwidth=1 bdspace=10
+      bgcolor="#ffffff" fgcolor="#000000">
+ Foo Bar Quux
+ </box>
+
+ <box header="Foo Bar Quux Header"
+      bdcolor="#000000" bdwidth=1 bdspace=10
+      bgcolor="#ffffff" fgcolor="#000000">
+ Foo Bar Quux
+ </box>
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2
+
+=head1 SEEALSO
+
+HTML C<E<lt>tableE<gt>> tag.
+
+=cut
+

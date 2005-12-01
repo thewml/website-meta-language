@@ -1,0 +1,61 @@
+##
+##  wml::fmt:all - All of Formatting (FMT) category
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::fmt::isolatin
+#use wml::fmt::pod
+#use wml::fmt::sdf
+#use wml::fmt::text
+#use wml::fmt::url
+#use wml::fmt::verbatim
+#use wml::fmt::xtable
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt:all - All of Formatting (FMT) category
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::all
+
+=head1 DESCRIPTION
+
+This includes all existing include files of the B<Formatting> (FMT) category,
+i.e. all includes with prefix B<wml::fmt>.  The following files currently
+exist:
+
+ wml::fmt::isolatin(3) ... ISO-Latin-1 to HTML Entity Conversion
+ wml::fmt::verbatim(3) ... Really Preformatted Verbatim Text
+ wml::fmt::xtable(3)   ... HTML tables through Advanced Syntax
+ wml::fmt::url(3)      ... Recognize Uniform Resource Locator
+ wml::fmt::text(3)     ... Plain ASCII with Special Formatting Semantic
+ wml::fmt::pod(3)      ... Plain Old Document (POD) Format
+ wml::fmt::sdf(3)      ... Simple Document Format (SDF)
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::fmt::isolatin(3),
+wml::fmt::verbatim(3),
+wml::fmt::xtable(3),
+wml::fmt::url(3),
+wml::fmt::text(3),
+wml::fmt::pod(3),
+wml::fmt::sdf(3).
+
+=cut
+

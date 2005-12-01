@@ -1,0 +1,73 @@
+##
+##  wml::std:all - All of Standard (STD) category 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::std::box
+#use wml::std::case
+#use wml::std::grid
+#use wml::std::href
+#use wml::std::info
+#use wml::std::label
+#use wml::std::lang
+#use wml::std::logo
+#use wml::std::page
+#use wml::std::tags
+#use wml::std::toc
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std:all - All of Standard (STD) category 
+
+=head1 SYNOPSIS
+
+ #use wml::std::all
+
+=head1 DESCRIPTION
+
+This includes all existing include files of the B<Standard> (STD) category,
+i.e. all includes with prefix B<wml::std>.  The following files currently
+exist:
+
+  wml::std::box(3)  ... Easily Create Rectangular Box
+  wml::std::case(3) ... Convert Tags to Upper or Lower Case
+  wml::std::grid(3) ... Layout Grid
+  wml::std::href(3) ... Enhanced Hyperlink
+  wml::std::info(3) ... Page Information
+  wml::std::lang(3) ... Multi-Lingual Support
+  wml::std::label(3)... Labels and References
+  wml::std::logo(3) ... Logo Insertion
+  wml::std::page(3) ... Standard HTML Page Header and Footer
+  wml::std::tags(3) ... Standard Support Tags 
+  wml::std::toc(3)  ... Table of Contents Generation
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::std::box(3),
+wml::std::case(3),
+wml::std::grid(3),
+wml::std::href(3),
+wml::std::info(3),
+wml::std::label(3),
+wml::std::lang(3),
+wml::std::logo(3),
+wml::std::page(3),
+wml::std::tags(3),
+wml::std::toc(3).
+
+=cut
+

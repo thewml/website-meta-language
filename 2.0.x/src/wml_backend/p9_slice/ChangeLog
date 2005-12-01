@@ -1,0 +1,303 @@
+       _ _          
+   ___| (_) ___ ___ 
+  / __| | |/ __/ _ \
+  \__ \ | | (_|  __/
+  |___/_|_|\___\___|
+
+  ChangeLog
+
+  This file summarizes *all* types of changes to the Slice sources,
+  i.e. changes between each patchlevel (1.x.y->1.x.(y+1) and
+  1.x.y->1.(x+1).0). Take this logfile for concrete and detailed
+  information about every single change.
+  ___________________________________________________________________________
+
+  Changes between 1.3.8 and ???:
+
+    *) Checks on file errors (20-Apr-2002):
+       File operations are checked and SLICE aborts if an error is detected.
+       [Denis Barbier]
+
+    *) Fix -y flag (19-Apr-2002):
+       Slice did not abort with 's' or 'z' policy set to 3.
+       [Denis Barbier]
+
+  Changes between 1.3.7 and 1.3.8:
+
+    *) New -y flag (12-Jan-2002):
+       This flag changes output policy, by defining which action is to be
+       taken when unknown slice sets are requested, or when input is empty.
+       Note that an undefined set used was previously considered as an error,
+       and it is now silently ignored by default.
+       [Denis Barbier]
+
+    *) Change detection of Perl modules (12-Jan-2002):
+       [Denis Barbier]
+
+    *) Cosmetic changes (22-Jul-2001):
+       Remove ampersands before function calls.
+       [Denis Barbier]
+
+    *) Upgrade to Autoconf 2.50 (22-Jul-2001):
+       [Denis Barbier]
+
+    *) Fix compilation of Bit::Vector with perl < 5.005 (20-Jun-2001):
+       Apply the 2001-08-27 patch by Max H. Duenki.
+       [Denis Barbier]
+
+    *) Upgraded to Bit::Vector 6.0 (04-May-2001):
+       [Denis Barbier]
+
+  Changes between 1.3.6 and 1.3.7:
+
+    *) Fix an infinite loop in slice 1.3.6  (27-Aug-2000):
+       Previous patch about speed improvements made slice hang up with
+       some files.  This patch has been entirely revisited.
+       [Josip Rodin <joy@cibalia.gkvk.hr>]
+
+    *) New `all except' operator (27-Aug-2000):
+       The wildcard sign accepts a new syntax.  When followed by braces,
+       it replaces ``all strings except the one enclosed within braces''.
+       This construct could not be emulated with previous operators with
+       nested slices.
+       [Denis Barbier]
+
+    *) Fix `%' operator (27-Aug-2000):
+       This operator, which is a synonym for `n' i.e. intersection of
+       slices, was only partially implemented
+       [Denis Barbier]
+
+    *) Fix compilation of Bit::Vector with perl < 5.005 (27-Aug-2000):
+       [Max H. Duenki <duenki@isi.ee.ethz.ch>]
+
+  Changes between 1.3.5 and 1.3.6:
+
+    *) Improve processing speed on large files (29-Jul-2000):
+       On very large files, this program was dramatically slow.
+       A speed-up factor of 15 is obtained on a 300KB file containing
+       16000 slices.
+       [Denis Barbier]
+
+    *) Fix compilation on threaded Perl 5.6.0 (29-Jul-2000):
+       [Denis Barbier]
+
+    *) Upgrade of Bit::Vector (28-Jul-2000):
+       Upgraded Bit::Vector from version 5.7 to 5.8.
+       [Ralf S. Engelschall]
+
+    *) Upgraded to GNU shtool 1.5.0 (01-Jul-2000):
+       Upgraded to GNU shtool 1.5.0. This involved especially a major
+       adjustment because of the rewritten "shtool version" command.
+       [Ralf S. Engelschall]
+
+  Changes between 1.3.4 and 1.3.5:
+
+    *) Fix compilation on FreeBSD  (27-Apr-2000):
+       [Denis Barbier]
+
+    *) Fix detection of Perl at configure time  (27-Apr-2000):
+       Perl 5.6.0 uses a versioning scheme different than previous
+       versions, which breaks our detection scheme.
+       [Denis Barbier]
+
+  Changes between 1.3.3 and 1.3.4:
+
+    *) Use of the TMPDIR environment variable (28-Aug-1999):
+       To conform with POSIX standard, this variable contains 
+       the directory name where temporary files are kept. By default, 
+       this directory is /tmp.
+       [Thomas Roessler <roessler@guug.de>]
+
+    *) Use GNU shtool for configuring (25-Aug-1999):
+       All scripts in etc/ sub-directories were still replaced by
+       Ralf's shtool since 01-Jul-1999. They are now removed.
+       [Denis Barbier]
+
+    *) Write empty file (23-Aug-1999):
+       An empty output implies an empty file. Previous versions
+       did not write empty files.
+       [Denis Barbier]
+
+    *) Fix installation of Perl modules (05-Jul-1999):
+       On some platforms, Perl modules are not installed according
+       to the prefix passed to the configure command-line.
+       Rules in Makefiles now invoke pure_perl_install
+       [Tobias Oetiker <oetiker@ee.ethz.ch>]
+
+  Changes between 1.3.2 and 1.3.3:
+
+    *) Upgrade Perl modules (21-May-1999):
+       - Bit-Vector 5.6
+       - IO 1.20
+       - Getopt-Long 2.19
+       [Denis Barbier <barbier@imacs.polytechnique.fr>]
+
+    *) Fixed slice_term.y (10-May-1999):
+       An undefined slice reports a warning instead of an error
+       [Michael McNamara <mac@surefirev.com>]
+  ___________________________________________________________________________
+
+  Slice is now maintained by Denis Barbier <barbier@imacs.polytechnique.fr>
+  I've now changed the syntax of the ChangeLog file for more readability
+  ___________________________________________________________________________
+
+  Changes between 1.3.1 and 1.3.2
+      980218 - Upgraded to Bit-Vector 5.0b4
+             - Upgraded to IO 1.19
+             - Fixed copyright notice and FSF address
+
+  Changes between 1.3.0 and 1.3.1
+      980128 - fixed the "Some slices were not closed" error
+               message. Now the slice named are printed as
+               expected.
+             - Upgraded to IO 1.1804
+
+  Changes between 1.2.9 and 1.3.0
+      980106 - Added support for wildcarded slice at the -o
+               option. This is very useful to avoid endless
+               union-constructs in slice terms. To avoid
+               conflicts the intersection now uses the
+               characters [n%] instead of [n*].
+             - Upgraded to BIt::Vector 5.0b2
+             - Fixed Getopt::Long check in configure.in
+             - Added Version display to configure.in
+             - Added subdir movement display to Makefile.in
+             - Removed "All Rights Reserved" from copyright
+               messages because this conflicts with GNU GPL.
+             - Adjusted slice.pod for new features and added
+               Version, Copyright and See Also sections
+
+  Changes between 1.2.8 and 1.2.9
+      971228 - slice.1 now is installed as
+               PREFIX/man/man1/slice.1 instead of just
+               PREFIX/man/slice.1 [Thanks to Anthony Fok
+               <foka@gpu.srv.ualberta.ca> for patch]
+             - changed Perl module version check according to the
+               way WML does it [Thanks to Anthony Fok
+               <foka@gpu.srv.ualberta.ca> for patch]
+             - upgraded to GetoptLong 2.13
+             - upgraded to IO 1.1803
+
+  Changes between 1.2.7 and 1.2.8
+      971212 - disabled Perl warnings 
+             - fixed lib/00README file
+             - fixed destroyed COPYING file
+             - adjusted ChangeLog file to WML format
+             - added longoptions to usage page
+             - changed -v to -V option
+             - changed -x to -v option
+             - added -h option
+
+  Changes between 1.2.6 and 1.2.7
+      971127 - upgraded to Bit::Vector 5.0b1
+
+  Changes between 1.2.5 and 1.2.6
+      971014 - upgraded to Getopt::Long 2.12
+      971112 - upgraded to IO 1.1801
+             - fixed nasty bug when some slices are used more
+               then once (for different output files but one with
+               a negation).  [Thanks to Sebastian Wilhelmi for
+               hint <wilhelmi@ira.uka.de>]
+             - fixed Debug output
+             - fixed Perl interpreter determination because of
+               Perl 5.004_04 where -v output changed.
+
+  Changes between 1.2.4 and 1.2.5
+      970828 - slightly changes the verbose and error messages
+             - slightly fixed slice.pod
+
+  Changes between 1.2.3 and 1.2.4
+      970819 - upgraded to Getopt::Long 2.10
+             - let slice accept empty input files without
+               complaining it
+             - added RESTRICTION section to slice.pod to make it
+               clear that anon end delimiters can lead to
+               problems.
+
+  Changes between 1.2.2 and 1.2.3
+      970815 - made it workable under Perl 5.003 again
+             - removed perl -c check in Makefile.in
+             - fixed distclean target
+             - fixed lib/Makefile.in
+             - fixed lib/getoptlong/Makefile.PL
+             - fixed lib/io/Makefile.PL
+             - disabled $Getopt::Long::getopt_compat option
+
+  Changes between 1.2.1 and 1.2.2
+      970814 - improved the %!slice support [Thanks to Andrew
+               Pimlott <pimlott@abel.MATH.HARVARD.EDU> for
+               providing the patch]
+             - overhauled the ChangeLog file format ;-)
+
+  Changes between 1.2.0 and 1.2.1
+      970812 - Perl 5.004 not needed, 5.003 works too.
+             - added support for ``%!slice ...'' lines which can
+               overwrite the options from within the file
+
+  Changes between 1.1.1 and 1.2.0
+      970715 - upgraded etc/newvers
+             - upgraded to Bit::Vector 4.2 module
+             - added --with-perl option to configure
+             - added IO package to lib/
+             - added etc/crunch
+             - added SLICE@ syntax (see slice.pod)
+      970805 - greatly overhauled and optimized the output
+               generation
+
+  Changes between 1.1.0 and 1.1.1
+      970523 - fixed problem with existing /tmp/x in configure,
+               no /tmp/ac.$$
+             - fixed new-patchlevel target in Makefile.in
+             - added fixperm script and fixperm target
+
+  Changes between 1.0.7 and 1.1.0
+      970423 - upgraded from Set::IntegerFast 3.2 to Bit::Vector
+               4.0 module
+
+  Changes between 1.0.6 and 1.0.7
+      970402 - again fixed MakeMaker install path determination.
+               in GNU autoconf again. Now it should really work
+               correctly ;_)
+
+  Changes between 1.0.5 and 1.0.6
+      970221 - fixed MakeMaker install path determination 
+               in GNU autoconf again. Now it should work
+               correctly ;_)
+
+  Changes between 1.0.4 and 1.0.5
+      970215 - changed COPYRIGHT header to LICENSE header in file
+               LICENSE
+             - changed library hack with BEGIN to "use lib"
+               variant
+             - made autoconf part for MakeMaker install paths
+               more robust, at least for Linux
+             - the slice.1 is pre-generated because pod2man is
+               broken on some Linux machines
+             - added MKDIR to Makefile.in's install target
+
+  Changes between 1.0.3 and 1.0.4
+      970205 - fixed the lib/Makefile
+             - changed local() to my() where appropriate
+             - fixed a few bugs in slice.pod
+             - added "make update-version"
+
+  Changes between 1.0.2 and 1.0.3
+      970204 - updated to Steffen Beyers official
+               Set::IntegerFast 3.0 module from
+               Set-IntegerFast-3.2 bundle.
+
+  Changes between 1.0.1 and 1.0.2
+      970131 - fixed setting of empty sets where low = high+1
+             - added check for existing slice names
+
+  Changes between 1.0.0 and 1.0.1
+      970131 - changed signature of rse
+             - used new Set::IntegerFast::Fill_Interval method
+             - used new Set::IntegerFast::Size method
+             - fixed "make clean" inside lib/
+             - fixed "configure" target in Makefile
+             - fixed "make clean" for t/
+
+  Changes between *GENESIS* and 1.0.1
+      9701xx - *GENESIS*
+

@@ -1,0 +1,415 @@
+##
+##  wml::std::tags - Standard Support Tags 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#
+#   Manage arrays as stacks
+#   These macros are obsolete and should not be used anymore.
+#   Mp4h has some builtins which are more efficient.
+#
+
+<define-tag array:size whitespace=delete>
+<if <gt <array-size %0 /> 0 /> <array-size %0 /> 0 />
+</define-tag>
+
+<define-tag array:topvalue whitespace=delete>
+<set-var __index=<array:size %0 /> />
+<get-var %0[<get-var __index />] />
+</define-tag>
+
+<define-tag array:show>
+<set-var __i=0 />
+<while <get-var %0[<get-var __i />] />>
+%0[<get-var __i />] = <get-var %0[<get-var __i />] />
+<increment __i />
+</while>
+</define-tag>
+
+
+#
+#   Easier condition testing
+#
+
+<define-tag ifdef>
+<if <get-var %0 /> %1 %2 />
+</define-tag>
+
+#
+#   Support-Tag for Pass 3: ePerl
+#
+
+#  We try to allow some kind of nestings. By default, ePerl forbids it.
+#  The main idea is to replace all printings by variable assignments,
+#  and prints those variables only when in outer mode.
+
+#  The __perl:level variable stores current level of nestings
+<set-var __perl:level=0 />
+
+#  Some modules write to filehandles different than standard output.
+<set-var __perl:filehandle= />
+<set-var __perl:fh= />
+
+#  The name of the variable must be unique for a level of nesting, so we
+#  choose a name and all other include files must refer to it.
+<define-tag perl:var>${perl_var<get-var __perl:level />}</define-tag>
+
+#  These macros are also useful, but for internal use only
+<define-tag __perl_var-1>${perl_var<substract <get-var __perl:level /> 1 />}</define-tag>
+<define-tag __perl_var_save>${_save_var<get-var __perl:level />}</define-tag>
+
+# Assignment mode: 1 for 'single quotes', 2 for "double quotes"
+<define-tag perl:assign:mode whitespace=delete>
+    __perl:assign<get-var __perl:level />
+</define-tag>
+
+#  These macros are to temporarily disallow text printing
+<define-tag perl:print:disable whitespace=delete>
+<set-var <perl:assign:mode />=%0 />
+</define-tag>
+
+#  Enable text printing
+<define-tag perl:print:enable whitespace=delete>
+<unset-var <perl:assign:mode /> />
+</define-tag>
+
+<define-tag perl:checkprint whitespace=delete>
+<when <not <get-var <perl:assign:mode /> /> />>
+<set-var __perl:print= />
+<if <eq <get-var __perl:level /> 1 />
+  <set-var __perl:print=true /> />
+<if <string-neq <array-topvalue __perl:fh />
+              <get-var __perl:filehandle /> />
+  <set-var __perl:print=true /> />
+<get-var __perl:print />
+</when>
+</define-tag>
+
+#  Sets this variable
+<define-tag perl:assign endtag=required>
+<perl:print:disable 2 />
+<when "%0">
+  <__perl_var_save /> = <perl:var />;
+  <perl:var /> = '';
+</when>
+<perl:var /> .= <<"EPERL_EOT";
+%body
+EPERL_EOT
+#   The ``here'' notation adds an extra newline
+<perl:var /> =~ s/\n$//s;
+<when "%0">
+  %0 = <perl:var />;
+  <perl:var /> = <__perl_var_save />;
+</when>
+<perl:print:enable />
+</define-tag>
+
+#  Sets this variable with single quotes Perl delimiter, i.e.
+#  without expansion of Perl variables.
+<define-tag perl:assign:sq endtag=required>
+<perl:print:disable 1 />
+<when "%0">
+  <__perl_var_save /> = <perl:var />;
+  <perl:var /> = '';
+</when>
+<perl:var /> .= <<'EPERL_EOT';
+%body
+EPERL_EOT
+#   The ``here'' notation adds an extra newline
+<perl:var /> =~ s/\n$//s;
+<when "%0">
+  %0 = <perl:var />;
+  <perl:var /> = <__perl_var_save />;
+</when>
+<perl:print:enable />
+</define-tag>
+
+#  Print its value to the filehandle
+<define-tag perl:print endtag=required>\
+<when <not <perl:checkprint /> />>\
+   <perl:assign>%body</perl:assign>\
+</when>
+<when <perl:checkprint />>\
+   print <get-var __perl:filehandle /> <perl:var /> if <perl:var />;
+   <perl:var /> = '';
+   <perl:assign>%body</perl:assign>\
+   print <get-var __perl:filehandle /> <perl:var /> if <perl:var />;
+   <perl:var /> = '';
+</when>
+</define-tag>
+
+<define-tag perl:print:>\
+<when <not <perl:checkprint /> />>\
+   <perl:var /> .= %attributes;
+</when>
+<when <perl:checkprint />>
+   print <get-var __perl:filehandle /> <perl:var /> . %attributes;
+   <perl:var /> = '';
+</when>
+</define-tag>
+
+<define-tag perl:print:var>
+<when <perl:checkprint />>
+   print <get-var __perl:filehandle /> <perl:var /> if <perl:var />;
+   <perl:var /> = '';
+</when>
+</define-tag>
+
+#  And now the <perl> tag.
+<define-tag perl endtag=required>\
+<preserve filehandle nosemicolon />\
+<set-var nosemicolon=* />\
+<set-var %attributes />\
+<when <neq <get-var __perl:level /> 0 />><when <get-var <perl:assign:mode /> />>
+#   we have to put a blank line here in case the <perl> tag
+#   is not at the beginning of a line
+EPERL_EOT
+   <perl:var /> =~ s/\n$//s;
+   <perl:print:var />
+</when></when>\
+<array-push __perl:fh <get-var __perl:filehandle /> />\
+<if <get-var filehandle /> <copy-var filehandle __perl:filehandle /> />\
+<increment __perl:level />\
+<when <eq <get-var __perl:level /> 1 />>\
+#   Outer mode
+<:
+   <perl:var /> = '';
+%body
+   <perl:print:var />
+   <ifeq <get-var nosemicolon /> "*" "_" "1;" />\
+:>\
+</when>\
+<when <neq <get-var __perl:level /> 1 />>
+   <perl:var /> = <__perl_var-1 />;
+   <__perl_var-1 /> = '';
+%body
+   <perl:print:var />
+   <__perl_var-1 /> .= <perl:var />;
+<when <eq <get-var __perl:assign<substract <get-var __perl:level /> 1 /> /> 2 />>\
+   <__perl_var-1 /> .= <<"EPERL_EOT";
+</when>\
+<when <eq <get-var __perl:assign<substract <get-var __perl:level /> 1 /> /> 1 />>\
+   <__perl_var-1 /> .= <<'EPERL_EOT';
+</when>\
+</when>\
+<decrement __perl:level />\
+<set-var __perl:filehandle="<array-pop __perl:fh />" />\
+<restore  filehandle nosemicolon />\
+</define-tag>
+
+<define-tag say endtag=required>
+<perl filehandle=TTY>\
+{
+    local(*TTY);
+    open(TTY, ">/dev/tty");
+    print TTY <<'EPERL_EOT';
+%body
+EPERL_EOT
+    close(TTY);
+}\
+</perl>
+</define-tag>
+
+#
+#   Support-Tag for Pass 4: GNU M4
+#
+
+<define-tag m4 endtag=required>
+<preserve quotes />\
+<set-var quotes="`,'" />\
+<set-var %attributes />\
+m4_noquotes()m4_dnl
+m4_changequote(<get-var quotes />)m4_dnl
+%body \
+m4_noquotes()m4_dnl
+<restore quotes />
+</define-tag>
+
+#
+#   Symbols
+#
+
+<define-tag symbol>
+<m4 quotes="<`,'>">
+<ifeq <get-var %1 /> undef
+      <group "m4_undefine(<`%0'>)" />
+      <group "m4_define(<`%0'>,\
+            <`m4_noquotes()m4_changequote(<`,'>)<`%1'>'>)" /> />
+</m4>
+</define-tag>
+
+#
+#   Diversion via Pass 5 (Divert)
+#
+#   dump of a location (undivert)
+<define-tag dump>\
+{#%0#}\
+</define-tag>
+#   enter a location (divert to)
+<define-tag enter>\
+{#%0#:\
+</define-tag>
+#   leave a location (divert from)
+<define-tag leave>\
+:#%0#}\
+</define-tag>
+#   diversion container 
+<define-tag divert endtag=required>\
+<enter %0 />%body<leave <match "%0" "!" action=delete /> />\
+</define-tag>
+
+#
+#   Support-Tag for Pass 6: ASubst
+#
+<define-tag asubst endtag=required whitespace=delete>
+<set-var subst="%attributes" />
+<subst-in-var subst "(s/[^/]+/[^/]+/[smigx]+)" "[[\\1]]" />
+<subst-in-var subst "(s%[^%]+%[^%]+%[smigx]+)" "[[\\1]]" />
+<subst-in-var subst "(tr/[^/]+/[^/]+/[g]+)" "[[\\1]]" />
+<subst-in-var subst "(tr%[^%]+%[^%]+%[g]+)" "[[\\1]]" />
+<subst-in-var subst "[ \t]+(\[\[s)" "\\1" />
+<subst-in-var subst "[ \t]+(\[\[tr)" "\\1" />
+<subst-in-var subst "(\]\])[ \t]+" "\\1" />
+{:<get-var subst />%body:}
+</define-tag>
+
+#
+#   Support-Tag for protected Client-Side JavaScript
+#
+<define-tag javascript endtag=required>
+<preserve defer src version language type nohead nolang />
+<set-var defer=* />
+<set-var nohead=* />
+<set-var nolang=* />
+<set-var %attributes />
+<defvar version "" />
+<defvar language "JavaScript<get-var version />" />
+<defvar type "text/javascript" />
+#  all variables are expanded before %Ubody, so they are not overridden
+<define-tag __jscmd>\
+<script type="<get-var type />" language="<get-var language />"\
+    <ifeq "<get-var src />" "" "" " src=\"<get-var src />\"" />\
+    <ifeq "<get-var defer />" "*" "" " defer" />\
+><nostrip>
+<!-- Hiding the code
+<subst-in-string "%Ubody" "^\n*(.*?)\n*$" "\\1" singleline=true />
+// done hiding -->
+</nostrip></script>\
+</define-tag>
+<if <and <get-var nohead /> <match <symbol-info head /> " COMPLEX$" />
+         <not <symbol-info javascript:nohead /> <javascript:nohead /> /> />
+   <compound><head>\
+     <if <and <get-var nolang /> <symbol-info lang:current /> <lang:current /> />
+       "[LANG_<upcase <lang:current /> />:<__jscmd />:LANG_<upcase <lang:current /> />]"
+       <__jscmd />
+     />
+   </head></compound>
+   <__jscmd />
+/>
+<restore  defer src version language type nohead nolang />
+</define-tag>
+
+#
+#   Synchronize line numbers to help debugging
+#
+<define-tag sync-lines whitespace=delete>
+<if <eq <get-var __perl:level /> 0 />
+   "<:#line <substract <__line__ /> 1 />:>"
+   "#line <substract <__line__ /> 1 />" />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::tags - Standard Support Tags 
+
+=head1 SYNOPSIS
+
+ #use wml::std::tags
+
+ #   Pass 2: advanced if constructs
+ <ifdef varname thenval elseval>
+
+ #   Pass 3: support tag
+ <perl> ... </perl>
+ <say> ... </say>
+
+ #   Pass 4: support tag
+ <m4> ... </m4>
+
+ #   Pass 4: symbols
+ <symbol name value>
+ <symbol name undef>
+
+ #   Pass 5: diversions
+ <dump NAME>
+ <enter NAME> ... <leave>
+ <divert NAME> ... </divert>
+
+ #   Pass 6: support tag
+ <asubst ...> ... </asubst>
+
+ #   Client-Side JavaScript: support tag
+ <javascript [version=..] [language=..]
+             [type=..] [src=...] [defer] [nohead] [nolang]>
+ ... 
+ </javascript>
+
+ #   Resynchronize line numbers for more accurate pass 3 warnings
+ <sync-lines>
+
+=head1 DESCRIPTION
+
+This include file defines some standard support tags one needs all the time.
+All tags are self-explanatory and briefly mentioned in wml_intro(1), except
+the last two which are described below.
+
+=head2 B<C<E<lt>javascriptE<gt>>:>
+
+This tag was primarily a shorthand for C<E<lt>script
+type="text/javascript" language="JavaScript"E<gt>> but
+it has evolved.  If the C<E<lt>headE<gt>> tag is defined and is a
+complex macro, e.g. when calling C<wml::std::page>, then Javascript code
+is automatically passed to this macro and should be diverted to the HEAD
+section of HTML documents.  This diversion preserve lang slices in
+multi-lingual documents.  Those features may be disabled by the ``nohead''
+and ``nolang'' attributes.
+
+=head2 B<C<E<lt>sync-linesE<gt>>:>
+
+WML tries to print information on input file and line numbers when
+warnings or errors are reported in passes 2 and 3.  Some special
+sentences containing file names and line numbers are inserted during
+pass 1. So pass 2 have an accurate knowledge of where warnings appear in
+input file.  But it also filters it without preserving lines, so
+after pass 2 information is almost unusable.  By putting
+C<E<lt>sync-linesE<gt>> in input file, it forces pass 2 to resynchronize
+information on line numbers.  So for debugging pass 3, it could be of
+some help to insert C<E<lt>sync-linesE<gt>> before ePerl code.
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3, P4, P6
+ External: --
+
+=head1 SEEALSO
+
+wml(1)
+
+=cut
+

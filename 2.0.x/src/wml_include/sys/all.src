@@ -1,0 +1,53 @@
+##
+##  wml::sys:all - All of System (SYS) category 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1999-2001 Denis Barbier
+##
+
+#use wml::sys::bootp3
+#use wml::sys::bootp4
+#use wml::sys::compat1
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::sys:all - All of System (SYS) category 
+
+=head1 SYNOPSIS
+
+ #use wml::std::all
+
+=head1 DESCRIPTION
+
+This includes all existing include files of the B<System> (SYS) category,
+i.e. all includes with prefix B<wml::sys>.  The following files currently
+exist:
+
+  wml::sys::bootp3(3)  ... WML Bootstrap Code for pass 3 (ePerl)
+  wml::sys::bootp4(3)  ... WML Bootstrap Code for pass 4 (gm4)
+  wml::sys::compat1(3) ... Compatibility for WML version 1.x
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::sys::bootp3(3),
+wml::sys::bootp4(3),
+wml::sys::compat1(3).
+
+=cut
+

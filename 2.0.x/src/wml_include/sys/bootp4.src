@@ -1,0 +1,44 @@
+##
+##  wml::sys::bootp4 -- WML Bootstrap Code for pass 4 (gm4)
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1999-2001 Denis Barbier
+##
+m4_changequote()m4_changequote(`,')m4_dnl
+m4_define(`m4_noquotes', `m4_changequote()')m4_dnl
+m4_define(`m4_quotes',   `m4_changequote`'')m4_dnl
+m4_noquotes()m4_dnl
+m4_changecom()m4_dnl
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::sys::bootp4 - WML Bootstrap Code for Pass 4
+
+=head1 SYNOPSIS
+
+I<No synopsis, because this is automatically included by WML on startup.>
+
+=head1 DESCRIPTION
+
+Include some macros definitions to deal with GNU m4 quoting.
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+P4
+
+=head1 SEEALSO
+
+wml_p4_gm4(1), m4(1)
+
+=cut
+

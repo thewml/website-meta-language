@@ -1,0 +1,67 @@
+##
+##  wml::des:all - All of the Webdesign (DES) category
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::des::gfont
+#use wml::des::imgbg
+#use wml::des::imgdot
+#use wml::des::lowsrc
+#use wml::des::navbar
+#use wml::des::preload
+#use wml::des::rollover
+#use wml::des::space
+#use wml::des::typography
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des:all - All of the Webdesign (DES) category
+
+=head1 SYNOPSIS
+
+ #use wml::des::all
+
+=head1 DESCRIPTION
+
+This just includes all existing include files of the B<Webdesign> (DES)
+category, i.e. all includes with prefix B<wml::des>. The following files
+currently exist:
+
+ wml::des::gfont(3)      ... Graphical Font Tag
+ wml::des::imgbg(3)      ... Background Images
+ wml::des::imgdot(3)     ... 1pt Dot-Images for Webdesign
+ wml::des::lowsrc(3)     ... Create Image and LOWSRC-Attribute for IMG-Tag
+ wml::des::navbar(3)     ... Navigation Bar
+ wml::des::preload(3)    ... Preload Page Contents
+ wml::des::rollover(3)   ... RollOver-Style Image-Button
+ wml::des::space(3)      ... Layout Space
+ wml::des::typography(3) ... Typography
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::des::gfont(3),
+wml::des::imgbg(3),
+wml::des::imgdot(3),
+wml::des::lowsrc(3),
+wml::des::navbar(3),
+wml::des::preload(3),
+wml::des::rollover(3),
+wml::des::space(3),
+wml::des::typography(3).
+
+=cut
+

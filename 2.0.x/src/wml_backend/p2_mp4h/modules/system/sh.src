@@ -1,0 +1,34 @@
+;;;
+;;;  system:sh - Executing Shell commands
+;;; 
+;;;  Copyright (c) 2001 Denis Barbier, All Rights Reserved. 
+;;;
+
+<load module="system:sh">
+
+##EOF##
+__END__
+
+=head1 NAME
+
+system:sh - Executing Shell commands
+
+=head1 SYNOPSIS
+
+ <use name="system:sh" />
+
+ <sh>... some shell commands ...</sh>
+
+=head1 DESCRIPTION
+
+To be done :(
+
+  <sh>uname -a</sh>
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+

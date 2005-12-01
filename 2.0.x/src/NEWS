@@ -1,0 +1,276 @@
+
+  N E W S
+  =======
+
+  This file summarizes *major* changes to the WML sources, i.e.
+  between each *revision* (1.x -> 1.(x+1)).  Take this logfile
+  for detailed information about user related or visible changes.
+  ___________________________________________________________________________
+
+  Major changes between 1.7 and 2.0:
+
+      - Several improvements in wml_p1_ipp:
+          The -S and -I flags are now processed in right-to-left order
+          so that these flags in .wmlrc files have precedence over
+          .wmlrc files above.
+
+          Variable substitutions can now be nested and new constructs
+          have been added. The only restriction is that parenthesis
+          inside variable expansion are forbidden in inner expressions.
+
+          New automatic variables are provided to ease generation of
+          diaporamas (automatic references to previous and next files).
+
+          Block comments are no more supported by wml_p1_ipp.
+
+      - Meta-HTML is replaced by mp4h for Pass 2: the new parser has a
+        syntax very similar to the one of Meta-HTML, and tags have been
+        defined to ensure maximum compatibility.  Please read
+        README.mp4h and the wml_p2_mp4h documentation for details on how
+        to migrate from Meta-HTML to mp4h.
+
+      - Allow nesting of wml_p3_eperl commands: this is one of the
+        biggest challenge of WML 2.0 whereas it is entirely transparent
+        for end users.  Read the wml_macros(7) manpage for details on
+        how to write nestable macros.
+
+      - Promote alternate syntax in wml_p5_divert: until wml-1.7.0,
+        pass 5 used expressions containing angle characters.  In many
+        situations this could confuse pass 2, and so an alternate form
+        without angle characters is preferred.  Old syntax is still
+        valid but should be avoided.  Note also that WML 1.7.3 and
+        1.7.4 provided a slightly different syntax which is not
+        supported anymore.
+
+      - New include files:
+          wml::std::label implements labels and references
+          wml::mod::version ensures that a recent enough WML is run
+          wml::mod::MakeMaker is to help writing portable WML modules
+
+      - Wwwtable is replaced by freetable, a GPL replacement.  Syntax
+        is very similar and input files should work without changes.
+
+      - Support for both GIF and PNG formats.
+        Logos are shipped in both formats, and generated images may be
+        written in GIF (without the patented LZW algorithm) or PNG (if
+        PNG library and headers are found) formats.
+        Modified versions of libgd and GD are used to support both
+        formats.
+
+      - Change format of ISO dates
+        Format was previously dd-mm-yyyy and it has been changed to
+        yyyy-mm-dd to conform to ISO standards.
+
+      - A global base name may be used for generated images: instead of
+        defining IMGB_BASE, IMGDOT_BASE,... it is now possible to define
+        IMAGE_BASE and all generated images will refer to this variable.
+
+      - Better processing on files in other directories: the main goal
+        is to allow use of the VPATH feature of GNU make to build
+        webpages into a test area before compiling webpages.  This
+        does only apply to the wml binary, since there is no reason
+        to mix WMk and Makefiles.
+
+  Major changes between 1.6 and 1.7:
+
+      - Enhanced time dependency checks for wmk: wml accepts a new
+        flag to mimic how gcc handles dependency checks. This way,
+        wmk rebuilds the target when it is older than the source
+        file or than any file included during pass 1.
+
+      - Easier multi-lingual files generation: instead of using
+        the pseudo-shebang line, one can put the -o flags into
+        the RC-Files. Moreover some new commands have been
+        included in wml::std::lang to help writing compact and
+        self-explanatory source files.
+
+      - Defining variable without value: until now, the -D flag
+        accepted a var=value pair, and returned an error if no
+        value or an empty value was found. This was confusing
+        because major programming language accepts these two
+        forms, and because it was impossible to undefine a
+        variable. Now -Dvar is equivalent to -Dvar=1 and
+        -Dvar="" allows you to clear a variable.
+
+      - Big changes in configuration stuff: it is now done with
+        the same files as Apache 1.3, instead of the GNU ones.
+
+      - Improve include files: new functionalities have been
+        added especially into wml::std::toc, wml::std::lang and
+        wml::des::navbar. Bug fixes have been committed to deal
+        with quotes inside attributes.
+
+      - Y2K fixes : all programs have been checked. It does not
+        mean that WML is fully y2k compliant, but we do our best.
+        Anyway, WML does use dates for a) check time dependency
+        (WMk) and b) print current date.
+
+      - Help to write cleaner HTML pages : the htmlfix program
+        is improved, and new third party tools are put in
+        wml_aux : HTML-Clean and tidy.
+
+      - Add a keyword search in WMd: the Website Meta Language
+        Documentation browser becomes more friendly with this
+        nice tool.
+
+      - Denis Barbier <barbier@imacs.polytechnique.fr> is the
+        new maintainer of WML.
+
+  Major changes between 1.5 and 1.6:
+
+      - Big source and installation tree cleanup: the configure
+        option --enable-compat was removed, the files
+        wml_include/OBSOLETE* were removed, the wml_p*/ subdirs
+        were moved to wml_backend/wml_p*/, etc.  pp. And in
+        addition to this reorganization the backends and
+        auxiliary programs are now installed in PREFIX/lib/exec/
+        instead of PREFIX/bin/.
+
+      - Cleanup of include files: tag names were renamed
+        (especially in wml::des::navbar) to avoid namespace
+        conflicts, tags were merged (especially in
+        wml::std::box), tags were generalized (especially the new
+        wml::std::logo), double-defined tags were removed
+        (especially wml::sup::stack and wml::usr::rse), etc. pp.
+
+      - Revised a wrong design decision of the early days:
+        Comments are now supported in Pass 1 and not in Pass 8
+        and they are now supported in a more general way:
+        EOL-mode (#) and Block-mode (/*...*/) comments.  This
+        pass shift was done to get rid of comments as quick as
+        possible. This way we now really can comment out _any_
+        stuff and as a side effect processing is a little bit
+        faster.
+
+      - A new manpage was introduced: wml_tags(7), a permuted
+        index of all defined WML meta-tags.
+
+      - A lot of minor stuff was fixed, added or at least
+        generalized: the WML -p, -V and -P options, RC-File
+        parsing, HTMLfix quotation parsing, slice errors, etc.
+
+  Major changes between 1.4 and 1.5:
+
+      - New Platform Portability Test Suite: A PORTING.text
+        script was added to the distribution which can be used to
+        run a portability test and which displays a platform
+        entry line on success which then can be added to the
+        PORTING.L file. The PORTING text file now is
+        automatically build out of the PORTING.L entries.
+
+      - New GNU Autoconf option: ``--with-cc=PATH''. This
+        equivalent to setting CC=PATH before running the
+        ``configure'' script but follows the same idea as
+        --with-perl=PATH.
+
+      - The maintainer files for the packaging mechanisms of
+        various Unix derivates have been added as
+        wml_contrib/pkg/ for reference. Currently there are files
+        for the FreeBSD Ports area, the Debian dpkg mechanism and
+        the RedHat Package Manager.
+
+      - Added new include file: wml::std::lang. This provides a
+        high-level interface for multi-lingual support via
+        Slices.
+
+  Major changes between 1.3 and 1.4:
+
+      - The source distribution again was cutted down by
+        approximately 100 KB, especially by removing unnecessary
+        database support for Meta-HTML in the wml_p2_mhc/*
+        subtree.
+
+      - Now Speedup mode (introduced in 1.3) is the default
+        processing mode and the -s option now stand for --safe
+        and can be used to use the slow but more safe
+        forking-based approach of starting the Perl-based WML
+        passes. The trick of the Speedup mode is that the
+        frontend `wml' precompiles the Perl scripts into its
+        memory and evaluates them with the current interpreter
+        instead of using the system() call.
+
+      - A new Curses-based frontend named WMd (WML Documentation)
+        was added for nice and easy access to all WML manual
+        pages (works correct even without correct MANPATH).  The
+        reason is because WML has a lot of single manpages with
+        non-trivial names and such a startup page simplifies
+        access to the documentation.  The side effect is that you
+        now need a SVR4-compatible Curses-library (like NCurses
+        or S-Lang) to build WML. The used tool for browsing is
+        iSelect which was added to the distribution under
+        wml_aux/iselect/
+
+      - The long-awaited internal <protect [pass=SPEC]>..</protect>
+        container tag was added. This can be used to protect
+        *any* data from being processed by any WML pass.  While
+        such protections can be applied after any pass, the final
+        output data is unprotected after pass 9 only. Use this
+        new feature for protecting page contents which would
+        conflict with any WML functionality.
+
+      - Now the long-awaited new wml::des::navbar killer include
+        file replaces the old version. This is a complete new
+        approach to create navigation bars. It is based on the
+        idea of defining a grammar-like structure and let this
+        structure be rendered later. The structure itself is
+        completely independed of the used HTML markup code, so any
+        type of navigation bar can be created. There is although
+        additional support for rollover effects and Plain-Text
+        variants.
+
+      - Divert (WML Pass 5) now supports named leave tags, i.e.
+        you can leave a diversion by name which has the effect of
+        leaving it and all other diversions which were entered
+        from within it. This way one can use a templates more
+        then once in an input file.
+
+      - Now ePerl and thus WML supports the Perl Locale
+        environment which makes WML support international
+        character sets, for instance in the <sc>..</sc> container
+        tag from wml::des::typography
+
+      - A new wml::des::preload include file was added
+        for minimal preloading support of images.
+
+      - Another frontend: WMb -- Website META Language Bug
+        Reporting Tool.  This can be used to easily sumbit a bug
+        report to the WML author.
+
+      - System variables like WML_GEN_HOSTNAME now can be
+        overwritten by -D options on the command line or in
+        .wmlrc files. For instance this is useful to overwrite
+        informations for the <info> tag from wml::std::info with
+        correct values.
+
+      - Various 3rd-party software upgrades:
+        ePerl 2.2.8, Bit-Vector 5.0b1, Slice 1.2.7
+
+      - Numerous minor enhancements, portability changes and
+        bugfixes were done on the various WML passes and WML
+        include files. See the file ChangeLog for more details.
+
+  Major changes between 1.2 and 1.3:
+
+      -  New options -s which speeds up processing by avoiding fork()s
+      -  New feature in HTMLfix (pass 7): out-commenting HTML tags (<xx#>)
+      -  New feature in HTMLfix (pass 7): post-indenting (<indent>)
+      -  Cleanup of all WMk and WML options, including GNU long-options
+      -  Enhanced WML -v1 output (table format)
+
+  Major changes between 1.1 and 1.2:
+
+      -  HTML tag overwrite support (via <tag*> and </tag*>)
+      -  Pass 8 (HTMLStrip) overhauled (removed incorrect stripping)
+      -  Pass 1 (IPP) enhanced (new __FILE__, __LINE__ and $(VAR) stuff)
+      -  Perl compatibility changes ("use lib" replaced by "BEGIN/@INC" variant)
+      -  New manual pages: wml_intro(7) and wml_tutorial(7)
+      -  Cleaned up distribution [Step 2] (removed unnecessary stuff)
+      -  Upgrade to ePerl 2.2.3
+
+  Major changes between 1.0 and 1.1:
+
+      -  Fixed command line argument bugs (especially -DXXX=YYYY)
+      -  Changed GNU Autoconf option --with-closedworld to --with-openworld
+      -  Cleaned up distribution [Step 1] (removed unnecessary stuff)
+      -  Upgrade to Slice 1.2.4
+

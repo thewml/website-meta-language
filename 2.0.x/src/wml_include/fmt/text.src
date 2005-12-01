@@ -1,0 +1,114 @@
+##
+##  wml::fmt::text - Plain ASCII with Special Formatting Semantic
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::std::tags
+
+<protect pass=2>
+<:
+#   the conversion function
+sub wml_fmt_text {
+    my ($arg) = @_;
+    my ($buf);
+    local (*FP);
+
+    #   read the txt2html result
+    open(FP, "$(WML_LOC_LIBDIR)/exec/wml_aux_txt2html $arg->{FILE}|");
+    local ($/) = undef;
+    $buf = <FP>;
+    close(FP);
+
+    #   cut out the body
+    $buf =~ s|^.*<BODY>||is;
+    $buf =~ s|</BODY>.*$||is;
+
+    #   give headlines a more typographically strong look
+    if (not $arg->{NOTYPO}) {
+        $buf =~ s|^(<A NAME=".+?"><H([1-6])>)(.+?)(</H\2></A>)|$1<font face=\"Arial,Helvetica\">$3</font>$4|isg;
+    }
+
+    return $buf;
+}
+:>
+</protect>
+
+<define-tag text endtag=required>
+<preserve notypo />
+<set-var notypo=* />
+<set-var %attributes />
+<perl>
+{
+    my $tmpfile = "$(WML_TMPDIR)/wml.txt2html.$$.tmp";
+    my $notypo = (qq|<get-var notypo />| eq '' ? 1 : 0);
+
+    my $buf;
+    <perl:assign:sq $buf>%body</perl:assign:sq>
+
+    #   there is no reason to nest <text> tags, so the <perl:print>
+    #   statement is unnecessary
+    open(TXT, ">$tmpfile");
+    print TXT $buf;
+    close(TXT);
+
+    <perl:print:
+         "&wml_fmt_text({ FILE => $tmpfile, NOTYPO => $notypo })" />
+
+    unlink($tmpfile);
+}
+</perl>
+<restore notypo />
+</define-tag>
+
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt::text - Plain ASCII with Special Formatting Semantic
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::text
+
+ <: print &wml_fmt_text({ FILE => $file, ...}); :>
+
+ <text>
+ FOO
+ ===
+
+ 1. bar
+ 2. quux
+    a. baz
+    b. foo
+ ...
+ </text>
+
+=head1 DESCRIPTION
+
+The usage is simple: Surround the text with the C<E<lt>textE<gt>> container
+tag and then just write plain ASCII text inside it. The corresponding HTML
+code is created via F<wml_aux_txt2html>(1), a filter which gives the ASCII
+text nice formatting semantic which control the HTML result.
+
+The core conversion function is wml_fmt_text() which also can be used by other
+include files. 
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3, wml_aux_txt2html (WML)
+ External: --
+
+=head1 SEEALSO
+
+wml_aux_txt2html(1)
+
+=cut
+

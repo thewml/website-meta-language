@@ -1,0 +1,55 @@
+##
+##  wml::fmt::url - Recognize Uniform Resource Locator
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+<define-tag url endtag=required>
+{:\
+    [[s|\b(http://\S+)|<a href="$1">$1</a>|g]]\
+    [[s|\b(ftp://\S+)|<a href="$1">$1</a>|g]]\
+    [[s|\b(gopher://\S+)|<a href="$1">$1</a>|g]]\
+    [[s|\b(telnet:\S+)|<a href="$1">$1</a>|g]]\
+    [[s|\b(news:\S+)|<a href="$1">$1</a>|g]]\
+    [[s|\b(mailto:\S+)|<a href="$1">$1</a>|g]]\
+    %body\
+:}\
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt::url - Recognize Uniform Resource Locator
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::url
+
+ <url>
+ ....http://....
+ </url>
+
+=head1 DESCRIPTION
+
+The usage is simple: Just surround the text with the C<E<lt>urlE<gt>>
+container tag and all contained URLs are recognized and made interactive by
+adding HTML C<E<lt>aE<gt>> (anchor) tags.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P6
+ External: --
+
+=head1 SEEALSO
+
+HTML C<E<lt>aE<gt>> tag.
+
+=cut
+

@@ -1,0 +1,211 @@
+##
+##  wml::std::toc - Table of Contents Generation
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1999-2001 Denis Barbier
+##
+
+#use wml::des::space
+
+#   define the tag which just dumps the ToC
+#   via a divert location.
+<define-tag toc>\
+<get-var toc_begin />
+{#ToC#}\
+<get-var toc_end />
+</define-tag>
+
+#   globally initialize the ToC entry counter
+<set-var __TOCCNT=1 />
+
+#   defaults
+<set-var toc_style="$(style:-pre)" />
+#   these variables are used for "pre","hspace" and "nbsp" styles
+<set-var toc_begin="" toc_pad="" toc_eol="" toc_end="" />
+
+#   whereas this macro is for complex constructions like lists
+#   Choose the most appropriate when defining new styles
+<define-tag toc_section endtag=required>%body</define-tag>
+
+#   determine the ToC style
+<when <string-eq "<get-var toc_style />" "pre" />>
+    <set-var toc_begin="<pre*>" />
+    <set-var toc_pad="    "     />
+    <set-var toc_end="</pre*>"  />
+</when>
+<when <string-eq "<get-var toc_style />" "nbsp" />>
+    <set-var toc_pad="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+/>
+    <set-var toc_eol="<br />" />
+</when>
+<when <string-eq "<get-var toc_style />" "hspace" />>
+    <set-var toc_eol="<br />" />
+    <define-tag toc_section endtag=required>\
+    <hspace <multiply 20 %0 /> />%body\
+    </define-tag>
+</when>
+<when <string-eq "<get-var toc_style />" "ol" />>
+    <define-tag toc_style_type>\
+    <set-var __x=<substring "$(type)" %0 <add %0 1 /> /> />\
+    <if <get-var __x /> <group " type=\"<get-var __x />\"" /> />\
+    </define-tag>
+</when>
+<when <string-eq "<get-var toc_style />" "ul" />>
+    <define-tag toc_style_type>\
+    <set-var __x=<substring "$(type)" %0 <add %0 1 /> /> />\
+    <var-case
+       __x="d" <group " type=\"disc\"" />
+       __x="c" <group " type=\"circle\"" />
+       __x="s" <group " type=\"square\"" /> />\
+    </define-tag>
+</when>
+
+#   as i wrote, lists are somehow hairy
+<when <match "<get-var toc_style />" "(o|u)l" />>
+    <set-var toc_begin="{:" />
+    <set-var toc_end=":}" />
+    <set-var __i=1 />
+    <while <lt <get-var __i /> 7 />>\
+      <set-var toc_begin="<get-var toc_begin />\
+        [[s|</<get-var toc_style />*>\\n*<<get-var toc_style />*[^>]*>||g]]" />\
+      <increment __i />\
+    </while>
+    <subst-in-string "\
+=LT=define-tag toc_section endtag=required>\
+=LT=set-var __i=0 />\
+=LT=while =LT=lt =LT=get-var __i /> %0 />>\
+=LT=<get-var toc_style />*=LT=toc_style_type =LT=get-var __i /> />>\
+=LT=increment __i />=LT=/while>\
+<li*>\
+%body
+=LT=set-var __i=0 />\
+=LT=while =LT=lt =LT=get-var __i /> %0 />>\
+=LT=/<get-var toc_style />>\
+=LT=increment __i />=LT=/while>\
+=LT=/define-tag>
+"
+       "=LT=" "<"
+    />
+</when>
+
+#   Define the <HX> and <TOC_HX> container tags (X = 1...6)
+<set-var __i=1 />\
+<set-var __pad= />
+<while <lt <get-var __i /> 7 />>\
+    <subst-in-string "\
+=LT=define-tag h<get-var __i /> endtag=required>\
+=LT=h<get-var __i />* %attributes>\
+=LT=toc_h<get-var __i />>\
+%body\
+=LT=/toc_h<get-var __i />>\
+=LT=/h<get-var __i />*>\
+=LT=/define-tag>\
+"
+        "=LT=" "<"
+    />
+    <subst-in-string "\
+=LT=define-tag toc_h<get-var __i/> endtag=required>\
+=LT=preserve alt/>\
+=LT=set-var alt=/>\
+=LT=set-var %attributes/>\
+=LT=a name=\"ToC=LT=get-var __TOCCNT/>\">%body</a>\
+{#ToC#:\
+=LT=toc_section <get-var __i/>>\
+<get-var __pad/>\
+=LT=a href=\"#ToC=LT=get-var __TOCCNT/>\"><strong>\
+=LT=or =LT=get-var alt/> %body/>\
+</strong></a>\
+=LT=/toc_section>\
+<get-var toc_eol/>
+:#ToC#}\
+=LT=increment __TOCCNT/>\
+=LT=restore alt/>\
+=LT=/define-tag>\
+"
+        "=LT=" "<"
+    />
+    <set-var __pad="<get-var __pad /><get-var toc_pad />" />
+    <increment __i />
+</while>
+
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::toc - Table of Contents Generation
+
+=head1 SYNOPSIS
+
+ #use wml::std::toc [style={pre,nbsp,hspace,ul,ol} [type=...]]
+
+ <toc>
+
+ <hN>...</hN>
+
+ <toc_hN ...>...</toc_hN>
+
+=head1 DESCRIPTION
+
+This creates a table of contents which can be inserted at any point (even more
+than once) by the C<E<lt>tocE<gt>> tag. The contents gets created out of all
+header tags ``C<E<lt>hNE<gt>>'' where ``N'' also controls the indention in the
+table of contents.
+
+Alternatively you can use the C<E<lt>toc_hNE<gt>> tags to insert its
+body (can be empty!) at the current location and into the Table Of
+Contents. If specified, the C<alt> attribute is included into the ToC
+instead of the body.
+
+=head1 STYLES
+
+You may specify any of the five styles C<pre>, C<nbsp>, C<hspace>, C<ul>
+and C<ol>. The last two accept special options to render HTML lists.
+With C<style=ol>, you may choose types C<1>, C<A>, C<a>, C<i> and C<I>
+whereas C<style=ul> provides C<d>, C<c> and C<s> for respectively
+discs, circles and squares.
+
+=head1 EXAMPLE
+
+Below is an example to render the Table of Contents with HTML
+C<E<lt>preE<gt>> tag.
+
+ #use wml::std::toc style=pre
+ #use wml::std::page
+
+ <page>
+ <h1>Chapter 1</h1>
+ <h2>Section 1</h2>
+ <h2>Section 2</h2>
+ <h1>Chapter 2</h1>
+ <h2>Section 1</h2>
+ <h2>Section 2</h2>
+ <toc>
+
+Play and choose your favorite!
+
+ #use wml::std::toc style=ol type=A1ai
+
+or
+
+ #use wml::std::toc style=ul type=dssccc
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P5, P6
+
+=head1 SEEALSO
+
+HTML C<E<lt>HxE<gt>> C<E<lt>ULE<gt>> C<E<lt>OLE<gt>> tags.
+
+=cut
+

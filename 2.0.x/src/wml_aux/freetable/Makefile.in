@@ -1,0 +1,42 @@
+##
+##  wml_aux/freetable/Makefile
+##  Copyright (c) 1997-2000 Ralf S. Engelschall, <rse@engelschall.com>
+##  Copyright (c) 2000 Denis Barbier <barbier@engelschall.com>
+##
+
+@SET_MAKE@
+SHELL           = /bin/sh
+
+PATH_PERL       = @PATH_PERL@
+
+SRC_FILES       = freetable.src
+
+MAN_FILES       = $(SRC_FILES:.src=.1)
+EXE_FILES       = $(SRC_FILES:.src=.pl)
+
+.SUFFIXES:
+.SUFFIXES: .pl .1 .src
+
+.src.pl:
+	sed -e 's|\@PATH_PERL\@|$(PATH_PERL)|g' \
+          <$< >$@ && chmod a+x $@
+
+.src.1:
+	cp $< $*.pod
+	pod2man --section=1 \
+            --center="GNU/Linux Freedomization Project" \
+            --release="GNU/Linux Freedomization Project" \
+            $*.pod > $@
+	rm -f $*.pod
+
+all: $(EXE_FILES) $(MAN_FILES)
+
+clean: 
+	-rm -f $(EXE_FILES) $(MAN_FILES)
+
+distclean: clean
+	-rm -f Makefile
+
+realclean: distclean
+
+##EOF##

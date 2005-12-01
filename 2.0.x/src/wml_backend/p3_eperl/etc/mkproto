@@ -1,0 +1,37 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  mkproto -- generate prototype header
+##  Copyright (c) Ralf S. Engelschall, All Rights Reserved.
+##
+
+$header = $ARGV[0];
+shift @ARGV;
+$sources = join(" ", @ARGV);
+
+open(IN, "<$header");
+open(OUT, ">$header.n");
+while (<IN>) {
+	if (m|^/\*_BEGIN_PROTO_\*/|) {
+		while (<IN>) {
+	        last if (m|^/\*_END_PROTO_\*/|);
+		}
+		print OUT "/*_BEGIN_PROTO_*/\n";
+        open(CP, "cproto -DMKPROTO -e -f3 -v $sources 2>/dev/null|");
+		while (<CP>) {
+			if (m|^/\* .+\.c \*/|) {
+				print OUT "\n";
+			}
+			print OUT $_;
+		}
+        close(CP);
+		print OUT "/*_END_PROTO_*/\n";
+		next;
+	}
+	print OUT $_;
+}
+
+close(OUT);
+close(IN);
+system("mv $header.n $header");

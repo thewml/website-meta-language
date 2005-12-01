@@ -1,0 +1,399 @@
+
+;;;
+;;;    Sectioning
+;;;
+<define-tag section endtag=required>
+<preserve alt />
+<set-var %attributes />
+<increment info:chap />
+<if <get-var info:gentoc />
+    "@remove@=LT=set-var ext:chap[<get-var info:chap />]=\"%body\" />
+@remove@=LT=set-var ext:alt[<get-var info:chap />]=\"<get-var alt />\"/>
+" />
+
+@node %body, ;;;
+      <or <get-var ext:chap[<add <get-var info:chap /> 1 />] /> " " />, ;;;
+      <or <get-var ext:chap[<add <get-var info:chap /> -1 />] /> "Top" />, ;;;
+      Top
+@chapter %body
+
+<set-var info:sect=-1 />
+<when <get-var ext:chap<get-var info:chap /> />>
+@menu
+<set-var i=0 /><foreach section ext:chap<get-var info:chap />>;;;
+<when <get-var section />>;;;
+* <get-var section />:: ;;; align text
+  <subst-in-var section . " " />;;;
+  <subst-in-string "                              "
+            "^<get-var section />" "" />
+</when>;;;
+<increment i /></foreach>
+@end menu
+</when>
+<restore alt />
+</define-tag>
+
+<define-tag subsection endtag=required>
+<preserve alt />
+<set-var %attributes />
+<increment info:sect />
+<if <get-var info:gentoc />
+  "@remove@=LT=set-var ext:chap<get-var info:chap />[<get-var info:sect />]=\"%body\" />
+@remove@=LT=set-var ext:alt<get-var info:chap />[<get-var info:sect />]=\"<get-var alt />\" />
+" />
+
+@node %body, ;;;
+      <or <get-var ext:chap<get-var info:chap />[<add <get-var info:sect /> 1 />] /> " " />, ;;;
+      <or <get-var ext:chap<get-var info:chap />[<add <get-var info:sect /> -1 />] /> <get-var ext:chap[<get-var info:chap />] /> />, ;;;
+      <get-var ext:chap[<get-var info:chap />] />
+@section %body
+
+<restore alt />
+</define-tag>
+
+;;;
+;;;    Set text in typewriter or bold face font
+;;;    Constructs like <tt><tt>a</tt></tt> are valid but we
+;;;    prefer to avoid them.
+;;;
+<set-var _text:tt=0 />
+<set-var _text:b=0 />
+<set-var _text:em=0 />
+<define-tag texttt endtag=required whitespace=delete>
+<increment _text:tt />
+<ifeq <get-var _text:tt /> 1 "@code{" />
+%body
+<ifeq <get-var _text:tt /> 1 "}" />
+<decrement _text:tt />
+</define-tag>
+
+<define-tag textbf endtag=required whitespace=delete>
+<increment _text:b />
+<ifeq <get-var _text:b /> 1 "@b{" />
+%body
+<ifeq <get-var _text:b /> 1 "}" />
+<decrement _text:b />
+</define-tag>
+
+<define-tag textem endtag=required whitespace=delete>
+<increment _text:em />
+<ifeq <get-var _text:em /> 1 "@emph{" />
+%body
+<ifeq <get-var _text:em /> 1 "}" />
+<decrement _text:em />
+</define-tag>
+
+;;;
+;;;    Common names
+;;;
+<define-tag program>@code{%attributes}</define-tag>
+<define-entity mp4h><program mp4h /></define-entity>
+<define-entity WML><program WML /></define-entity>
+<define-entity m4><program m4 /></define-entity>
+<define-entity Meta-HTML><program Meta-HTML /></define-entity>
+
+<define-tag var>@var{%attributes}</define-tag>
+<define-tag value>@code{%attributes}</define-tag>
+<define-tag command>@command{%attributes}</define-tag>
+<define-tag full-command>@command{<%attributes>}</define-tag>
+<define-tag slash>@code{S}</define-tag>
+<define-tag true>@code{true}</define-tag>
+<define-tag optflag>@option{-%attributes}</define-tag>
+<define-tag file>@file{%attributes}</define-tag>
+
+<define-tag anchor whitespace=delete>
+<preserve name />
+<set-var %attributes />
+@anchor{<get-var name />}
+<restore name />
+</define-tag>
+
+<define-tag tag:slash>@emph{Simple}</define-tag>
+<define-tag tag:V>@emph{Verbatim}</define-tag>
+
+;;;
+;;;    Alias for writing URLs
+;;;
+<define-tag URL whitespace=delete>
+<preserve name src />
+<set-var %attributes />
+<subst-in-var src "@" "@@" />
+<subst-in-var src "\\{" "@{" />
+<subst-in-var src "\\}" "@}" />
+<get-var name /> @url{<get-var src />}
+<restore  name src />
+</define-tag>
+
+;;;
+;;;    Header of the TeXinfo document
+;;;
+<define-tag header>
+\input texinfo    @c -*-texinfo-*-
+@c %**start of header
+@setfilename mp4h.info
+@settitle <get-var title />
+@finalout
+@c %**end of header
+
+<set-var fileinfo="<get-file-properties mp4h.mp4h />" />;;;
+<set-var filedate="<date <get-var fileinfo[3] /> />" />
+@set UPDATED <get-var filedate />
+@set EDITION <__version__ />
+@set VERSION <__version__ />
+
+@ifinfo
+@format
+@dircategory Web Tools
+@direntry
+* mp4h: (mp4h).                 A macro processor for HTML documents.
+@end direntry
+@end format
+@end ifinfo
+
+@ifinfo
+This file documents the @code{mp4h} utility.
+
+Copyright @copyright{} 2000-2002  Denis Barbier
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Foundation.
+@end ifinfo
+
+@titlepage
+@title mp4h, version @value{VERSION}
+@subtitle A macro processor for HTML documents
+@subtitle Edition @value{EDITION}, @value{UPDATED}
+@author by Denis Barbier
+
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2000-2002  Denis Barbier
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Foundation.
+@end titlepage
+
+@ifinfo
+@node Top, <get-var ext:chap[0] />, (dir), (dir)
+@top @code{mp4h}
+
+@menu
+<set-var i=0 /><foreach chapter ext:chap>;;;
+* <get-var chapter />:: ;;; align text
+  <subst-in-var chapter . " " />;;;
+  <subst-in-string "                              "
+            "^<get-var chapter />" "" /><get-var ext:alt[<get-var i />] />
+<increment i /></foreach>
+@end menu
+
+@end ifinfo
+
+</define-tag>
+
+;;;
+;;;    Footer of the TeXinfo document
+;;;
+<define-tag footer>;;;
+@summarycontents
+@contents
+@bye
+</define-tag>
+
+;;;
+;;;    Description of mp4h tags
+;;;
+<define-tag tag:description endtag=required whitespace=delete>
+<preserve complex verbatim />
+<set-var complex=* />
+<set-var verbatim=* />
+<set-var %attributes />
+<set-var list-attributes="%body" />
+<subst-in-var list-attributes "^\n*(.*?)\n*$" "\\1" reflags=s />
+<group "
+@multitable @columnfractions .25 .6
+@item @tab
+@flushright
+<if <get-var complex /> "<tag:slash/>" /> <if <get-var verbatim /> "" "<tag:V/>" />
+@end flushright
+@item @code{%0} @tab <foreach attr list-attributes>@code{<get-var attr />} </foreach>
+@end multitable
+" />
+<restore  complex verbatim />
+</define-tag>
+
+<define-tag attributes:description endtag=required>
+@itemize @bullet
+%body@end itemize
+</define-tag>
+
+<define-tag attributes:item endtag=required>
+@item
+<attribute %0 />
+
+%body
+
+</define-tag>
+
+;;;
+;;;    Paragraphs
+;;;
+<define-tag para endtag=required>
+%body
+</define-tag>
+
+;;;
+;;;    Notes
+;;;
+<define-tag note endtag=required>;;;
+<para>@b{Note}: %body</para>
+</define-tag>
+
+;;;
+;;;    Lists
+;;;
+<define-tag list endtag=required>
+@itemize @bullet
+%body@end itemize
+</define-tag>
+
+<define-tag item endtag=required>
+@item
+
+%body
+
+</define-tag>
+
+;;;
+;;;    Quotes
+;;;
+<set-quotes />
+<define-tag begin-quote><@@[</define-tag>
+<define-tag end-quote>]@@></define-tag>
+
+;;;
+;;;    Example of mp4h code
+;;;
+<set-eol-comment "###" />
+<define-tag three-colon>;;;</define-tag>
+<define-tag example endtag=required attributes=verbatim>
+<set-var-verbatim verb-body=%Ubody />
+<subst-in-var verb-body "@" "@@" />
+<subst-in-var verb-body "\\{" "@{" />
+<subst-in-var verb-body "\\}" "@}" />
+<subst-in-var verb-body "^\n*(.*?)\n*$" "\\1" reflags=s />
+<set-var body=%body />
+<subst-in-var body "@" "@@" />
+<subst-in-var body "\\{" "@{" />
+<subst-in-var body "\\}" "@}" />
+<subst-in-var body "<three-colon/>[^;\n]*\n[ \t]*" "" />
+<subst-in-var body "<three-colon/>$" "" reflags=m />
+<subst-in-var body "^\n*(.*?)\n*$" "\\1" reflags=s />
+
+@noindent
+Source code:
+@example
+<get-var-once verb-body />
+@end example
+
+@noindent
+Output:
+@example
+<get-var-once body />
+@end example
+
+</define-tag>
+<set-eol-comment ";;;" />
+
+<define-tag void-func></define-tag>
+<define-tag pseudo-func>;;;
+<set-var liste-funcs="%Aattributes" />;;;
+<foreach func liste-funcs>;;;
+  <subst-in-string "=LT=let <get-var func />=void-func />" "=LT=" "<" />;;;
+</foreach>;;;
+</define-tag>
+
+;;;
+;;;    Verbatim code
+;;;
+<define-tag code endtag=required attributes=verbatim>
+<set-var-verbatim verb-body=%Ubody />;;;
+<subst-in-var verb-body "@" "@@" />
+@example
+<get-var-once verb-body />
+@end example
+</define-tag>
+
+;;;
+;;;    Attributes
+;;;
+<define-tag attribute>@code{%attributes}</define-tag>
+
+;;;
+;;;    HTML Comments
+;;;
+<define-tag html:comment endtag=required>
+_LT_!--%body--_GT_
+</define-tag>
+
+<define-tag pre endtag=required>
+%body
+</define-tag>
+
+<define-tag option-list endtag=required>
+@table @samp
+%body
+@end table
+</define-tag>
+
+<define-tag option endtag=required>
+@item %attributes
+%body
+</define-tag>
+
+<define-tag option-desc endtag=required>
+
+%body
+</define-tag>
+
+<define-tag optmand attributes=verbatim>;;;
+@option{%attributes};;;
+</define-tag>
+
+<define-tag optopt attributes=verbatim>;;;
+@option{[%attributes]};;;
+</define-tag>
+
+;;;
+;;;  Load table of contents for Info navigation
+;;;
+<include file=mp4h.chp alt=" " />
+<set-var info:chap=-1 />

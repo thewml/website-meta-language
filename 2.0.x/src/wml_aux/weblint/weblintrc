@@ -1,0 +1,406 @@
+#
+# sample configuration file for weblint
+# distributed as part of weblint 1.020
+#
+# The settings in this file reflect the built-in defaults.
+# I.e. if a warning is enabled in this file, then it is enabled by
+# default, and you don't have to enable it in your .weblintrc.
+#
+
+#========================================================================
+#	Global Configuration File
+#========================================================================
+#
+# Weblint supports a local site configuration file.
+# If one is set up, then you can specify it be included with the following:
+#
+#	use global weblintrc
+#
+
+#========================================================================
+#	Weblint Variables
+#========================================================================
+
+#
+# message-style: style of warning message to generate
+#	lint	generate warnings similar to traditional lint:
+#			file(line #): warning
+#		this is the default
+#	short	don't include the filename in the warning message:
+#			line #: warning
+#	terse	a style which is easy for another program to parse:
+#			file:line #:warning-identifier
+
+set message-style = lint
+
+#
+# url-get: a program which can be used to retrieve a URL
+#
+
+set url-get = lynx -source
+
+#
+# directory-index: list of filenames for directory indices
+#
+# If your server supports multiple index file names:
+#	set directory-index = index.html, welcome.html
+#
+
+set directory-index = index.html
+
+#
+# file-extensions: list of filename extensions for valid HTML filenames
+#
+# A comma-separated list of filenames extensions; these are used when
+# recursing in a directory, to decide which files should be checked.
+#
+
+set file-extensions = html, htm, shtml, phtml
+
+#========================================================================
+#	Extensions
+#========================================================================
+
+#------------------------------------------------------------------------
+# Allow Netscape HTML extensions, such as CENTER and FONT
+#------------------------------------------------------------------------
+# uncomment following line to enable the Netscape extensions
+extension Netscape
+
+#------------------------------------------------------------------------
+# Allow Microsoft HTML extensions, such as MARQUEE
+#------------------------------------------------------------------------
+# uncomment following line to enable the Microsoft extensions
+extension Microsoft
+
+
+#========================================================================
+#	Weblint Warnings
+#========================================================================
+
+#------------------------------------------------------------------------
+# By default, when recursing in a directory, weblint will check files
+# which are symlinks.  Uncomment the following line if you want weblint
+# to skip symlinks.  This is equivalent to the -l command-line switch
+#------------------------------------------------------------------------
+# ignore symlinks
+
+#------------------------------------------------------------------------
+# There are two checks for the case of element tags:
+#	upper-case	all tags should be in upper case
+#	lower-case	all tags should be in lower case
+# If both are disabled, then case is ignored
+#------------------------------------------------------------------------
+disable upper-case lower-case
+
+#------------------------------------------------------------------------
+# Bad style to use `here' as anchor text
+#------------------------------------------------------------------------
+enable here-anchor
+
+#------------------------------------------------------------------------
+# Flag any elements which are not recognized.  This will catch mis-typed
+# elements (e.g. <TOTLE>, or <\BODY>).
+#------------------------------------------------------------------------
+enable unknown-element
+
+#------------------------------------------------------------------------
+# check element attributes to see if they are legal
+#------------------------------------------------------------------------
+enable unknown-attribute
+
+#------------------------------------------------------------------------
+# flag if no HEAD element in page
+#------------------------------------------------------------------------
+enable require-head
+
+#------------------------------------------------------------------------
+# Flag elements which should only appear once on a page (eg TITLE)
+#------------------------------------------------------------------------
+enable once-only
+
+#------------------------------------------------------------------------
+# Flag case where page has BODY element, but no HEAD defined
+#------------------------------------------------------------------------
+enable body-no-head
+
+#------------------------------------------------------------------------
+# If you want outer element to be <HTML>
+#------------------------------------------------------------------------
+enable html-outer
+
+#------------------------------------------------------------------------
+# Flag elements which are only allowed to appear in HEAD element
+#------------------------------------------------------------------------
+enable head-element
+
+#------------------------------------------------------------------------
+# Flag elements which aren't allowed to appear in HEAD element
+#------------------------------------------------------------------------
+enable non-head-element
+
+#------------------------------------------------------------------------
+# Flag obsolete elements, such as XMP and LISTING
+#------------------------------------------------------------------------
+enable obsolete
+
+#------------------------------------------------------------------------
+# Flag mis-matched begin and end tags;  for example:
+#	<H1> ... </H2>
+#------------------------------------------------------------------------
+enable mis-match
+
+#------------------------------------------------------------------------
+# Flag any IMG elements which don't have ALT text defined.
+#------------------------------------------------------------------------
+enable img-alt
+
+#------------------------------------------------------------------------
+# Flag illegally nested elements (such as anchors).
+#------------------------------------------------------------------------
+enable nested-element
+
+#------------------------------------------------------------------------
+# Check for those elements which have required context.
+# For example, the <CAPTION> element can only appear in <FIG> or <TABLE>
+#------------------------------------------------------------------------
+enable required-context
+
+#------------------------------------------------------------------------
+# Check for mailto: LINK in header;  for example:
+#	<LINK REV=MADE HREF="mailto:neilb@cre.canon.co.uk">
+# This lets at least lynx users comment on a page.
+#------------------------------------------------------------------------
+disable mailto-link
+
+#------------------------------------------------------------------------
+# Flag overlapped elements.  For example:
+#	<A HREF="..."> <B> text </A> </B>
+#------------------------------------------------------------------------
+enable element-overlap
+
+#------------------------------------------------------------------------
+# Generate a warning if closing tag is not seen for elements where
+# it is expected.  A common case is <A NAME="..."> ... </A>.
+#------------------------------------------------------------------------
+enable unclosed-element
+
+#------------------------------------------------------------------------
+# Generate a warning if markup appears inside a comment.  This can
+# confuse quite a few browsers, so it's not a good idea to do it.
+#------------------------------------------------------------------------
+enable markup-in-comment
+
+#------------------------------------------------------------------------
+# You are not allowed to have any whitespace between the opening
+# < and element name.
+#------------------------------------------------------------------------
+enable leading-whitespace
+
+#------------------------------------------------------------------------
+# Flag potentially unclosed tags:
+#	< ... < ... >
+#------------------------------------------------------------------------
+enable unexpected-open
+
+#------------------------------------------------------------------------
+# Elements which do not have any required attributes, but for which at
+# least one attribute is expected.  Anchors, for example.
+#------------------------------------------------------------------------
+enable expected-attribute
+
+#------------------------------------------------------------------------
+# Required element attributes.  Eg IMG tag must have SRC attribute.
+#------------------------------------------------------------------------
+enable required-attribute
+
+#------------------------------------------------------------------------
+# Currently just checks local links, to see if target file exists.
+# disabled at the moment, since it generates bogus warnings if the file
+# path included directories.
+#------------------------------------------------------------------------
+disable bad-link
+
+#------------------------------------------------------------------------
+# Check for headings which are more than 1 level deeper than previous.
+# Example: <H1> followed by <H3>
+#------------------------------------------------------------------------
+enable heading-order
+
+#------------------------------------------------------------------------
+# Check for odd number of double quotes in tag, to catch things like:
+#		<A HREF="url >
+#------------------------------------------------------------------------
+enable odd-quotes
+
+#------------------------------------------------------------------------
+# Warn about closing tag for elements which don't take a closing tag.
+# For example: <IMG SRC="foo.gif" ALT="alt text"></IMG>
+#------------------------------------------------------------------------
+enable illegal-closing
+
+#------------------------------------------------------------------------
+# Warn about unclosed comments.  For example:
+#	<!-- this comment is not correctly closed >
+# Legal SGML comments are:
+#	<!-- ... blah blah ... -->
+#------------------------------------------------------------------------
+enable unclosed-comment
+
+#------------------------------------------------------------------------
+# Warning for use of physical font markup, rather than logical
+# For example:
+#	<B> where you should use <STRONG>
+#	<I> where you should use <EM>
+#	<TT> where you should use <CODE>, <KBD>, <VAR>, or <SAMP>
+#------------------------------------------------------------------------
+disable physical-font
+
+#------------------------------------------------------------------------
+# Warning for repeated attributes within the same tag.  For example:
+#	<IMG SRC="foo.gif" SRC="bar.gif">
+#	<A NAME="fred" NAME="bloggs">
+#------------------------------------------------------------------------
+enable repeated-attribute
+
+#------------------------------------------------------------------------
+# Warn against use of ' as a delimiter for attribute values.  E.g.:
+#	<A HREF='http://www.cre.canon.co.uk/'>Canon Research Centre</A>
+#------------------------------------------------------------------------
+enable attribute-delimiter
+
+#------------------------------------------------------------------------
+# Warn about attributes on a closing tag of container element.  E.g.:
+#	<A HREF="foobar.html">click here!</A NAME="foobar">
+#------------------------------------------------------------------------
+enable closing-attribute
+
+#------------------------------------------------------------------------
+# When recursing in a directory, check whether there is a directory
+# index file.  See also the variable `directory-index', which specifies
+# the name of index file to look for.
+#------------------------------------------------------------------------
+enable directory-index
+
+#------------------------------------------------------------------------
+# Warn about empty container elements.  For example:
+#	<TITLE></TITLE>
+#------------------------------------------------------------------------
+enable empty-container
+
+#------------------------------------------------------------------------
+# Warn about situations where one element is expected to immediately
+# follow another, with no tags or text between. For example:
+#	1) LH should be the first thing in a UL, if it appears at all
+#	2) should be nothing between </HEAD> and <BODY>
+#------------------------------------------------------------------------
+enable must-follow
+
+#------------------------------------------------------------------------
+# Warn about IMG elements which don't have the WIDTH and HEIGHT
+# attributes set. Setting these attributes can improve page layout speed
+# on some browsers.
+#------------------------------------------------------------------------
+enable img-size
+
+#------------------------------------------------------------------------
+# Warn about leading or trailing whitespace for certain container
+# elements: A, TITLE, H1 through H6.
+#------------------------------------------------------------------------
+disable container-whitespace
+
+#------------------------------------------------------------------------
+# Warn if you don't have a DOCTYPE element as the first thing in
+# your document.
+#------------------------------------------------------------------------
+disable require-doctype
+
+#------------------------------------------------------------------------
+# Warn if you a metacharacter is included literally, rather than using
+# the appropriate entity. Currently this just warns about use of >,
+# in which case you should use &gt;
+#------------------------------------------------------------------------
+enable literal-metacharacter
+
+# ========================================================================
+# Warnings added in the 1.014 release
+# ========================================================================
+
+#------------------------------------------------------------------------
+# Warn if a heading is closed with a different level close tag than
+# the heading was opened with. For example:
+#	<H2>... blah blah ...</H1>
+#------------------------------------------------------------------------
+enable heading-mismatch
+
+#------------------------------------------------------------------------
+# Warn if text is seen in unexpected context, such as inside a UL element
+# (rather than inside an LI, which is inside a UL. Or in the HEAD element.
+#------------------------------------------------------------------------
+enable bad-text-context
+
+#------------------------------------------------------------------------
+# Warn about illegal attribute values, such as values in the wrong format.
+#------------------------------------------------------------------------
+enable attribute-format
+
+# ========================================================================
+# Warnings added in the 1.015 release  
+#       NOTE: the netscape-markup and netscape-attribute warnings
+#               were deleted with the 1.015 release
+# ========================================================================
+
+# uncomment the following line if using the Microsoft HTML extensions
+# extension Microsoft
+
+#------------------------------------------------------------------------
+# Warn if using extended markup without an appropriate extension enabled.
+# This warning replaces the 'netscape-markup' warning, and is now generated
+# if the page uses Netscape or Microsoft extensions.
+#------------------------------------------------------------------------
+enable extension-markup
+ 
+#------------------------------------------------------------------------
+# Warn if using extended attributes without an appropriate extension enabled.
+# This warning replaces the 'netscape-attribute' warning, and is now generated
+# if the page uses Netscape or Microsoft attributes.
+#------------------------------------------------------------------------
+enable extension-attribute
+
+
+# ========================================================================
+# New stuff in the 1.016 release
+# ========================================================================
+
+#------------------------------------------------------------------------
+# Warn of the document TITLE is longer than 64 characters.
+# This limit is recommended by the HTML specification
+#------------------------------------------------------------------------
+enable title-length
+
+#------------------------------------------------------------------------
+# Warn about a heading inside an anchor. Should be the other way round;
+# i.e. an anchor inside a heading.
+#------------------------------------------------------------------------
+enable heading-in-anchor
+
+#------------------------------------------------------------------------
+# Warn about use of < inside the PRE element. This is just a special
+# case of the `literal-metacharacter' warning.
+#------------------------------------------------------------------------
+enable meta-in-pre
+
+#------------------------------------------------------------------------
+# Warn about attribute values which should be quoted, but aren't.
+# Attribute values should be quoted if they contain characters
+# other than [-.A-Za-z0-9]
+#------------------------------------------------------------------------
+enable quote-attribute-value
+
+
+# ========================================================================
+# New stuff in the 1.020 release
+# ========================================================================
+
+#-- no new warnings or variables added in 1.020
+

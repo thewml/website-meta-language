@@ -1,0 +1,563 @@
+#!@PATH_PERL@
+eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  htmlfix -- Fixup HTML markup code
+##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 2000 Denis Barbier
+##
+
+require 5.003;
+
+BEGIN { $^W = 0; } # get rid of nasty warnings
+
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
+use Getopt::Long 2.13;
+use Image::Size;
+use IO::File 1.06;
+
+#
+#   process command line
+#
+sub usage {
+    print STDERR "Usage: htmlfix [options] [file]\n";
+    print STDERR "\n";
+    print STDERR "Options:\n";
+    print STDERR "  -o, --outputfile=<file>  set output file instead of stdout\n";
+    print STDERR "  -F, --fix=<fixes>        select which fix to apply\n";
+    print STDERR "  -S, --skip=<fixes>       skip specified fixes\n";
+    print STDERR "  -v, --verbose            verbose mode\n\n";
+    print STDERR "Fixes are a comma separated list of (default is to process them all)\n";
+    print STDERR "  imgalt : add ALT attributes to IMG tags\n";
+    print STDERR "  imgsize: add WIDTH/HEIGHT attributes to IMG tags\n";
+    print STDERR "  summary: add SUMMARY attribute to TABLE tags\n";
+    print STDERR "  center : change proprietary CENTER tag to standard DIV tag\n";
+    print STDERR "  space  : fix trailing spaces in tags\n";
+    print STDERR "  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes\n";
+    print STDERR "  indent : indent paragraphs\n";
+    print STDERR "  comment: out-comment tags\n";
+    print STDERR "  tagcase: perform tag case-conversion\n";
+    exit(1);
+}
+$opt_v = 0;
+$opt_o = '-';
+$opt_F = 'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
+$opt_S = '';
+$Getopt::Long::bundling = 1;
+$Getopt::Long::getopt_compat = 0;
+if (not Getopt::Long::GetOptions(
+    "v|verbose",
+    "F|fix=s",
+    "S|skip=s",
+    "o|outputfile=s")) {
+    &usage;
+}
+
+sub verbose {
+    my ($str) = @_;
+    if ($opt_v) {
+        print STDERR "** HTMLfix:Verbose: $str\n";
+    }
+}
+sub error {
+    my ($str) = @_;
+    print STDERR "** HTMLfix:Error: $str\n";
+    exit(1);
+}
+sub warning {
+    my ($str) = @_;
+    if (not $opt_q) {
+        print STDERR "** HTMLfix:Warning: $str\n";
+    }
+}
+
+#
+#   read input file
+#
+if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
+    $in = new IO::Handle;
+    $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
+    local ($/) = undef;
+    $buffer = <$in>;
+    $in->close() || error("cannot close STDIN: $!");
+}
+elsif ($#ARGV == 0) {
+    $in = new IO::File;
+    $in->open($ARGV[0]) || error("cannot load $ARGV[0]: $!");
+    local ($/) = undef;
+    $buffer = <$in>;
+    $in->close() || error("cannot close $ARGV[0]: $!");
+}
+else {
+    &usage;
+}
+
+#
+#   processing loop
+#
+$bytes = 0;
+
+#
+#   Definitions of fixups
+#   Some attention has been paid for efficiency in regular expressions,
+#   this is why they appear more complicated than needed.
+#
+
+#
+#   FIXUP 1: add WIDTH/HEIGHT/ALT attributes to <img>-tags
+#
+sub ProcessImgTag {
+    my ($attr) = @_;
+    my ($image, $width, $height, $scale);
+    my ($Nwidth, $Nheight, $Pwidth, $Pheight);
+
+    if (   $attr =~ m|SRC\s*=\s*"([^"]*)"|is
+        or $attr =~ m|SRC\s*=\s*(\S+)|is    ) {
+        $image = $1;
+
+        ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+         $atime,$mtime,$ctime,$blksize,$blocks) = stat($image);
+        $bytes += $size;
+
+        #   add WIDTH and HEIGHT to speed up display
+        $width  = -1;
+        $height = -1;
+        $scale  =  1;
+        if (   $attr =~ m/WIDTH\s*=\s*([0-9%]+|\*)/is
+            or $attr =~ m/WIDTH\s*=\s*"([0-9%]+|\*)"/is) {
+            $width = $1;
+        }
+        if (   $attr =~ m/HEIGHT\s*=\s*([0-9%]+|\*)/is
+            or $attr =~ m/HEIGHT\s*=\s*"([0-9%]+|\*)"/is) {
+            $height = $1;
+        }
+        if (   $attr =~ s/SCALE\s*=\s*([0-9]+)%//is
+            or $attr =~ s/SCALE\s*=\s*"([0-9]+)%"//is) {
+            $scale = $1 / 100;
+        }
+        if (   $attr =~ s/SCALE\s*=\s*([0-9.]+)//is
+            or $attr =~ s/SCALE\s*=\s*"([0-9.]+)"//is) {
+            $scale = $1;
+        }
+        if ($width  eq '*' or $width  == -1 or
+            $height eq '*' or $height == -1   ) {
+            if (-f $image) {
+                ($Pwidth, $Pheight) = Image::Size::imgsize($image);
+
+                #    width given, height needs completed
+                if ((not ($width  eq '*' or $width  == -1)) and 
+                         ($height eq '*' or $height == -1)     ) {
+                    if ($width == $Pwidth) {
+                        $Nheight = $Pheight;
+                    }
+                    else {
+                        $Nheight = int(($Pheight/$Pwidth)*$width);
+                    }
+                }
+                #   height given, width needs completed
+                elsif ((not ($height eq '*' or $height == -1)) and 
+                            ($width  eq '*' or $width  == -1)     ) {
+                    if ($height == $Pheight) {
+                        $Nwidth = $Pwidth;
+                    }
+                    else {
+                        $Nwidth = int(($Pwidth/$Pheight)*$height);
+                    }
+                }
+                #   both width and height needs completed
+                elsif (($height eq '*' or $height == -1) and 
+                       ($width  eq '*' or $width  == -1)    ) {
+                    $Nwidth  = $Pwidth;
+                    $Nheight = $Pheight;
+                }
+
+                #   optionally scale the dimensions
+                if ($scale != 1) {
+                    $Nwidth  = int($Nwidth  * $scale);
+                    $Nheight = int($Nheight * $scale);
+                }
+
+                #   now set the new values
+                if ($width eq '*') {
+                    $attr =~ s|(WIDTH\s*=\s*)\S+|$1$Nwidth|is;
+                    &verbose("substituting width for $image: ``width=$Nwidth''");
+                }
+                elsif ($width == -1) {
+                    $attr .= " width=$Nwidth";
+                    &verbose("adding width for $image: ``width=$Nwidth''");
+                }
+                if ($height eq '*') {
+                    $attr =~ s|(HEIGHT\s*=\s*)\S+|$1$Nheight|is;
+                    &verbose("substituting height for $image: ``height=$Nheight''");
+                }
+                elsif ($height == -1) {
+                    $attr .= " height=$Nheight";
+                    &verbose("adding height for $image: ``height=$Nheight''");
+                }
+            }
+            else {
+                #   complain
+                &verbose("cannot complete size of $image: file not found");
+                #   and make sure the =* placeholder constructs are removed
+                $attr =~ s|WIDTH\s*=\s*\*||is;
+                $attr =~ s|HEIGHT\s*=\s*\*||is;
+            }
+        }
+    }
+
+    return $attr;
+}
+sub Fixup_imgalt {
+    $bufferN = '';
+    while ($buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s) {
+        ($pre, $tag, $attr, $end) = ($1, $2, $3, $4);
+        if (    $attr !~ m|ALT\s*=\s*"[^"]*"|is
+            and $attr !~ m|ALT\s*=\s*\S+|is) {
+            &verbose("adding ALT for $image");
+            $attr .= ' alt=""';
+        }
+        $bufferN .= $pre . $tag . $attr . $end;
+    }
+    $buffer = $bufferN . $buffer;
+}
+sub Fixup_imgsize {
+    $bufferN = '';
+    while ($buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s) {
+        ($pre, $tag, $attr, $end) = ($1, $2, $3, $4);
+        $bufferN .= $pre . $tag . &ProcessImgTag($attr) . $end;
+    }
+    $buffer = $bufferN . $buffer;
+}
+
+#
+#   FIXUP 2: add summary attribute to <table>-tags
+#
+sub Fixup_summary {
+    &verbose("adding summary attribute to <table>");
+
+    my $last = 0;
+    $bufferN = '';
+    while ($buffer =~ m|\G(.*?)(<[tT][aA][bB][lL][eE])([^>]*?)(/?>)|gs) {
+        $last = pos($buffer);
+        ($pre, $begin, $attr, $end) = ($1, $2, $3, $4);
+
+        #   add a SUMMARY="" tag to make HTML lints happy
+        if ($attr !~ m|SUMMARY\s*=|i) {
+            $attr .= ' summary=""';
+        }
+        $bufferN .= $pre . $begin . $attr . $end;
+    }
+    $buffer = $bufferN . substr($buffer, $last);
+}
+
+#
+#   FIXUP 3: change <center>..</center> to <div align=center>..</div>
+#
+sub Fixup_center {
+    &verbose("replacing <center>..</center> by <div align=center>..</div>");
+
+    $buffer =~ s|<[cC][eE][nN][tT][eE][rR](\s[^>]*)?>|<div align="center"$1>|g;
+    $buffer =~ s|</[cC][eE][nN][tT][eE][rR]>|</div>|g;
+}
+
+#
+#   FIXUP 4: fix trailing space in tags
+#
+sub Fixup_space {
+    &verbose("trailing space in tags");
+
+    #   Only space characters are removed, neither tabs nor newlines
+    $buffer =~ s| +>|>|g;
+    $buffer =~ s|([^\s])/>|$1 />|g;
+}
+
+#
+#   FIXUP 5: add quotations to attribute values and
+#            add missing '#' char to color attributes 
+#
+sub Fixup_quotes {
+    &verbose("add quotes to attributes");
+
+    my $last = 0;
+    $bufferN = '';
+    while ($buffer =~ m|\G(.*?)(<[a-zA-Z_][^>]*>)|sg) {
+        $last = pos($buffer);
+        ($prolog, $tag) = ($1, $2);
+        $tag =~ s@([A-Za-z_-]+=)([^\s\"\'><\[]+)(\s|/?>)@$1"$2"$3@sg;
+        $tag =~ s|([A-Za-z_-]+=")([0-9A-Fa-f]{6}"[\s/>])|$1#$2|sg;
+        $bufferN .= $prolog.$tag;
+    }   
+    $buffer = $bufferN . substr($buffer, $last);
+}
+
+
+#
+#   FIXUP 6: paragraph indentation 
+#
+sub ProcessIndentContainer {
+    my ($attr, $data) = @_;
+    my ($num, $size, $pad, $prefix);
+    
+    #   determine amount of padding
+    $num  = 0;
+    $size = 4;
+    $attr =~ s/num\s*=\s*"?(\d+)"?/$num = $1, ''/ige;
+    $attr =~ s/size\s*=\s*"?(\d+)"?/$size = $1, ''/ige;
+
+    #   pad the data
+    if ($num > 0) {
+        $pad = ' ' x ($num * $size);
+        $data =~ s/^/$pad/mg;
+    }
+    elsif ($num == 0) {
+        ($prefix) = ($data =~ m|^\n*([ \t]+)|s);
+        if (length($prefix) > 0) {
+            $data =~ s/^$prefix//mg;
+        }
+    }
+    return $data;
+}
+sub Fixup_indent {
+    &verbose("paragraph indentation");
+
+    if ($buffer =~ m|<[iI][nN][dD][eE][nN][tT][\s>]|) {
+        $bufferN = '';
+        while ($buffer =~ s|^(.*?)<indent([^>]*)>(.*?)</indent>||is) {
+            ($pre, $attr, $data) = ($1, $2, $3);
+            $bufferN .= $pre . &ProcessIndentContainer($attr, $data);
+        }
+        $buffer = $bufferN . $buffer;
+    }
+}
+
+#
+#   FIXUP 7: out-commenting tags
+#
+sub Fixup_comment {
+    &verbose("remove commenting tags");
+    $buffer =~ s|<[a-zA-Z_][a-zA-Z0-9-]*#.*?>||sg;
+    $buffer =~ s|</[a-zA-Z_][a-zA-Z0-9-]*#>||sg;
+}
+
+#
+#   FIXUP 8: tag case translation
+#
+sub doit_upper {
+    ($prefix, $body) = @_;
+    $prefix =~ s/^(.+)$/\U$1\E/;
+    $body =~ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\U$1\E$2/sg;
+    return $prefix.$body;
+}
+sub doit_lower {
+    ($prefix, $body) = @_;
+    $prefix =~ s/^(.+)$/\L$1\E/;
+    $body =~ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\L$1\E$2/sg;
+    return $prefix.$body;
+}
+sub ProcessTagConv {
+    my ($attr, $data) = @_;
+    my ($case);
+    
+    #   determine case translation type
+    $case = 'upper';
+    $attr =~ s/case\s*=\s*"?(upper|lower)"?/$case = lc($1), ''/ige;
+
+    #   and then translate the data
+    if ($case eq 'upper') {
+        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\U$1\E|sg;
+        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?/?>)|&doit_upper($1,$2)|sge;
+        $data =~ s|(<\/[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\U$1\E|sg;
+    }
+    else {
+        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\L$1\E|sg;
+        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?>)|&doit_lower($1,$2)|sge;
+        $data =~ s|(<\/[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\L$1\E|sg;
+    }
+    return $data;
+}
+sub Fixup_tagcase {
+    &verbose("tag case translation");
+
+    if ($buffer =~ m|<[tT][aA][gG][cC][oO][nN][vV][\s>]|) {
+        $bufferN = '';
+        while ($buffer =~ s|^(.*?)<tagconv([^>]*)>(.*?)</tagconv>||is) {
+            ($pre, $attr, $data) = ($1, $2, $3);
+            $bufferN .= $pre . &ProcessTagConv($attr, $data);
+        }
+        $buffer = $bufferN . $buffer;
+    }
+}
+
+#
+#   process all required fixups
+#
+foreach (split(',', $opt_S)) {
+    $opt_F =~ s/\b$_\b//;
+}
+foreach (split(',', $opt_F)) {
+    $fixup = 'Fixup_' . $_;
+    &$fixup if defined (&$fixup);
+}
+
+#
+#   statistic
+#
+&verbose("Total amount of images: $bytes bytes");
+
+#
+#   write to output file
+#
+if ($opt_o eq '-') {
+    $out = new IO::Handle;
+    $out->fdopen(fileno(STDOUT), "w") || error("cannot write into STDOUT: $!");
+}
+else {
+    $out = new IO::File;
+    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
+}
+$out->print($buffer) || error("cannot write into $opt_o: $!");
+$out->close() || error("cannot close $opt_o: $!");
+
+exit(0);
+
+##EOF##
+__END__
+
+=head1 NAME
+
+htmlfix - Fixup HTML markup code
+
+=head1 SYNOPSIS
+
+B<htmlfix>
+[B<-o> I<outputfile>]
+[B<-F> I<fixes>]
+[B<-S> I<fixes>]
+[B<-v>]
+[I<inputfile>]
+
+=head1 DESCRIPTION
+
+The F<htmlfix> program reads I<inputfile> or from C<stdin> and performs the
+following actions (name of each fixup is within parentheses):
+
+=over 4
+
+=item (B<imgsize>) : B<Adding WIDTH and HEIGHT attributes to IMG tags>
+
+For all C<IMG> tags which don't already have both C<WIDTH> and C<HEIGHT>
+attributes (matched case insensitive), the size of the image (taken from the
+C<SRC> attribute) is determined and the missing ``C<width=X>'' and/or
+``C<height=Y>'' is added to the list of attributes. The intention is to
+speedup the layouting of the final webpage.
+
+Don't intermix this with a size checker: F<htmlfix> will only I<add> missing
+width/height attributes and don't adjust ones with wrong dimensions. This is
+because else the user wouln't be able to scale images (used a lot by
+webdesigners via 1pt dot-images).
+
+There is a special case: When the C<WIDTH> or C<HEIGHT> attribute already
+exists and has a value of ``C<*>'' this asterisk is replaced by the physical
+value instead of appending a new attribute. Use when you want the attributes
+at a certain position, i.e. use this variant as a placeholder.
+
+HTMLfix supports one additionl feature in conjunction with C<WIDTH> and
+C<HEIGHT>: C<SCALE=>I<factor> and C<SCALE=>I<percent>C<%>. This can be used to
+scale the given or determined width and height values by multiplying with
+I<factor> or multiplying with I<percent>/100.
+
+=item (B<imgalt>) : B<Adding ALT attribute to IMG tags>
+
+For all C<IMG> tags which don't already have a C<ALT> tag an C<ALT="">
+attribute is added. The intention is to both make HTML checkers like
+weblint(1) happy and to demystify the final webpage for lynx(1) users.
+
+=item (B<summary>) : B<Adding SUMMARY attribute to TABLE tags>
+
+This attribute helps non-visual rendering of tables by adding a hint on
+its contents, and it makes tidy(1) quiet.
+
+=item (B<center>) : B<Changing proprietary CENTER tag to standard DIV tag>
+
+All proprietary (Netscape) C<CENTER> tags are replaced by the HTML 3.2
+conforming construct ``C<E<lt>DIV ALIGN=CENTERE<gt>>''.
+
+=item (B<space>) : B<Fix trailing spaces in tags>
+
+Appendix C of the XHTML Specification recommands putting a space before
+closing simple tags to help rendering by old browsers.  This space is
+automatically added when this fixup is used.  On the other hand, all
+spaces before a right-angle bracker are suppressed.
+
+=item (B<quotes>) : B<Adding missing quotes for attributes>
+
+All attributes of the form ``C<...=xyz>'' are replaced by ``C<...="xyz">''.
+Furthermore all (color) attributes of the form ``C<...="XXYYZZ">''
+(XX,YY,ZZ elements of set {0,..,9,a,..,f} are fixed to
+``C<...="#XXYYZZ">''.
+
+=item (B<indent>) : B<Indenting paragraphs>
+
+Paragraphs enclosed in C<E<lt>indent [num=N]
+[size=S]E<gt>>...C<E<lt>/indentE<gt>> containers are indented by N*S spaces.
+When N=0 then the whitespace block in front of the paragraph is removed.
+Default is a 4 space indentation (N=1, S=4).
+
+=item (B<comment>) : B<Out-commenting tags>
+
+Sometimes it is useful to temporarily out-comment a tag instead of completely
+removing it. This can be done by just adding a sharp (``C<#>'') character
+directly to the end of the tagname. The result is that the complete tag is
+commented out. For container-tags you have to comment out the end-tag
+explicitly, too. Example: ``E<lt>C<a# href="...">E<gt>''.
+
+=item (B<tagcase>) : B<Markup-code case-conversion>
+
+Some people like their HTML markup code either to be all uppercase or all
+lowercase. This tag case-conversion is supported by the internal
+C<E<lt>tagconv case=...E<gt>>...C<E<lt>/tagconvE<gt>> container tag from
+HTMLfix. Use C<case=upper> to translate the HTML tags in its body to uppercase
+(default) or C<case=lower> to translate them to lowercase.
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item B<-o> I<outputfile>
+
+This redirects the output to I<outputfile>. Usually the output will be send to
+C<stdout> if no such option is specified or I<outputfile> is "C<->".
+
+=item B<-F> I<fixes>
+
+This option specifies which specifix fixups are performed.  Its argument
+is a comma separated list of fixup names, and by default all fixups are
+performed.
+
+=item B<-S> I<fixes>
+
+This option does the inverse job, it skips specified fixups.
+
+=item B<-v>
+
+This sets verbose mode where some processing information will be given on the
+console.
+
+=back
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+
+##EOF##

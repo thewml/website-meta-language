@@ -1,0 +1,59 @@
+##
+##  wml_p6_asubst/Makefile
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, <rse@engelschall.com>
+##  Copyright (c) 2000-2001 Denis Barbier <barbier@engelschall.com>
+##
+
+@SET_MAKE@
+SHELL           = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+INSTALL_PROGRAM = $(top_srcdir)/etc/shtool install -c -m 755 -s
+INSTALL_DATA    = $(top_srcdir)/etc/shtool install -c -m 644
+
+prefix          = @prefix@
+exec_prefix     = $(prefix)
+bindir          = $(prefix)/bin
+libsubdir       = @libsubdir@
+libdir          = $(prefix)/lib$(libsubdir)
+mandir          = $(prefix)/man
+
+PATH_PERL       = @PATH_PERL@
+INSTALLPRIVLIB  = @INSTALLPRIVLIB@
+INSTALLARCHLIB  = @INSTALLARCHLIB@
+
+SRC_FILES       = asubst.src
+
+MAN_FILES       = $(SRC_FILES:.src=.1)
+EXE_FILES       = $(SRC_FILES:.src=.pl)
+
+.SUFFIXES:
+.SUFFIXES: .pl .1 .src
+
+.src.pl:
+	sed -e '/^=head1/,/^=cut/d' \
+        -e '/^__END__/,$$d' \
+	-e 's|\@PATH_PERL\@|$(PATH_PERL)|g' \
+        -e 's|\@INSTALLPRIVLIB\@|$(INSTALLPRIVLIB)|g' \
+        -e 's|\@INSTALLARCHLIB\@|$(INSTALLARCHLIB)|g' \
+          <$< >$@ && chmod a+x $@
+
+.src.1:
+	cp $< $*.pod
+	pod2man --section=1 --center="EN Tools" --release="EN Tools" $*.pod >$@
+	rm -f $*.pod
+
+all: $(EXE_FILES) $(MAN_FILES)
+
+clean: 
+	-rm -f $(EXE_FILES) $(MAN_FILES)
+
+distclean: clean
+	-rm -f Makefile
+
+realclean: distclean
+
+##EOF##

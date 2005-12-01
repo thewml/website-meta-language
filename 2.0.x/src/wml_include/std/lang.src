@@ -1,0 +1,393 @@
+##
+##  wml::std::lang - Multi-Lingual Support
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1999-2001 Denis Barbier
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+#   
+#  The list of defined languages
+#
+<set-var __languages= />
+
+#   
+#  The stack of language slices
+#
+<set-var __lang:stack= />
+
+#
+#   Display current language and list of defined languages
+#
+<define-tag lang:current><array-topvalue __lang:stack /></define-tag>
+<define-tag lang:list><get-var __languages /></define-tag>
+
+#
+#   The `lang:new xx' tag which adds another language to
+#   the list of known ones and defines the `lang:xx' tag.
+#
+<define-tag lang:new whitespace=delete>
+<preserve id short />
+<set-var short=* />
+<set-var %attributes />
+<set-var __ok=1 />
+<set-var __i=0 />
+<while <get-var __languages[<get-var __i />] />>
+  <ifeq "<get-var __languages[<get-var __i />] />" "<get-var id />"
+      <set-var __ok=0 /> />
+  <increment __i />
+</while>
+<when <eq "<get-var __ok />" 1 />>
+  <array-push __languages <get-var id /> />
+  <set-var __i="LANG_<upcase <get-var id /> />" />
+  <set-var __j="=LT=when =LT=string-eq =LT=or =LT=lang:current /> <get-var id /> /> <get-var id /> caseless=true />>" />
+  <subst-in-string 
+        "=LT=define-tag lang:<get-var id />: attributes=verbatim><get-var __j />[<get-var __i />:=LT=array-push __lang:stack <get-var id /> />%%attributes=LT=set-var __dummy==LT=array-pop __lang:stack /> />:<get-var __i />]=LT=/when>=LT=/define-tag>
+         =LT=define-tag lang:<get-var id /> endtag=required><get-var __j />[<get-var __i />:=LT=array-push __lang:stack <get-var id /> />%%body=LT=set-var __dummy==LT=array-pop __lang:stack /> />:<get-var __i />]=LT=/when>=LT=/define-tag>" 
+     "=LT=" "<"
+  />
+  <when <not <get-var short /> />>
+  <subst-in-string 
+        "=LT=define-tag <get-var id />: attributes=verbatim><get-var __j />[<get-var __i />:=LT=array-push __lang:stack <get-var id /> />%%attributes=LT=set-var __dummy==LT=array-pop __lang:stack /> />:<get-var __i />]=LT=/when>=LT=/define-tag>
+         =LT=define-tag <get-var id /> endtag=required><get-var __j />[<get-var __i />:=LT=array-push __lang:stack <get-var id /> />%%body=LT=set-var __dummy==LT=array-pop __lang:stack /> />:<get-var __i />]=LT=/when>=LT=/define-tag>" 
+     "=LT=" "<"
+  />
+  </when>
+</when>
+<restore  id short />
+</define-tag>
+
+#
+#   The `lang:area' container tag
+#
+<define-tag lang:area endtag=required whitespace=delete>
+<set-var __body=%Ubody />
+<set-var __i=0 />
+<set-var __j=<get-var __languages[<get-var __i />] /> />
+<while <get-var __j />>
+  <subst-in-var __body
+    "\\(<get-var __j />\\)(.+?)(?=\\((?:[a-z]+|\\/)\\)|$)"
+    "<lang:<get-var __j />>\\1</lang:<get-var __j />>" />
+  <increment __i />
+  <set-var __j=<get-var __languages[<get-var __i />] /> />
+</while>
+<get-var __body />
+</define-tag>
+
+#
+#   The ``lang:set-wildcard'' tag lets you define which wildcard to use
+#
+<define-tag lang:set-wildcard>
+<set-var __lang:wildcard=<or "%0" <@[\*]@> /> />
+</define-tag>
+
+#   
+#   Sets the default wildcard 
+#
+<lang:set-wildcard />
+
+#
+#   The ``lang:star:'' tag
+#      The protection is for navbar
+#
+<define-tag lang:star: whitespace=delete>
+<protect pass=3>
+<set-var __i=0 />
+<while <get-var __languages[<get-var __i />] />>
+  <when <string-eq
+           <or <lang:current /> <get-var __languages[<get-var __i />] /> />
+           <get-var __languages[<get-var __i />] /> caseless=true />>
+    <subst-in-string 
+      "[LANG_<upcase <get-var __languages[<get-var __i />] /> />:%attributes:]" 
+      "<get-var __lang:wildcard />" "<get-var __languages[<get-var __i />] />" />
+  </when>
+  <increment __i />
+</while>
+</protect>
+</define-tag>
+
+#
+#   The specialized <lang:star:href:> tag which
+#   is a <lang:star:> tag but enhanced for use
+#   with URLs...
+#
+<define-tag lang:star:href: whitespace=delete>
+#   Colons may confuse pass 3, e.g. in rollovers
+<protect pass=3>
+<if <match "%attributes" ".+|.*" action=report /> <group
+    <set-var __str=<match "%attributes" "^[^|]+" action=extract /> />
+    <set-var __alt=<match "%attributes" "[^|]*$" action=extract /> />
+/>    <group
+    <set-var __str="%attributes" />
+    <set-var __alt=<match "%attributes" "<get-var __lang:wildcard />" action=delete /> />
+/>/>
+<set-var __i=0 />
+<while <get-var __languages[<get-var __i />] />>
+  <when <string-eq
+           <or <lang:current /> <get-var __languages[<get-var __i />] /> />
+           <get-var __languages[<get-var __i />] /> caseless=true />>
+    <set-var __url=<subst-in-string "<get-var __str />" 
+                    "<get-var __lang:wildcard />" "<get-var __languages[<get-var __i />] />" /> />
+    <if <file-exists <get-var __url /> />
+       <group
+         <suck/><subst-in-string
+                "[LANG_<upcase <get-var __languages[<get-var __i />] /> />:<get-var __str />:]"
+                "<get-var __lang:wildcard />" "<get-var __languages[<get-var __i />] />" /><suck/> />
+       <group
+         <suck/>[LANG_<upcase <get-var __languages[<get-var __i />] /> />:<get-var __alt />:]<suck/>
+    />/>
+  </when>
+  <increment __i />
+</while>
+</protect>
+</define-tag>
+
+#
+#   The ``lang:star:slice:'' tag
+#   Another variant of <lang:star:> to dynamically specify
+#   the output filenames instead of using the wml shebang line
+#
+#   This definition is really awful because it can deal with all
+#   sort of situations
+#   Former syntax:
+#   * wml without command-line option (= wml -o %BASE.*.html)
+#   * #!wml -o (ALL-LANG_*)+LANG_EN:foo.en.html
+#   New syntax:
+#   * #!wml -o (ALL-LANG_*)+LANG_**:foo.*.html
+#   * #!wml -o (ALL-LANG_*)+LANG_**+FOO:foo.*.html \
+#           -o (ALL-LANG_*)+LANG_**+BAR:bar.*.html
+#
+<define-tag lang:star:slice: whitespace=delete>
+<set-var __slices:filename=<or %0
+      "<get-var SLICE_OUTPUT_FILENAME />"
+      "<get-var WML_SRC_BASENAME />.*.html" /> />
+<set-var __str="" />
+<foreach __sl:file __slices:filename>
+    <when <match <get-var __sl:file /> "<@[\*[^:]*$]@>" />>
+        <foreach __i __languages>
+            <if <match <get-var __sl:file /> ":" />
+                <group
+<set-var __slice=<match <get-var __sl:file /> ":.*$" action=delete /> />
+<subst-in-var __slice "<@[\*\*]@>" <upcase <get-var __i /> /> />
+<set-var __filename=<match <get-var __sl:file /> ".*:" action=delete /> /> />
+                <group
+<set-var __slice=<group "(ALL-LANG_*)+LANG_" <upcase <get-var __i /> /> /> />
+<set-var __filename=<get-var __sl:file /> /> />
+            />
+            <set-var __str=<group <get-var __str />
+                    " -o " <get-var __slice />
+                    ":"
+                    <subst-in-string <get-var __filename /> "<@[\*]@>" <get-var __i /> /> /> />
+        </foreach>
+    </when>
+</foreach>
+<when <get-var __str />>
+    <set-var __str=<group "%!slice" <get-var __str /> "\n" /> />
+    <subst-in-var __str "%BASE" <get-var WML_SRC_BASENAME /> />
+    <subst-in-var __str "%DIR" <get-var WML_SRC_DIRNAME /> />
+    <get-var __str />
+</when>
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::lang - Multi-Lingual Support
+
+=head1 SYNOPSIS
+
+ #use wml::std::lang
+
+ <lang:new id=xx [short]>
+
+ <lang:area>
+ (xx) ... (yy) ...
+ </lang:area>
+
+ <lang:set-wildcard ...>
+
+ <lang:star: ...*..>
+ <lang:star:href: index.*.html|index.html>
+ <lang:star:slice: index.*.html>
+
+ <lang:xx>...</lang:xx>
+ <lang:xx: ...>
+
+ <xx>...</xx>
+ <xx: ...>
+
+ <lang:current>
+ <lang:list>
+
+=head1 DESCRIPTION
+
+This include file provides high-level multi-lingual support via Slices.  Its
+purpose is to define the slices ``C<LANG_XX>'' according to the multi-lingual
+selection tags. 
+
+The general intend of this slice-based approach is to use the defined slices
+in Pass 9 (Slice) via WMLs B<-o> option.  A typical shebang-line example for
+the use with a webserver's content negotiation feature is:
+
+  #!wml -o (ALL-LANG_*)+LANG_EN:index.html.en \
+        -o (ALL-LANG_*)+LANG_DE:index.html.de
+
+Since WML 1.7.0, the C<E<lt>lang:star:slice:E<gt>> tag is an alternative
+to this shebang-line.
+
+Before you can use a language, you have to define the corresponding tags via
+C<E<lt>lang:newE<gt>>. For instance when you want to use the languages english
+and german, use:
+
+ <lang:new id=en>
+ <lang:new id=de>
+
+Then the following tags are defined:
+
+ <lang:en>...</lang:en>
+ <lang:de>...</lang:de>
+ <lang:en: ...>
+ <lang:de: ...>
+
+i.e. for both languages a container tag and a simple tag is defined. The
+container tag is more readable while the simple tag is nicer for short
+variants. When the names C<lang:xx> are still to large for you, you
+can use the C<short> attribute to C<E<lt>lang:newE<gt>> 
+
+ <lang:new id=en short>
+ <lang:new id=de short>
+
+when then leads to the defintion of the shortcut variants:
+
+ <en>...</en>
+ <de>...</de>
+ <en: ...>
+ <de: ...>
+
+Additionally you always have the
+C<E<lt>lang:areaE<gt>>...C<E<lt>/lang:areaE<gt>> container tag available which
+provides an alternative way of selecting the language in its body. It
+automatically surrounds the data between `C<(xx)>' start tags with the
+corresponding C<LANG_XX> slice.
+
+The following are equal:
+
+ <lang:xx: Foo><lang:yy Bar>
+ <lang:xx>Foo</lang:xx><lang:yy>Bar</lang:yy>
+ <lang:area>(xx)Foo(yy)Bar</lang:area>
+
+Because these three lines internally get expanded to
+
+ [LANG_XX:Foo:][LANG_YY:Bar:]
+ [LANG_XX:Foo:][LANG_YY:Bar:]
+ [LANG_XX:Foo:][LANG_YY:Bar:]
+
+There is one additional special tag: C<E<lt>lang:star:E<gt>>.  This tag
+expands its attribute line like the C<E<lt>lang:xx:E<gt>> tags but multiple
+times. Actually as much as defined languages exists (C<E<lt>lang:newE<gt>>!).
+And in each expansion the asterisks (=stars) in the data gets replaced by the
+language identifier.
+
+Is is sometimes convenient to use another wildcard, e.g. when defining
+navigation bars. The C<E<lt>lang:set-wildcardE<gt>> tag does the job.
+The attribute becomes the wildcard used in future substitutions. Without
+attribute, the default value is restored. You may specify any regular
+expression, and do not forget to escape special characters (the
+astersisk is in fact ``\\*'').
+
+  <lang:set-wildcard "%">
+  <lang:star: index.%.html>
+  <lang:set-wildcard>
+
+There is a more specialized variant named C<E<lt>lang:star:href:E<gt>>
+which is similar to C<E<lt>lang:star:E<gt>> but treats its attribute value as
+a URL part and tries to check if it already exists. If it doesn't exist the
+tag expands the value without the star or an alternative value which can be
+appended with ``|alt-value''.
+
+The C<E<lt>lang:star:slice:E<gt>> is another variant to help writing
+multi-lingual files quickly. It must come after all occurences of
+C<E<lt>lang:newE<gt>> tags.
+
+  <lang:star:slice: index.html.*>
+
+The `C<%BASE>' form is recognized (see wml(1)) and an empty argument is
+equivalent to the string `C<%BASE.*.html>'.  But note that the use of
+this tag instead of the WML shebang line prevents WMk from doing its
+job, because WMk can not guess output filenames in this case.
+
+For complex multi-lingual documents, you may want to know in which
+language text is currently processed.  This is achieved with
+
+  <lang:current>
+
+which always returns current language (as defined in
+C<E<lt>lang:newE<gt>> or an empty string when outside of any language
+portion. The macro
+
+  <lang:list>
+
+prints the newline separated list of defined languages.
+
+=head1 EXAMPLE
+
+The following is an example of a webpage C<index.wml> with a multi-lingual
+header and hyperlink:
+
+ #use wml::std::lang
+ #use wml::std::href
+
+ <lang:new id=en short>
+ <lang:new id=de short>
+ <lang:star:slice: index.html.*>
+ 
+ <h1><en: Welcome><de: Willkommen></h1>
+ 
+ <href name="The Hyperlink" url="<lang:star: index.*.html>">
+ <href name="The Hyperlink" url="<lang:star:href: index2.*.html|index2.html>">
+
+When processed via 
+
+  $ wml index.wml
+
+The following two output files are generated (assuming that F<index2.html> and
+only F<index2.de.html> exists):
+
+index.html.en:
+
+  <h1>Welcome</h1>
+  <a href="index.en.html">The Hyperlink</a>
+  <a href="index2.html">The Hyperlink</a>
+
+index.html.de:
+
+  <h1>Willkommen</h1>
+  <a href="index.de.html">The Hyperlink</a>
+  <a href="index2.de.html">The Hyperlink</a>
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P6, P9
+ External: --
+
+=head1 SEEALSO
+
+wml_p9_slice(1)
+
+=cut
+

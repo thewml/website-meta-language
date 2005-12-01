@@ -1,0 +1,98 @@
+##
+##  wml::std::label - Labels and References
+##  Copyright (c) 2000-2001 Denis Barbier. All Rights Reserved. 
+##
+
+#use wml::std::tags
+
+<set-var __refs= />
+<set-var __oldrefs= />
+
+#   Name of auxiliary file
+<if "$(auxfile)"
+  <set-var auxfile="$(auxfile)" />
+  <set-var auxfile="$(WML_SRC_BASENAME).aux" />
+/>
+
+#   Syntax: <label name value>
+<define-tag label whitespace=delete>
+<set-var __ref:%0=%1 />
+<array-push __refs "__ref:%0=%1" />
+</define-tag>
+
+#   Syntax: <ref name>
+<define-tag ref><get-var __ref:%0 /></define-tag>
+
+#   List of all labels is written in auxfile when input is complete
+<at-end-of-file>
+#   Compare old and new refs.  If they are ths same, do nothing
+#   otherwise write new lables to auxiliary file and exit
+<sort __refs /><sort __oldrefs />
+<when <string-neq <get-var __refs /> <get-var __oldrefs /> />>
+  <perl filehandle=AUX>
+{
+    my $bsetref = '<' . 'set-ref ';
+    my $esetref = ">\n";
+    open (AUX, "> <get-var auxfile />");
+    <foreach ref __refs>
+      <perl:print: $bsetref . qq(<get-var ref />) . $esetref />
+    </foreach>
+    close (AUX);
+}
+  </perl>
+  <m4>
+    m4_errprint(
+** WML:Warning: labels have changed, re-run WML
+)
+  </m4>
+  </when>
+</at-end-of-file>
+
+#   The <set-ref> tag is read in auxfile.
+<define-tag set-ref whitespace=delete>
+<set-var %attributes />
+<array-push __oldrefs "%attributes" />
+</define-tag>
+
+#   Read auxiliary file
+<include <get-var auxfile /> alt="
+" />
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::label - Labels and References
+
+=head1 SYNOPSIS
+
+ #use wml::std::label auxfile=NAME
+
+ <label name "Label Section">
+ <ref name>
+
+=head1 DESCRIPTION
+
+This module implements a mechanism of labels and references.
+Labels are defined via variables, which are expanded with the
+C<E<lt>refE<gt>> tag.  A common problem is when labels are referenced
+before they are defined.  For this reason, labels are stored in an
+auxiliary file.  When the module is loaded, this file is read and
+labels are defined.  Then input is processed and at end of input, labels
+are compared with their previous value.  If some labels changed, then
+all labels are written to the auxiliary file and a message is printed
+to warn that labels are wrong.
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P2, P3, P4
+ External: --
+
+=cut
+

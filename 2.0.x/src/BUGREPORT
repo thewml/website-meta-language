@@ -1,0 +1,29 @@
+
+  B U G  R E P O R T
+  ==================
+
+  When you have ideas, suggestions or bugs you want to report to the WML
+  author, then you have the following three options:
+
+  1. Use the WML Bug Reporting Tool `wmb'
+
+     This is the preferred way of submitting a bug report, because it
+     automatically includes your platform parameters in the message which 90%
+     of the time are really essential to solve the problem. The `wmb' tool
+     uses a mail user agent (MUA) like `elm', `mutt', `pine' or `mail' or the
+     mail transfer agent (MTA) `sendmail' for delivering the bug report to
+     rse@engelschall.com. If your system has no E-Mail connection to the
+     Internet or `wmb' is unable to find a suitable MUA, you have to use the
+     alternative ways described under 2.) and 3.).
+
+  2. Directly write an E-Mail to sw-wml@engelschall.com
+     
+     This is the last chance ;_) Go to a system from where you can send E-Mail
+     and manually send one directly to sw-wml@engelschall.com. Please include
+     at least the output of `wml -V3'. 
+     
+  Independent what way you choose, the result should be an E-Mail to
+  sw-wml@engelschall.com, containing as much information and details so the
+  WML author and maintainer is able to successfully investigate in your
+  problem.
+

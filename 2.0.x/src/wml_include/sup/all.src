@@ -1,0 +1,46 @@
+##
+##  wml::sup:all - All of Support (SUP) category
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::sup::hextriple
+#use wml::sup::path
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::sup:all - All of Support (SUP) category
+
+=head1 SYNOPSIS
+
+ #use wml::sup::all
+
+=head1 DESCRIPTION
+
+This includes all existing include files of the B<Support>
+(SUP) category, i.e. all includes with prefix B<wml::sup>.  The following
+files currently exist:
+
+ wml::sup::hextriple(3) ... Convert #rrggbb string to RGB value and v.v.
+ wml::sup::path(3)      ... Filesystem Path Manipulation
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::sup::hextriple(3),
+wml::sup::path(3).
+
+=cut
+

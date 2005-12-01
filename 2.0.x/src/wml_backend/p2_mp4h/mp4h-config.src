@@ -1,0 +1,206 @@
+#! /bin/sh
+##
+##  mp4h-config -- Displays configuration suitable to build mp4h modules
+##  
+##  Copyright (c) 2000 Denis Barbier.  All rights reserved.
+##  
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 of the License, or
+##  (at your option) any later version.
+##  
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##  
+##  You should have received a copy of the GNU General Public License
+##  along with this program; if not, write to
+##  
+##      Free Software Foundation, Inc.
+##      59 Temple Place - Suite 330
+##      Boston, MA  02111-1307, USA
+##  
+##  Notice, that ``free software'' addresses the fact that this program
+##  is __distributed__ under the term of the GNU General Public License
+##  and because of this, it can be redistributed and modified under the
+##  conditions of this license, but the software remains __copyrighted__
+##  by the author. Don't intermix this with the general meaning of 
+##  Public Domain software or such a derivated distribution label.
+##  
+##  The author reserves the right to distribute following releases of
+##  this program under different conditions or license agreements.
+##
+
+prefix="@prefix@"
+pkglibdir="@pkglibdir@"
+pkgdatadir="@pkgdatadir@"
+includedir="@prefix@/include"
+mandir="@mandir@"
+version="@VERSION@"
+cc="@CC@"
+cflags="@CFLAGS@"
+compile=
+
+if [ $# = 0 ]; then
+    set X --help
+    shift
+fi
+
+#  No option require argument
+for ac_option
+do
+
+  # Accept the important Cygnus configure options, so we can diagnose typos.
+
+  case "$ac_option" in
+
+  -help | --help | --hel | --he)
+    # Omit some internal or obsolete options to make the list less imposing.
+    # This message is too long to be a string in the A/UX 3.1 sh.
+    cat << EOF
+Usage: mp4h-config [options]
+Options:
+  --help                  print this message
+  --version               print the version of mp4h and exit
+  --pkglibdir             directory where to put modules
+  --pkgdatadir            directory where to put arch-independent packages
+  --includedir            C header files location
+  --mandir                man documentation
+  --cc                    C compiler
+  --cflags                C compiler flags
+  --compile               full command to compile a C file
+EOF
+    exit 0 ;;
+
+  -version | --version | --versio | --versi | --vers)
+    output="$output $version" ;;
+
+  -pkglibdir | --pkglibdir | --pkglibdi | --pkglibd | --pkglib)
+    output="$output $pkglibdir" ;;
+
+  -pkgdatadir | --pkgdatadir | --pkgdatadi | --pkgdatad | --pkgdata)
+    output="$output $pkgdatadir" ;;
+
+  -includedir | --includedir | --includedi | --included | --include \
+  | --includ | --inclu | --incl | --inc)
+    output="$output $includedir" ;;
+
+  -mandir | --mandir | --mandi | --mand | --man)
+    output="$output $mandir" ;;
+
+  -cc | --cc)
+    output="$output $cc" ;;
+
+  -cflags | --cflags)
+    output="$output $cflags" ;;
+
+  -compile | --compile | --compil | --compi)
+    output="$output $cc $cflags -I. -I$includedir" ;;
+
+  *) { echo "mp4h-config: error: $ac_option: invalid option; use --help to show usage" 1>&2; exit 1; }
+    ;;
+
+  esac
+done
+
+echo $output
+exit 0
+
+##EOF##
+__END__
+
+=head1 NAME
+
+mp4h-config - Displays configuration suitable to build mp4h modules
+
+=head1 VERSION
+
+@VERSION@
+
+=head1 SYNOPSIS
+
+B<mp4h-config>
+[B<--help>]
+[B<--version>]
+[B<--includedir>]
+[B<--pkglibdir>]
+[B<--pkgdatadir>]
+[B<--mandir>]
+[B<--cc>]
+[B<--cflags>]
+[B<--compile>]
+
+=head1 DESCRIPTION
+
+This script is a tool to help compiling F<mp4h> loadable modules.
+It shows settings used when compiling and installing F<mp4h>.
+It is wise to keep those settings when compiling loadable modules.
+
+=head1 OPTIONS
+
+=over
+
+=item B<--version>
+
+Displays the installed version of F<mp4h>.
+
+=item B<--pkglibdir>
+
+Directory where compiled module has to be installed.
+
+=item B<--pkgdatadir>
+
+Directory where packages has to be installed.
+
+=item B<--mandir>
+
+Preferred location for documentation, if any.
+
+=item B<--includedir>
+
+Prints header files location.
+
+=item B<-cc>
+
+Prints the C compiler name.
+
+=item B<--cflags>
+
+Prints C compiler flags.
+
+=item B<--compile>
+
+Displays the combination of the three previous options used to compile
+loadable modules.
+
+=back
+
+=head1 EXAMPLE
+
+Here is an example showing how to embed mp4h-config into your Makefiles.
+
+   .SUFFIXES:
+   .SUFFIXES: .o .lo
+   .c.o:
+        libtool --mode=compile `mp4h-config --compile` -c $<
+
+   .c.lo:
+        libtool --mode=compile `mp4h-config --compile` -c $<
+
+   all: module.la
+   module.la: module.o module.lo
+        libtool --mode=link `mp4h-config --cc` -o $@ module.lo \
+             -module -rpath `mp4h-config --pkglibdir` -avoid-version
+
+   install:
+        libtool --mode=install cp module.la \
+                     `mp4h-config --pkglibdir`/module.la
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@imacs.polytechnique.fr
+
+=cut
+

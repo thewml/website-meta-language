@@ -1,0 +1,903 @@
+##
+##  WML Macros
+##  Copyright (c) 2000-2001 Denis Barbier, All Rights Reserved. 
+##
+
+=head1 NAME
+
+WML Macros - Writing powerful WML macros
+
+=head1 DESCRIPTION
+
+This tutorial is a guide for writing macros in WML.  It should help
+beginners to write their first templates, but also give useful hints to
+write tricky macros.  To take best benefit of this document, it is
+highly recommended to read documentation of individual passes first.
+
+Following examples are compiled with
+
+  wml -q -p123 test.wml
+
+Most of them could be passed through F<wml_p2_mp4h> only, but the line
+below is more generic.
+
+=head1 INTRODUCTION
+
+=head2 Definitions
+
+These definitions are those used in this document, they may differ from
+those of the W3C because i do not want to enter into deep details.
+
+=over 2
+
+=item *
+
+A I<tag> is a portion of text enclosed between bracket angles, like
+
+     <a>
+     </table>
+     <!-- hey this is a comment -->
+     <?xml version="1.0" encoding="UTF-8"?>
+
+=item *
+
+A I<start> tag is a tag which begins an I<element> (see below).  It
+consists of a left angle bracket, followed by the element name, optional
+I<attributes> (see below), and a right angle bracket.  All these are
+start tags:
+
+     <a href="#name">
+     <td>
+     <meta name="generator" content="vi">
+
+=item *
+
+An I<end> tag is a tag which ends an I<element> (see below).  It
+consists of a left angle bracket, a slash, the element name, and a 
+right angle bracket, like in
+
+     </table>
+     </a>
+
+This tag cannot contain attributes.
+
+=item *
+
+An I<element> is an elementary unit of the document.  It mainly consists
+of pair of start and end tags, like in
+
+     <a href="#name">Click here</a>
+
+=item *
+
+The I<body> of an element is the portion of text contained between the
+start and the end tags.  In the example above, there is one element,
+which name is C<a>, and its body is "C<Click here>".
+
+=item *
+
+I<Attributes> are parameters to make elements more flexible.
+They must be put in the start tag.  An element may have any number of
+attributes, which are separated by one or more spaces, tabulations or
+newlines.  Each element may define which attributes are mandatory and
+which are optional.
+
+     <img src="logo.png" alt="Logo"
+          title="Our nice and beautiful logo">
+
+The C<img> element has 3 attributes
+
+=item *
+
+A I<simple tag> is an element without end tag.
+
+=item *
+
+A I<complex tag> is an element with start and end tags.
+
+=back
+
+=head2 First contact
+
+Basically all macro definitions are performed with the
+C<E<lt>define-tagE<gt>>. Here is a trivial example:
+
+Input:
+
+  1| <define-tag foo>
+  2| bar
+  3| </define-tag>
+  4| <FOO>
+
+Output:
+
+  1|
+  2|
+  3| bar
+  4|
+
+Whereas trivial this example shows some interesting points:
+
+=over 2
+
+=item *
+
+Newlines are preserved, there is the same number of lines on input and
+output, but we will discuss about whitespaces in detail below.
+
+=item *
+
+Tag names are case insensitive.
+
+=back
+
+=head2 About Simple Tags
+
+In HTML simple tags are an element without end tag, e.g.
+
+    <br>
+
+But XML specifies that simple tags must be written with one of these 2
+forms:
+
+    <br></br>
+    <br/>
+
+i.e. either as a complex tag, without body, or by adding a trailing
+slash to the start tag.  The first one will not work with WML, and also
+may confuse HTML browsers, and so should be avoided. You have to choose
+to write this trailing slash or not, WML works with both forms.
+
+In this document, i will now always write simple tags with this trailing
+slash, to conform to the new XHTML standard.  This is my preferred
+writing of input text, but one may still continue without this trailing
+slash.  You decide to which syntax you want to conform to.
+
+On the other hand, HTML browsers may be confused by
+XHTML syntax, so output text does not contain this trailing slash.
+This seems contradictory, but with this approach our input files are
+ready to be processed by future XML tools, and we only have to run WML
+with adequate flags to produce XHTML compliant pages.
+
+=head1 DEFINING NEW TAGS
+
+Each time a known element is found in input text, it is removed and its
+replacement text is put here. After that, this replacement text is
+scanned in case it contains other macros.
+
+All user macros are defined with the C<define-tag> element.  Its first
+attribute is the macro name which is defined, and its body function is
+the replacement text which is inserted in lieu of this macro.
+
+Let us begin with a simple example:
+
+Input:
+
+  1| <define-tag homepage>http://www.engelschall.com/sw/wml/</define-tag>
+  2| <homepage/>
+
+Output:
+
+  1|
+  2| http://www.engelschall.com/sw/wml/
+
+Defining a complex tag is no more difficult, just add an
+C<endtag=required> attribute.
+
+Input:
+
+  1| <define-tag foo endtag=required>bar</define-tag>
+  2| <foo>baz</foo>
+ 
+Output:
+
+  1|
+  2| bar
+
+=head2 Special Text
+
+Some strings have a special meaning when found in replacement text, to
+allow full customization of macros:
+
+=over 2
+
+=item %0 %1 ...
+
+Attributes: C<%0> is the first attribute, C<%1> the second, and so on.
+
+=item %name
+
+Macro name
+
+=item %attributes
+
+Space-separated list of all attributes
+
+=item %body
+
+Macro body (for complex tags only)
+
+=item %#
+
+Number of arguments
+
+=item %%
+
+A percent sign
+
+=back
+
+Input:
+
+  1| <define-tag foo endtag=required>
+  2| Macro name:          %name
+  3| Number of arguments: %#
+  4| First argument:      %0
+  5| Second argument:     %1
+  6| All arguments:       %attributes
+  7| Body macro:          %body
+  8| </define-tag>
+  9| <foo Here are attributes>
+ 10| And the body
+ 11| goes here.
+ 12| </foo>
+
+Output:
+
+  1| 
+  2| 
+  3| Macro name:          foo
+  4| Number of arguments: 3
+  5| First argument:      Here
+  6| Second argument:     are
+  7| All arguments:       Here are attributes
+  8| Body macro:          
+  9| And the body
+ 10| goes here.
+ 11| 
+ 12| 
+
+These special strings may also be altered by modifiers, which are a set
+of letters (one or more) put after the percent sign.  These modifiers,
+and their actions, are:
+
+=over 2
+
+=item U (Unexpanded)
+
+Text is replaced, but not expanded (see section about expansion for
+details).
+
+=item A (Array)
+
+Lists are separated by newlines instead of spaces.  This modifier makes
+sense with C<%attributes> only.
+
+Input:
+
+  1| <define-tag foo endtag=required>
+  2| First argument:      %A0
+  3| All arguments:       %Aattributes
+  4| Body macro:          %Abody
+  5| </define-tag>
+  6| <foo Here are attributes>
+  7| And the body
+  8| goes here.
+  9| </foo>
+
+Output:
+
+  1| 
+  2| 
+  3| First argument:      Here
+  4| All arguments:       Here
+  5| are
+  6| attributes
+  7| Body macro:          
+  8| And the body
+  9| goes here.
+ 10| 
+ 11| 
+
+=back
+
+Note that these sequences are replaced when macro is read, after what
+replacement text is scanned again.  This is very important, because you
+should never write constructs like
+
+   <if <get-var foo /> %body />
+
+Indded, C<%body> is replaced I<before> C<E<lt>ifE<gt>> element is
+scanned, which may cause unpredictable results.  A better solution is
+
+   <if <get-var foo /> "%body" />
+
+but it will cause trouble when C<%body> contains double quotes.  For
+this reason, you should never use C<E<lt>ifE<gt>> (and derivatives)
+tests when one of its arguments is a special sequence.  Use instead
+
+   <when <get-var foo />>
+   %body
+   </when>
+
+=head1 WHITESPACES
+
+Previous examples show that expansion prints lots of unused newlines.
+There are some techniques to remove them.  The first one is with pass 1,
+by putting a backslash at end of line, which will discard this end of
+line.
+
+Input:
+
+  1| <define-tag foo>\
+  2| bar\
+  3| </define-tag>\
+  4| <FOO/>
+
+Output:
+
+  1| bar
+
+Another solution is to specify C<whitespace=delete> when defining
+macros, e.g.
+
+  1| <define-tag foo whitespace=delete>
+  2| bar
+  3| </define-tag>
+  4| <FOO/>
+
+Output:
+
+  1|
+  1| bar
+
+The first line is caused by newline after C<E<lt>/define-tagE<gt>> which
+is not discarded.
+
+When this attribute is used, all trailing and leading whitespaces are removed,
+and also newlines outside of angle brackets.
+
+=head1 MACROS WITH ATTRIBUTES
+
+One nice feature of WML is its ability to deal with arbitrary attributes.
+There are many ways to define macros accepting attributes, we will
+discuss here the one used in all WML modules, and is so the standard
+way.
+
+Attributes are stored in variables, because HTML syntax C<attribute=value>
+is very closed to assignment to variables.  In order to keep variables
+local, a mechanism of push/pop is used.  Here is an example
+
+Input:
+
+  1| <define-tag href whitespace=delete>
+  2| <preserve url />
+  3| <preserve name />
+  4| <set-var %attributes />
+  5| <if <get-var name /> ""
+  6|   <set-var name="<tt><get-var url /></tt>" /> />
+  7| <a href="<get-var url />"><get-var name /></a>
+  8| <restore name />
+  9| <restore url />
+ 10| </define-tag>
+ 11| <href url="http://www.w3.org/" />
+
+Output:
+
+  1| 
+  2| <a href="http://www.w3.org/"><tt>http://www.w3.org/</tt></a>
+
+The C<E<lt>preserveE<gt>> tag pushes the variable passed in argument in
+top of a stack and clears this variable.  So this variable is non-null
+only when it has been assigned via C<E<lt>set-var %attributesE<gt>>.
+The C<E<lt>resstore<gt>> tag pops the value at top of the stack and sets
+the variable passed in argument to this value.
+
+In HTML some attributes are valid without value.
+This attribute may be detected with
+
+Input:
+
+  1| #use wml::std::info
+  2| <define-tag head whitespace=delete>
+  3| <preserve title>
+  4| <preserve info>
+  5| <set-var info=*>
+  6| <set-var %attributes>
+  7| <head*>
+  8| <ifeq "<get-var info>" "" <info style=meta>>
+  9| <if "<get-var title>" "<title*><get-var title></title*>">
+ 10| </head*>
+ 11| <restore info>
+ 12| <restore title>
+ 13| </define-tag>
+ 14| <head title="Test page 1">
+ 15| <head info title="Test page 2">
+
+Output:  (only non-blank lines are printed)
+
+     <head><title>Test page 1</title></head>
+     <head>
+     <nostrip><meta name="Author"    content="Denis Barbier, barbier@localhost">
+     <meta name="Generator" content="WML 2.0.2 (21-Jun-2000)">
+     <meta name="Modified"  content="2000-05-09 23:57:31">
+     </nostrip>
+     <title>Test page 2</title></head>
+
+=head1 QUOTING AND GROUPING
+
+In HTML it is possible to specify attributes containing several words,
+by quoting them with single or double quotes.  WML knows only double
+quotes.
+
+  1| <define-tag foo>\
+  2| Number of arguments: %#
+  3| First argument:      %0
+  4| </define-tag>\
+  5| <foo Here are attributes />\
+  6| <foo "Here are" attributes />\
+
+Output:
+
+  1| Number of arguments: 3
+  2| First argument:      Here
+  3| Number of arguments: 2
+  4| First argument:      Here are
+
+=head1 EXPANSION
+
+In this section, all examples are processed with the command line
+
+   wml -W2,-dat -q -p123
+
+and all output lines beginning with C<trace> are generated by these
+debug flags.
+
+This section is harder to understand, but one can work with WML without
+understanding it, because these notions are required in rare cases
+(mostly when writing macros for WML tutorials).
+
+By default, macros are expanded when tags are scanned.
+
+Input:
+
+  1| <define-tag foo>%attributes</define-tag>\
+  2| <define-tag bar>baz</define-tag>\
+  3| <foo name="<bar/>" />
+
+
+Output:
+
+  1| trace: -1- <define-tag foo>
+  2| trace: -1- <define-tag bar>
+  3| trace: -2- <bar>
+  4| trace: -1- <foo name=baz>
+  5| name=baz
+
+We see that the C<E<lt>barE<gt>> macro is processed first (digit between
+hyphens represent enesting level), and then C<E<lt>fooE<gt>>.
+Indeed WML finds the C<foo> name.  As this is a macro name, attributes are
+searched for.  When scanning attributes, it finds the C<E<lt>barE<gt>>.
+As this macro has no attribute, it is now replaced by its replacement
+text, after that scanning of C<E<lt>fooE<gt>> attributes is finished.
+
+Consider now
+
+Input:
+
+  1| <define-tag foo attributes=verbatim>%attributes</define-tag>\
+  2| <define-tag bar>baz</define-tag>\
+  3| <foo name="<bar/>" />
+
+Output:
+
+  1| trace: -1- <define-tag foo>
+  2| trace: -1- <define-tag bar>
+  3| trace: -2- <bar>
+  4| trace: -1- <foo name=<bar>>
+  5| trace: -1- <bar>
+  6| name=baz
+
+The C<attributes=verbatim> attribute tells WML that when scanning this
+macro attributes, no expansion is performed.  So the four first lines
+are now easy to understand.  But after C<E<lt>fooE<gt>> is expanded into
+
+   name=<bar>
+
+this text is scanned again and C<E<lt>barE<gt>> is expanded in turn.
+
+The solution to forbid this expansion is to use the C<U> modifier,
+explained in section B<Special Text>.
+
+Input:
+
+  1| <define-tag foo attributes=verbatim>%Uattributes</define-tag>\
+  2| <define-tag bar>baz</define-tag>\
+  3| <foo name="<bar/>" />
+
+Output:
+
+  1| trace: -1- <define-tag foo>
+  2| trace: -1- <define-tag bar>
+  3| trace: -2- <bar>
+  4| trace: -1- <foo name=<bar>>
+  5| name=<bar>
+
+=head1 MIXING MP4H AND EPERL
+
+After these preliminaries it is time to see how to mix F<mp4h> and
+F<ePerl>.  The following section is a bit tricky, you may skip to
+section B<How to use these macros> to quickly learn which changes are
+needed.
+
+=head2 Nested ePerl macros do not work
+
+Consider this macro:
+
+   <define-tag show-attr><: print "attrs:%attributes"; :></define-tag>
+
+At first look, it behaves like
+
+   <define-tag show-attr-ok>attrs:%attributes</define-tag>
+
+But what happens when these macros are nested?
+
+Input:
+
+  1| <show-attr-ok <show-attr-ok 0 /> />
+
+Output:
+
+  1| attrs:attrs:0
+
+It works fine!  On the other hand,
+
+Input:
+
+  1| <show-attr <show-attr 0 /> />
+
+Output:
+
+  1| ePerl:Error: Perl parsing error (interpreter rc=255)
+  2| 
+  3| ---- Contents of STDERR channel: ---------
+  4| Backslash found where operator expected at /tmp/wml.1183.tmp1.wml line
+  5| 10, near ""attrs:<: print attrs:0; print "\"
+  6|         (Missing operator before \?)
+  7| syntax error at /tmp/wml.1183.tmp1.wml line 10, near ""attrs:<: print
+  8| attrs:0; print "\"
+  9| Execution of /tmp/wml.1151.tmp1.wml aborted due to compilation errors.
+ 10| ------------------------------------------
+ 11| ** WML:Break: Error in Pass 3 (rc=74).
+
+Huh, looks like something went wrong.  Output after pass 2 is
+
+  1| <: print "attrs:<: print attrs:0; :>"; :>
+
+And because ePerl commands cannot be nested, an error is reported
+(if you do not understand why we have this text after pass 2, reread
+previous section).
+
+This example is simplistic, and a workaround is trivial (use
+C<E<lt>show-attr-okE<gt>> instead), but there are many cases where these
+problems are much more difficult to track.  For instance if you nest
+macros defined in WML modules, you do not know whether they use ePerl
+code or not.
+
+=head2 First try to solve this problem
+
+One problem is that ePerl commands cannot be nested, according to its
+documentation.  So our first try is to count nested levels and print
+ePerl delimeters when in outer mode only.
+
+Input:
+
+  1| <set-var __perl:level=0 />\
+  2| <define-tag perl endtag=required whitespace=delete>
+  3| <increment __perl:level />
+  4| <when <eq <get-var __perl:level /> 1 />>
+  5| <: %body :>
+  6| </when>
+  7| <when <neq <get-var __perl:level /> 1 />>
+  8| %body
+  9| </when>
+ 10| <decrement __perl:level />
+ 11| </define-tag>\
+ 12| <define-tag add1 endtag=required>\
+ 13| <perl>$a += 1; %body</perl>\
+ 14| </define-tag>\
+ 15| <add1><add1><add1></add1></add1></add1>
+ 16| <:= $a :>
+
+Output:
+
+  1|
+  2| 3
+
+Another example (lines 1-11 are left unchanged)
+
+Input:
+
+ 12| <define-tag remove-letter endtag=required whitespace=delete>
+ 13| <perl>
+ 14|   $string = q|%body|; $string =~ s|%0||g; print $string;
+ 15| </perl>
+ 16| </define-tag>\
+ 17| <remove-letter e>Hello this is a test</remove-letter>
+
+Output:
+
+  1| Hllo this is a tst
+
+With previous definitions, here is what happens when nesting
+C<E<lt>remove-letterE<gt>> tags:
+
+Input:
+
+ 17| <remove-letter s><remove-letter e>\
+ 18| Hello this is a test\
+ 19| </remove-letter></remove-letter>
+
+Output:
+
+  1| ePerl:Error: Perl parsing error (interpreter rc=255)
+  2| 
+  3| ---- Contents of STDERR channel: ---------
+  4| Bareword found where operator expected at /tmp/wml.1198.tmp1.wml
+  5| line 10, near "q|$string = q|Hello"
+  6| syntax error at /tmp/wml.1198.tmp1.wml line 10, near "q|$string =
+  7| q|Hello this "syntax error at /tmp/wml.1198.tmp1.wml line 10, near ";|"
+  8| Execution of /tmp/wml.1198.tmp1.wml aborted due to compilation errors.
+  9| ------------------------------------------
+ 10| ** WML:Break: Error in Pass 3 (rc=74).
+
+
+To understand why this error is reported, we run only the first two passes
+to see which input is sent to ePerl:
+
+    prompt$ wml -q -p12 qaz.wml
+    <: $string = q|$string = q|Hello this is a test|; $string =~ s|e||g;
+    print $string;|; $string =~ s|s||g; print $string; :>
+
+As expected ePerl delimiters are only put around the whole sentence, and
+are not nested.  But we can see this is not sufficient, because the
+C<%body> directive was replaced by ePerl code, and not a string.
+
+In one word, there will be trouble whenever special sequences
+(C<%E<lt>digitE<gt>>, C<%body>, C<%attributes>, ...) appear within ePerl
+delimiters, because you can not ensure that replacement text does not
+contain ePerl commands too.
+
+=head2 Macros defined by the wml::std::tags module
+
+The F<wml::std::tags>(3) module provides a solution to deal with nested
+ePerl commands.  Previous example may be written like this
+
+Input:
+
+  1| #use wml::std::tags
+  2| 
+  3| <define-tag remove-letter endtag=required whitespace=delete>
+  4| <perl>
+  5| <perl:assign $string>%body</perl:assign>
+  6| <perl:assign $letter>%0</perl:assign>
+  7| $string =~ s|$letter||g;
+  8| <perl:print: $string />
+  9| </perl>
+ 10| </define-tag>\ 
+ 11| <remove-letter s><remove-letter e>\
+ 12| Hello this is a test\
+ 13| </remove-letter></remove-letter>
+
+Output:
+
+      ...61 empty lines...
+  62| Hllo thi i a tt
+  63|
+  64|
+
+How this works is beyond the scope of this document, and we will focus
+on commands provided by the F<wml::std::tags> module, and how to use
+them.  In the list below, pseudo-perl commands show an equivalent form
+of these macros.
+
+=over 2
+
+=item <perl:var />
+
+This macro expands to a Perl variable, which is different in all nested
+levels.
+
+    $perl_var<get-var __perl:level />
+
+=item <perl:print>string</perl:print>
+
+This complex tag prints its body.
+
+   print qq(string);
+
+=item <perl:print: string />
+
+This simple tag prints its attributes.
+
+   print string;
+
+=item <perl:print:var />
+
+Prints the C<E<lt>perl:varE<gt>> variable
+
+  print $perl_var<get-var __perl:level />;
+
+=item <perl:assign $variable>value</perl:assign>
+
+Assign a Perl variable.  If there is no attribute, value is assigned to
+C<E<lt>perl:varE<gt>>.
+
+   $variable = qq(value);
+
+=item <perl:assign:sq $variable>value</perl:assign>
+
+Assign a Perl variable.  If there is no attribute, value is assigned to
+C<E<lt>perl:varE<gt>>.
+
+   $variable = q(value);
+
+=back
+
+=head2 How to use these macros
+
+Now that we know our problem has a solution, you are certainly impatient
+to learn how to proceed.  There are two golden rules:
+
+=over 2
+
+=item 1
+
+Never write special sequences (C<%E<lt>digitE<gt>>, C<%body>,
+C<%attributes>, ...) inside a Perl statement.
+
+=item 2
+
+Never use the Perl C<print> statement, nor its derivatives.
+
+=back
+
+First rule tells to replace
+
+  $var1 = qq|%body|;
+  $var2 = q|%body|;
+
+by
+
+  <perl:assign $var1>%body</perl:assign>
+  <perl:assign:sq $var2>%body</perl:assign:sq>
+
+and second rule 
+
+  print $string;
+  print "<img src=\"$src\" alt=\"$alt\">";
+
+by
+
+  <perl:print: $string>
+  <perl:print><img src="$src" alt="$alt"></perl:print>
+
+=head2 Examples
+
+Example 1: simplified version of C<wml::des::lowsrc>
+
+Non-nestable version:
+
+  <define-tag lowsrc>
+  <:
+  {
+      my $src = '%0';
+      my $lowsrc = $src;
+      $lowsrc =~ s|\.([^.]+)$|.lowsrc.$1|;
+      system("convert -monochrome $src $lowsrc");
+      print "lowsrc=\"$lowsrc\"";
+  }
+  :>
+  </define-tag>
+
+Nestable version:
+
+  <define-tag lowsrc>
+  <perl>
+  {
+      my $src;
+      <perl:assign:sq $src>%0</perl:assign:sq>
+      my $lowsrc = $src;
+      $lowsrc =~ s|\.([^.]+)$|.lowsrc.$1|;
+      system("convert -monochrome $src $lowsrc");
+      <perl:print> lowsrc="$lowsrc"</perl:print>
+  }
+  </perl>
+  </define-tag>
+
+The first change (assignment to C<$src>) allows attribute to be an ePerl
+command, and second change (print result) allows this macro to appear
+inside ePerl commands.  As you see, this is fairly straightforward, and
+you may look how WML modules are written.
+
+In all previous examples and definitions, output was printed to standard
+output.  But sometimes it is printed to filehandles.  Here is how to
+proceed, with an example taken from C<wml::fmt::xtable>.
+
+Non-nestable version:
+
+  <define-tag xtable endtag=required>
+  <:
+  {
+      my $options = qq|%attributes|;
+      my $tmpfile = "<get-var WML_TMPDIR>/wml.table.$$.tmp";
+      local (*FP);
+      open(FP, ">$tmpfile");
+      print FP "<" . "wwwtable $options>\n";
+      print FP <<'__XTABLE__EOT'
+  %body
+  __XTABLE__EOT
+  ;
+      print FP "<" . "/wwwtable>\n";
+      close(FP);
+      open(FP, "$WML_LOC_LIBDIR/exec/wml_aux_freetable -w $tmpfile|");
+      local ($/) = undef;
+      print <FP>;
+      close(FP);
+      unlink("$tmpfile");
+  }
+  :>
+  </define-tag>
+
+Nestable version:
+
+  <set-var __xtable:level=0 />
+  <define-tag xtable endtag=required>
+  <increment __xtable:level />
+  <perl filehandle="FH_XTABLE">
+  {
+      my $tmpfile = "<get-var WML_TMPDIR />/wml.table.$$.tmp";
+      my $options;
+      <perl:assign $options>%attributes</perl:assign>;
+      <when <eq <get-var __xtable:level /> 1 />>
+      local *FH_XTABLE;
+      open(FH_XTABLE, ">$tmpfile");
+      </when>
+      <perl:assign>
+      <wwwtable $options>
+          %body
+      </wwwtable>
+      </perl:assign>
+  </perl>
+  #   we cut here to change filehandle
+  <perl>
+      <when <eq <get-var __xtable:level /> 1 />>
+      print FH_XTABLE <perl:var/>;
+      close(FH_XTABLE);
+      open(FH_XTABLE_IN,
+         "<get-var WML_LOC_LIBDIR />/exec/wml_aux_freetable -w $tmpfile |");
+      local ($/) = undef;
+      #  The asterisk below prevents expansion during pass 2 and is
+      #  removed after this pass.
+      <perl:var/> = <*FH_XTABLE_IN>;
+      close(FH_XTABLE_IN);
+      <perl:print:var/>
+      unlink("$tmpfile");
+      </when>
+  }
+  </perl>
+  <decrement __xtable:level />
+  </define-tag>
+
+Filehandles are defined via attributes to the C<perl> tag.  All
+subsequent calls to C<E<lt>perl:printE<gt>> are then printed to this
+filehandle.
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+
+##EOF##

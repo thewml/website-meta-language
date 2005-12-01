@@ -1,0 +1,59 @@
+##
+##  wml_aux/Makefile
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+@SET_MAKE@
+SHELL = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+SUBDIRS =             \
+   iselect   \
+   htmlclean \
+   htmlinfo  \
+   linklint  \
+   map2html  \
+   tidy      \
+   txt2html  \
+   weblint   \
+   freetable
+
+# ------------------------------------------------
+#   TARGETS
+# ------------------------------------------------
+
+all:
+	@set -e; \
+	set dummy $(MAKEFLAGS); amf=$$2; \
+	for dir in $(SUBDIRS); do \
+	    echo "===> wml_aux/$$dir ($@)"; \
+	    (cd $$dir && $(MAKE)) \
+	    || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	    echo "<=== wml_aux/$$dir"; \
+	done && test -z "$$fail"
+
+clean:
+	-@for dir in $(SUBDIRS); do \
+	    echo "===> wml_aux/$$dir ($@)"; \
+	    (cd $$dir && $(MAKE) clean); \
+	    echo "<=== wml_aux/$$dir"; \
+	done
+
+distclean: 
+	-@for dir in $(SUBDIRS); do \
+	    echo "===> wml_aux/$$dir ($@)"; \
+	    (cd $$dir && $(MAKE) distclean); \
+	    echo "<=== wml_aux/$$dir"; \
+	done
+	-@rm -f Makefile
+
+realclean: distclean
+
+##EOF##

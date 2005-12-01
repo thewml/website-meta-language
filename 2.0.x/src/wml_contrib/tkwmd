@@ -1,0 +1,125 @@
+#! /usr/bin/perl -w
+#
+# tkwmd -- Tk frontend for the Website Meta Language Documentation
+#
+# Copyright (c) 1999 Denis Barbier <barbier@engelschall.com>
+# This program is free software released under the GNU General
+# Public License v2
+# 
+#    This program is not intended to replace wmd, i write it
+#    to learn Perl::Tk. Bug reports and comments are welcome ;-)
+#    Any ideas to format man pages into Tk widgets as tkman does
+#    will be helpful.
+#
+
+use Tk;
+require Tk::ErrorDialog;
+require Tk::ROText;
+use subs qw/printman/;
+use strict;
+no strict "refs";
+
+my $tkwmd_version = '0.1';
+my $tkwmd_date = '28/06/1999';
+
+#    The main window
+my $MW = MainWindow->new;
+$MW->title('Website META Language Documentation');
+
+#    The menubar contains 2 buttons
+my $menubar = $MW->Frame(-relief => 'flat', -borderwidth => 2);
+$menubar->pack(-fill => 'x');
+
+#    Dialog box containig the ``About'' text
+my $DIALOG_ABOUT = $MW->Dialog(
+    -title          => 'About widget',
+    -bitmap         => 'info',
+    -default_button => 'OK',
+    -buttons        => ['OK'],
+    -text           => "tkwmd v.$tkwmd_version\n $tkwmd_date\n" .
+                       "Denis Barbier",
+);
+
+my $about = $menubar->Button(-text => 'About',
+      -command => [$DIALOG_ABOUT => 'Show']);
+my $quit = $menubar->Button(-text => 'Quit', -command => [\&exit]);
+
+$quit->pack(-side => 'left');
+$about->pack(-side => 'right');
+
+#    This region contains the text
+my $FONT = '-*-Helvetica-Medium-R-Normal--*-140-*-*-*-*-*-*';
+my $fd = $MW->Scrolled('ROText',
+    -scrollbars => 'e',
+    -wrap       => 'word',
+    -width      => 60,
+    -height     => 30,
+    -font       => $FONT,
+);
+
+$fd->tagConfigure(qw/title -font -*-Helvetica-Bold-R-Normal--*-180-*-*-*-*-*-*/);
+$fd->tagConfigure(qw/man -lmargin1 1c -lmargin2 1c -foreground blue/);
+
+$fd->tagBind(qw/man <ButtonRelease-1>/ => sub {printman $fd->index('current')});
+
+#    Header
+$fd->insert('end', "Website META Language, Version 1.7.1 (05-06-1999)\n", 'title');
+$fd->insert('end', "Copyright (c) 1996,1997,1998,1999 Ralf S. Engelschall\nOfficial homepage and distribution area:\n  http://www.engelschall.com/sw/wml/\n   ftp://ftp.engelschall.com/sw/wml/\n");
+
+#    Sections
+sub add_doc_menu {
+    my ($name, @items) = @_;
+
+    $fd->insert('end', "\n$name\n", 'title');
+    foreach (@items) {
+        $fd->insert('end', "$_\n", [split(' ', qq/man $_/)]);
+    }
+}
+
+add_doc_menu('Basics', 
+    qw(wml_intro wml_tutorial wml_faq wml_tags wml_barebone));
+add_doc_menu('References', 
+    qw(wml_std_html40 wml_std_html32 wml_std_html20 wml_std_css1
+       wml_std_css2 wml_std_csspos));
+add_doc_menu('Frontends', qw(wml wmk wmd wmb wmu));
+add_doc_menu('Backends',
+    qw(wml_p1_ipp wml_p2_mhc wml_p3_eperl wml_p4_gm4 wml_p5_divert
+       wml_p6_asubst wml_p7_htmlfix wml_p8_htmlstrip wml_p9_slice));
+add_doc_menu('Auxiliaries',
+    qw(wml_aux_htmlinfo wml_aux_linklint wml_aux_weblint wml_aux_tidy
+       wml_aux_htmlclean wml_aux_map2html wml_aux_txt2html
+       wml_aux_freetable wml_aux_iselect));
+add_doc_menu('Webdesign',
+    qw(wml::des::all wml::des::gfont wml::des::imgbg wml::des::imgdot
+       wml::des::lowsrc wml::des::navbar wml::des::preload
+       wml::des::rollover wml::des::space wml::des::typography));
+add_doc_menu('Formatting',
+    qw(wml::fmt::all wml::fmt::isolatin wml::fmt::pod wml::fmt::sdf
+       wml::fmt::text wml::fmt::url wml::fmt::verbatim wml::fmt::xtable));
+add_doc_menu('Import',
+    qw(wml::imp::all wml::imp::csmap wml::imp::fsview wml::imp::generic));
+add_doc_menu('Standard',
+    qw(wml::std::all wml::std::box wml::std::case wml::std::grid
+       wml::std::href wml::std::lang wml::std::logo wml::std::info
+       wml::std::page wml::std::tags wml::std::toc));
+add_doc_menu('Support',
+    qw(wml::sup::all wml::sup::hextriple wml::sup::path));
+add_doc_menu('System',
+    qw(wml::sys::all wml::sys::boot));
+
+$fd->pack;
+
+#    End of the definition of windows
+
+my $e = $MW->ErrorDialog;
+$e->Subwidget('error_dialog')->Subwidget('message')->configure(-bg => 'red');
+
+MainLoop;
+
+sub printman {
+    my($index) = @_;
+
+    my @tags = $fd->tagNames($index);
+    my $command = $tags[1];
+    system("xterm -e man $command");
+}

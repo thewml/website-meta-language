@@ -1,0 +1,37 @@
+use ExtUtils::MakeMaker;
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    'NAME'	=> 'WML::GD',
+    'VERSION_FROM'	=> 'GD.pm',
+    'PM'	=> {'GD.pm' => '$(INST_LIBDIR)/GD.pm'},
+    'MYEXTLIB'  => 'libgd/libgd$(LIB_EXT)',
+    'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
+	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
+    'realclean' => {'FILES'=>'Makefile.PL libgd/Makefile.PL config.cache config.log config.status'},
+
+    # Uncomment the line below if you're getting link errors
+    # having to do with missing math functions (like floor)
+    'LIBS'      =>  ["-lm @LIBPNG@"],
+    'DEFINE'	=> '@DEFS@'
+    # Uncomment the line below if you're using a perl compiled
+    # for fastCGI (http://www.fastcgi.com/).
+    # 'DEFINE'	=> '-DFCGI'
+);
+
+sub MY::postamble{
+'
+$(MYEXTLIB): libgd/Makefile
+	DEFINE=\'$(DEFINE)\'; export DEFINE INC; \
+	cd libgd && $(MAKE) -e
+';
+}
+
+#   hack to avoid MakeMaker bug of empty rm -f command
+sub MY::realclean {
+    package MY; # so that "SUPER" works right
+    my $inherited = shift->SUPER::realclean(@_);
+    $inherited =~ s/  rm -f \n//s;
+    $inherited;
+}
+

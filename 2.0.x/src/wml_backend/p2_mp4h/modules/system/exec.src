@@ -1,0 +1,36 @@
+;;;
+;;;  system:exec - Executing external commands
+;;; 
+;;;  Copyright (c) 2001 Denis Barbier, All Rights Reserved. 
+;;;
+
+<load module="system:exec">
+
+##EOF##
+__END__
+
+=head1 NAME
+
+system:exec - Executing external commands
+
+=head1 SYNOPSIS
+
+ <use name="system:exec" />
+
+ <exec type="...">... some commands ...</exec>
+
+=head1 DESCRIPTION
+
+To be done :(
+
+=head1 EXAMPLE
+
+  <exec type="sh">uname -a</exec>
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+

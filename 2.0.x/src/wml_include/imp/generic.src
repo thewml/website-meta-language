@@ -1,0 +1,160 @@
+##
+##  wml::imp::generic - Generic Import Of External Resources
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+#use wml::fmt::verbatim
+#use wml::fmt::text
+#use wml::fmt::pod
+#use wml::fmt::sdf
+
+<protect pass=2>
+<:
+#
+#  determine a way to retrieve the data
+#
+sub existsprg {
+    my ($prg) = @_;
+    my ($found, $p);
+
+    $found = 0;
+    foreach $p (split(/:/, $ENV{'PATH'})) {
+        $found = 1 if (-x "$p/$prg");
+    }
+    return $found;
+}
+eval 'use LWP::Simple;';
+if (not $@) {
+    eval 'sub remote_fetch { my($url) = @_; return LWP::Simple::get($url); }'
+}
+elsif (&existsprg("lynx")) {
+    eval 'sub remote_fetch { my($url) = @_; return `lynx -source $url`; }'
+}
+elsif (&existsprg("wget")) {
+    eval 'sub remote_fetch { my($url) = @_; return `cd $(WML_TMPDIR) && mkdir wget.$$ && cd wget.$$ && wget -q -o/dev/null $url && cat * && cd $(WML_TMPDIR) && rm -f wget.$$`; }'
+}
+elsif (&existsprg("fetch")) {
+    eval 'sub remote_fetch { my($url) = @_; return `fetch $url`; }'
+}
+else {
+    eval 'sub remote_fetch { my($url) = @_; 
+                      return "Failed to retrieve $url" .
+                             "None of {LWP::Simple::get,Lynx,Wget,Fetch} were found"; }'
+}
+sub local_fetch {
+    my ($file) = @_;
+    my ($buf);
+    local (*FP);
+
+    open(FP, "<$file") || die;
+    local ($/) = undef;
+    $buf = <FP>;
+    close(FP);
+
+    return $buf;
+}
+:>
+</protect>
+
+<define-tag import>
+<preserve src format eperlfilter />
+<set-var %attributes />
+<perl>
+{
+    my $format      = '<get-var format />';
+    my $src         = '<get-var src />';
+    my $eperlfilter = '<get-var eperlfilter />';
+
+    if ($format eq '') {
+        $format = 'verbatim';
+        $format = 'pod'  if ($src =~ m|\.pod$|);
+        $format = 'sdf'  if ($src =~ m|\.sdf$|);
+        $format = 'text' if ($src =~ m|\.txt$|);
+    }
+
+    my $buf;
+    if ($src =~ m|^http://| or $src =~ m|^ftp://|) {
+        $buf = &remote_fetch($src);
+    }
+    else {
+        $buf = &local_fetch($src);
+    }
+
+    my $tmpfile = "$(WML_TMPDIR)/wml.import.$$.tmp";
+    local (*TMP);
+    open(TMP, ">$tmpfile");
+    print TMP $buf;
+    close(TMP);
+
+    if ($format eq 'verbatim') {
+        $buf = &wml_fmt_verbatim({ FILE => $tmpfile });
+    }
+    elsif ($format eq 'pod') {
+        $buf = &wml_fmt_pod({ FILE        => $tmpfile, 
+                              KEEPINDEX   => 1,
+                              EPERLFILTER => $eperlfilter });
+    }
+    elsif ($format eq 'sdf') {
+        $buf = &wml_fmt_pod({ FILE => $tmpfile });
+    }
+    elsif ($format eq 'text') {
+        $buf = &wml_fmt_text({ FILE => $tmpfile });
+    }
+
+    unlink($tmpfile);
+
+    <perl:print: $buf />
+}
+</perl>
+<restore  src format eperlfilter />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::imp::generic - Generic Import Of External Resources
+
+=head1 SYNOPSIS
+
+ #use wml::imp::generic
+
+ <import src="url" [format="..."]>
+
+=head1 DESCRIPTION
+
+This tag imports an external resource via URL or filename. The
+C<E<lt>importE<gt>> tag gets replaced by the contents of the external resource
+formatted via the C<verbatim>, C<pod>, C<sdf> or C<text> formatting filters.
+
+Remote retrival only works if at least one of the following programs can be
+found:
+
+   - Perl function: LWP::Simple::get()
+   - Program: lynx
+   - Program: wget
+   - Program: fetch
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: LWP::Simple::get (P5M) | lynx (PATH) | wget (PATH) | fetch (PATH)
+
+=head1 SEEALSO
+
+LWP::Simple(3), lynx(1), wget(1), fetch(1)
+
+=cut
+

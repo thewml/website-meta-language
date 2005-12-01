@@ -1,0 +1,58 @@
+# Configure template for GNU m4.
+# Copyright (C) 1991, 1993, 1994 Free Software Foundation, Inc.
+# Process this file with autoconf to produce a configure script.
+
+undefine([changeword])
+
+AC_INIT(src/m4.c)
+AC_CONFIG_HEADER(config.h)
+AC_ARG_PROGRAM
+
+PRODUCT=m4
+VERSION=1.4
+AC_DEFINE_UNQUOTED(PRODUCT, "$PRODUCT")
+AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
+AC_SUBST(PRODUCT)
+AC_SUBST(VERSION)
+
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+AC_AIX
+AC_ISC_POSIX
+AC_MINIX
+fp_C_PROTOTYPES
+AC_C_CONST
+AC_EXEEXT
+
+AC_CHECK_HEADERS(limits.h memory.h siginfo.h string.h unistd.h)
+AC_HEADER_STDC
+AC_TYPE_SIGNAL
+AC_TYPE_SIZE_T
+
+AC_CHECK_FUNCS(mkstemp sigaction sigaltstack sigstack sigvec strerror tmpfile)
+AC_FUNC_ALLOCA
+AC_FUNC_VPRINTF
+AC_REPLACE_FUNCS(strtol)
+AC_MSG_CHECKING(ecvt declaration)
+AC_EGREP_HEADER(ecvt, stdlib.h,
+  [AC_MSG_RESULT(yes); AC_DEFINE(HAVE_EFGCVT, 2)], 
+  [AC_MSG_RESULT(no); AC_CHECK_FUNCS(ecvt)])
+
+AC_MSG_CHECKING(if changeword is wanted)
+AC_ARG_ENABLE(changeword,
+[  --enable-changeword     enable -W and changeword() builtin],
+[if test "$enableval" = yes; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE(ENABLE_CHANGEWORD)
+else
+  AC_MSG_RESULT(no)
+fi], [AC_MSG_RESULT(no)])
+
+fp_WITH_DMALLOC
+
+AC_OUTPUT(Makefile lib/Makefile src/Makefile,
+[test -z "$CONFIG_HEADERS" || date > stamp-h])

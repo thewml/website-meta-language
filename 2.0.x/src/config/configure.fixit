@@ -1,0 +1,22 @@
+:
+eval 'exec perl -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  configure.fixit -- fix some stuff in configure script
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+open(FPI, "<$ARGV[0]");
+open(FPO, ">$ARGV[0].n");
+while (<FPI>) {
+    s|Divert|divert|g; # because we had avoid the keyword "divert"
+	s|echo configuring in \$ac_config_dir|echo ""; echo "Configuring for \$ac_config_dir"|g;
+    print FPO $_;
+}
+close(FPO);
+close(FPI);
+unlink("$ARGV[0]");
+link("$ARGV[0].n", "$ARGV[0]");
+unlink("$ARGV[0].n");
+
+##EOF##

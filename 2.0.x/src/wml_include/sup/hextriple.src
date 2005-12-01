@@ -1,0 +1,66 @@
+##
+##  wml::sup::hextriple - Convert #rrggbb String to RGB Value and vice versa
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+<protect pass=2>
+<:
+sub triple2rgb {
+    my ($triple) = @_;
+    my ($r, $g, $b);
+
+    $triple =~ s|^#||;
+    $triple =~ tr|A-F|a-f|;
+    $triple =~ m|([a-f0-9][a-f0-9])([a-f0-9][a-f0-9])([a-f0-9][a-f0-9])|;
+    ($r, $g, $b) = (hex($1), hex($2), hex($3));
+
+    return ($r, $g, $b);
+}
+
+sub rgb2triple {
+    my ($r, $g, $b) = @_;
+    my ($triple);
+
+    $triple = sprintf("%02x%02x%02x", $r, $g, $b);
+
+    return $triple;
+}
+:>
+</protect>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::sup::hextriple - Convert #rrggbb String to RGB Value and vice versa
+
+=head1 SYNOPSIS
+
+ #use wml::sup::hextriple
+
+ <: ($r, $g, $b) = &triple2rgb($triple); :>
+ <: $triple = &rgb2triple($r, $g, $b); :>
+
+=head1 DESCRIPTION
+
+This converts between the strings C<RRGGBB> or C<#RRGGBB> and the
+corresponding hextriple consisting of the value for red, green and blue.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P3
+ External: --
+
+=head1 SEEALSO
+
+HTML color attributes.
+
+=cut
+

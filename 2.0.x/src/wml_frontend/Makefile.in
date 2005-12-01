@@ -1,0 +1,83 @@
+##
+##  wml_frontend/Makefile
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, <rse@engelschall.com>
+##  Copyright (c) 2000-2001 Denis Barbier
+##
+
+@SET_MAKE@
+SHELL           = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+INSTALL_PROGRAM = $(top_srcdir)/etc/shtool install -c -m 755 -s
+INSTALL_DATA    = $(top_srcdir)/etc/shtool install -c -m 644
+
+prefix          = @prefix@
+exec_prefix     = $(prefix)
+bindir          = $(prefix)/bin
+libsubdir       = @libsubdir@
+libdir          = $(prefix)/lib$(libsubdir)
+mandir          = $(prefix)/man
+
+WML_VERSION     = @WML_VERSION@
+WML_CONFIG_ARGS = @WML_CONFIG_ARGS@
+
+PATH_PERL       = @PATH_PERL@
+INSTALLPRIVLIB  = @INSTALLPRIVLIB@
+INSTALLARCHLIB  = @INSTALLARCHLIB@
+
+built_system    = @built_system@
+built_user      = @built_user@
+built_date      = @built_date@
+perlprog        = @perlprog@
+perlvers        = @perlvers@
+
+compat          = @compat@
+
+SRC_FILES       = wmk.src wml.src wmb.src wmd.src wmu.src
+
+MAN_FILES       = $(SRC_FILES:.src=.1) wmd_missing.1
+EXE_FILES       = $(SRC_FILES:.src=.pl)
+
+.SUFFIXES:
+.SUFFIXES: .pl .1 .src
+
+.src.pl:
+	sed -e '/^=head1/,/^=cut/d' \
+        -e '/^__END__/,$$d' \
+        -e 's|\@WML_VERSION\@|$(WML_VERSION)|g' \
+        -e 's|\@WML_CONFIG_ARGS\@|$(WML_CONFIG_ARGS)|g' \
+        -e 's|\@perlprog\@|$(perlprog)|g' \
+        -e 's|\@perlvers\@|$(perlvers)|g' \
+        -e 's|\@built_system\@|$(built_system)|g' \
+        -e 's|\@built_user\@|$(built_user)|g' \
+        -e 's|\@built_date\@|$(built_date)|g' \
+        -e 's|\@compat\@|$(compat)|g' \
+        -e 's|\@prefix\@|$(prefix)|g' \
+        -e 's|\@bindir\@|$(bindir)|g' \
+        -e 's|\@libdir\@|$(libdir)|g' \
+        -e 's|\@mandir\@|$(mandir)|g' \
+        -e 's|\@PATH_PERL\@|$(PATH_PERL)|g' \
+        -e 's|\@INSTALLPRIVLIB\@|$(INSTALLPRIVLIB)|g' \
+        -e 's|\@INSTALLARCHLIB\@|$(INSTALLARCHLIB)|g' \
+          <$< >$@ && chmod a+x $@
+
+.src.1:
+	cp $< $*.pod
+	pod2man --section=1 --center="EN Tools" --release="EN Tools" $*.pod |\
+    sed -e 's|\@WML_VERSION\@|$(WML_VERSION)|g' > $@
+	rm -f $*.pod
+
+all: $(EXE_FILES) $(MAN_FILES)
+
+clean: 
+	-rm -f $(EXE_FILES) $(MAN_FILES)
+
+distclean: clean
+	-rm -f Makefile
+
+realclean: distclean
+
+##EOF##

@@ -1,0 +1,200 @@
+##
+##  wml::imp::fsview - View Box for Filesystem Resource
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<define-tag fsview>
+<preserve src headercolor bodycolor width hl hlcolor />
+<set-var %attributes />
+<perl>
+    $path    = "<get-var src />";
+    $width   = "<or <get-var width /> 90% />";
+    $hl      = "<get-var hl />";
+    $hlcolor = "<or <get-var hlcolor /> #a02020 />";
+
+    if ($hl =~ m|,|) {
+        @HL = split(',', $hl);
+    }
+    else {
+        @HL = ($hl);
+    }
+
+    #   some special colors
+    if ($path =~ m|\.html?$|) {
+        $col1 = "<or <get-var headercolor /> #d0dfd0 />";
+        $col2 = "<or <get-var bodycolor /> #e0f0e0 />";
+    }
+    elsif ($path =~ m|\.wml$|) {
+        $col1 = "<or <get-var headercolor /> #dfc0c0 />";
+        $col2 = "<or <get-var bodycolor /> #ffe0e0 />";
+    }
+    else {
+        $col1 = "<or <get-var headercolor /> #d0d0d0 />";
+        $col2 = "<or <get-var bodycolor /> #f0f0f0 />";
+    }
+
+    <perl:print>\
+       <table* border=0 width="$width" cellpadding=10 cellspacing=0>\
+       <tr*>\
+       <td* align=left bgcolor="$col1">\
+    </perl:print>
+
+    if (-f $path) {
+        #
+        #   source is a file
+        #
+        <perl:print>\
+           <a href="$path">\
+           <font size=5>[ <b>FILE</b> ]</font>\
+           </a>\
+           &nbsp;&nbsp;&nbsp;\
+           <font size=5 color="#404080"><b><tt>$path</tt></b></font>\
+           <br />\
+           <font* size=-1 color="#606090"><tt*>\
+        </perl:print>
+        open(FP, "ls -la $path |");
+        $line = <*FP>;
+        @entries = split(/ +/, $line); 
+        ($p, $o, $g, $f) = ($entries[0], $entries[2], $entries[3], $entries[8]);
+        $line = "[$p $o $g]";
+        $line =~ s|&|&amp;|g;
+        $line =~ s|<|&lt;|g;
+        $line =~ s|>|&gt;|g;
+        <perl:print: $line />
+        close(FP);
+        <perl:print>\
+           </tt*></font*>\
+           </td*>\
+           </tr*>\
+           <tr*>\
+           <td* bgcolor="$col2" align=left>\
+           <pre*>
+</perl:print>
+        open(FP, "<$path");
+        while (<*FP>) {
+            s|&|&amp;|g;
+            s|<|&lt;|g;
+            s|>|&gt;|g;
+            if ($hl ne "") {
+                foreach $mark (@HL) {
+                    if (m|$mark|) {
+                        s|^|<b*><font* color=\"$hlcolor\">|;
+                        s|$|</font*></b*>|;
+                    }
+                }
+            }
+            <perl:print: $_ />
+        }
+        close(FP);
+        <perl:print></pre*>
+</perl:print>
+    }
+    elsif (-d $path) {
+        #
+        #   source is a file
+        #
+        $path =~ s|/$||g;
+        $path =~ s|$|/|g;
+
+        <perl:print>\
+           <font size=5>[ <b>DIR</b> ]</font>\
+           &nbsp;&nbsp;&nbsp;\
+           <font size=5 color="#404080"><b><tt>$path</tt></b></font>\
+           <br />\
+           <font* size=-1 color="#606090"><tt*>\
+        </perl:print>
+        open(FP, "ls -dla $path |");
+        $line = <*FP>;
+        @entries = split(/ +/, $line); 
+        ($p, $o, $g, $f) = ($entries[0], $entries[2], $entries[3], $entries[8]);
+        $line = "[$p $o $g]";
+        $line =~ s|&|&amp;|g;
+        $line =~ s|<|&lt;|g;
+        $line =~ s|>|&gt;|g;
+        <perl:print: $line />
+        close(FP);
+        <perl:print>\
+           </tt*></font*>\
+           </td*>\
+           </tr*>\
+           <tr*>\
+           <td* bgcolor="#$col2" align=left>\
+           <pre*>
+</perl:print>
+        open(FP, "ls -la $path |");
+        while (<*FP>) {
+            s|&|&amp;|g;
+            s|<|&lt;|g;
+            s|>|&gt;|g;
+            if ($hl ne "") {
+                foreach $mark (@HL) {
+                    if (m|$mark|) {
+                        s|^|<b*><font* color=\"$hlcolor\">|;
+                        s|$|</font*></b*>|;
+                    }
+                }
+            }
+            <perl:print: $_ />
+        }
+        close(FP);
+        <perl:print></pre*>
+</perl:print>
+
+    }
+    else {
+        <perl:print><b>ERROR: Cannot open file '<tt>$path</tt>'</b><p*>
+</perl:print>
+    }
+    <perl:print>\
+       </td*>\
+       </tr*>\
+       </table*>\
+    </perl:print>
+</perl>
+<restore  src headercolor bodycolor width hl hlcolor />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::imp::fsview - View Box for Filesystem Resource
+
+=head1 SYNOPSIS
+
+ #use wml::imp::fsview
+
+ <fsview src="file" [hl="keywords"]>
+
+=head1 DESCRIPTION
+
+This tag creates a view box for an external source I<file> and optionally
+highlights lines containing I<keywords>.
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: --
+
+=head1 SEEALSO
+
+-
+
+=cut
+

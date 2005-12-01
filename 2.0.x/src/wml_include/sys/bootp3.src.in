@@ -1,0 +1,50 @@
+##
+##  wml::sys::bootp3 -- WML Bootstrap Code for pass 3 (ePerl)
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+<:
+BEGIN {
+    #   don't use "use lib" here because this leads to conflict 
+    #   warnings from "lib.pm" when using a Perl runtime system
+    #   which is different from the one used under compile time.
+    unshift @INC, qw(
+        @INSTALLPRIVLIB@
+        @INSTALLARCHLIB@
+    );
+
+    # get rid of nasty warnings
+    $^W = 0;
+}
+:>\
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::sys::bootp3 - WML Bootstrap Code for Pass 3
+
+=head1 SYNOPSIS
+
+I<No synopsis, because this is automatically included by WML on startup.>
+
+=head1 DESCRIPTION
+
+This include file currently just bootstraps the (perhaps) privately installed
+Perl 5 modules of WML which stay below F<@libdir@@libsubdir@/perl/>.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+P3
+
+=head1 SEEALSO
+
+wml_p3_eperl(1), perl(1)
+
+=cut
+

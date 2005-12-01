@@ -1,0 +1,819 @@
+
+  C H A N G E L O G
+  =================
+
+  This file summarizes *all* types of changes to the mp4h sources,
+  i.e. changes between each patchlevel (0.x.y->0.x.(y+1) and
+  0.x.y->0.(x+1).0). Take this logfile for concrete and detailed
+  information about every single change.
+  ___________________________________________________________________________
+
+  Changes between 1.3.0 and ???:
+
+    *) Fix <directory-contents> (18-Oct-2002):
+       Remove trailing newline.
+       [Ralf Vissers <ravis@web.de>]
+
+    *) Fix memory error in <array-shift> (27-Sep-2002):
+       Some argument checks were missing in <array-shift> and could
+       cause memory fault.
+       [Jean-Michel Sauvage <jms.debian@club-internet.fr>]
+
+  Changes between 1.2.4 and 1.3.0:
+
+    *) Replace configure flag about modules (06-Jul-2002):
+       The --enable-modules flag is replaced by --with-modules, ans it
+       now takes an optional argument which is the list of modules to
+       install.
+       [Denis Barbier]
+
+    *) New <printf> tag (04-Jul-2002):
+       It currently supports %s flag character, with $ extension.
+       [Denis Barbier]
+
+    *) Improve debugging for module loading (01-Jul-2002):
+       The new -dm debugging flag gives information when loading modules.
+       [Denis Barbier]
+
+    *) Revamp module management (19-Jun-2002):
+       Modules and packages are extensions for mp4h.  The former refered
+       to shared libraries whereas the latter contain macros.
+       Modules are loaded with <load> tag, and packages via the <use> tag.
+       But this is confusing, because user had to know module internals
+       to determine how to call it.
+       These notions are now merged: every module must also have an
+       associated package file, whose only task is to load shared library.
+       Thus end-user only calls <use> macro, and <load> is hidden.
+       the MP4HLIB environment variable may be used to set run-time
+       search paths.
+       [Denis Barbier]
+
+    *) Use Automake (16-Jun-2002):
+       Eventually Automake is back.
+       [Denis Barbier]
+
+    *) Add support for i18n (16-Jun-2002):
+       Add gettext support.
+       [Denis Barbier]
+
+    *) Upgrade to PCRE 3.9 (15-Jun-2002):
+       [Denis Barbier]
+
+    *) Add intl:gettext module (13-Jun-2002):
+       This module is an interface for gettext functions.
+       [Denis Barbier]
+
+    *) Fix module detection (18-Mar-2002):
+       There were several bugs which caused failure when multiple paths
+       were defined in MP4HMODPATH.
+       [Denis Barbier]
+
+    *) Upgraded to GNU shtool 1.6.0 (06-Mar-2002):
+       [Denis Barbier]
+
+    *) Fix literals (06-Mar-2002):
+       mp4h 1.2.4 does not handle <@[ ]@> quotes as expected, they
+       were simply discarded.
+       [Denis Barbier]
+
+  Changes between 1.2.3 and 1.2.4:
+
+    *) Run autoconf in libltdl/ subdirectory (02-Mar-2002):
+       The toplevel configure script could fail due to autoconf
+       version mismatch.
+       [Guido Draheim <guidod-2002-@gmx.de>]
+
+    *) Fix <attributes-extract> and <attributes-remove> tags (11-Jan-2002):
+       Valueless attributes in these tags crashed mp4h.
+       [Anders Dinsen]
+
+    *) Do not abort with missing input files (05-Jan-2002):
+       Just print a warning and skip this file.
+       [Anders Dinsen]
+
+    *) Fix line numbers in error messages (10-Dec-2001):
+       [Denis Barbier]
+
+    *) Upgrade to PCRE 3.7 (08-Nov-2001):
+       Upstream do allow various definitions of newline char, I keep
+       stuck with `\n' in internal.h until I know exactly how to
+       incorporate this option.
+       [Denis Barbier]
+
+  Changes between 1.2.2 and 1.2.3:
+
+    *) Fix leading space added by <attributes-quote> (25-Oct-2001):
+       This space must not be added when attribute is empty.
+       [Denis Barbier]
+
+  Changes between 1.2.1 and 1.2.2:
+
+    *) Leading space added by <attributes-quote> (18-Oct-2001):
+       This tag is useful for printing HTML output.  This change allows
+       writing <a<attributes-quote %attributes>> which prints <a> without
+       attributes and <a foo="bar"> instead.  It is now much more user
+       friendly because there is no need to first check whether there
+       are attributes in order to decide to add a leading space or not.
+       [Denis Barbier]
+
+    *) Change in handling invalid negative array indices (17-Oct-2001):
+       They have now no effect, they did formerly reset variable.
+       [Denis Barbier]
+
+    *) Checks added for preserve/restore pairs (17-Oct-2001):
+       A warning is raised at end of processing when some material
+       remains on this stack.
+       [Denis Barbier]
+
+    *) Fix memory leaks (15-Oct-2001):
+       [Denis Barbier]
+
+    *) Fix arrays (15-Oct-2001):
+       Insertion of values inside arrays did fail under some
+       circumstance.
+       [Ghislaine Labouret <Ghislaine.Labouret@hsc.fr>]
+
+  Changes between 1.2.0 and 1.2.1:
+
+    *) Add support for case sensitiveness (30-Sep-2001):
+       In HTML, tags are case insensitive unlike entities.  Moreover in
+       XHTML, tags have also become case sensitive.  For these reasons,
+       it is important to be able to decide at run time whether symbols
+       are case sensitive or not.  A new -c flag does the job.
+       [Denis Barbier]
+
+    *) Improve documentation (29-Sep-2001):
+       Entities are now used in place of some tags, and some typos
+       are fixed.
+       [Anders Dinsen]
+
+    *) Implement entity support (28-Sep-2001):
+       [Anders Dinsen]
+
+    *) Minor change in top level Makefile.in (26-Aug-2001):
+       The `clean' and `distclean' targets are unconditionnally processed
+       through the modules/ directory.
+       [Denis Barbier]
+
+    *) Fix version number in documentation (26-Aug-2001):
+       [Denis Barbier]
+
+  Changes between 1.1.2 and 1.2.0:
+
+    *) Allow compilation from another directory (14-Aug-2001):
+       Makefiles are updated to allow compilation from another
+       directory, when `make' supports the VPATH feature.
+       [Denis Barbier]
+
+    *) Clean up configure.ac (14-Aug-2001):
+       The new AC_INIT form in Autoconf 2.50 does now its job, and
+       version number is retrieved from src/version.c.  This was not as
+       easy as with Autoconf 2.13, I hope this is the canonical way to
+       insert some code to run before AC_INIT.
+       [Denis Barbier]
+
+    *) Install libraries in subdirectories (13-Aug-2001):
+       As with <use>, double colons are replaced by slashes in <load>
+       attributes, which allows putting libraries in subdirectories.
+       [Denis Barbier]
+
+    *) Upgrade to Autoconf 2.50 (12-Aug-2001):
+       [Denis Barbier]
+
+    *) Change <use> invocation (12-Aug-2001):
+       Module name must now be set through `name' attribute.
+       [Denis Barbier]
+
+    *) Internal naming changes in src/builtin.c (11-Aug-2001):
+       Future versions will be more modularized, and some care must be
+       taken with naming conventions; more functions and variables will
+       be prefixed by `mp4h_', so all functions called by predefined
+       macros are renamed from mp4h_<foo> to mp4h_bp_<foo> to clearly
+       identify builtin primitives.
+       [Denis Barbier]
+
+    *) Experimental UTF-8 support (21-Jul-2001):
+       Compile PCRE 3.4 with UTF-8 support, 
+       A new --encoding option accepts 2 values, either `8bit' or
+       `utf8'.  When `utf8' is selected, regular expressions are
+       compiled with PCRE_UTF8 flag.
+       The <string-length> and <substring> tags are also
+       encoding-dependent.
+       [Denis Barbier]
+
+    *) Upgrade to PCRE 3.4 (21-Jul-2000):
+       [Denis Barbier]
+
+    *) Fix <get-file-properties> (21-Apr-2001):
+       A segmentation fault occurred when uid or gid could not be
+       resolved.
+       [Denis Barbier]
+
+    *) Change module invocation (07-Apr-2001):
+       The <loadmodule> tag is replaced by a more generic <load> tag,
+       which works with shared library and mp4h modules.
+       [Denis Barbier]
+
+    *) Rearrange modules/ subdirectory (07-Apr-2001):
+       [Denis Barbier]
+
+    *) New <set-var-x> tag (24-Mar-2001):
+       Like <set-var>, but this is a complex tag.
+       [Anders Dinsen]
+
+    *) New <real-path> tag (24-Mar-2001):
+       Returns absolute pathname of a file.
+       [Anders Dinsen]
+
+    *) Clean-up src/builtin.c (24-Mar-2001):
+       The mp4h_set_var_verbatim function is useless and removed.
+       [Anders Dinsen]
+
+    *) Fix compilation on Tru64 (24-Mar-2001):
+       [Stéphane Bortzmeyer]
+
+    *) Improve <include> tag (14-Mar-2001):
+       File name is passed through the `file' attribute, and a new
+       `command' attribute allows reading output from arbitrary shell
+       command.  As this might be considered as a security flaw, a new
+       -S flag allows filtering potentially risky functions.
+       [Anders Dinsen]
+
+    *) Add diversions (09-Mar-2001):
+       Push diversion mechanisms back into mp4h.
+       [Anders Dinsen]
+
+    *) Improve <date> tag (09-Mar-2001):
+       New `time' and `format' attributes make this tag much more
+       powerful.
+       [Anders Dinsen <anders@dinsen.net>]
+
+    *) Remove special characters in debugging output (20-Feb-2001):
+       [Axel Beckert <rse-wml@deuxchevaux.org>]
+
+    *) New <disjoin> tag (20-Feb-2001):
+       This tag does the opposite job of <group>, it explodes its
+       attribute into several pieces.
+       [Denis Barbier]
+
+    *) Fix bug with body tag surrounded by quotes (20-Feb-2001):
+       When a body function was surrounded within double quotes (without
+       any whitespace around), it was simply discarded.
+       [Petr Andreyev <petr@xanadu.ru>]
+
+  Changes between 1.1.1 and 1.1.2:
+
+    *) Fix bugs with conditionals (07-Nov-2000):
+       The <if>, <ifeq> and <ifneq> conditionals do not behave properly.
+       Under rare circumstances, both THEN and ELSE clauses may be run.
+       [Martin Schulze <joey@infodrom.north.de>]
+
+  Changes between 1.1.0 and 1.1.1:
+
+    *) Fix trailing slash in empty complex tags (31-Aug-2000):
+       They caused memory errors.
+       [Denis Barbier]
+
+    *) Fix bugs with non-ASCII letters (31-Aug-2000):
+       Mp4h gobbled some non-ASCII letters because of misuse of
+       signedness.  Several similar bugs have been fixed.
+       [Denis Barbier, Debian webmasters]
+
+    *) Upgraded to GNU shtool 1.5.1 (08-Aug-2000):
+       Upgraded to GNU shtool 1.5.1. This especially fixed problems 
+       with "shtool version" under Solaris.
+       [Ralf S. Engelschall]
+
+  Changes between 1.0.6 and 1.1.0:
+
+    *) Rename option to disable support for loadable modules (24-Jul-2000):
+       This option is now `./configure --disable-modules'
+       [Denis Barbier]
+
+    *) New -X option (21-Jul-2000):
+       With -X=32, a trailing slash is appended to simple tag
+       attributes.  For readibility and to follow appendix C of
+       the XHTML 1.0 specifications, a space is inserted before
+       this trailing slash.  When value 256 is also set, this space
+       is not inserted.
+       [Denis Barbier]
+
+    *) Add support for modifiers in regexps (21-Jul-2000):
+       Only i, m, s and x modifiers have been added, U and X are
+       specific to PCRE and have not been implemented.
+       The `singleline' attribute has been changed.  It now accepts
+       two values, `true' (like the s modifier) and `false' (like the
+       m modifier).  Until now, `m' was the default, and singleline=true
+       switches to `s'.
+       [Denis Barbier]
+
+    *) Clean Up in PCRE files (21-Jul-2000):
+       Only used files are kept back.
+       [Denis Barbier]
+
+    *) Use of the native API of PCRE (21-Jul-2000):
+       And support for locales has been added.  Mp4h is now fully
+       powered by PCRE.
+       [Denis Barbier]
+
+  Changes between 1.0.5 and 1.0.6:
+
+    *) Use of the PCRE library (20-Jul-2000):
+       This library is copyrighted by University of Cambridge.
+       With this library, Perl regular expressions may now be
+       used instead of POSIX regular expressions.
+       Current implementation in mp4h is quite weak, because we use
+       the POSIX compatibility mode instead of native API.  Moreover
+       one test of the test suite fails.
+       [Denis Barbier]
+
+    *) Fix some bugs with quotes (19-Jul-2000):
+       Quotes have two functions: group multiple words into a single
+       token in attributes, and its normal meaning (i.e. output quotes).
+       The former must be removed, whereas the latter are preserved.
+       This is quite tricky, and previous implementations failed under
+       certain circumstances.  Now when quotes are seen outside of tag
+       attributes, they are marked as being special and cannot be
+       removed.
+       The <dq> tag is also fixed.
+       [Fritz Zaucker]
+
+    *) Add support for loadable modules (12-Jul-2000):
+       This stage was easy because GNU m4 1.4n already has such
+       support.  Work has to be done to provide a nice API to
+       module developers.
+       [Denis Barbier]
+
+    *) Allow trailing slash in empty complex tags (12-Jul-2000):
+       It is now possible to write <foo/> even if `foo' has been
+       declared as being complex.
+       [Denis Barbier]
+
+    *) Fix driver for Info documentation (11-Jul-2000):
+       This driver is just an example to determine if it is worth trying
+       to write Info files.
+       [Denis Barbier]
+
+    *) Forbid negative indices in arrays (11-Jul-2000):
+       A negative index returns an empty value.
+       [Denis Barbier]
+
+    *) Improve <attributes-extract> and <attributes-remove> (10-Jul-2000):
+       These functions now accept matches against regular expressions,
+       and new examples in documentation explain how to define a macro
+       which may pass its attributes to HTML tags.
+       [Denis Barbier]
+
+    *) Fix `beginning of line' bug in regular expressions (09-Jul-2000):
+       The `^' special character was not interpreted.
+       [Denis Barbier]
+
+  Changes between 1.0.4 and 1.0.5:
+
+    *) Minor fix to restore compatibility with old syntax (09-Jul-2000):
+       It is possible (but not desirable) to put square brackets after
+       a variable name to show that this variable is an array of
+       newline separated lists.
+       This fix restores this capability which is broken in 1.0.4
+       [Denis Barbier]
+
+  Changes between 1.0.3 and 1.0.4:
+
+    *) Internal change in hash tables (08-Jul-2000):
+       Until now, variables and macros shared the same hash table.
+       They now have their own tables, which should speed up
+       symbol searches.
+       A new table is used to store names of loaded package files,
+       in order to prevent loading a file more than once.
+       [Denis Barbier]
+
+    *) Add support for third-party packages (08-Jul-2000):
+       The new <use> tag is similar to the synonym Perl command.
+       Files are searched in directories specified with the -I
+       command-line flag, then in directories listed in MP4HPATH
+       if this environment variable exists, last under
+       /usr/local/share/mp4h (or any other location specified at
+       configure time).
+       Package files have a .mp4hp suffix, which is removed when
+       calling <use>.
+       If filename contains colons, they are replaced by slashes and
+       so represent directory names.
+       [Denis Barbier]
+
+    *) Internal changes about regular expressions (06-Jul-2000):
+       Mp4h now uses the POSIX functions of the GNU libc regex.c instead
+       of old GNU functions.  The most important reason for this change
+       is that previous functions are not documented, and so hard to
+       maintain.
+       Moreover i had to patch the regex functions to allow the
+       ``singleline=true'' attribute.
+       With this new version it works out of the box, and many memory
+       leaks are also fixed.
+       [Denis Barbier]
+
+    *) Restore grouping around <attributes-quotes> (06-Jul-2000):
+       Like other <attributes-*> tags, <attributes-quotes> did not group
+       its expansion into a single token.
+       It does now, because it seems that it is more useful in general
+       cases.
+       [Denis Barbier]
+
+    *) Fix boolean operators (05-Jul-2000):
+       The <and> tag was broken, and <or> has been cleaned up.
+       [Denis Barbier]
+
+    *) Improve <preserve>/<restore> stuff (05-Jul-2000):
+       These tags accept now any number of arguments, so it is possible
+       to write
+           <define-tag foo>
+           <preserve name src text>
+           <set-var %attributes>
+           ... code using `name', `src' and `text' variables.
+           <restore  name src text>
+           </define-tag>
+       [Denis Barbier]
+
+    *) Better control with <return> tag (04-Jul-2000):
+       With `up=0', closes all current macro expansion.
+       With `up=-1', closes all current macro expansion and stops
+       processing current file.
+       [Denis Barbier]
+
+    *) Preserve whitespaces in attributes (04-Jul-2000):
+       Meta-HTML did preserve whitespaces in attributes.  Even if it is
+       not very useful, some people may need this feature to format
+       thier output files as wanted.
+       This change fixes also the `whitespace=delete' attribute, which
+       did remove newlines in attributes.
+       [Denis Barbier]
+
+    *) Fix <return> (04-Jul-2000):
+       This tag could cause segmentation fault.
+       [Denis Barbier]
+
+    *) New <compound> tag for grouping (02-Jul-2000):
+       It does exactly the same job as <group>, but this tag is
+       complex.
+       [Denis Barbier]
+
+    *) New tags to affect attributes (01-Jul-2000):
+       The <attributes-extract> and <attributes-remove> tags allow
+       extraction and removal of specific attributes from %attributes.
+       And <attributes-quote> prints the list of attributes with quotes
+       around attribute values.
+       [Denis Barbier, Ralf S. Engelschall]
+
+    *) Reintroduce support for dmalloc (28-Jun-2000):
+       Original m4 sources provide support for dmalloc, a great
+       malloc debugger.  This support is activated via the --with-dmalloc
+       flag at configure time.
+       [Denis Barbier]
+
+  Changes between 1.0.2 and 1.0.3:
+
+    *) Fix localization (26-Jun-2000):
+       Localization was not fully effective because it uses some
+       internal tables which were not updated when l10n is modified.
+       [Denis Barbier]
+
+    *) Fix non-ASCII characters (26-Jun-2000):
+       Previous versions of mp4h had some problem of endianness,
+       which may occur with non-ASCII text.
+       [Max H. Duenki <duenki@isi.ee.ethz.ch>]
+
+    *) Fix frozen state files mechanism (24-Jun-2000):
+       Frozen state files are unusable in mp4h-1.0.2.
+       [Denis Barbier]
+
+    *) Parse bad formed closing tags (24-Jun-2000):
+       With previous versions, closing tags with attributes confuse
+       mp4h.  They are now accepted, even if not desirable in input
+       files.
+       [Fritz Zaucker <zaucker@ee.ethz.ch>]
+
+  Changes between 1.0.1 and 1.0.2:
+
+    *) Improve output routines (22-Jun-2000):
+       Changes are performed to remove some unused garbage.
+       [Denis Barbier]
+
+    *) Fix verbatim inclusion of files by mp4h (22-Jun-2000):
+       An endianness problem caused unexpected results when including
+       files verbatim. And text included this way could not appear
+       inside other tags.  Both problems have been solved.
+       [Denis Barbier]
+
+  Changes between 1.0.0 and 1.0.1:
+
+    *) Fix '<*' form on some platforms (21-Jun-2000):
+       At least on SunOS, an error is reported under some circumstances.
+       [Denis Barbier]
+
+  Changes between 0.9.5 and 1.0.0:
+
+    *) Numerous clean-ups and documentation enhancements (19-Jun-2000):
+       Macro parser is now very robust, and extensible with the -X flag.
+       It should be useful to any HTML (or XHTML) writer which wants a
+       simple but powerful macro-processor.
+       Documentation is enhanced, but need some more work.
+       Expansion behaviour has been deeply reviewed since 0.9.5, see
+       documentation for details.
+       [Denis Barbier]
+
+    *) Change expansion flags (18-Jun-2000):
+       Two flags have been switched, and two new options added to
+       remove leading and trailing star in tag names.
+       [Denis Barbier]
+
+    *) Change valid tag names (17-Jun-2000):
+       Valid tag names now match [a-zA-Z_][a-zA-Z_0-9:-]*
+       Previous versions also accept `%' sign, which is removed
+       not to conflict with ASP notation.
+       [Denis Barbier]
+
+    *) Remove control characters from debug output (16-Jun-2000):
+       There were some garbage in debug output caused by control
+       characters, which are now filtered.
+       [Denis Barbier]
+
+    *) Fix string substitution (14-Jun-2000):
+       With some complex expressions, string substitution did not
+       work properly.
+       [Denis Barbier]
+
+    *) Fix logical operators (14-Jun-2000):
+       With some complex expressions, <and>, <or> and <not> logical
+       operators did not work properly.
+       [Denis Barbier]
+
+    *) Change default behaviour (13-Jun-2000):
+       The removal of trailing star in tag name is suppressed, because
+       it cannot deal with all cases.  The only right approach is to
+       use a post-processor (this brilliant thought has changed on
+       18-Jun-2000).
+       Escaping mechanism has also been reviewed.
+       [Denis Barbier]
+
+    *) Remove French documentation (07-Jun-2000):
+       English version is now the only one maintained.
+       [Denis Barbier]
+
+    *) Remove trailing star in tag name (04-Jun-2000):
+       Because of new parsing scheme, complex HTML tags must be well
+       nested.  When this is not the case, e.g. only begin or end tag is
+       to be processed, there must be a way to let mp4h believe that
+       following tag is simple without putting a trailing slash in
+       attributes.  This is done by appending a star to the tag name,
+       both in begin and end tag.  This star is automatically removed.
+       [Denis Barbier]
+
+    *) New tags added (04-Jun-2000):
+       Tags <lb/>, <rb/>, <dq/> and <bs/> allow protection of the
+       following special characters: `<', `>', '"' and '\'.
+       [Denis Barbier]
+
+    *) Add -X flag to test parser (03-Jun-2000):
+       [Denis Barbier]
+
+    *) Fix compilation bug in src/builtin.c (01-Jun-2000):
+       [<gaa@ulticom.com>]
+
+    *) Provide a way to read tokens without parsing (01-Jun-2000):
+       All characters between <@[ and ]@> are read without parsing,
+       this is very useful to read malformed mp4h tags.  These
+       delimiters may be changed with the <set-quotes> tag.
+       [Tobias Oetiker <oetiker@ee.ethz.ch>]
+
+  Changes between 0.9.4 and 0.9.5:
+
+    *) Change evaluation of unknown tags (22-May-2000):
+       Until now, unknown tags were treated like normal text, i.e. left
+       angle bracket lose their special meaning.  This has very
+       strange side effects when such tags appear in attributes.
+       [many people]
+
+    *) Fix trailing slash (06-May-2000):
+       When there was no attribute and no space before the slash sign,
+       as in <br/>, this tag was not expanded.
+       [Denis Barbier]
+
+  Changes between 0.9.3 and 0.9.4:
+
+    *) Changes in l10n (03-May-2000):
+       I do not know how to deal with locales in a portable way, so
+       examples are removed from documentation.  Only English
+       documentation is build, but you may continue to compile the
+       French one if your environment variables are rightly set.
+       [Denis Barbier]
+
+    *) Syntax change in the <let> tag (03-May-2000):
+       New syntax is <let cmd1=cmd2>, similar to TeX and more
+       user friendly.
+       [Denis Barbier]
+
+  Changes between 0.9.2 and 0.9.3:
+
+    *) Ease building of Debian package (20-Apr-2000):
+       I added a new `deb' target to build Debian packages
+       [Denis Barbier]
+
+    *) Do not invoke tidy on HTML documentation (20-Apr-2000):
+       By default HTML documentation is no more post-processed by
+       tidy because some old versions break compilation.  This feature
+       is available with the --with-tidy flag of the configure script.
+       [Ralf S. Engelschall]
+
+    *) Fix compilation on some platforms (20-Apr-2000):
+       [Stephane Bortzmeyer <bortzmeyer@pasteur.fr>]
+
+    *) Better handling of trailing slashes (20-Apr-2000):
+       Now a trailing slash in <command "foo/"> is not removed
+       [Nobuyuki Tsuchimura]
+
+  Changes between 0.9.1 and 0.9.2:
+
+    *) New array-topvalue tag (18-Apr-2000):
+       This tag prints the last entry in an array.
+       [Denis Barbier]
+
+    *) Better handling of trailing slashes (18-Apr-2000):
+       It was very difficult to prevent suppression of trailing slash
+       in attributes.  Now it can be done by putting spaces between this
+       slash and the closing bracket.
+       [Nobuyuki Tsuchimura]
+
+    *) Many cosmetic changes (13-Apr-2000):
+       Mp4h is now spelled mp4h in lowercase letters in all files.
+       Some source files are fixed to produce no warning at compilation
+       time.
+       [Ralf S. Engelschall]
+
+  Changes between 0.9.0 and 0.9.1:
+
+    *) Fix bugs with extra quotes in attributes (03-Apr-2000):
+       [Denis Barbier]
+
+    *) Fix bugs in grouping (03-Apr-2000):
+       [Denis Barbier]
+
+    *) Remove a trailing slash in attributes (01-Apr-2000):
+       When reading attributes of single tags, a trailing slash is
+       ignored.
+       [Denis Barbier]
+
+  Changes between 0.8.5 and 0.9.0:
+
+    *) Customization of number output format (01-Apr-2000):
+       [Denis Barbier]
+
+    *) Add support for localization (01-Apr-2000):
+       New <mp4h-l10n> macro defines locale settings.
+       By default, locale is set to C.
+       [Denis Barbier]
+
+    *) Change arguments of array functions (01-Apr-2000):
+       To be more intuitive, first argument of all array-related
+       macros is now the name of the variable containing the array.
+       [Denis Barbier]
+
+    *) Change some array functions (31-Mar-2000):
+       The <array-append> tag is replaced by <array-push> and
+       <array-pop> is added.
+       [Denis Barbier]
+
+    *) Implicit array indexes (29-Mar-2000):
+       The expression <get-var foo[i]> is a shorthand for
+       <get-var foo[<get-var i>]>.
+       [Jan Holler <jh@inetcom.ch>]
+
+    *) Fix warning messages (29-Mar-2000):
+       [Denis Barbier]
+
+  Changes between 0.8.5 and 0.8.4:
+
+    *) Fix bug with some nested expressions (27-Mar-2000):
+       [Nobuyuki Tsuchimura <tutimura@nn.iij4u.or.jp>]
+
+  Changes between 0.8.4 and 0.8.3:
+
+    *) Change in grouping (25-Mar-2000):
+       The quoted=true attribute of the <group> tag is removed and this
+       feature is now provided by the <noexpand> tag. Its counterpart is
+       <expand>.
+       New attribute of <group> : ``separator=string''
+       [Denis Barbier]
+
+    *) Fix memory leaks (22-Mar-2000):
+       [Denis Barbier]
+
+    *) Add <return> tag (20-Mar-2000):
+       This tag exits from inner macro.
+       [Uwe Mindrup <uwe@mindrup.de>]
+
+    *) Add %name in replacement text (20-Mar-2000):
+       This special string expands to the macro name when found in
+       replacement text.
+       [Denis Barbier]
+
+    *) Bugfix in replacement text (18-Mar-2000):
+       Letters `A' and `U' after a percent sign were gobbled by mp4h
+       in macro replacement text.
+       [Joerg Plate <Joerg@Plate.cx>]
+
+  Changes between 0.8.3 and 0.8.2:
+
+    *) Add macro hooks (15-Mar-2000):
+       These hooks are provided to allow inserting text before or after
+       macro expansion. This way it becomes easy to transform primitives
+       or defined macros.
+       [Denis Barbier]
+
+    *) Fix build failure on FreeBSD (15-Mar-2000):
+       There was a bug in lib/xmalloc.c which causes a build failure
+       on FreeBSD.
+       [Ralf S. Engelschall <rse@engelschall.com>]
+
+  Changes between 0.8.2 and 0.8.1:
+
+    *) Cosmetic changes in documentation (11-Mar-2000):
+       These changes are made to allow automatic generation of
+       http://www.engelschall.com/sw/mp4h/docs/index.html
+       [Denis Barbier]
+
+    *) Suppress whitespace after discarded newlines (11-Mar-2000):
+       When newlines are discarded via the <dnl> tag or eol-comments,
+       leading whitespaces on following line are removed.
+       [Denis Barbier]
+
+  Changes between 0.8.1 and 0.8.0:
+
+    *) Remove unused subroutines (02-Mar-2000):
+       [Denis Barbier]
+
+    *) Fix again how unknown macros are expanded (01-Mar-2000):
+       This time, no expansion is done.
+       [Denis Barbier]
+
+  Changes between 0.8.0 and 0.7.2:
+
+    *) English documentation (28-Feb-2000):
+       [Denis Barbier]
+
+    *) Fix <unset-var> tag (28-Feb-2000):
+       [Denis Barbier]
+
+    *) Internal change in <include> tag (28-Feb-2000):
+       [Denis Barbier]
+
+    *) Expand attributes in unknown macros (28-Feb-2000):
+       [Denis Barbier]
+
+    *) Internal changes in macro parser (26-Feb-2000):
+       The macro parser is remade in order to be more robust. Expansion
+       modes are now explained in the doc.
+       [Denis Barbier]
+
+    *) More comprehensive messages on error (18-Feb-2000):
+       When a warning is printed, it includes file name and line
+       number.
+       [Denis Barbier]
+
+    *) Fix support for frozen files (18-Feb-2000):
+       This is the first working version.
+       [Denis Barbier]
+
+    *) Merge synclines tags into <__file__> and <__line__> (16-Feb-2000):
+       [Denis Barbier]
+
+  Changes between 0.7.2 and 0.7.1:
+
+    *) Add <synclines-push> and <synclines-pop> tags (16-Feb-2000):
+       These macros will help debugging within WML.
+       [Denis Barbier]
+
+    *) Remove <eval> and <quote> tags (16-Feb-2000):
+       A change in how macros are quoted and evalled make these macros
+       useless.
+       [Denis Barbier]
+
+  Changes between 0.7.1 and 0.7.0:
+
+    *) Fix escaped quotes in attributes (13-Feb-2000):
+       [Denis Barbier]
+
+    *) Fix expansion of malformed tags (13-Feb-2000):
+       When an opening angle is followed by a valid name, which is
+       neither followed by a space nor a closing angle, this rag must
+       be written verbatim. For instance, <a+1> was expanded into <a>+1>.
+       [Denis Barbier]
+
+    *) Add tags: <capitalize> <at-end-of-file> <eval> (13-Feb-2000):
+       [Denis Barbier]
+
+    *) Allow spaces in variable assignments (13-Feb-2000):
+       Constructs like <set-var i = 0> are now parsed like <set-var i=0>.
+       [Denis Barbier]
+
+
+  mp4h 0.7.0 (11-Feb-2000):
+    First public release.

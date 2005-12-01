@@ -1,0 +1,550 @@
+#!@PATH_PERL@
+eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  htmlstrip -- Strip HTML markup code
+##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 2000 Denis Barbier
+##
+
+require 5.003;
+
+BEGIN { $^W = 0; } # get rid of nasty warnings
+
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
+use Getopt::Long 2.13;
+use IO::Handle 1.15;
+use IO::File 1.06;
+
+#
+#   process command line
+#
+sub usage {
+    print STDERR "Usage: htmlstrip [options] [file]\n";
+    print STDERR "\n";
+    print STDERR "Options:\n";
+    print STDERR "  -o, --outputfile=<file>   set output file instead of stdout\n";
+    print STDERR "  -O, --optimize=<level>    set optimization/crunch level\n";
+    print STDERR "  -v, --verbose             verbose mode\n";
+    exit(1);
+}
+$opt_v = 0;
+$opt_o = '-';
+$opt_O = 2;
+$opt_b = 16384;
+$Getopt::Long::bundling = 1;
+$Getopt::Long::getopt_compat = 0;
+if (not Getopt::Long::GetOptions(
+    "v|verbose",
+    "O|optimize=i",
+    "b|blocksize=i",
+    "o|outputfile=s")) {
+    &usage;
+}
+$opt_b = 32766 if $opt_b > 32766;
+$opt_b = 1024  if $opt_b > 0 and $opt_b < 1024;
+
+sub verbose {
+    my ($str) = @_;
+    if ($opt_v) {
+        print STDERR "** HTMLstrip:Verbose: $str\n";
+    }
+}
+sub error {
+    my ($str) = @_;
+    print STDERR "** HTMLstrip:Error: $str\n";
+    exit(1);
+}
+
+#
+#   read input file
+#
+&verbose("Reading input file");
+if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
+    $in = new IO::Handle;
+    $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
+    local ($/) = undef;
+    $INPUT = <$in>;
+    $in->close() || error("cannot close STDIN: $!");
+}
+elsif ($#ARGV == 0) {
+    $in = new IO::File;
+    $in->open($ARGV[0]) || error("cannot load $ARGV[0]: $!");
+    local ($/) = undef;
+    $INPUT = <$in>;
+    $in->close() || error("cannot close $ARGV[0]: $!");
+}
+else {
+    &usage;
+}
+
+#
+#   global initial stripping
+#
+
+&verbose("Strip sharp-like comments");
+#   strip sharp-like comments
+#$INPUT =~ s|^\s*#.*$||mg;
+1 while ($INPUT =~ s/^([ \t]*)#[^\n]*\n//s); # special  case: at begin
+$INPUT =~ s/\n[ \t]*#[^\n]*(?=\n)//sg;       # standard case: in the middle
+$INPUT =~ s/\n[ \t]*#[^\n]*\n?$/\n/s;        # special  case: at end
+$INPUT =~ s/^([ \t]*)\\(#)/$1$2/mg;          # remove escaping backslash
+
+#
+#   stripping functions for particular areas
+#
+
+#   Strip Plain Text, i.e. outside of any 
+#   preformatted area and outside any HTML tag.
+sub StripPlainText {
+    my ($buf) = @_;
+
+    #   Level 0
+    #if ($opt_O >= 0) {
+    #}
+    #   Level 1
+    if ($opt_O >= 1) {
+        #   strip empty lines
+        $buf =~ s|\n\s*\n|\n|sg;
+    }
+    #   Level 2
+    if ($opt_O >= 2) {
+        #   strip multiple whitespaces to single one
+        $buf =~ s|(\S+)[ \t]{2,}|$1 |sg;
+        #   strip trailing whitespaces
+        $buf =~ s|\s+\n|\n|sg;
+    }
+    #   Level 3
+    if ($opt_O >= 3) {
+        #   strip leading whitespaces
+        $buf =~ s|\n\s+|\n|sg;
+    }
+    #   Level 4
+    if ($opt_O >= 4) {
+        #   strip empty lines again
+        $buf =~ s|^\s*$||mg;
+        $buf =~ s|\n\n|\n|sg;
+    }
+    #   Level 5
+    if ($opt_O >= 5) {
+        #   concatenate all lines
+        $buf =~ s|\n| |sg;
+        #  
+        $from = $buf;
+        $line = '';
+        $buf = '';
+        sub nexttoken {
+            my ($buf) = @_;
+            my ($token, $bufN);
+
+            if ($buf =~ m|^([^<]+?)(<.+)$|s) {
+                $token = $1;
+                $bufN  = $2;
+            }
+            elsif ($buf =~ m|^(<[^>]+>)(.*)$|s) {
+                $token = $1;
+                $bufN  = $2;
+            }
+            else {
+                $token = $buf;
+                $bufN  = '';
+            }
+
+            if (length($token) > 80) {
+                $x = substr($token, 0, 80);
+                $i = rindex($x, ' ');
+                $bufN = substr($token, $i) . $bufN;
+                $token = substr($token, 0, $i);
+            }
+            return ($token, $bufN);
+        }
+        while (length($from) > 0) {
+            ($token, $from) = &nexttoken($from);
+            if ((length($line) + length($token)) < 80)  {
+                $line .= $token;
+            }
+            else {
+                $buf .= $line . "\n";
+                $line = $token;
+            }
+        }
+        $buf =~ s|^\s+||mg;
+        $buf =~ s|\s+$||mg;
+    }
+
+    return $buf;
+}
+
+#   Strip HTML Tag, i.e. outside of any 
+#   preformatted area but inside a HTML tag.
+sub StripHTMLTag {
+    my ($buf) = @_;
+
+    #   Level 0
+    #if ($opt_O >= 0) {
+    #}
+    #   Level 1
+    #if ($opt_O >= 1) {
+    #}
+    #   Level 2
+    if ($opt_O >= 2) {
+        #   strip multiple whitespaces to single one
+        $buf =~ s|(\S+)[ \t]{2,}|$1 |mg;
+        #   strip trailing whitespaces at end of line
+        $buf =~ s|\s+\n|\n|sg;
+        #   strip whitespaces between attribute name and value
+        $buf =~ s|([ \t]+[a-zA-Z][a-zA-Z0-9_]*)\s*=\s*|$1=|sg;
+        #   strip whitespaces before tag end
+        $buf =~ s|[ \t]+>$|>|sg;
+    }
+    #   Level 3
+    #if ($opt_O >= 3) {
+    #}
+    #   Level 4
+    if ($opt_O >= 4) {
+        #   strip HTML comments
+        $buf =~ s|<!--.+?-->||sg;
+        #   strip newlines before tag end
+        $buf =~ s|\n>$|>|sg;
+    }
+    #   Level 5
+    #if ($opt_O >= 5) {
+    #}
+
+    return $buf;
+}
+
+#   Strip Preformatted Areas, i.e.  inside 
+#   <pre>, <xmp> and <nostrip> container tags.
+sub StripPreformatted {
+    my ($buf) = @_;
+
+    #   Level 0
+    #if ($opt_O >= 0) {
+    #}
+    #   Level 1
+    #if ($opt_O >= 1) {
+    #}
+    #   Level 2
+    if ($opt_O >= 2) {
+        #   strip trailing whitespaces on non-empty lines
+        $buf =~ s|([^\s]+)[ \t]+\n|$1\n|sg;
+    }
+    #   Level 3
+    #if ($opt_O >= 3) {
+    #}
+    #   Level 4
+    #if ($opt_O >= 4) {
+    #}
+    #   Level 5
+    #if ($opt_O >= 5) {
+    #}
+
+    return $buf;
+}
+
+#
+#   Processing Loop
+#
+%TAGS = (
+  "nostrip" => 1,
+  "pre"     => 0,
+  "xmp"     => 0,
+);
+
+$OUTPUT = '';
+
+sub StripNonPreformatted {
+    my ($I) = @_;
+    my ($O);
+
+    $O = '';
+    while ($I =~ s|^(.*?)(<.+?>)||s) {
+        $O .= &StripPlainText($1);
+        $O .= &StripHTMLTag($2);
+    }
+    $O .= &StripPlainText($I);
+    return $O;
+}
+
+#   On large files, benchmarking show that most of the time is spent
+#   here because of the complicated regexps.  To minimize memory usage
+#   and CPU time, input is splitted into small chunks whose size may
+#   be changed by the -b flag.
+
+&verbose("Main processing");
+$chunksize = $opt_b;
+$loc = 0;
+do {
+    $NEXT = '';
+    if ($chunksize > 0 && $chunksize < 32767 && length($INPUT) > $chunksize) {
+        ($INPUT, $NEXT) = ($INPUT =~ m|^(.{$chunksize})(.*)$|s);
+    }
+    while (1) {
+        #   look for a begin tag
+        $len = length($INPUT);
+        $pos = $len;
+        foreach $tag (keys(%TAGS)) {
+            if ($INPUT =~ m|^(.*?)(<$tag(?:\s+[^>]*)?>)(.*)$|is) {
+                $n = length($1);
+                if ($n < $pos) {
+                    $pos = $n;
+                    $prolog = $1;
+                    $curtag = $2;
+                    $epilog = $3;
+                    $tagname = $tag;
+                }
+            }
+        }
+        if ($pos < $len) {
+            $str = sprintf "found $curtag at position %d", $loc+$pos;
+            &verbose($str);
+            $o = &StripNonPreformatted($prolog);
+            $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
+            $OUTPUT .= $o;
+
+            #   if end tag not found, extend string
+            if ($epilog =~ s|^(.*?)(</$tagname>)||is) {
+                $body   = $1;
+                $endtag = $2;
+            }
+            else {
+                $INPUT = $curtag . $epilog . $NEXT;
+                $chunksize += $opt_b;
+                last;
+            }
+
+            $str = sprintf "found $endtag at position %d",
+                $loc+$pos+length($body);
+            &verbose($str);
+            $OUTPUT .= $curtag if (not $TAGS{$tagname});
+            $OUTPUT .= &StripPreformatted($body);
+            $OUTPUT .= $endtag if (not $TAGS{$tagname});
+            $loc  += $pos + length($body) + length($curtag);
+            $INPUT = $epilog;
+            next;
+        }
+        else {
+            if ($INPUT =~ m|^(.+)(<.*)$|s) {
+                $loc += length($1);
+                $INPUT = $2;
+                $o = &StripNonPreformatted($1);
+                $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
+                $OUTPUT .= $o;
+            }
+            if ($NEXT) {
+                if (length($INPUT) < $chunksize) {
+                    $chunksize = $opt_b;
+                }
+                else {
+                    $chunksize += $opt_b;
+                }
+                $INPUT .= $NEXT;
+            }
+            else {
+                $o = &StripNonPreformatted($INPUT);
+                $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
+                $OUTPUT .= $o;
+                $INPUT = '';
+            }
+            last;
+        }
+    }
+    if ($NEXT eq '') {
+        $OUTPUT .= $INPUT;
+        $INPUT = '';
+    }
+} while ($INPUT);
+
+#
+#   global final stripping
+#
+&verbose("Fix <suck> special command");
+$OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
+$OUTPUT =~ s|^\n||s;
+
+#
+#   write to output file
+#
+if ($opt_o eq '-') {
+    $out = new IO::Handle;
+    $out->fdopen(fileno(STDOUT), "w") || error("cannot write into STDOUT: $!");
+}
+else {
+    $out = new IO::File;
+    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
+}
+$out->print($OUTPUT) || error("cannot write into $opt_o: $!");
+$out->close() || error("cannot close $opt_o: $!");
+
+exit(0);
+
+##EOF##
+__END__
+
+=head1 NAME
+
+htmlstrip - Strip HTML markup code
+
+=head1 SYNOPSIS
+
+B<htmlstrip>
+[B<-o> I<outputfile>]
+[B<-O> I<level>]
+[B<-b> I<blocksize>]
+[B<-v>]
+[I<inputfile>]
+
+=head1 DESCRIPTION
+
+HTMLstrip reads I<inputfile> or from C<stdin> and strips the contained HTML
+markup. Use this program to shrink and compactify your HTML files in a safe
+way.  
+
+=head2 Recognized Content Types
+
+There are three disjunct types of content which are recognized by
+HTMLstrip while parsing:
+
+=over 4
+
+=item HTML Tag (tag)
+
+This is just a single HTML tag, i.e. a string beginning with a opening angle
+bracket directly followed by an identifier, optionally followed by attributes
+and ending with a closing angle bracket.
+
+=item Preformatted (pre)
+
+This is any contents enclosed in one of the following container tags:
+ 
+  1. <nostrip>
+  2. <pre>
+  3. <xmp>
+
+The non-HTML-3.2-conforming C<E<lt>nostripE<gt>> tag is special here: It acts
+like C<E<lt>preE<gt>> as a protection container for HTMLstrip but is also
+stripped from the output.  Use this as a pseudo-block which just preserves its
+body for the HTMLstrip processing but itself is removed from the output.  
+
+=item Plain Text (txt)
+
+This is anything not falling into one of the two other categories, i.e any
+content both outside of preformatted areas and outside of HTML tags.
+
+=back
+
+=head2 Supported Stripping Levels
+
+The amount of stripping can be controlled by a optimization level, specified
+via option B<-O> (see below). Higher levels also include all of the lower
+levels. The following stripping is done on each level:
+
+=over 4
+
+=item B<Level 0:>
+
+No real stripping, just removing the sharp/comment-lines (C<#...>) [txt,tag].
+Such lines are a standard feature of WML, so this is always done.
+
+=item B<Level 1:>
+
+Minimal stripping: Same as level 0 plus stripping of blank and empty lines
+[txt].
+
+=item B<Level 2:>
+
+Good stripping: Same as level 1 plus compression of multiple whitespaces (more
+then one in sequence) to single whitespaces [txt,tag] and stripping of
+trailing whitespaces at the of of a line [txt,tag,pre]. 
+
+B<This level is the default> because while providing good optimization the
+HTML markup is not destroyed and remains human readable.
+
+=item B<Level 3:>
+
+Best stripping: Same as level 2 plus stripping of leading whitespaces on a
+line [txt]. This can also be recommended when you still want to make sure that
+the HTML markup is not destroyed in any case. But the resulting code is a
+little bit ugly because of the removed whitespaces.
+
+=item B<Level 4:>
+
+Expert stripping:  Same as level 3 plus stripping of HTML comment lines
+(``C<E<lt>!-- ... --E<gt>>'') and crunching of HTML tag endsi [tag]. B<BE
+CAREFUL HERE:> Comment lines are widely used for hiding some Java or
+JavaScript code for browsers which are not capable of ignoring those stuff.
+When using this optimization level make sure all your JavaScript code is hided
+correctly by adding HTMLstrip's C<E<lt>nostripE<gt>> tags around the comment
+delimiters.
+
+=item B<Level 5:>
+
+Crazy stripping: Same as level 4 plus wrapping lines around to fit in an 80
+column view window. This saves some newlines but both leads to really
+unreadable markup code and opens the window for a lot of problems when this
+code is used to layout the page in a browser. B<Use with care. This is only
+experimental!> 
+
+=back
+
+Additionally the following global strippings are done:
+
+=over 4
+
+=item C<^\n>:
+
+A leading newline is always stripped.
+
+=item C<E<lt>suckE<gt>>:
+
+The C<E<lt>suckE<gt>> tag just absorbs itself and all whitespaces around it.
+This is like the backslash for line-continuation, but is done in Pass 8, i.e.
+really at the end. Use this inside HTML tag definitions to absorb whitespaces,
+for instance around C<%body> when used inside C<E<lt>tableE<gt>> structures
+which at some point are newline-sensitive in Netscape Navigator.
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item B<-o> I<outputfile>
+
+This redirects the output to I<outputfile>. Usually the output will be send to
+C<stdout> if no such option is specified or I<outputfile> is "C<->".
+
+=item B<-O> I<level>
+
+This sets the optimization/stripping level, i.e. how much HTMLstrip should
+compress the contents.
+
+=item B<-b> I<blocksize>
+
+For efficiency reasons, input is divided into blocks of 16384 chars.  If
+you have some performance problems, you may try to change this value.
+Any value between C<1024> and C<32766> is allowed.  With a value of
+C<0>, input is not divided into blocks.
+
+=item B<-v>
+
+This sets verbose mode where some
+processing information will be given on the console.
+
+=back
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+
+##EOF##

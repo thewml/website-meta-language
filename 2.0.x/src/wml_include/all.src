@@ -1,0 +1,93 @@
+##
+##  wml::all - WML Include Files Of All Categories
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::des::all
+#use wml::fmt::all
+#use wml::imp::all
+#use wml::mod::all
+#use wml::std::all
+#use wml::sup::all
+#use wml::sys::all
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::all - WML Include Files Of All Categories
+
+=head1 SYNOPSIS
+
+ #use wml::all
+
+=head1 DESCRIPTION
+
+This includes all existing standard WML include files of all categories.  Use
+it only when you are a really lazy webmaster which just wants all features WML
+can provide ;-) It is always better to include one of the C<wml::xxx::all>
+include files.
+
+The following categories currently exists:
+
+=over 4 
+
+=item B<Standard> (std)
+
+Here you can find all standard tagsets which everybody usually uses all the
+time. 
+
+=item B<Webdesign> (des)
+
+These are tagsets which help webdesigners of the 3rd generation fighting
+against the puristic plain HTML. Use with care.
+
+=item B<Formatting> (fmt)
+
+Here you can find formatting environments, i.e. usually container tags which
+do special formatting.
+
+=item B<Import> (imp)
+
+Here you can find import tags, i.e. usually tags which import external data
+and converts them to HTML. 
+
+=item B<Support> (sup)
+
+Some support stuff which is used in other include files.
+
+=item B<System> (sys)
+
+All system related stuff.
+
+=item B<User> (usr)
+
+The user specific include files. Should be extended by the webmaster for his
+users.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::des::all(3),
+wml::fmt::all(3),
+wml::imp::all(3),
+wml::std::all(3),
+wml::sup::all(3),
+wml::sys::all(3),
+wml::usr::all(3).
+
+=cut
+

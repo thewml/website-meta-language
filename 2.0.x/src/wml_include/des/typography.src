@@ -1,0 +1,470 @@
+##
+##  wml::des::typography - Typography
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+#use wml::des::imgdot
+#use wml::des::gfont
+#use wml::des::space
+#use wml::fmt::verbatim
+
+#
+#   typographical paragraph skip (ps)
+#   [german variant: *D*urch*S*chuß (ds)]
+#
+<define-tag ps>
+<br />
+<imgdot height=<or %0 4 /> /><br />
+</define-tag>
+
+<let ds=ps />
+
+#
+#   typographical paragraph indention (pi)
+#   [german variant: *Ein*rückung (ein)]
+#
+<define-tag pi>
+<br />
+<imgdot height=16 width=<or %0 40 /> />
+</define-tag>
+
+<let ein=pi />
+
+#
+#   big letter
+#
+<define-tag big>
+<gfont face="ps:ptmb8r" size=+4 align=left crop>%0</gfont>
+</define-tag>
+
+#
+#   Spaced Paragraph
+#   [german variant: Gesperrt]
+#
+<define-tag spaced endtag=required>
+<preserve interchar interline />
+<set-var %attributes />
+<perl>
+{
+    my $n_char = qq|<get-var interchar />|;
+    my $n_line = qq|<get-var interline />|;
+    my $base   = qq|<or <get-var IMGDOT_BASE /> <get-var IMAGE_BASE /> />|;
+    my $format = qq|<or <get-var IMAGE_FORMAT /> gif />|;
+    <perl:assign:sq $body>%body</perl:assign:sq>
+    $n_char = 0 if ($n_char eq '' or $n_char < 0);
+    $n_line = 0 if ($n_line eq '' or $n_line < 0);
+
+    my $pad_char = '';
+    if ($n_char > 0) {
+        $pad_char = '&nbsp;' x $n_char;
+    }
+
+    my $pad_line = '';
+    if ($n_line > 0) {
+        $n_line += 14; # 14 pt is the average text width
+        my $file = &imgdot($base, 1, 1, 'transp-ffffff', 255, 255, 255, 1, $format);
+        $pad_line = '<*img src="'.$file.'" width=1 height='.$n_line.' alt="">';
+    }
+
+    my $cnt = 0;
+    my $every = int(5 / ($n_char+1));
+    $every = 1 if ($every < 1);
+    while ($body) {
+        if ($body =~ s|^(</?[a-zA-Z]+[^>]*>)||s) {
+            <perl:print: $1 />
+        }
+        elsif ($body =~ s|^([^<\s]+)||s) {
+            $word = $1;
+            $word =~ s|\G(.)|$1$pad_char|sg;
+            <perl:print: $word />
+            if (($cnt++ % $every) == 0) {
+                <perl:print: $pad_line />
+            }
+        }
+        elsif ($body =~ s|^(\S+)||s) {
+            $word = $1;
+            $word =~ s|\G(.)|$1$pad_char|sg;
+            <perl:print: $word />
+            if (($cnt++ % $every) == 0) {
+                <perl:print: $pad_line />
+            }
+        }
+        elsif ($body =~ s|^(\s+)||s) {
+            $space = $1;
+            $space =~ s|\G([^\n])|$pad_char$1|sg;
+            <perl:print: $space />
+        }
+    }
+}
+</perl>
+<restore  interchar interline />
+</define-tag>
+
+<let gesperrt=spaced />
+
+#
+#   Small Caps (sc)
+#   i.e. change all lower case letters to upper case but lower
+#   them a little bit by font size.  Optionally all words can
+#   begin with an upper case letter
+#   [german variant: "Kapitälchen"]
+#
+<define-tag sc endtag=required>\
+<preserve complete />\
+<set-var complete=* />\
+<set-var %attributes />\
+<perl>
+{
+    my $complete = (qq|<get-var complete />| eq '' ? 1 : 0);
+    <perl:assign:sq $body>%body</perl:assign:sq>
+    $body =~ s|\n$||s;
+    use locale;
+    sub convword {
+        my ($w) = @_;
+
+        #   optionally make all words start with an upper case letter
+        $w = uc(substr($w, 0, 1)).substr($w, 1) if ($complete);
+
+        #   convert lower case chars to upper case
+        my $c;
+        my @C = split('', $w);
+        my $makeupper = 0;
+        $w = '';
+        foreach $c (@C) {
+            if (not $makeupper and $c eq lc($c)) {
+                $w .= '<*font size="-1">'.uc($c);
+                $makeupper = 1;
+            }
+            elsif ($makeupper and $c ne lc($c)) {
+                $w .= '<*/font>'.$c;
+                $makeupper = 0;
+            }
+            elsif ($makeupper and $c eq lc($c)) {
+                $w .= uc($c);
+            }
+            else {
+                $w .= $c;
+            }
+        }
+        $w .= '<*/font>' if ($makeupper);
+        return $w;
+    }
+    my $text = '';
+    while ($body ne '') {
+        if ($body =~ m|^([^<]+)(<[/a-zA-Z].*?>)(.*)$|) {
+            my $words = $1;
+            my $rest  = $2;
+            $body = $3;
+            $words =~ s|(\w+)|&convword($1)|sge;
+            $text .= $words . $rest;
+        }
+        elsif ($body =~ m|^(<[/a-zA-Z].*?>)(.*)$|) {
+            $text .= $1;
+            $body = $2;
+        }
+        else {
+            $body =~ s|(\w+)|&convword($1)|sge;
+            $text .= $body;
+            $body = '';
+        }
+    }
+    <perl:print: $text />
+}
+</perl>\
+<restore complete />\
+</define-tag>
+
+<let csc=sc />
+
+#
+#   Verbatim Code Text
+#
+<define-tag verbcode endtag=required>
+<p*>
+<over 30>
+<b><verbatim>%body</verbatim></b>
+</over>
+</define-tag>
+
+#
+#   Headline
+#   [german variant: "Überschrift"]
+#
+<define-tag headline endtag=required>
+<if %0 "<a* name="%0">" />\
+<font face="Arial,Helvetica" size=+4><b>%body</b></font>\
+<if %0 "</a*>" />
+<ds 5 />\
+</define-tag>
+
+<let ue=headline />
+
+#
+#   Sub Headline
+#   [german variant: "Zwischenüberschrift"]
+#
+<define-tag subheadline endtag=required>
+<if %0 "<a* name="%0">" />\
+<font face="Arial,Helvetica" size=+2><b>%body</b></font>
+<if %0 "</a*>" />
+<ds 2 />\
+</define-tag>
+
+<let zwue=subheadline />
+
+#
+#   Emulation of the <ul>...</ul> environment in
+#   a more typographically strong layout.
+#
+<define-tag tul endtag=required>
+<preserve ps pi />
+<set-var %attributes />
+<defvar pi 30 />
+<ps <get-var ps /> />
+<table cellspacing=0 cellpadding=0 border=$(DEBUG:-0) summary="">
+<tr>
+<td valign=top><imgdot height=1 width=<get-var pi /> /></td><suck/>
+<td valign=top><imgdot height=1 width=<get-var pi /> /><suck/>
+%body<suck/>
+</td>
+</tr>
+</table>
+<restore  ps pi />
+</define-tag>
+
+<define-tag tli endtag=required>
+<preserve pshape pcolor />
+<set-var %attributes />
+<defvar pshape box />
+<defvar pcolor "#cccccc" />
+<ps <get-var ps /> />
+</td*>\
+</tr*>
+<tr*>\
+<td valign=top align=right>\
+<ifeq "<get-var pshape />" "box"
+    <imgdot color="<get-var pcolor />" height=10 width=10 />
+    "<font color="<get-var pcolor />">-</font>" />\
+&nbsp;&nbsp;\
+</td>\
+<td*>
+%body
+<restore  pshape pcolor />
+</define-tag>
+
+#
+#   the ``#use ... face_shortcuts'' support
+#
+<if "$(face_shortcuts)" <group
+{: [[s/(face=)"?helvetica"?/face="Arial,Helvetica"/ig]]
+{#TYPOGRAPHY_FACE_SHORTCUTS#}
+:}
+{#TYPOGRAPHY_FACE_SHORTCUTS#:
+/>/>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::typography - Typography
+
+=head1 SYNOPSIS
+
+ #use wml::des::typography [face_shortcuts]
+  
+ #   paragraph whitespace
+ <ps [height]>
+ (<ds [height]>)
+ <pi [width]>
+ (<ein [width]>)
+
+ #   paragraph text rendering
+ <big X>
+ <sc [complete]>...</sc>
+ <csc>...</csc>
+ <spaced [interchar=N] [interline=N]>...</spaced>
+ <verbcode>...</verbcode>
+
+ #   headlines
+ <headline [name]>...</headline>
+ (<ue [name]>...</ue>)
+ <subheadline [name]>...</subheadline>
+ (<zwue [name]>...</zwue>)
+
+ #   unsorted lists
+ <tul [ps=N] [pi=N]>
+   <tli [pshape=dash|box] [pcolor=#rrggbb]>...</tli>
+   ...
+ </tul>
+
+=head1 DESCRIPTION
+
+This include file provides tags for more typographically strong layouting then
+HTML per default provides. The following tags are provided:
+
+=over 4
+
+=item B<Typographical Paragraph Skip>
+
+B<C<E<lt>ps >>[I<height>]B<C<E<gt>>>
+
+This is the typographical way to insert a
+blank line between two paragraphs. It is not as high as the one generated by
+HTML's C<E<lt>pE<gt>> tag. Default is 4 pixels for I<height>. Optically and
+functionally C<E<lt>psE<gt>> is between C<E<lt>brE<gt>> and C<E<lt>pE<gt>>.
+In german this is called "Durchschuss", so you can also use the alterntive name
+C<E<lt>dsE<gt>> for this tag.
+
+  ...The last line of the previous paragraph.
+  <ps>
+  The new line of the following paragraph...
+
+=item B<Typographical Paragraph Indention> 
+
+B<C<E<lt>pi >>[I<width>]B<C<E<gt>>>
+
+This is the typographical way to glue
+paragraphs which should become one optical block. A complete blank line
+between them would be ugly and without any inserts the reader cannot
+distinguish between the two paragraphs. The typographical solution here is to
+indent the second paragraph by I<width> pixels. The default is 40 pixels.
+Optically C<E<lt>piE<gt>> also includes the effect of C<E<lt>psE<gt>>.  In
+german this is called `Einrückung', so you can also use the alterntive name
+C<E<lt>einE<gt>> for this tag.
+
+Example:
+
+  ...The last line of the previous paragraph.
+  <pi>The new line of the following paragraph...
+
+=item B<Big Paragraph Starting Letter>
+
+B<C<E<lt>big >>I<X>B<C<E<gt>>>
+
+This is the typographical way to mark the
+beginning of a more important paragraph by rendering the first letter of the
+first word of this paragraph in huge font. Optically this letter then is
+approximately three times bigger then the normal text font. Additionally the
+B<alt> attribute of the used C<E<lt>imgE<gt>> tag is set to the letter, so
+text-based browsers correctly show the first word. Because 
+such a paragraph should also be introduced by more whitespace, one
+usually uses the standard C<E<lt>pE<gt>> tag in front of C<E<lt>bigE<gt>> to
+achieve the correct optical effect.
+
+Example:
+
+  ...The last line of the previous paragraph.
+  <p>
+  <big T>he new line of the following paragraph...
+
+=item B<Small Caps Text> 
+
+B<C<E<lt>sc >>[B<complete>]B<C<E<gt>>>...B<C<E<lt>/scE<gt>>>
+
+This container tag renders its body with small caps, i.e.
+all lower case letters are changed to upper case while lowered optically via
+font size. In german typography this is also known as `Kapitälchen'.
+Optionally when adding the attribute B<complete>, all words are forced to
+begin with an upper case letter, too.
+
+If you have support for i18n (internationalization) you may also convert case
+of non-ASCII characters. See your local documentation locale(7) for details
+or ask your system administrator.
+
+=item B<Spaced Text> 
+
+B<C<E<lt>spaced >>[B<interchar=>I<N>] [B<interline=>I<N>]B<C<E<gt>>>...B<C<E<lt>/spacedE<gt>>>
+
+This container tag renders its body as spaced text, i.e.  text with spaces
+between the lines and characters. In typpgraphy this is usually used to
+emphasize the text by the use of whitespace. Per default B<interchar> and
+B<interline> are 0, i.e. no spacing. The spacing is achieved by inserting as
+much C<&nbsp;> entities as I<interchar> specifies and 1pt-images of height
+14+I<interline> every fifth word.  In german typography this is also known as
+`Gesperrt'.
+
+=item B<Headline>
+
+B<C<E<lt>headline >>[I<name>]B<C<E<gt>>>...B<C<E<lt>/headlineE<gt>>>
+
+This container tag creates a typographically better headline as
+the standard HTML C<E<lt>h1E<gt>> does, i.e. it renders the text in Helvetica
+and used better whitespaces around it. Actually it does not create any
+whitespace above it, but the correct one below it. This way you can create the
+leading whitespace your own (which is usually different according to the
+context) but get nice trailing whitespace (which has to be choosen carefully
+to make the headline and the following paragraph one unit).  In german this is
+called `Überschrift' hence the alias C<E<lt>ueE<gt>>.
+
+Example:
+
+  ...The last line of the previous paragraph.
+  <p>
+  <ue>The headline</ue>
+  The new line of the following paragraph...
+
+=item B<Sub-Headline>
+
+B<C<E<lt>subheadline >>[I<name>]B<C<E<gt>>>...B<C<E<lt>/subheadlineE<gt>>>
+
+This container tag creates a typographically better
+sub-headline as the standard HTML C<E<lt>h2E<gt>> does, i.e. it renders the
+text in Helvetica and used better whitespaces around it. Actually it does not
+create any whitespace above it, but the correct one below it. This way you can
+create the leading whitespace your own (which is usually different according
+to the context) but get nice trailing whitespace (which has to be choosen
+carefully to make the headline and the following paragraph one unit).  In
+german this is called `Zwischenüberschrift' hence the alias C<E<lt>zwueE<gt>>.
+
+Example:
+
+  ...The last line of the previous paragraph.
+  <p>
+  <zwue>The headline</zwue>
+  The new line of the following paragraph...
+
+=item B<Verbatim Code>
+
+B<C<E<lt>verbcodeE<gt>>>...B<C<E<lt>/verbcodeE<gt>>>
+
+This container tag renders its body mostly verbatim, i.e.
+treats it like plain (source) code. Internally this just is an indented
+C<E<lt>verbatimE<gt>> container from wml::fmt::verbatim(3) which itself is an
+enhanced C<E<lt>preE<gt>> container.
+
+=item B<Unnumbered Lists> 
+
+B<C<E<lt>tul >>[B<ps=>I<N>] [B<pi=>I<N>]B<C<E<gt>>>...B<C<E<lt>/tulE<gt>>>
+
+This container tag displays unnumbered lists in a more typographically
+strong layout, rendered via HTML tables for indentation.
+
+B<C<E<lt>tli >>[B<pshape=>I<box>|I<dash>] [B<pcolor=>I<#rrggbb>]B<C<E<gt>>>...B<C<E<lt>/tliE<gt>>>
+
+Items are prefixed by a box or a dash, depending on the B<pshape> attribute,
+and its color may be defined.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3, P8
+
+=head1 SEEALSO
+
+HTML C<E<lt>fontE<gt>> and C<E<lt>brE<gt>> tags.
+
+=cut
+

@@ -1,0 +1,164 @@
+##
+##  wml::des::rollover - RollOver-Style Image-Button
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<set-var __ro:count=1 />
+
+<define-tag rollover:jsfuncs>\
+<javascript>
+function ro_imgNormal(imgName) {
+    if (document.images) {
+        document[imgName].src = eval(imgName + '_n.src');
+        self.status = '';
+    }
+}
+function ro_imgOver(imgName, descript) {
+    if (document.images) {
+        document[imgName].src = eval(imgName + '_o.src');
+        self.status = descript;
+    }
+}
+</javascript>
+<define-tag rollover:jsfuncs></define-tag>
+</define-tag>
+
+<define-tag rollover whitespace=delete>
+<preserve name src oversrc href alt target hint />
+<set-var %attributes />
+<if "<get-var name />" "" <group
+    <set-var name=unknown<get-var __ro:count /> />
+    <increment __ro:count />
+/>/>
+<defvar alt <get-var href /> />
+<defvar hint <get-var alt /> />
+<defvar href "#" />
+<rollover:jsfuncs />
+
+<copy-var name __ro:name />
+<copy-var src __ro:src />
+<copy-var oversrc __ro:oversrc />
+#   The <group> tag is to prevent the concatenation of the javascript code
+<group "
+#   Protect `name', `src' and `oversrc' variables from being overriden
+#   by the <javascript> tag
+<javascript>
+if (document.images) {
+    ro_img_<get-var __ro:name />_n = new Image();
+    ro_img_<get-var __ro:name />_n.src = '<get-var __ro:src />';
+    ro_img_<get-var __ro:name />_o = new Image();
+    ro_img_<get-var __ro:name />_o.src = '<get-var __ro:oversrc />';
+}
+</javascript>
+" />
+<a href="<get-var href />" \
+   <if <get-var target /> "target=\"<get-var target />\"" /> \
+   onmouseover="ro_imgOver('ro_img_<get-var name />', '<get-var hint />'); return true" \
+   onmouseout="ro_imgNormal('ro_img_<get-var name />'); return true" \
+   onfocus="ro_imgOver('ro_img_<get-var name />', '<get-var hint />'); return true" \
+   onblur="ro_imgNormal('ro_img_<get-var name />'); return true"\
+   <attributes-quote <attributes-extract :a:(.*) %attributes /> />\
+><img \
+   name=ro_img_<get-var name /> \
+   src="<get-var src />" \
+   alt="<get-var alt />" \
+   width=* height=* \
+   border=0 \
+   <attributes-quote <attributes-extract :img:(.*) %attributes /> />\
+/></a>
+<restore  name src oversrc href alt target hint />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::rollover - RollOver-Style Image-Button
+
+=head1 SYNOPSIS
+
+ #use wml::des::rollover
+
+ <rollover [attributes]>
+
+=head1 DESCRIPTION
+
+One of the most interesting trick to make a webpage more interactive is the
+so-called I<rollover effect> commonly known from window system GUIs. The idea
+is simply to change the underlaying image when the mouse I<rolls over> it.
+Additionally when a mouse click occurs over the image it acts like a button
+and jumps to a new URL.  
+
+Although there are more then one way to achieve this optical effect, to use
+the client-side scripting-language I<JavaScript> currently is the best
+solution. But here only those variants can be used which provide the C<image>
+object.  Netscape version 3 and 4 and Internet Explorer 4 support this. But
+the generated code of this C<E<lt>rolloverE<gt>> tag is backward-compatible
+with all types of browsers.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item name
+
+The name of the image. Just for internal usage to bind the correct image
+objects to the image tag.
+
+=item src
+
+The normal image which is displayed when the mouse I<is not> over the image.
+
+=item oversrc
+
+The image which is displayed when the mouse I<is> over the image.
+
+=item href
+
+The URL for the hyperlink which gets activated when the mouse clicks into the
+image.
+
+=item alt
+
+This string is displayed in text-only browsers or browsers which have images
+disabled at the place where the image stays. Additionally it is displayed in
+the browsers status line when the mouse is over the image.
+
+=item target
+
+This sets the C<target> attribute for the surrounding anchor (C<E<lt>aE<gt>>)
+tag. Use this for redirecting the hyperlink to different target area, i.e.
+usually when using frames or multiple windows.
+
+=item :a:I<ATTR>=I<STR> :img:I<ATTR>=I<STR>
+
+The ``I<ATTR>=I<STR>'' pairs are passed along to the C<E<lt>aE<gt>>
+and C<E<lt>imgE<gt>> HTML tags.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2
+ External: JavaScript (BROWSER)
+
+=head1 SEEALSO
+
+HTML 3.2 C<E<lt>imgE<gt>> and C<E<lt>aE<gt>> tags,
+JavaScript: http://home.netscape.com/eng/mozilla/3.0/handbook/javascript/
+
+=cut
+

@@ -1,0 +1,12 @@
+
+ This is the Website Meta Language contribution directory.
+ The stuff you can find here is provided AS IS and without 
+ any support and guarranty.
+ These files contain information to contact their respective authors.
+
+ wmg.cgi ............ The popular Webdesign Magnifying Glass (WMG)
+ wml.spec.in ........ Specification file to build RedHat/Linux RPMS
+ navbar-FH.wml ...... A modified version of navbar.wml
+ mkwml .............. An alternative to WMk
+ wml.vim ............ Syntax highlighting of WML files with VIM
+
