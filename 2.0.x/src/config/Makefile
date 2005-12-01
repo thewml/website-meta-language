@@ -1,5 +1,5 @@
 
-all: ../configure
+all: ../configure noautocache
 
 ../configure: configure.in aclocal.m4
 	rm -f ../configure
@@ -14,4 +14,7 @@ distclean:
 
 realclean: distclean
 	-rm -f ../configure
+
+noautocache:
+	rm -fr autom4te.cache
 
