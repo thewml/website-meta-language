@@ -46,3 +46,6 @@ CLEANFILES = \
    mp4h.info mp4h.info-* mp4h.texi mp4h.chp mp4h.cp mp4h.fn mp4h.vr \
    mp4h.tp mp4h.ky mp4h.pg mp4h.aux mp4h.log mp4h.toc mp4h.dvi mp4h.ps
 
+# Workaround so html.out won't be deleted on cygwin.
+html.out:
+	@echo hello

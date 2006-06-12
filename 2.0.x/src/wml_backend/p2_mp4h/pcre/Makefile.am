@@ -12,7 +12,7 @@ libpcre_a_SOURCES = maketables.c study.c pcre.c
 
 noinst_HEADERS    = internal.h pcre.h
 
-chartables.c: dftables
+chartables.c: dftables$(EXEEXT)
 	./dftables > $@
 
 BUILT_SOURCES = chartables.c
