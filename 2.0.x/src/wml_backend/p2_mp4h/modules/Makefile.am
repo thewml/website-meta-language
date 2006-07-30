@@ -1,3 +1,2 @@
-
-SUBDIRS  = system intl
+include subdirs.am
 
