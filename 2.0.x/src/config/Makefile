@@ -4,9 +4,9 @@ MP4H_cfg = $(MP4H_DIR)/configure
 
 all: run_modules_file $(MP4H_min) $(MP4H_cfg) ../configure noautocache 
 
-../configure: configure.in aclocal.m4
+../configure: configure.ac aclocal.m4
 	rm -f ../configure
-	autoconf configure.in >../configure
+	autoconf configure.ac >../configure
 	./configure.fixit ../configure
 	chmod a+x ../configure
 
