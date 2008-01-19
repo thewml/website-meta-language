@@ -79,25 +79,25 @@
 #undef HAVE_DLD
 
 /* Define to 1 if you have the <dld.h> header file. */
-#undef HAVE_DLD_H
+#cmakedefine HAVE_DLD_H 1
 
 /* Define to 1 if you have the `dlerror' function. */
 #undef HAVE_DLERROR
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#undef HAVE_DLFCN_H
+#cmakedefine HAVE_DLFCN_H 1
 
 /* Define to 1 if the -ldl library should be used */
 #undef HAVE_DLOPEN
 
 /* Define to 1 if you have the <dl.h> header file. */
-#undef HAVE_DL_H
+#cmakedefine HAVE_DL_H 1
 
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
 
 /* Define to 1 if you have the <errno.h> header file. */
-#undef HAVE_ERRNO_H
+#cmakedefine HAVE_ERRNO_H 1
 
 /* Define to 1 if the system has the type `error_t'. */
 #undef HAVE_ERROR_T
@@ -139,7 +139,7 @@
 #undef HAVE_GETUID
 
 /* Define to 1 if you have the <grp.h> header file. */
-#undef HAVE_GRP_H
+#cmakedefine HAVE_GRP_H 1
 
 /* Define if you have the iconv() function. */
 #undef HAVE_ICONV
@@ -148,7 +148,7 @@
 #undef HAVE_INDEX
 
 /* Define if <inttypes.h> exists and doesn't clash with <sys/types.h>. */
-#undef HAVE_INTTYPES_H
+#cmakedefine HAVE_INTTYPES_H 1
 
 /* Define if <inttypes.h> exists, doesn't clash with <sys/types.h>, and
    declares uintmax_t. */
@@ -167,13 +167,13 @@
 #undef HAVE_LIBDLD
 
 /* Define to 1 if you have the <limits.h> header file. */
-#undef HAVE_LIMITS_H
+#cmakedefine HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the <locale.h> header file. */
-#undef HAVE_LOCALE_H
+#cmakedefine HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the <malloc.h> header file. */
-#undef HAVE_MALLOC_H
+#cmakedefine HAVE_MALLOC_H 1
 
 /* Define to 1 if you have the `memcpy' function. */
 #undef HAVE_MEMCPY
@@ -182,7 +182,7 @@
 #undef HAVE_MEMMOVE
 
 /* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
+#cmakedefine HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the `mempcpy' function. */
 #undef HAVE_MEMPCPY
@@ -197,10 +197,10 @@
 #undef HAVE_MUNMAP
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
-#undef HAVE_NDIR_H
+#cmakedefine HAVE_NDIR_H 1
 
 /* Define to 1 if you have the <nl_types.h> header file. */
-#undef HAVE_NL_TYPES_H
+#cmakedefine HAVE_NL_TYPES_H 1
 
 /* Define to 1 if you have the `obstack' function. */
 #undef HAVE_OBSTACK
@@ -212,7 +212,7 @@
 #undef HAVE_PUTENV
 
 /* Define to 1 if you have the <pwd.h> header file. */
-#undef HAVE_PWD_H
+#cmakedefine HAVE_PWD_H 1
 
 /* Define to 1 if you have the `rindex' function. */
 #undef HAVE_RINDEX
@@ -230,10 +230,10 @@
 #cmakedefine HAVE_STDARG_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
-#undef HAVE_STDDEF_H
+#cmakedefine HAVE_STDDEF_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H 1
 
 /* Define if <stdint.h> exists, doesn't clash with <sys/types.h>, and declares
    uintmax_t. */
@@ -243,7 +243,7 @@
 #cmakedefine HAVE_STDIO_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H
+#cmakedefine HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the `stpcpy' function. */
 #undef HAVE_STPCPY
@@ -264,10 +264,10 @@
 #cmakedefine HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#undef HAVE_STRINGS_H
+#cmakedefine HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
-#undef HAVE_STRING_H
+#cmakedefine HAVE_STRING_H 1
 
 /* Define to 1 if you have the `strrchr' function. */
 #undef HAVE_STRRCHR
@@ -280,29 +280,29 @@
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
-#undef HAVE_SYS_DIR_H
+#cmakedefine HAVE_SYS_DIR_H 1
 
 /* Define to 1 if you have the <sys/dl.h> header file. */
-#undef HAVE_SYS_DL_H
+#cmakedefine HAVE_SYS_DL_H 1
 
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
-#undef HAVE_SYS_NDIR_H
+#cmakedefine HAVE_SYS_NDIR_H 1
 
 /* Define to 1 if you have the <sys/param.h> header file. */
-#undef HAVE_SYS_PARAM_H
+#cmakedefine HAVE_SYS_PARAM_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#undef HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/times.h> header file. */
-#undef HAVE_SYS_TIMES_H
+#cmakedefine HAVE_SYS_TIMES_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#undef HAVE_SYS_TYPES_H
+#cmakedefine HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <time.h> header file. */
-#undef HAVE_TIME_H
+#cmakedefine HAVE_TIME_H 1
 
 /* Define to 1 if you have the `tmpfile' function. */
 #cmakedefine HAVE_TMPFILE 1
