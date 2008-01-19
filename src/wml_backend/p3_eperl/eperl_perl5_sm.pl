@@ -5,6 +5,8 @@
 
 use Config;
 
+open O, ">eperl_perl5_sm.h";
+select(O);
 print <<'EOT'
 /*
 **        ____           _ 
@@ -105,4 +107,5 @@ print <<EOT
 EOT
 ;
 
+close(O);
 ##EOF##

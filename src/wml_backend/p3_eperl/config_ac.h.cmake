@@ -27,16 +27,16 @@
 #undef HAVE_DMALLOC
 
 /* Define if you have the memmove function.  */
-#undef HAVE_MEMMOVE
+#cmakedefine HAVE_MEMMOVE
 
 /* Define if you have the setegid function.  */
-#undef HAVE_SETEGID
+#cmakedefine HAVE_SETEGID
 
 /* Define if you have the seteuid function.  */
-#undef HAVE_SETEUID
+#cmakedefine HAVE_SETEUID
 
 /* Define if you have the strdup function.  */
-#undef HAVE_STRDUP
+#cmakedefine HAVE_STRDUP
 
 /* Define if you have the <ctype.h> header file.  */
 #cmakedefine HAVE_CTYPE_H

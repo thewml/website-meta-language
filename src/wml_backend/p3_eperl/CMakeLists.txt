@@ -12,31 +12,29 @@ SET(perl_prog ${PERL_EXECUTABLE})
 # TODO - this is just to get it working - change to something more meaningful
 SET(prefix "/usr")
 
-EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
-    "-e" "use Config; print \$Config{archlib}"
-    OUTPUT_VARIABLE perl_archlib
-)
+MACRO(GET_PERL_CONFIG cfg)
+    EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
+        "-e" "use Config; print \$Config{${cfg}}"
+        OUTPUT_VARIABLE "perl_${cfg}"
+    )    
+ENDMACRO(GET_PERL_CONFIG)
+
+SET (PERL_CONFIGS archlib libs usedl ccflags optimize)
+FOREACH (cfg ${PERL_CONFIGS})
+    GET_PERL_CONFIG(${cfg})
+ENDFOREACH(cfg)
+
 EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
     "-e" "printf '%.3f',\$]"
     OUTPUT_VARIABLE perl_vers
 )
 
-EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE} 
-    "-e" "use Config; print \$Config{libs}"
-    OUTPUT_VARIABLE perl_libs
-)
-
-EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
-    "-e" "use Config; print \$Config{usedl}"
-    OUTPUT_VARIABLE usedl
-)
-
-IF(usedl STREQUAL "define")
+IF(perl_usedl STREQUAL "define")
     SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
     SET (HAVE_PERL_DYNALOADER 1)
-ELSE(usedl STREQUAL "define")
+ELSE(perl_usedl STREQUAL "define")
     SET (perl_dla "")
-ENDIF(usedl STREQUAL "define")
+ENDIF(perl_usedl STREQUAL "define")
 
 EXECUTE_PROCESS(COMMAND "whoami"
     OUTPUT_VARIABLE build_user
@@ -73,9 +71,16 @@ SET (INCLUDE_FILES_TO_CHECK
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})
 
+SET (FUNCTIONS_TO_CHECK 
+    memmove
+    setegid
+    seteuid
+    strdup
+    )
+CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
 
-ADD_EXECUTABLE(eperl
+SET (SOURCES 
     eperl_config.c
     eperl_debug.c
     eperl_getopt.c
@@ -90,6 +95,14 @@ ADD_EXECUTABLE(eperl
     eperl_readme.c
     eperl_sys.c
     eperl_version.c
+)
+
+ADD_EXECUTABLE(eperl
+    ${SOURCES}
+)
+
+SET_SOURCE_FILES_PROPERTIES(${SOURCES}
+    PROPERTIES COMPILE_FLAGS "${perl_optimize} ${perl_ccflags} -I${perl_archlib}/CORE -I."
 )
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h)
