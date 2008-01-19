@@ -1,0 +1,5 @@
+
+<use name="system:sh">
+
+<exec type="sh">uname -a</exec>
+<sh>uname -a</sh>

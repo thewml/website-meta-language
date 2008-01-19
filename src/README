@@ -1,0 +1,29 @@
+  __        ___  __ _     
+  \ \      / / \/  | |    
+   \ \ /\ / / |\/| | |    
+    \ V  V /| |  | | |___   ``WML is the Unix toolkit for getting
+     \_/\_/ |_|  |_|_____|    your webdesigner's HTML job done.''
+
+  Website META Language, Version 2.0.11 (19-Aug-2006)
+
+  Copyright (c) 1996-2000 Ralf S. Engelschall
+  Copyright (c) 1999-2000 Denis Barbier
+
+  WML is a free and extensible Webdesigner's off-line HTML generation
+  toolkit for Unix, distributed under the GNU General Public License
+  (GPL v2). It is written in ANSI C and Perl 5, built via a GNU Autoconf
+  based source tree and runs out-of-the-box on all major Unix derivates.
+  It can be used free of charge both in educational and commercial
+  environments.
+  
+  WML consists of a control frontend driving up to nine backends in a
+  sequential pass-oriented filtering scheme. Each backend provides one
+  particular core language. For maximum power WML additionally ships
+  with a well-suited set of include files which provide higher-level
+  features build on top of the backends core languages. While not
+  trivial and idiot proof WML provides most of the core features real
+  hackers always wanted for HTML generation.
+
+                               http://www.engelschall.com/sw/wml/
+                                ftp://ftp.engelschall.com/sw/wml/
+

@@ -1,0 +1,781 @@
+##
+##  WML Tutorial
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+=head1 NAME
+
+WML Tutorial - Understanding WML step-by-step
+
+=head1 DESCRIPTION
+
+This tutorial gives you a step-by-step introduction to the features of WML,
+separated into tiny lessons. Each lesson shows one particular aspect or
+feature of WML.  The order of lessons go from easy and trivial to hard and
+complex.
+
+=head1 IMPLICIT MARKUP PROCESSING
+
+=head2 LESSON: Plain Data Throughput
+
+In this lesson we first learn that WML is 95% of the time transparent to its
+input, i.e. we can pass through any data without corruption.
+
+Input:
+
+ 1| foo
+ 2| <bar>
+ 3| quux
+
+Output:
+
+ 1| foo
+ 2| <bar>
+ 3| quux
+
+This is because per default there are neither definitions for symbols C<foo>
+or C<quux> nor a defined HTML tag named C<E<lt>barE<gt>>. And because there
+are no unnecessary whitespaces in this example, the input cannot be stripped
+in any case.
+
+=head2 LESSON: Protected Markup Code
+
+Sometimes situations can occur where some of your markup code or page contents
+conflicts with WML due to overlapping tagnames, etc. Here WML interprets some
+stuff you actually don't want to be interpreted. 
+
+Input:
+
+ 1| foo: foo.c
+ 2|    $(CC) -o foo foo.c
+
+Output:
+
+ 1| foo: foo.c
+ 2|     -o foo foo.c
+
+Here the `C<$(CC)>' was expanded to an empty string because IPP uses the same
+syntax for variable interpolation like F<make>. To avoid this just surround
+the critical part with the WML-internal C<E<lt>protectE<gt>> container tag.
+
+Input:
+
+ 1| foo: foo.c
+ 2|    <protect>$(CC)</protect> -o foo foo.c
+
+Output:
+
+ 1| foo: foo.c
+ 2|    $(CC) -o foo foo.c
+
+=head2 LESSON: Stripped-Down Markup Code
+
+Now let's try an example which has unnecessary whitespaces. Be careful,
+`unnecessary' here means they can be stripped as long as the resulting
+Webpage displays the same in a Webbrowser as the original.
+
+Input:
+
+ 1| <body>
+ 2| 
+ 3| <img src = "file.gif"    alt="  test  " >
+ 4| <pre>
+ 5|
+ 6|     Preformatted          Text  
+ 7| </pre>
+ 8|     Not    Preformatted   Text
+ 9| </body>
+
+Output:
+
+ 1| <body>
+ 2| <img src="file.gif" alt=" test ">
+ 4| <pre>
+ 5|
+ 6|     Preformatted          Text  
+ 7| </pre>
+ 8|     Not Preformatted Text
+ 9| </body>
+
+Here we see that line 2 is completely removed because empty lines have no
+effect in HTML. The whitespaces between the attribute C<src> and its value are
+removed, too. And all double whitespaces are replaced by a single whitespace
+character. But not inside preformatted areas.
+
+=head2 LESSON: Fixed And Adjusted Markup Code
+
+Now assume that we have an F<image.gif> file containing a GIF image with a
+size of 500x400 pixels and the following input page:
+
+ 1| <body>
+ 2| <center>
+ 3| <font color=336699>Headline:</font><br>
+ 4| <img src="image.gif">
+ 5| </center>
+ 6| </body>
+
+Although this is valid HTML code, WML can enhance it to make it more portable,
+speed up it rendering in the Webbrowser and make I<Lynx> users more happy. So
+WML recognizes the C<E<lt>imgE<gt>> tag and automatically adds missing
+information and replaces obsolete tags with up-to-date variants:
+
+ 1| <body>
+ 2| <div align=center>
+ 3| <font color="#336699">Headline:</font><br>
+ 4| <img src="image.gif" alt="" width="500" height="400">
+ 5| </div>
+ 6| </body>
+
+As you can see, WML first replaced the proprietary C<E<lt>centerE<gt>> tag
+with the HTML 3.2 pedant C<E<lt>div align=centerE<gt>>, second it fixed the
+C<color> attribute of C<E<lt>fontE<gt>>. And third it added missing C<alt> and
+C<width>/C<height> attributes.
+
+=head1 STRUCTURING THE MARKUP CODE
+
+=head2 LESSON: Using Include Files 
+
+One of the most useful features of WML is the ability to move commonly used
+stuff into include files which can be selectively read in at later steps.
+
+Assume we have an include file F<bar.wml>...
+
+ 1| bar
+ 2| The value of bar is: $(bar:-unknown)
+
+...and the following input file: 
+
+ 1| foo
+ 3| #include 'bar.wml' bar="FooBar"
+ 2| #include 'bar.wml'
+ 5| quux
+
+Then the output is:
+
+ 1| foo
+ 2| bar
+ 3| The value of bar is: Foobar
+ 4| bar
+ 5| The value of bar is: unknown
+ 6| quux
+
+As you can see, the C<#include> directive is replaced by the contents of the
+corresponding file. And this included contents can contain variables which are
+interpolated when they are defined, inclusive default values.
+
+There is also a way to create simple constructs similar to an if-then-else
+just by using variable interpolation:
+
+  1| The value of bar is $(bar:+set)$(bar:*unset).
+
+Here the `C<$(bar:+set)$(bar:*unset)>' construct emulates the following semantics:
+
+  if (isdefined(bar))
+      expandto("set")
+  if (not isdefined(bar))
+      expandto("unset")
+
+=head2 LESSON: Concatenating Lines
+
+Although HTML usually does not care about whitespaces and newlines, sometimes
+it is very frustrating to create preformatted areas or write own tags (see
+later) without the ability to spread the code over more than one line while
+it should be actually one single line. For this a lot of languages use a line
+concatenation/continuation character `C<\>', as does WML.
+
+Input:
+
+ 1| foo\
+ 2|    bar \
+ 3| quux
+
+Output:
+
+ 1| foobar quux
+
+The line concatenation strips whitespaces from the begin of concatenated lines
+but preserves whitespaces at the end of them, i.e. you can use leading
+whitespaces for structuring your input nicely but still use appended
+whitespaces for real ones.
+
+=head2 LESSON: Diverting To Locations
+
+One of the most powerful features of WML is the ability to
+I<divert> data at any point to I<locations> defined at any other point.
+
+Input:
+
+ 1| {#BAR#:this is:##}
+ 2| foo
+ 3| {#BAR#}
+ 4| quux
+ 5| {#BAR#: bar:##}
+ 6| foobar
+ 7| {#BAR#}
+
+Output:
+
+ 1| foo
+ 2| this is bar
+ 3| quux
+ 4| foobar
+ 5| this is bar
+
+Here in line 3 the location C<BAR> is already dumped, but filled at lines 1
+and 5.  And as you can see a location can be dumped at any point and even more
+than once. And you can accumulate the contents for a location by subsequent
+fills (line 1 and 5). This works because in WML first all locations are filled
+in a first pass and then dumped in a second pass.
+
+With the use of the high-level tags from F<wml::std::tags> we also could write
+the example above in a little bit more human readable way:
+
+ 1| #use wml::std::tags
+ 2| <divert BAR>this is</divert>
+ 3| foo
+ 4| <dump BAR>
+ 5| quux
+ 6| <divert BAR> bar</divert>
+ 7| foobar
+ 8| <dump BAR>
+
+=head2 LESSON: Defining Output Slices
+
+Often one needs more than one output file. Usually although 90% of the
+contents is the same, one needs a way to select the remaining 10%. WML's
+approach here is to write these 10% directly in the input file but separate
+the variants by defining I<slices> which later can be used to create the
+different output files.
+
+ 1| <html>
+ 2| <head>
+ 3| <title>[EN:Titleline:][DE:Titelzeile:]</title>
+ 4| </head>
+ 5| <body>
+ 6| <h1>[EN:Headerline:][DE:Ueberschrift:]</h1>
+ 7| </body>
+ 8| </html>
+
+Now assume the above page is in file F<index.wml>, then the command
+
+ $ wml -o UNDEF+EN:index.html.en \
+       -o UNDEF+DE:index.html.de index.wml
+
+generates the output file C<index.html.en> containing the union of all
+undefined areas and the slices `C<EN>'...
+
+ 1| <html>
+ 2| <head>
+ 3| <title>Titleline</title>
+ 4| </head>
+ 5| <body>
+ 6| <h1>Headerline</h1>
+ 7| </body>
+ 8| </html>
+
+...and the output file C<index.html.de> containing the union of all undefined
+areas and the slices `C<DE>':
+
+ 1| <html>
+ 2| <head>
+ 3| <title>Titelzeile</title>
+ 4| </head>
+ 5| <body>
+ 6| <h1>Ueberschrift</h1>
+ 7| </body>
+ 8| </html>
+
+=head1 FORMATTING
+
+=head2 LESSON: Area Substitution
+
+WML provides an area substitution feature which works by specifying the begin
+and end of the area and inserting some Perl substitution and translation
+commands.
+
+Input:
+
+ 1| foo
+ 2| {: [[s/foo/bar/g]] [[s/quux/foobar/g]] [[tr/[a-z]/[A-Z]/]]
+ 3| this is foo and quux.
+ 4| :}
+ 5| quux
+
+Output:
+
+ 1| foo
+ 2| THIS IS BAR AND FOOBAR.
+ 3| quux
+
+Because this seems useless, we go further and show an example of the
+C<E<lt>isolatinE<gt>> and C<E<lt>urlE<gt>> container tags from
+F<wml::fmt::isolatin> and F<wml::fmt::url> which are programmed this way.
+
+Input:
+
+ 1| #use wml::fmt::isolatin
+ 2| #use wml::fmt::url
+ 3| <isolatin><url>
+ 4| Some umlauts `öäüÖÄß' and
+ 5| a hyperlink http://foo.bar.com/
+ 6| </url></isolatin>
+
+Output:
+
+ 1| Some umlauts `&ouml;&auml;&uuml;&Ouml;&Auml;&szlig;' and
+ 2| a hyperlink <a href="http://foo.bar.com/">http://foo.bar.com/</a>
+
+=head2 LESSON: Text Formatting
+
+HTML sucks when it comes to write more than one paragraph of text.  So WML
+provides nice ways to format an area of input via other (externally available)
+markup language processors. Here is an example which used two embedded areas,
+the first one is written in I<Plain Old Document> (POD) format, second one is
+written in I<Simple Document Format> (SDF).
+
+Input:
+
+  1| #use wml::fmt::pod
+  2| #use wml::fmt::sdf
+  3| <html>
+  4| <pod notypo>
+  5| =head1 Headline1
+  6| 
+  7| Foo
+  8| 
+  9| =head2 Headline1.1
+ 10| 
+ 11| Bar
+ 12| </pod>
+ 13| 
+ 14| <sdf notypo>
+ 15| H1: Headline1
+ 16| 
+ 17| Foo
+ 18| 
+ 19| H2: Headline 1.1
+ 20| 
+ 21| Bar
+ 22|   * Baz
+ 23|     - Foobar
+ 24|     - Quux 
+ 25|   * Foo
+ 26| </sdf>
+ 27| </html>
+
+Output:
+
+  1| <html>
+  2| <P>
+  3| <H1><A NAME="Headline1">Headline1
+  4| </A></H1>
+  5| Foo
+  6| <P>
+  7| <H2><A NAME="Headline1_1">Headline1.1
+  8| </A></H2>
+  9| Bar
+ 10| <P>
+ 11| <H1><A NAME="Headline1">1. Headline1</A></H1>
+ 12| <P>Foo</P>
+ 13| <H2><A NAME="Headline 1.1">1.1. Headline 1.1</A></H2>
+ 14| <P>Bar</P>
+ 15| <UL>
+ 16| <LI>Baz<UL>
+ 17| <LI>Foobar
+ 18| <LI>Quux</UL>
+ 19| <LI>Foo</UL>
+ 20| </html>
+
+=head2 LESSON: Table Formatting
+
+Another point where the HTML markup code is unproductive and ugly is when it
+comes to write some C<E<lt>tableE<gt>> structures. Here WML provides two new
+container tags which make your live easier:
+
+=over 4
+
+=item B<E<lt>gridE<gt>>
+
+The goal of this container tag is to provide a way to specify tables the same
+way you have it in your mind, i.e.  as a 2-dimensional grid. So, a grid is
+created by specifying a grid-layout and then fill its cells. Additionally the
+C<E<lt>gridE<gt>> container tag provides a nice feature for specifying the cell
+alignments.
+
+Input:
+
+  1| #use wml::std::grid
+  2| <grid layout=2x3 align=lr valign=tbb border=1>
+  3|   <cell>Header 1</cell> <cell>Header 2</cell>
+  4|   <cell>Cell-A</cell>   <cell>Cell-B</cell>
+  5|   <cell>Cell-C</cell>   <cell>Cell-D</cell>
+  6| </grid>
+
+Output:
+
+  1| <table border="1" cellspacing="0" cellpadding="0">
+  2|   <tr>
+  3|     <td align=left valign=top>Header 1</td>
+  4|     <td align=right valign=top>Header 2</td>
+  5|   </tr>
+  6|   <tr>
+  7|     <td align=left valign=bottom>Cell-A</td>
+  8|     <td align=right valign=bottom>Cell-B</td>
+  9|   </tr>
+ 10|   <tr>
+ 11|     <td align=left valign=bottom>Cell-C</td>
+ 12|     <td align=right valign=bottom>Cell-D</td>
+ 13|   </tr>
+ 14| </table>
+
+=item B<E<lt>xtableE<gt>>
+
+This is the extended C<E<lt>tableE<gt>> container tag which syntax is provided
+by the external F<wml_aux_freetable> program. Its goal is to provide a compact
+syntax for specifying a table. Again the same example:
+
+Input:
+
+  1| #use wml::fmt::xtable
+  2| <xtable border=1>
+  3|   (*, 1) align=left
+  4|   (*, 2) align=right
+  5|   (1, *) valign=top
+  6|   (2|3, *) valign=bottom
+  7|   (1,1) 
+  8|   Header 1 
+  9|   (1,2)
+ 10|   Header 2
+ 11|   (2,1) 
+ 12|   Cell-A   
+ 13|   (2,2)
+ 14|   Cell-B
+ 15|   (3,1) 
+ 16|   Cell-C   
+ 17|   (3,2) 
+ 18|   Cell-D
+ 19| </xtable>
+
+Output:
+
+  1| <table border="1">
+  2|   <tr valign=top>
+  3|     <td align=left>Header 1</td>
+  4|     <td align=right>Header 2</td>
+  5|   </tr>
+  6|   <tr>
+  7|     <td align=left valign=bottom>Cell-A</td>
+  8|     <td align=right valign=bottom>Cell-B</td>
+  9|   </tr>
+ 10|   <tr>
+ 11|     <td align=left valign=bottom>Cell-C</td>
+ 12|     <td align=right valign=bottom>Cell-D</td>
+ 13|   </tr>
+ 14| </table>
+
+=back
+
+=head1 DEFINITION OF OWN HTML TAGS
+
+=head2 LESSON: Simple Tags And Container Tags
+
+Now it is time to enhance our markup language by defining new custom HTML tags.
+There are two types of HTML tags:
+
+=over 4
+
+=item B<Simple Tags>
+
+As an example let us define a C<E<lt>meE<gt>> tag which expands to my name
+abbreviation.
+
+Input:
+
+ 1| <define-tag me whitespace=delete>
+ 2| rse@engelschall.com
+ 3| </define-tag>
+ 4|
+ 5| This is <me>.
+
+Output:
+
+ 1| This is rse@engelschall.com.
+
+=item B<Container Tags>
+
+As an example let us define a C<E<lt>redE<gt>> tag which changes its body text
+color to red.
+
+Input:
+
+  1| <define-tag red endtag=required whitespace=delete>
+  2| <font color="#cc3333">%body</font>
+  3| </define-tag>
+  4| 
+  5| This is <red>very important</red>.
+
+Output:
+
+  1| This is <font color="#cc3333">very important</font>.
+
+=back
+
+=head2 LESSON: Tags With Attributes
+
+Because tags without attributes are not very flexible there is also a way to
+define tags which can use these.
+
+Input:
+
+  1| <define-tag me whitespace=delete>
+  2| <if   "%0" ""            "rse@engelschall.com">
+  3| <ifeq "%0" "engelschall" "rse@engelschall.com">
+  4| <ifeq "%0" "netsw"       "rse@netsw.org">
+  5| <ifeq "%0" "apache"      "rse@apache.org">
+  6| <ifeq "%0" "freebsd"     "rse@freebsd.org">
+  7| <ifeq "%0" "sdm"         "rse@sdm.de">
+  8| </define-tag>
+  9| 
+ 10| This is <me> and <me apache>.
+
+Output:
+
+   1| This is rse@engelschall.com and rse@apache.org.
+
+There is also a variant to use attributes of type C<name=value>:
+
+Input:
+
+  2| <define-tag me whitespace=delete>
+  3| <preserve at>
+  4| <set-var %attributes>
+  5| <if   "<get-var at>" ""            "rse@engelschall.com">
+  6| <ifeq "<get-var at>" "engelschall" "rse@engelschall.com">
+  7| <ifeq "<get-var at>" "netsw"       "rse@netsw.org">
+  8| <ifeq "<get-var at>" "apache"      "rse@apache.org">
+  9| <ifeq "<get-var at>" "freebsd"     "rse@freebsd.org">
+ 10| <ifeq "<get-var at>" "sdm"         "rse@sdm.de">
+ 11| <restore at>
+ 12| </define-tag>
+ 13| 
+ 14| This is <me> and <me at=apache>.
+
+Output:
+
+   1| This is rse@engelschall.com and rse@apache.org.
+
+=head2 LESSON: Overwriting Existing HTML Tags
+
+WML also provides a way to overwrite existing HTML tags, i.e.  you can define
+a custom tag with the same name as an already known HTML tag and use the
+original HTML tag inside it.
+
+Input:
+
+   1| <define-tag br whitespace=delete>
+   2| <br*><br*>
+   4| </define-tag>
+   5|
+   6| Some Text<br>
+   7| Some more Text
+    
+Output:
+
+   1| Some Text<br><br>
+   2| Some more Text
+
+=head2 LESSON: Programming Tags In Perl
+
+One of the essential features in WML is that you can embed Perl code at any
+point, just marked with `C<E<lt>:>' and `C<:E<gt>>' delimiters.  This can be
+combined with the tag definitions by programming tags in Perl.
+
+Input:
+
+  1| #use wml::std::tags
+  2| <define-tag me whitespace=delete>
+  3| <preserve at>
+  4| <set-var %attributes>
+  5| <:{ 
+  6|     my $at = qq/<get-var at>/;
+  7|     my $addr;
+  8|     $addr = "rse\@engelschall.com" if $at eq '';
+  9|     $addr = "rse\@engelschall.com" if $at eq 'engelschall';
+ 10|     $addr = "rse\@netsw.org"       if $at eq 'netsw';
+ 11|     $addr = "rse\@apache.org"      if $at eq 'apache';
+ 12|     $addr = "rse\@freebsd.org"     if $at eq 'freebsd';
+ 13|     $addr = "rse\@sdm.de"          if $at eq 'sdm';
+ 14|     print $addr;
+ 15| }:>
+ 16| <restore at>
+ 17| </define-tag>
+ 18| 
+ 19| This is <me> and <me at=apache>.
+
+Output:
+
+  1| This is rse@engelschall.com and rse@apache.org.
+
+=head1 ADVANCED FEATURES
+
+=head2 LESSON: Using Templates
+
+We've already seen how to divert data to a location.  Because WML
+automatically closes still opened diversions at EndOfFile, we can use this
+feature to create templates.  Assume we have the following template defined in
+the file F<template.wml>.
+
+  1| #   the template itself 
+  2| <html>
+  3| <head>
+  4| <title>{#SUBJECT_LOC#}</title>
+  5| </head>
+  6| <body>
+  7| <h1>{#SUBJECT_LOC#}</h1>
+  8| <blockquote>
+  9| {#BODY#}
+ 10| </blockquote>
+ 11| </body>
+ 12| </html>
+ 13| 
+ 14| #   way to insert the subject
+ 15| <define-tag subject>
+ 16| {#SUBJECT_LOC#:%0:##}
+ 17| </define-tag>
+ 18| 
+ 19| #   per default we are in body
+ 20| {#BODY#:
+
+Input:
+
+  1| #include 'template.wml'
+  2| 
+  3| <subject "Foo, Bar and Quux">
+  4|
+  5| This is about Foo, Bar and Quux...
+
+Output:
+
+  1| <html>
+  2| <head>
+  3| <title>Foo, Bar and Quux</title>
+  4| </head>
+  5| <body>
+  6| <h1>Foo, Bar and Quux</h1>
+  7| <blockquote>
+  8| This is about Foo, Bar and Quux...
+  9| </blockquote>
+ 10| </body>
+ 11| </html>
+
+You can even nest more than one template because the diversion mechanism in
+WML accepts location dumps and location fills at any point, even within other
+location fills.
+
+=head2 LESSON: Creating Multi-Lingual Pages
+
+The core languages of WML don't provide a dedicated facility to create
+multi-lingual pages, i.e. one or more output pages created out of a single
+input source, each one containing the same page information but in different
+human languages. But WML provides variants through ``slicing'' (Pass 9) and
+human languages are just a special case of general variants.  So
+wml::std::lang exists which provides specialized multi-lingual support tags
+which are mapped to slices which then can be used to create the various output
+files.
+
+Let take an example:
+
+  1| #!wml -o (ALL-LANG_*)+LANG_EN:index.en.html \
+  2|       -o (ALL-LANG_*)+LANG_DE:index.de.html
+  3| 
+  4| #use wml::std::page
+  5| #use wml::std::lang
+  6| 
+  7| <lang:new id=en short>
+  8| <lang:new id=de short>
+  9| 
+ 10| <page>
+ 11| 
+ 12| <h1><en: Welcome><de: Willkommen>!</h1>
+ 13| 
+ 14| <a href="<lang:star: index2.*.html>">Index 2</a>
+ 15| 
+ 16| <lang:area>
+ 17| (en)This is a test page
+ 18| (de)Dies ist eine Testseite
+ 19| </lang:area>
+
+After processing passes 1 to 8 (C<wml -p1-8>) the following is internally
+generated by WML:
+
+  1| <html>
+  2| <head>
+  3| </head>
+  4| <body bgcolor="#ffffff" text="#000000" link="#333399" alink="#9999ff" vlink="#000066">
+  5| <h1>[LANG_EN:Welcome:][LANG_DE:Willkommen:]!</h1>
+  6| <a href="[LANG_EN:index2.en.html:][LANG_DE:index2.de.html:]">Index 2</a>
+  7| [LANG_EN:This is a test page
+  8| :][LANG_DE:Dies ist eine Testseite:]
+  9| </body>
+ 10| </html>
+
+And then after processing pass 9 with the initial WML magic cookie line
+(C<#!wml -o...>) the following two files are generated:
+
+index.en.html:
+
+  1| <html>
+  2| <head>
+  3| </head>
+  4| <body bgcolor="#ffffff" text="#000000" link="#333399" alink="#9999ff" vlink="#000066">
+  5| <h1>Welcome!</h1>
+  6| <a href="index2.en.html">Index 2</a>
+  7| This is a test page
+  8| 
+  9| </body>
+ 10| </html>
+
+index.de.html:
+
+  1| <html>
+  2| <head>
+  3| </head>
+  4| <body bgcolor="#ffffff" text="#000000" link="#333399" alink="#9999ff" vlink="#000066">
+  5| <h1>Willkommen!</h1>
+  6| <a href="index2.de.html">Index 2</a>
+  7| Dies ist eine Testseite
+  8| </body>
+  9| </html>
+
+And these two pages then can be served by a content negotiation feature of the
+webserver or by explicit references.
+
+=head1 MORE INFORMATION
+
+Now you've seen the various core languages of WML in action. For the gory
+details of what each language provides either read the all-in-one WML
+Introduction in wml_intro(7) or step through the particular manpages of the
+core languages.  Start here with the frontend wml(1).
+
+Additionally can can step through the set of available standard include files
+WML ships with. Start with the top-level include file wml::all(3).
+
+=head1 SEEALSO
+
+wml_intro(7)
+
+wml_p1_ipp(1),
+wml_p2_mp4h(1),
+wml_p3_eperl(1),
+wml_p4_gm4(1),
+wml_p5_divert(1),
+wml_p6_asubst(1),
+wml_p7_htmlfix(1),
+wml_p8_htmlstrip(1),
+wml_p9_slice(1).
+
+wml::all(3)
+
+=cut
+
+##EOF##

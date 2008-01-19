@@ -1,0 +1,247 @@
+##
+##  Makefile -- SLICE Makefile
+##
+
+@SET_MAKE@
+SHELL = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+SUBDIRS         = lib t
+
+#   installation tools
+SHTOOL          = $(top_srcdir)/etc/shtool
+INSTALL_SCRIPT  = $(SHTOOL) install -c -m 755
+INSTALL_DATA    = $(SHTOOL) install -c -m 644
+MKDIR           = $(SHTOOL) mkdir -p -f -m 755
+VERSION_TOOL    = $(SHTOOL) version
+FIXPERM         = $(SHTOOL) fixperm
+
+prefix          = @prefix@
+exec_prefix     = $(prefix)
+bindir          = $(prefix)/bin
+libsubdir       = @libsubdir@
+libdir          = $(prefix)/lib$(libsubdir)
+mandir          = $(prefix)/man
+
+PATH_PERL       = @PATH_PERL@
+INSTALLPRIVLIB  = @INSTALLPRIVLIB@
+INSTALLARCHLIB  = @INSTALLARCHLIB@
+
+_REPLACEVARS = \
+    sed -e "s|\@PATH_PERL\@|$(PATH_PERL)|" -e '/@(\#)/d' -e '/^;\#/d' \
+        -e "s|\@INSTALLPRIVLIB\@|$(INSTALLPRIVLIB)|" \
+        -e "s|\@INSTALLARCHLIB\@|$(INSTALLARCHLIB)|" \
+
+# ------------------------------------------------
+#   THE DEFAULT TARGETS
+# ------------------------------------------------
+
+all: etc/expand slice slice.1 all-recursive
+	@:> .build-ok
+
+etc/expand: etc/expand.in
+	@$(_REPLACEVARS) etc/expand.in > $@
+	@chmod a+x $@
+
+# ------------------------------------------------
+#   THE PROGRAM
+# ------------------------------------------------
+
+slice: etc/expand slice_main.pl slice_term.pl slice_util.pl \
+   slice_setup.pl slice_pass1.pl slice_pass2.pl slice_pass3.pl
+	./etc/expand slice_main.pl | $(_REPLACEVARS) >slice
+	chmod a+x slice
+
+slice_term.pl: slice_term.y
+	pbyacc -l -P slice_term.y 2>/dev/null \
+     || pbyacc -l -P SliceTermParser slice_term.y && mv SliceTermParser.pm y.tab.pl
+	sed -e "s/'@'/'\\\@'/g" <y.tab.pl >slice_term.pl
+	rm y.tab.pl
+
+# ------------------------------------------------
+#   THE DOCUMENTATION
+# ------------------------------------------------
+
+slice.1: slice.pod
+	set -e; \
+	V=`$(VERSION_TOOL) -l perl -d long slice_vers.pl`; \
+	pod2man --section=1 \
+	        --center="Ralf S. Engelschall" \
+	        --release="EN Tools" slice.pod |\
+	sed -e "s|\@SLICE_VERSION\@|$$V|" >$@
+
+slice.1.txt: slice.1
+	groff -Tascii -man slice.1 >slice.1.txt
+
+slice.1.ps: slice.1
+	groff -Tps -man slice.1 >slice.1.ps
+
+# ------------------------------------------------
+#   TEST SUITE
+# ------------------------------------------------
+
+test:
+	@[ -f .build-ok ] || $(MAKE) all
+	@echo "==> t ($@)"; \
+	cd t && $(MAKE) $@; \
+	echo "<== t"
+
+# ------------------------------------------------
+#   INSTALLATION
+# ------------------------------------------------
+
+install:
+	@[ -f .build-ok ] || $(MAKE) all
+	$(MKDIR) $(bindir)
+	$(MKDIR) $(libdir)
+	$(MKDIR) $(mandir)/man1
+	$(INSTALL_SCRIPT) slice $(bindir)/slice
+	$(INSTALL_DATA) slice.1 $(mandir)/man1/slice.1
+	@$(MAKE) install-recursive prefix=$(prefix)
+
+# ------------------------------------------------
+#   CLEANUP
+# ------------------------------------------------
+
+clean: clean-recursive
+	-rm -f slice
+	-rm -f slice.1 
+	-rm -f etc/expand
+	-rm -f .build-ok
+
+distclean: clean distclean-recursive
+	-rm -f slice.1.ps
+	-rm -f slice.1.txt
+	-rm -f config.cache
+	-rm -f config.log
+	-rm -f config.status
+	-rm -f Makefile
+
+realclean: distclean
+	-rm -f slice_term.pl
+
+# ------------------------------------------------
+#   RECURSIVE CALLS
+# ------------------------------------------------
+
+all-recursive install-recursive:
+	@set -e; set dummy $(MAKEFLAGS); amf=$$2; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for dir in $(SUBDIRS); do \
+	    if [ -f $$dir/Makefile ]; then \
+	        echo "===> $$dir ($$target)"; \
+	        (cd $$dir && $(MAKE) $$target prefix=$(prefix)) \
+	        || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	        echo "<=== $$dir"; \
+	    else :; \
+	    fi; \
+	done && test -z "$$fail"
+
+clean-recursive distclean-recursive:
+	@target=`echo $@ | sed s/-recursive//`; \
+	for dir in $(SUBDIRS); do \
+	    if [ -f $$dir/Makefile ]; then \
+	        echo "===> $$dir ($$target)"; \
+	        (cd $$dir && $(MAKE) $$target); \
+	        echo "<=== $$dir"; \
+	    else :; \
+	    fi; \
+	done
+
+# ------------------------------------------------
+#   THE CONFIGURATION SUPPORT
+# ------------------------------------------------
+
+config: configure
+
+configure: configure.ac
+	rm -f $@
+	autoconf $? >$@
+	./etc/fixconfigure $@
+	chmod 770 $@
+
+etc/shtool:
+	shtoolize -o $@ install mkdir version echo fixperm
+
+# ------------------------------------------------
+#   THE RELEASE STUFF
+# ------------------------------------------------
+
+TAR    = tar       # where to find GNU Tar
+FIND   = find      # where to find a good Find tool
+TARDY  = tarcust   # where to find the Tarcust tool
+GZIP   = gzip      # where to find GNU Zip
+NAME   = barbier   # name of maintainer who rolls the tarball
+
+EXCLUDE_FILES = .cvsignore CVS slice-*.tar.gz
+
+NEWVERS = \
+    $(VERSION_TOOL) -l perl -n Slice -p slice_ $$OPT slice_vers.pl; \
+    V=`$(VERSION_TOOL) -l perl -d long slice_vers.pl`;\
+    sed -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README
+
+UPDATEVERS = \
+    V=`$(VERSION_TOOL) -l perl -d short slice_vers.pl`;\
+    $(VERSION_TOOL) -l perl -n Slice -p slice_ -s $$V slice_vers.pl; \
+    V=`$(VERSION_TOOL) -l perl -d long slice_vers.pl`;\
+    sed -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README
+
+_GETDISTINFO = \
+    _version=`$(VERSION_TOOL) -l perl -d short slice_vers.pl`; \
+    _date=`date '+%Y%m%d_%H%M'`;
+
+_BUILDDIST = \
+    _cwd=`pwd`; \
+    echo "Creating tarball..."; \
+    cd $(top_srcdir) && \
+    $(TAR) --no-recursion -cvf - `cat MANIFEST` |\
+    $(TARDY) --user_number=0  --user_name=$(NAME) \
+             --group_number=0 --group_name=slice \
+             --prefix=$${_distname} - |\
+    $(GZIP) --best - >$${_tarball}; \
+    echo "Done"; \
+    cd $$_cwd && ls -l $${_tarball}
+
+release: distclean manifest fixperm
+	@$(_GETDISTINFO) \
+    _distname="slice-$${_version}"; \
+    _tarball="$${_distname}.tar.gz"; \
+    echo "Release Distribution: SLICE Version $$_version"; \
+    $(_BUILDDIST)
+
+snap: distclean manifest fixperm
+	@$(_GETDISTINFO) \
+    _distname="slice-$${_version}-SNAP"; \
+    _tarball="$${_distname}.tar.gz"; \
+    echo "Snap of whole source tree: SLICE Version $$_version as of $$_date"; \
+    $(_BUILDDIST)
+
+new-version:
+	@V="$(VERSION)"; \
+	if [ ".$$V" != . ]; then \
+		OPT="-s$$V"; \
+	else \
+		OPT="-e"; \
+	fi; \
+	$(NEWVERS)
+
+update-version:
+	$(UPDATEVERS)
+
+fixperm:
+	$(FIXPERM) *
+
+manifest: distclean
+	x=`echo $(EXCLUDE_FILES) |\
+	   sed -e 's;/;\\\\/;g' -e 's#[         ]\{1,\}#/d -e /#g'`; \
+	$(FIND) * -type f -depth -print |\
+	sed -e /$$x/d | sort >MANIFEST
+
+##EOF##

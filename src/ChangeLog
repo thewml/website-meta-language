@@ -1,0 +1,3407 @@
+
+  C H A N G E L O G
+  =================
+
+  This file summarizes *all* types of changes to the WML sources,
+  i.e. changes between each patchlevel (1.x.y->1.x.(y+1) and
+  1.x.y->1.(x+1).0). Take this logfile for concrete and detailed
+  information about every single change.
+  ___________________________________________________________________________
+
+  Changes between 2.0.8 and 2.0.9:
+
+    *) Fix <directory-contents> (18-Oct-2002):
+       Remove trailing newline.
+       [Ralf Vissers <ravis@web.de>]
+
+    *) Fix memory error in <array-shift> (18-Oct-2002):
+       Some argument checks were missing in <array-shift> and could
+       cause memory fault.
+       [Jean-Michel Sauvage <jms.debian@club-internet.fr>]
+
+    *) Upgrade to mp4h 1.3.0 (18-Oct-2002):
+       [Denis Barbier]
+
+    *) Fix ePerl compilation (17-Oct-2002):
+       Perl 5.8.0 has now thread support by default, which caused trouble
+       when compiling ePerl.
+       [Denis Barbier]
+
+    *) Renamed 'aux' directory to 'data' (12-Oct-2002):
+       Allows WML to be compiled under Cygwin.
+       [Claus Faerber]
+
+    *) Use '.' instead of '::' for man pages on Windows (12-Oct-2002):
+       Allows WML to be compiled under Cygwin.
+       [Claus Faerber]
+
+    *) Use EXEEXT in configuration (12-Oct-2002):
+       Allows WML to be compiled under Cygwin.
+       [Claus Faerber <claus@faerber.muc.de>]
+
+    *) Fix compilation on MS Windows (22-Jun-2002):
+       [Darryl Smith <Darryl@radio-active.net.au>]
+
+    *) Fix wml::sup::path (16-Jun-2002):
+       canonpath('.///') did return '/' instead of './'
+       [Florian Hars]
+
+    *) Improve checks on file errors (20-Apr-2002):
+       In passes 1, 5, 6, 7, 8 and 9 (ie Perl passes), file operations are
+       checked and WML aborts if an error is detected.
+       [Denis Barbier]
+
+    *) Remove freetable comments in wml::fmt::xtable (10-Feb-2002):
+       The -w flag now prints comments before generated table, whereas
+       it used to omit it.  It is then omitted on freetable command line.
+       [Thomas R. Koll <tomk32@tomk32.de>]
+
+    *) Fix wml_p1_ipp (21-Dec-2001):
+       Text added to let pass 3 retrieve filename and line numbers are
+       protected against pass 2, because brackets could cause some trouble.
+       [Denis Barbier]
+
+    *) Fix wml::des::typography (21-Dec-2001):
+       The <spaced> tag could add ``&nbsp;'' within tags when interchar
+       attribute was used.
+       [Alvise Belotti]
+
+    *) Fix wml::sup::path (18-Dec-2001):
+       The canonpath function in wml::sup::path was buggy if path contains
+       dots in directory names.
+       [Tommi Vainikainen <thv@iki.fi>]
+
+    *) Suppress warning in wml::std::toc (07-Nov-2001):
+       A warning about wrong <preserve>/<restore> pairs could be raised
+       when redefining <toc_section>, this is a long-standing bug which
+       is revealed by an extra check added in recent mp4h.
+       [Werner Heuser]
+
+    *) Fix generic attributes in wml::des::navbar (05-Nov-2001):
+       They were not always taken into account.
+       [Clemens Oertel <oertel@uni-tuebingen.de>]
+
+  Changes between 2.0.7 and 2.0.8:
+
+    Note: since WML 2.0.5 there were two versions, stable and unstable.
+          The former was numbered 2.0.N whereas the latter was 2.1aN.
+          But I do not have time to manage those two separate trees,
+          and there was no real benefit, so I am leaving this scheme.
+
+    *) Fix locales in ePerl (28-Oct-2001):
+       Locales broke ePerl with Perl > 5.6, with an odd error message:
+       ``DynaLoader object version 1.04 does not match $DynaLoader::VERSION
+       1 at DynaLoader.pm ...''
+       [Martin Maechler <maechler@stat.math.ethz.ch>, Axel Beckert]
+
+    *) Upgrade to linklint 2.3.5 (28-Oct-2001):
+       [Denis Barbier]
+
+    *) Cleanup wml::des::navbar (26-Oct-2001):
+       The urlopts attribute in navbar:define was documented but not
+       implemented, it is replaced by generic attributes.
+       [Werner Heuser <wehe@snafu.de>]
+
+    *) Fix -W description in wmk usage summary (23-Oct-2001):
+       [Martin Quinson <Martin.Quinson@ens-lyon.fr>]
+
+    *) Upgrade to mp4h 1.2.2 (18-Oct-2001):
+       Among other new features, the most significant for WML users
+       may be the ability to define entities (in the SGML or XML sense)
+       which could be seen as empty tags without attributes, and an
+       experimental support of utf8,
+       Note also that a leading space has been added to expansion of
+       <attributes-quote> to ease writing HTML tags.
+       [Denis Barbier]
+
+    *) Fix detection of Perl modules (02-Oct-2001):
+       Previous detection did use the Exporter::require_version method,
+       which cause problem when modules are not setup with Exporter.
+       New scheme only rely on normal `use MODULE VERSION' Perl function.
+       [Blair Zajac <blair@orcaware.com>]
+
+    *) Undefine variables on command-line (29-Sep-2001):
+       Special construct -Dfoo=UNDEF undefine foo, if it was previously
+       set by other command line options.  This is especially useful
+       in .wmlrc files
+       [Jan Holler]
+
+    *) Upgrade wml_contrib/wml.vim (29-Sep-2001):
+       [Denis Barbier]
+
+    *) Improve wml_p5_divert (09-Sep-2001):
+       This pass could be very slow with large files.
+       [Jean-Michel Sauvage]
+
+    *) Fix documentation (26-Aug-2001):
+       There was a documentation bug with example defining the <mail2>
+       tag.
+       [Rajendra Gokhale <rvg@creato.org>]
+
+    *) Fixed various typos in manual pages (26-Aug-2001):
+       Fixed various typos in manual pages wml_faq, wml::std::page
+       and wml::std::info.
+       [Thomas Lotterer <thomas.lotterer@cw.com>]
+
+    *) Fix <protect> (17-Jul-2001):
+       The pass= attribute is now case-insensitive.
+       [Axel Beckert]
+
+  Changes between 2.0.6 and 2.0.7:
+
+    Note: timestamps have a single value because this 2.0.x branch did
+          not receive support for a long time, so it has been decided
+          to copy WML 2.1a2 into 2.0.7.
+
+    *) Change <tli> in wml::des::typography (20-Jun-2001):
+       It becomes a complex tag, as stated in documentation.
+       [Craig Small]
+
+    *) Fix compilation of Bit::Vector with perl < 5.005 (20-Jun-2001):
+       Apply the 2001-08-29 patch by Max H. Duenki.
+       [Denis Barbier]
+
+    *) Fix nested ePerl tags implementation (19-Jun-2001):
+       When <perl:assign> surrounds <perl:print>, output was not
+       diverted to variables.  Quoting has also been fixed.
+       [Petr Andreyev]
+
+    *) Upgraded to Image::Size 2.93 (19-Jun-2001):
+       Upgraded from 2.903 to 2.93
+       [Denis Barbier]
+
+    *) Fix wml_p7_htmlfix (19-Jun-2001):
+       When replacing <center> tags, it did not work if this tag has
+       attributes.
+       [Andreas Hoffmann]
+
+    *) Fix wml::fmt::verbatim (19-Jun-2001):
+       The <verbatim> tag could not be used in conjunction with
+       wml::std::case,
+       [Nobuyuki Tsuchimura]
+
+    *) Fix diversion (19-Jun-2001):
+       Parent dirs `..' could cause problems.
+       [Nobuyuki Tsuchimura]
+
+    *) Upgraded to Bit::Vector 6.0 (19-Jun-2001):
+       [Denis Barbier]
+
+    *) Fix protection (19-Jun-2001):
+       When both stdout and file names are specified by -o flags,
+       unprotection was not performed on standard output.
+       [Aymeric Poulain-Maubant <Aymeric.PoulainMaubant@jipo.com>]
+
+    *) Update wml_contrib/wml.spec.in (19-Jun-2001):
+       File wml_contrib/wml.spec was always outdated, so this new spec
+       file allows automatic update, just run `make wml_contrib/wml.spec'.
+       [Christian W. Zuckschwerdt]
+
+    *) Fixed wml::std::href (19-Jun-2001):
+       Removed extra newline after </a>.
+       [Jean-Michel Sauvage]
+
+    *) Fixed wml::std::page (19-Jun-2001):
+       Multiple pages capabilities was broken.
+       [Jean-Michel Sauvage <jean-michel.sauvage@club-internet.fr>]
+
+    *) Fixed wml::des::preload (19-Jun-2001):
+       Javascript code was broken.
+       [Andreas Hoffmann <hoffmana@mathematik.tu-muenchen.de>]
+
+    *) Remove special characters in debugging output (19-Jun-2001):
+       [Axel Beckert <rse-wml@deuxchevaux.org>]
+
+    *) New <disjoin> tag (19-Jun-2001):
+       This tag does the opposite job of <group>, it explodes its
+       attribute into several pieces.
+       [Denis Barbier]
+
+    *) Fix bug with body tag surrounded by quotes (19-Jun-2001):
+       When a body function was surrounded within double quotes (without
+       any whitespace around), it was simply discarded.
+       [Petr Andreyev]
+
+    *) New logos (19-Jun-2001):
+       These new logos are about NetBSD, OpenBSD, PHP and XEmacs.
+       [Wolfgang Dautermann]
+
+    *) Upgraded to txt2html 1.28 (19-Jun-2001):
+       The bug described just below has been fixed in txt2html 1.28, so
+       changes in wml::fmt::text have been discarded.
+       [Denis Barbier]
+
+    *) Fix wml::fmt::text (19-Jun-2001):
+       Some characters are missing when text is not finished by a
+       newline.  There are indeed some bugs in wml_aux_txt2html, so
+       a workaround is to ensure there is always a newline in
+       wml::fmt::text.
+       [Frediano Ziglio <freddy77@angelfire.com>]
+
+    *) Change transparency in wml::des::imgdot (19-Jun-2001):
+       By default, transparency color was set to black.  Unfortunately,
+       some browsers do not render transparent PNG images, and black
+       backgrounds are not so frequent anymore. Default is now set to
+       white, and may be changed by prepending an hyphen to the color
+       attribute.
+       [Craig Small <csmall@eye-net.com.au>]
+
+    *) Improve wml_p5_divert (19-Jun-2001):
+       Make a distinction betwwen URLs like `../foo' and diversion like
+       ..NAME>> to improve speed.
+       [Denis Barbier]
+
+    *) Improve wml::des::navbar (19-Jun-2001):
+       Any attributes can be added to <a> and <img> tags generated by
+       <navbar::render>.  For instance it allows insertion of CSS
+       attributes without having to modify wml::des::navbar.
+       [Denis Barbier]
+
+    *) Improve wml_p7_htmlfix (19-Jun-2001):
+       Trailing spaces in tags are fixed, i.e. all spaces before a
+       right-angle bracket are removed (this have no influence on
+       known server-side scripts) and a space is always inserted before
+       ``/>'' to help rendering of XHTML documents by old browsers.
+       [Denis Barbier]
+
+    *) Fix bugs with conditionals (19-Jun-2001):
+       The <if>, <ifeq> and <ifneq> conditionals do not behave properly.
+       Under rare circumstances, both THEN and ELSE clauses may be run.
+       [Martin Schulze <joey@infodrom.north.de>]
+
+    *) Fix nested ePerl tags implementation (19-Jun-2001):
+       When <perl> tags are nested and are not enclosed within space
+       characters, some output disappear.
+       [Petr Andreyev <petr@xanadu.ru>]
+
+    *) Fix wml::des::navbar (19-Jun-2001):
+       When rendering tables, <navbar:jsfuncs/> is called even if navbar
+       is not graphical, to make sure JavaScript functions used for
+       rollover effect are always defined.
+       [Denis Barbier]
+
+    *) Upgrade ePerl to current CVS version (19-Jun-2001):
+       [Ralf S. Engelschall, Denis Barbier]
+
+    *) New `all except' operator in slice terms (29-Oct-2000):
+       The wildcard sign accepts a new syntax.  When followed by braces,
+       it replaces ``all strings but the one enclosed within braces''.
+       This construct could not be emulated with previous operators with
+       nested slices.
+       This feature was introduced in Slice 1.3.7 on August 2000, but
+       required few fixes to work with WML.
+       [Denis Barbier]
+
+  Changes between 2.0.5 and 2.0.6:
+
+    *) Fix WMk (25-Oct-2000):
+       This version of WMk is broken and cannot compile multilingual
+       documents.
+       [Max H. Duenki]
+
+  Changes between 2.0.4 and 2.0.5:
+
+    *) Improve wml::std::page (23-Oct-2000):
+       Add an attribute ``color=none'' to remove color attributes in
+       the <body> tag.
+       [Wayne Schlitt <wayne@midwestcs.com>]
+
+    *) Improve WMd customization (13-Oct-2000):
+       The 02-May-2000 patch is improved, mapping is now done via an
+       external file, so that wmd script needs no more being updated.
+       [Denis Barbier]
+
+    *) Add wml_contrib/wml1to2 (02-Oct-2000):
+       This script helps upgrading to WML 2.x by performing some
+       changes in input files.
+       [Denis Barbier]
+
+    *) Fix wml::des::navbar (02-Oct-2000):
+       The $menumode Perl variable was not initialized.
+       [Anthony Fok]
+
+    *) Improve flags handling (02-Oct-2000):
+       Some flags require an argument, which is now quoted in case this
+       argument contains spaces or shell metacharacters.
+       [Albert Reiner <areiner@tph.tuwien.ac.at>]
+
+    *) Fix infinite loop in wml_p8_htmlstrip (28-Sep-2000):
+       WML hangs up when large text blocks are surrounded by
+       <pre>...</pre> or similar tags.
+       [Joey Hess <joeyh@debian.org>]
+
+    *) Fix wml_p8_htmlstrip (27-Sep-2000):
+       The <pre> and <xmp> tags were always converted to lowercase
+       letters.
+       [Nobuyuki Tsuchimura]
+
+    *) Fix compilation on AIX 4.3 (27-Sep-2000):
+       The GD library did not compile because two unused routines depend
+       upon undefined ones.  These useless routines are now removed.
+       [Norbert Gruener <nog@mpa-garching.mpg.de>]
+
+    *) Fix bug with conditionals in wml_p2_mp4h (27-Sep-2000):
+       The <if> and <while> tags have strange results when first
+       argument has a trailing slash, which is surely not so frequent.
+       [Sebastian Wilhelmi <wilhelmi@ira.uka.de>]
+
+  Changes between 2.0.3 and 2.0.4:
+
+    *) Fix wml::mod::MakeMaker (19-Sep-2000):
+       The `extradistfiles' attribute did not work.
+       [Denis Barbier]
+
+    *) Fix problems with synclines and protection (19-Sep-2000):
+       The `synclines' feature was not documented in WML 2.0.3.
+       It helps debugging by putting some special commands after
+       pass 1 to keep track of input line numbers.
+       Unfortunately, these extra commands will remain on output when
+       included file is inside a protected area.
+       This problem is now documented, and 2 solutions exist: either
+       compile with `-W1,-N', or append the `IPP_NOSYNCLINES' special
+       keyword to the #include line.
+       [Many Debian people]
+
+    *) Improve wml::des::navbar (16-Sep-2000):
+       By default (called `inner' mode), epilog is put after sub-menu
+       buttons, i.e. navbars are nested.  When <navbar:render> is called
+       with attribute `menumode=outer', then sub-menus are inserted after
+       epilog.
+       [Tobias Oetiker]
+
+    *) Make wml_p7_htmlfix customizable (16-Sep-2000):
+       Two new options let the user decide which fixups are performed
+       or skipped.
+       [Denis Barbier]
+
+    *) Fix wml_p7_htmlfix (13-Sep-2000):
+       The version shipped with WML 2.0.3 is broken, there are problems
+       with unquoted attributes containing a slash sign.
+       [Roland Rosenfeld]
+
+    *) Support w3m in addition to lynx in wmd (13-Sep-2000):
+       The wmd command now searches through $PATH for w3m and lynx (and
+       prefers w3m over lynx) instead of insisting on the existence of lynx.
+       [Ralf S. Engelschall]
+
+    *) Upgraded to LinkLint 2.2 (10-Sep-2000):
+       Upgraded from LinkLint version 1.35 to version 2.2 after LinkLint
+       changed from a (for WML not acceptable) shareware license to GPL.
+       [Ralf S. Engelschall, James B. Bowlin <bowlin@sirius.com>]
+
+  Changes between 2.0.2 and 2.0.3:
+
+    *) Fix compilation of ePerl with threaded Perl 5.6.0 (03-Sep-2000):
+       Providing portable code amongst several versions of Perl is a
+       nightmare, functions prototypes and macros definitions have
+       changed again.
+       [Denis Barbier]
+
+    *) Fix wml_intro.pod (03-Sep-2000):
+       It contains an erroneous reference to </define-container>
+       [Benoit des Ligneris <benoit.des.ligneris@physique.usherb.ca>]
+
+    *) Upgrade to mp4h 1.1.1 (31-Aug-2000):
+       This release fixes many bugs added in mp4h 1.1.0 about non-ASCII
+       letters.
+       [Denis Barbier]
+
+    *) Fix problems with @-sign in some module files (29-Aug-2000):
+       The <perl:assign> tag is replaced by <perl:assign:sq> to prevent
+       a problem with @-sign in input text.
+       [Stephane Bortzmeyer]
+
+    *) Upgrade to Slice 1.3.7 (29-Aug-2000):
+       Fix a bug with Slice 1.3.6, which hangs up with some input files.
+       [Denis Barbier]
+
+    *) Fix compilation of Bit::Vector with perl < 5.005 (29-Aug-2000):
+       [Max H. Duenki]
+
+    *) Upgraded to GNU shtool 1.5.1 (08-Aug-2000):
+       Upgraded to GNU shtool 1.5.1. This especially fixed problems 
+       with "shtool version" under Solaris.
+       [Ralf S. Engelschall]
+
+    *) Upgrade of tidy (06-Aug-2000):
+       Upgraded tidy from version 8jul00 to 04aug00.
+       [Denis Barbier]
+
+    *) Fix wml_p1_ipp (05-Aug-2000):
+       Pass 1 hangs when a dollar sign appears in variable substitution.
+       [Joey Smith <joey@joeysmith.com>]
+
+    *) New variables WML_SRC_TIME and WML_GEN_TIME (04-Aug-2000):
+       These variables ease customizing date formats.
+       [Fritz Zaucker]
+
+    *) Add alternative for mouse events (03-Aug-2000):
+       The onmouseover and onmouseout event handlers are seconded
+       by onfocus and onblur, to allow rendering with any device.
+       [Denis Barbier]
+
+    *) Add `summary' attribute in tables (03-Aug-2000):
+       This tag is automatically added by wml_p7_htmlfix, because
+       it helps rendering by non-graphical browser, exactly like
+       ALT attribute for <img>.
+       [Stephan Petersen]
+
+    *) Fix protection in wml (01-Aug-2000):
+       Output files are generated by wml_p9_slice.  This program has
+       a useful feature, output file names may be specified in
+       pseudo shebang lines.  But these lines may occur anywhere in
+       input file, not only on its beginning.
+       As wml has to know which files are generated to unprotect them
+       after pass 9, input file must be parsed before wml_p9_slice is
+       called to determine output files.
+       [Denis Barbier]
+
+    *) Allow nestable <protect> tags (31-Jul-2000):
+       This tag is now much more user-friendly, it may be nested, and
+       its syntax is similar to the -p flag, i.e. it accepts also a comma
+       separated list of individual passes.
+       [Denis Barbier]
+
+    *) Improve processing speed on large files (30-Jul-2000):
+       On large files, most of processing time is spent in
+       passes 7, 8 and 9.  This performance problem is induced by
+       Perl, which does not seem to work efficiently with regular
+       expressions on huge datas.  The provided solution is to split
+       input into smaller chunks.
+       This procedure is quite conservative, i.e. it is not fully
+       optimized to ensure that output is never altered by this
+       operation.
+       A speedup factor of 10 is obtained on those 3 passes with
+       files larger than 200KB (which may be caused by a huge input
+       file splitted into many HTML output files).
+       [Denis Barbier]
+
+    *) Upgrade of Bit::Vector (24-Jul-2000):
+       Upgraded Bit::Vector from version 5.7 to 5.8.
+       [Ralf S. Engelschall]
+
+    *) Update all WML module files for XHTML 1.0 (21-Jul-2000):
+       In WML module files, all simple tags have now a trailing
+       backslash to allow both HTML and XHTML input and output.
+       It is important to notice that this does not break compatibility,
+       output is exactly the same by default.  But now users can decide
+       which syntax to adopt via the -X flag of wml_p2_mp4h.
+       [Denis Barbier]
+
+    *) Add support for modifiers in regexps in wml_p2_mp4h (21-Jul-2000):
+       Only i, m, s and x modifiers have been added, U and X are
+       specific to PCRE and have not been implemented.
+       The `singleline' attribute has been changed.  It now accepts
+       two values, `true' (like the s modifier) and `false' (like the
+       m modifier).  Until now, `m' was the default, and singleline=true
+       switches to `s'.
+       [Denis Barbier]
+
+    *) Finish import of PCRE in wml_p2_mp4h (21-Jul-2000):
+       Native API is now used, and support for locales is back.
+       [Denis Barbier]
+
+    *) Many fixes for multilingual navbars (21-Jul-2000):
+       Some bugs were introduced by recent changes in wml::std::tags
+       and wml::des::navbar.
+       [Stephan Petersen]
+
+    *) Improve wml::std::lang (20-Jul-2000):
+       Thanks to PCRE, <lang:area> has been rewritten entirely with
+       mp4h commands, so now all lang tags can be nested.
+       [Denis Barbier]
+
+    *) Use Perl regular expressions in wml_p2_mp4h (20-Jul-2000):
+       The PCRE library is copyrighted by University of Cambridge.
+       With this library, Perl regular expressions may now be
+       used instead of POSIX regular expressions.
+       Current implementation in mp4h is quite weak, because we use
+       the POSIX compatibility mode instead of native API.
+       [Denis Barbier]
+
+    *) Improve <javascript> tag in wml::std::tags (19-Jul-2000):
+       When a complex <head> tag is defined, like in wml::std::page,
+       all JavaScript material is passed to this command in order to
+       be put inside the HEAD section.
+       This behaviour is disabled with the `nohead' attribute or by
+       defining <javascript:nohead> with a non-empty value.
+       [Denis Barbier]
+
+    *) Fix wml_p1_ipp (19-Jul-2000):
+       Previous changes broke `make test'.
+       [Stephan Petersen]
+
+    *) Improve wml::std::lang (19-Jul-2000):
+       Language slices can now be nested, the reason is to allow
+       constructs like ``<en><lang:star:href: index.*.html></en>''.
+       This can not be easily handled by wml_p9_slice (any suggestions
+       to do so are welcome), and so wml::std::lang has been patched
+       to forbid nesting of different languages by redefining <en>,
+       <lang:en> tags (and of course all other defined languages) and
+       all <lang:star...> tags.
+       Unfortunately multi-lingual zones enclosed between <lang:area>
+       and </lang:area> do not yet allow this nesting.
+       Two new tags are introduced, <lang:current> always returns
+       the language being currently processed, and <lang:list> returns
+       the newline separated list of defined languages.
+       [Stefan `Sec` Zehl]
+
+    *) Fix file name and line numbers on warnings (18-Jul-2000):
+       Pass 1 now prints some control sequences to let pass 2 and 3
+       know about original filename and line number instead of
+       locations in temporary files.  This is very useful for debugging.
+       It can be turned out with -W1,-N flag.
+       [Denis Barbier]
+
+    *) Fix a bug when using both -M and -W1 flags (16-Jul-2000):
+       Options set with -W1,... were not passed to wml_p1_ipp.
+       [Ilya Martynov <m_ilya@agava.com>]
+
+    *) Upgrade of the Bare Bones Guide to HTML (13-Jul-2000):
+       Upgraded from version 3.0 to 4.0.
+       [Denis Barbier]
+
+    *) Upgrade of tidy (13-Jul-2000):
+       Upgraded tidy from version 30nov99 to 8jul00.
+       Dave Raggett included submitted patches to make gcc quiet,
+       so only few changes have been made in upstream sources.
+       [Denis Barbier]
+
+    *) Internal changes in mp4h about regular expressions (06-Jul-2000):
+       Mp4h now uses the POSIX functions of the GNU libc regex.c instead
+       of old GNU functions.  The most important reason for this change
+       is that previous functions are not documented, and so hard to
+       maintain.
+       Moreover i had to patch the regex functions to allow the
+       ``singleline=true'' attribute.
+       With this new version it works out of the box, and many memory
+       leaks are also fixed.
+       [Denis Barbier]
+
+    *) Fix boolean operators (05-Jul-2000):
+       The <and> tag was broken, and <or> has been cleaned up.
+       [Denis Barbier]
+
+    *) Improve <preserve>/<restore> stuff (05-Jul-2000):
+       These tags accept now any number of arguments, so it is possible
+       to write
+           <define-tag foo>
+           <preserve name src text>
+           <set-var %attributes>
+           ... code using `name', `src' and `text' variables.
+           <restore  name src text>
+           </define-tag>
+       All module files have been updated in consequence.
+       [Denis Barbier]
+
+    *) Fix whitespace in wml::des::preload (03-Jul-2000):
+       The javascript code was not protected against newlines removal,
+       and resulting code is ugly.
+       [Denis Barbier]
+
+    *) Rewrite wml::*::all files (03-Jul-2000):
+       These modules include all files from a specific category.
+       When inclusion is made with wildcards, some files which have been
+       removed from WML distribution, but were not deleted by user when
+       upgrading, may be called accidentally.  So they now explicitly 
+       invoke the desired files.
+       [Ralf S. Engelschall]
+
+    *) Upgraded to GNU shtool 1.5.0 (01-Jul-2000):
+       Upgraded to GNU shtool 1.5.0. This involved especially a major
+       adjustment because of the rewritten "shtool version" command.
+       [Ralf S. Engelschall]
+
+    *) Enhanced wml::std::tags' <javascript> tag (27-Jun-2000):
+       Added four additional attributes to the <javascript> container
+       tag of wml::std::tags: "src", "language" and "type" to directly
+       specify the corresponding attributes for the underlaying <script>
+       tag, and "version" which is a convinient attribute to specify the
+       JavaScript version as used in the default "language" attribute.
+       Example: ``<javascript version=1.2 src=foo.js>'' now expands
+       into ``<script type="text/javascript" language="JavaScript1.2"
+       src="foo.js">...</script>''
+       [Ralf S. Engelschall]
+
+    *) Fix wml::sys::all manpage (27-Jun-2000):
+       The wml::sys::all manpage talked about no longer existing 
+       wml::sys::xxx includes.
+       [Ralf S. Engelschall]
+
+    *) Fix escaped quotes in wml::std::href (24-Jun-2000):
+       [Denis Barbier]
+
+    *) Fix <divert> in wml::std::tags (24-Jun-2000):
+       It was impossible to use exclamation marks with this tag
+       as described in wml_p5_divert.
+       [Fritz Zaucker]
+
+  Changes between 2.0.1 and 2.0.2:
+
+    *) Update mp4h (22-Jun-2000):
+       New version is mp4h 1.0.2, with many enhancements since pre-1.0
+       releases.  The most important one is that `grammar' has been
+       entirely rethought.  After discussions on the WML mailing-list
+       it is clear that users want tag expansion mechanism to be simple.
+       Unfortunately, because WML runs many independant passes, each
+       one with its own syntax, i could not provide a simple mechanism.
+       But i try to keep it as simple as possible.
+       Last but not least, this new version makes WML 2.0.2 much more
+       compatible with WML 1.x than previous WML 2.x releases, and
+       optional features allow experienced users to deal with either
+       HTML or XHTML files.
+       [Denis Barbier]
+
+    *) Remove stars in tag names (15-Jun-2000):
+       The wml script now removes stars after and before tag names.
+       Read mp4h documentation to learn why this is needed.
+       [Denis Barbier]
+
+    *) Fix wml::std::grid (15-Jun-2000):
+       An error was raised with arrobas sign in cells.
+       [<middelink@polyware.nl>]
+
+    *) Fix wml_p8_htmlstrip (15-Jun-2000):
+       The <suck> tag may now be written <suck/> or <suck /> to conform
+       to new standards.
+       [Denis Barbier]
+
+    *) Fix wml::fmt::verbatim (08-Jun-2000):
+       This module was compromised because of nested protection tags,
+       which are not valid yet.
+       [Howard Alexander LaHurreau <alexdw@locl.net>]
+
+    *) Fix wml::des::typography (07-Jun-2000):
+       The <spaced> tag was broken.
+       [Denis Barbier]
+
+    *) Fix documentation of wml::std::page (02-Jun-2000):
+       The WML_PAGE_* slices are actually WML_STDPAGE_* and
+       are only available if the "slices" attribute is used.
+       [Ralf S. Engelschall]
+
+    *) Fix wml::std::lang (01-Jun-2000):
+       It was broken with default wildcard.
+       [Corsin Decurtins <corsin@student.ethz.ch>]
+
+    *) Fix compilation bug in wml_p2_mp4h (01-Jun-2000):
+       [<gaa@ulticom.com>]
+
+    *) Provide a way to read tokens without parsing (01-Jun-2000):
+       All characters between <@[ and ]@> are read without parsing,
+       this is very useful to read malformed mp4h tags.  These
+       delimiters may be changed with the <set-quotes> tag.
+       [Tobias Oetiker <oetiker@ee.ethz.ch>]
+
+    *) Fix wml_p8_htmlstrip (31-May-2000):
+       Pass 8 preserves whitespace inside <pre>, <xmp> or <nostrip>
+       complex tags.  When these tags have attributes, whitespaces were
+       removed.
+       [Tom Gilbert <gilbertt@linuxbrit.co.uk>]
+
+  Changes between 2.0.0 and 2.0.1:
+
+    *) Add missing documentation in wml::des::typography (23-May-2000):
+       The <tul> and <tli> macros were not documented.
+       [Franz Knipp, Alvise Belotti]
+
+    *) Fix WMd (23-May-2000):
+       Installation path of WML manpages is searched before $MANPATH,
+       and not after.
+       [Denis Barbier]
+
+    *) Numerous bugfixes and clean-ups in include files (23-May-2000):
+       Perl code in include files must be protected against expansion
+       during pass 2 because some constructs are now parsed (take great
+       care of left-angle brackets).
+       [Denis Barbier]
+
+    *) Change evaluation of unknown tags (22-May-2000):
+       Until WML 2.0.0, unknown tags are treated like normal text,
+       i.e. left angle bracket lose their special meaning.  This has
+       very strange side effects when such tags appear in attributes.
+       This feature has been discarded so that old pages still compile.
+       [many people]
+
+    *) Fix installation of preformatted manpages (22-May-2000):
+       An undocumented change in Makefiles installed preformatted
+       manpages under $(mandir)/manX instead of $(mandir)/catX. By
+       default the subdirectory name is now again `cat', but can
+       overridden via the new --with-catdir configure option
+       (usually one would use --with-catdir=man).
+       [Ralf S. Engelschall]
+
+    *) Fix wml_p2_mp4h documentation (16-May-2000):
+       Some French words were present in English version.
+       [Franz Knipp]
+
+    *) Fix wml::std::tags to remove extra newlines (16-May-2000):
+       Because of the definition of <perl:print>, some extra newlines
+       was added.
+       [Franz Knipp]
+
+  Changes between 1.99.9 and 2.0.0:
+
+    *) Add documentation: wml_macros (08-May-2000):
+       This document explains how to write macros with mp4h allowing
+       nestable ePerl commands.
+       [Denis Barbier]
+
+    *) Fix trailing slash inside empty elements (06-May-2000):
+       When there was no attribute and no space before the slash sign,
+       as in <br/>, this tag was not expanded.
+       [Denis Barbier]
+
+    *) Cosmetics for Autoconf procedure (04-May-2000):
+       A few cosmetical cleanups to let the WML auto-configuration
+       procedure look more homogenous, although it still is a
+       combination of Autoconf scripts from various separate packages.
+       [Ralf S. Engelschall]
+
+    *) Upgrade of Image::Size (04-May-2000):
+       Upgraded Image::Size module from versiom 2.901 to latest 2.903.
+       [Ralf S. Engelschall]
+
+    *) Improve WMk (04-May-2000):
+       The file $HOME/.wmkrc is parsed when found.
+       It is now possible to tell wmk to skip some directories containing
+       no input files.
+       [Denis Barbier]
+
+  Changes between 1.99.8 and 1.99.9:
+
+    *) L10n changes in mp4h (03-May-2000):
+       I do not know how to deal with locales in a portable way, so
+       examples are removed from documentation.  Only English
+       documentation is build, but you may continue to compile the
+       French one if your environment variables are rightly set.
+       This point is important: previously locales was set to C and
+       changed by <mp4h-l10n>.  Now locales are initialized to those
+       defined by user environment.
+       [Denis Barbier]
+
+    *) Syntax change in the <let> tag (03-May-2000):
+       New syntax is <let cmd1=cmd2>, similar to TeX and more
+       user friendly.
+       [Denis Barbier]
+
+    *) Upgrade of iselect (02-May-2000):
+       Upgraded to iselect 1.2.0, with some clean ups.
+       [Denis Barbier]
+
+    *) Upgrade of tidy (02-May-2000):
+       Upgraded to tidy 30apr00
+       [Denis Barbier]
+
+    *) Improve wmd (02-May-2000):
+       Some vendors do not include third-party programs in WML,
+       because these programs are still part of the system.  This
+       confuses wmd, because program names do not match, and some
+       manpages may be missing.
+       A mapping between names is implemented to help solve these
+       problems, and a `WML missing document' manpage is provided too.
+       [Denis Barbier]
+
+    *) Fix wml_aux_freetable (01-May-2000):
+       Freetable removes linebreaks in cells, which is confusing if
+       javascript comments are used.
+       [Timo Neumann <james@userland.de>]
+
+    *) Fix wml_p7_htmlfix (27-Apr-2000):
+       Wml_p7_htmlfix was confused when attribute values contain
+       some Server Side scripting,
+       [Laurent Riesterer <riesterer@celar.fr>]
+
+    *) Run compiled tidy on HTML documentation in Pass 2 (20-Apr-2000):
+       HTML documentation of p2_mp4h is post-processed by tidy.  We
+       must use the version shipped within WML since older may break
+       compilation.
+       [Ralf S. Engelschall]
+
+    *) Fix compilation on some platforms (20-Apr-2000):
+       [Stephane Bortzmeyer]
+
+    *) Fixed various build warnings (19-Apr-2000):
+       [Ralf S. Engelschall]
+
+    *) Fix compilation of Term::Readkey (18-Apr-2000):
+       [Joerg Plate]
+
+    *) Better handling of trailing slashes (18-Apr-2000):
+       It was very difficult to prevent suppression of trailing slash
+       in attributes.  Now it can be done by putting spaces between this
+       slash and the closing bracket.
+       [Nobuyuki Tsuchimura]
+
+  Changes between 1.99.7 and 1.99.8:
+
+    *) Fix compilation on FreeBSD (17-Apr-2000):
+       Perl modules did not install properly under FreeBSD.
+       [Ralf S. Engelschall]
+
+    *) Minimize `gfont' calls in wml::des::gfont (13-Apr-2000):
+       When an image is generated, gfont command line is put into a
+       text file.  On next run, this file is read and gfont will not be
+       re-run if command lines are identical.
+       [Denis Barbier]
+
+    *) Fix bug in wml_p1_ipp with include files (13-Apr-2000):
+       This bug allowed an include file to be inserted more than once
+       with only one invocation, if it was found under distinct
+       directories.
+       [Denis Barbier]
+
+  Changes between 1.99.6 and 1.99.7:
+
+    *) Upgraded to GetOptLong 2.23 (08-Apr-2000):
+       Upgraded from GetOptLong version 2.20 to version 2.23.
+       [Ralf S. Engelschall]
+
+    *) Fix bugs with extra quotes in attributes (Pass 2) (04-Apr-2000):
+       [Denis Barbier]
+
+  Changes between 1.99.5 and 1.99.6:
+
+    *) Fix bug in grouping (Pass 2) (02-Apr-2000):
+       [Denis Barbier]
+
+    *) Remove a trailing slash in attributes (02-Apr-2000):
+       When reading attributes of single tags, a trailing slash is
+       ignored.
+       [Denis Barbier]
+
+  Changes between 1.99.4 and 1.99.5:
+
+    *) Fix compilation with perl 5.6.0 (01-Apr-2000):
+       [jack@needle.mudshark.org]
+
+    *) Upgrade mp4h (01-Apr-2000):
+       Upgrade from 0.8.5 to 0.9.0.
+       Add support for localization.
+       Customization of number output format.
+       Important changes in array functions: <array-append> is
+       renamed into <array-push>, its counterpart <array-pop> is defined
+       and first argument of array-related functions is now variable name.
+       [Denis Barbier]
+
+    *) Implicit array indexes in wml_p2_mp4h (29-Mar-2000):
+       The expression <get-var foo[i]> is a shorthand for
+       <get-var foo[<get-var i>]>.
+       [Jan Holler <jh@inetcom.ch>]
+
+    *) Fix wml::std::tags (29-Mar-2000):
+       Because of new stuff introduced into wml::std::tags to allow
+       ePerl nested commands, some extra linefeeds were present in
+       output file.
+       [Roland Rosenfeld]
+
+    *) Fix checking of exit status of wml_aux_tidy (29-Mar-2000):
+       [Roland Rosenfeld]
+
+    *) Remove garbage introduced by WML shebang lines (29-Mar-2000):
+       WML shebang line with trailing backslash leaves some garbage in
+       output file.
+       [Roland Rosenfeld]
+
+  Changes between 1.99.3 and 1.99.4:
+
+    *) Renamed wml::sys::bootp2 into wml::sys::compat1 (27-Mar-2000):
+       This module provides backward compatibility with WML 1.x and
+       is no more included by default.
+       [Denis Barbier]
+
+    *) Upgrade mp4h (26-Mar-2000):
+       Upgrade from 0.8.3 to 0.8.5.
+       The quoted=true attribute of the <group> tag is removed and this
+       feature is now provided by the <noexpand> tag. Its counterpart is
+       <expand>.
+       New attribute of <group> : ``separator=string''
+       Fix some memory leaks.
+       Fix bug with some nested expressions.
+       [Denis Barbier, Nobuyuki Tsuchimura]
+
+    *) Add <return> tag (20-Mar-2000):
+       This tag exits from inner macro.
+       [Uwe Mindrup]
+
+    *) Add %name in replacement text (20-Mar-2000):
+       This special string expands to the macro name when found in
+       replacement text.
+       [Denis Barbier]
+
+    *) Fix a bug in wml_p2_mp4h (18-Mar-2000):
+       Letters `A' and `U' after a percent sign were gobbled by mp4h
+       in macro replacement text.
+       [Joerg Plate <Joerg@Plate.cx>]
+
+  Changes between 1.99.2 and 1.99.3:
+
+    *) Upgrade freetable (19-Mar-2000):
+       Upgrade from 0.6 to 0.11
+       [Denis Barbier]
+
+    *) Fixed some include files (19-Mar-2000):
+       Minor fixes, documentation update.
+       [Denis Barbier]
+
+    *) Improved wml::std::grid (19-Mar-2000):
+       A summary attribute is added.
+       [Joerg Plate]
+
+    *) Fixed wml_p1_ipp (19-Mar-2000):
+       IPP failed with expressions like ?$(foo). It is fixed and
+       features introduced in wml-1.99.0 are rewritten.
+       [Anthony Fok, Franz Knipp]
+
+  Changes between 1.99.1 and 1.99.2:
+
+    *) Fix wml::std::lang (18-Mar-2000):
+       The <lang:star:> tag was broken since wml-1.99.0
+       [Max H. Duenki <duenki@isi.ee.ethz.ch>]
+
+    *) Fix a bug in wml_p2_mp4h (18-Mar-2000):
+       Letters `A' and `U' after a percent sign were gobbled by mp4h
+       in macro replacement text.
+       [Joerg Plate <Joerg@Plate.cx>]
+
+    *) Upgrade GNU shtool (18-Mar-2000):
+       Upgraded to GNU shtool version 1.4.8. This especially
+       speeds up the "make install" step (now 30s instead of 44s ;)
+       [Ralf S. Engelschall]
+
+    *) Various Cleanups (18-Mar-2000):
+       Added Sub Directory Prefix (SDP) to Makefiles for p2_mp4h and
+       fixed various warnings which occured under gcc (2.95.2) and -Wall
+       [Ralf S. Engelschall]
+
+  Changes between 1.99.0 and 1.99.1:
+
+    *) Warning printed when an obsolete pass 2 macro is called (16-Mar-2000):
+       [Denis Barbier]
+
+    *) Fix a bug with empty output file (16-Mar-2000):
+       A previous bugfix fix caused wml to freeze when an empty output
+       file is processed.
+       [Denis Barbier]
+
+    *) Add macro hooks in wml_p2_mp4h (15-Mar-2000):
+       These hooks are provided to allow inserting text before or after
+       macro expansion. This way it becomes easy to transform primitives
+       or defined macros.
+       [Denis Barbier]
+
+    *) Fix build failure of wml_p2_mp4h on FreeBSD (15-Mar-2000):
+       There was a bug in wml_backend/p2_mp4h/lib/xmalloc.c which causes 
+       a build failure on FreeBSD.
+       [Ralf S. Engelschall]
+
+    *) Changed printing of ISO dates (15-Mar-2000):
+       All ISO dates are now printed in the yyyy-mm-dd format.
+       [Kurt D. Zeilenga]
+
+  Changes between 1.7.4 and 1.99.0:
+
+    *) Improved WMk (12-Mar-2000):
+       The -F flag may be used to avoid scanning directories and not
+       only files.
+       [Denis Barbier]
+
+    *) Changed processing of -S and -I flags of wml_p1_ipp (12-Mar-2000):
+       These flags are now processed from right to left, so that adding
+       them into .wmlrc files override previous definitions.
+       [Denis Barbier]
+
+    *) Processing of input files residing in other directories (12-Mar-2000):
+       When an input file is on another directory, wml now goes to this
+       directory before parsing .wmlrc files. The main goal of this
+       design change is to support the VPATH feature of GNU make, to
+       allow building files in a test area.
+       Old behaviour is also available via the -c flag.
+       Note that WMk has *NOT* been changed because this change has been
+       introduced for people who prefer Makefiles to WMk.
+       [Denis Barbier]
+
+    *) Fix invocation of tidy as an epilogue program (12-Mar-2000):
+       So called ``epilog filters'' are not filters, so documentation
+       call them ``programs'' now.
+       Tidy can be invoked with ``-E tidy''
+       [Roland Rosenfeld <roland@spinnaker.rhein.de>]
+
+    *) Added recent W3C Recommandations (12-Mar-2000):
+       HTML 4.01, Web Content Accessibility Guidelines 1.0
+       and XHTML 1.0.
+       [Denis Barbier]
+
+    *) Added syntax highlighting configuration file for Vim (12-Mar-2000):
+       See wml_contrib/wml.vim
+       [Gerfried Fuchs]
+
+    *) Removed Text::BlockParser and Text::DelimMatch (12-Mar-2000):
+       These Perl modules were previously used by IPP for block
+       comments. This feature has been suppressed.
+       [Denis Barbier]
+
+    *) Fixed protection (11-Mar-2000):
+       When a <protect pass=N> tag is not processed by pass N, either
+       because this pass is skipped or because protect tags are nested,
+       this protection will pollute output file.
+       [Franz Knipp]
+
+    *) Improved wml_p1_ipp (10-Mar-2000):
+       Numerous improvements in pass 1: variables can now be nested,
+       continuation lines are allowd on #include lines, and new variables
+       are added to ease generation of slide shows.
+       Block comments are suppressed because many people seem to use WML
+       to show their C listing.
+       [Franz Knipp]
+
+    *) Updated most include files to work with mp4h (13-Feb-2000):
+       [Denis Barbier]
+
+    *) Replaced Meta-HTML by mp4h for pass 2 (13-Feb-2000):
+       [Denis Barbier]
+
+    *) Added wml::std::label (13-Feb-2000):
+       This new module implements label/references macros.
+       [Denis Barbier]
+
+    *) Changed names of bootstrap files (13-Feb-2000):
+       The files wml::sys::bootmhc, wml::sys::boot and wml::sys::bootgm4
+       are renamed to wml::sys::bootp2, wml::sys::bootp3 and
+       wml::sys::bootp4.
+       [Denis Barbier]
+
+    *) Fixed <protect> problem with pass 9 (12-Feb-2000):
+       It is possible to dynamically change output filenames, by
+       writing a shebang line interpreted during pass 9. For this
+       reason, WML must check the presence of such a shebang line and
+       change output filenames, which are needed for unprotection
+       after pass 9.
+       [Wolfgang Dautermann]
+
+    *) Fixed wml::des::preload (10-Feb-2000):
+       As preloading is only performed on images, there is no reason
+       to check filename extension.
+       [Franz Knipp <franz@knipp.org>]
+
+    *) Fixed rc file search path within WMk (04-Feb-2000):
+       When WMk is called recursively, the search path for .wmkrc files
+       was never cleared and these files were read more than once.
+       [Craig Wiegert <wiegert@quintessence.uchicago.edu>]
+
+    *) Syntax change in wml_p5_divert (21-Jan-2000):
+       The bugfix in wml_p5_divert (19-Sep-1999) had a major drawback:
+       it slows down pattern search algorithm. To improve this new
+       version, end delimiter must be at least 2 characters long.
+       This new end delimiter is now ``:#NAME#}'', and for symmetry
+       begin delimiter is ``{#NAME#:''.
+       [Denis Barbier]
+
+    *) Replace wwwtable by freetable (11-Jan-2000):
+       Tomasz Wêgrzanowski <maniek@beer.com> wrote a GPL'd replacement
+       for wwwtable, and is actively maintaining it. 
+       [Denis Barbier]
+
+    *) Upgrade of File::PathConvert (08-Jan-2000):
+       Upgraded File::PathConvert from version 0.83 to 0.85.
+       [Denis Barbier]
+
+    *) Upgrade of Bit::Vector (08-Jan-2000):
+       Upgraded Bit::Vector from version 5.6 to 5.7.
+       [Denis Barbier]
+
+    *) Upgrade of Getopt::Long (08-Jan-2000):
+       Upgraded Getopt::Long from version 2.19 to 2.20.
+       [Denis Barbier]
+
+    *) Improve wml::des::rollover (08-Jan-2000):
+       When no href attribute is set, rollover is made but images
+       are not clickable.
+       [Stephan Petersen <sp@gtt.lth.rwth-aachen.de>]
+
+    *) Improve wml::des::imgbg (06-Jan-2000):
+       A new attribute is introduced to specify the size of the image
+       in the ``alternate'' direction.
+       [Denis Barbier]
+
+    *) Change some name of generated images (06-Jan-2000):
+       In wml::des::imgbg, wml::des::imgdot and wml::std::logo,
+       names of generated images do not depend on the source filename.
+       [Thomas Akin]
+
+    *) Define a global base name for generated images (06-Jan-2000):
+       When set, the IMAGE_BASE variable defines a base name for
+       every generated image to group all such images into a
+       single directory.
+       This base name can be overridden by usual attributes.
+       [Thomas Akin <takin@kennesaw.edu>]
+
+    *) Improve support of PNG format (06-Jan-2000):
+       All logos and generated images are available in PNG or GIF
+       formats.  This choice is defined by the IMAGE_FORMAT variable
+       (default is gif) and may be overridden by the ``format''
+       attribute.
+       [Denis Barbier]
+
+    *) Replace GD Perl library to allow PNG and GIF images (06-Jan-2000):
+       Old GD version supported only GIF format whereas newer one
+       only support PNG. This is because GD is a wrapper to the gd
+       library by Thomas Boutell, and he decided to stop dealing with
+       GIF format because of a patent hold by Unisys.
+       This decision does not make sense to my point of view, his
+       library was using the `run length encoding' compression and not
+       the patented LZW algorithm.
+       So i patched the gd library to allow generation of both formats.
+       WML use this library to draw lines and rectangles, and i removed
+       unused stuff (fonts, polygons, arcs, ...) to freeze this code.
+       To avoid conflicts with installed GD.pm, this modified version
+       has been renamed to WML::GD.
+       [Denis Barbier]
+
+    *) Added logos (04-Jan-2000):
+       New logos for ht://Dig, gimp and php3.
+       [Wolfgang Dautermann]
+
+    *) Upgrade of tidy (03-Jan-2000):
+       Upgraded tidy from version 27sep99 to 30nov99.
+       Like Ralf did with previous version, some cleanups are performed
+       on source files to let gcc happy with -Wall flag.
+       [Denis Barbier]
+
+    *) Fix wml::std::href to allow @ sign within URLs (03-Jan-2000):
+       When an @ sign was present within an URL, wml::std::href
+       always assumed this URL to be an e-mail address.
+       [Wolfgang Dautermann <dauti@oeh.tu-graz.ac.at>]
+
+    *) Many changes for compatibility with mhc and mp4h (29-Nov-1999):
+       The wml_p2_mhc program is replaced by wml_p2_mp4h.  Changes are
+       needed in frontends and include files to allow both programs in
+       pass 2.  This is a temporary fix to perform benchmarks and other
+       comparisons.  A definitive fix will be submitted before next
+       release.
+       [Denis Barbier]
+
+    *) Allow @ operator in slice specifications  (22-Nov-1999):
+       The @ operator is valid in wml_p9_slice, but WML did not
+       allow this operator in slice specifications.
+       [<cc@clasohm.com>]
+
+    *) Fix missing wml_p3_eperl documentation (13-Nov-1999):
+       [Nobuyuki Tsuchimura]
+
+    *) Wmk did not recognize the -M option (08-Nov-1999):
+       [Hans Ulrich Niedermann]
+
+    *) Add a notag attribute to <logo> (29-Oct-1999):
+       This attribute has the same functionality as within <gfont>.
+       [Denis Barbier]
+
+    *) Allow nesting of wml_p3_eperl commands (29-Oct-1999):
+       The ePerl processor cannot be called recursively. Then all
+       WML commands which invoke pass 3 could not be nested. Include
+       files concerned with this problem have changed to detect these
+       nestings and automatically insert appropriate code.
+       [Denis Barbier]
+
+    *) Added PNG versions of logos (25-Oct-1999):
+       WML must improve its support for PNG format. Logos in that
+       format are included in the distribution, and wml::std::logo
+       has a new ``format'' attribute.
+       [Denis Barbier]
+
+    *) Fix configure bugs with some Perl versions (24-Oct-1999):
+       The patch between WML-1.7.2 and WML-1.7.3 did not work because
+       autoconf had not been run.
+       [Nobuyuki Tsuchimura]
+
+    *) Fixed the <verbatim> tag (24-Oct-1999):
+       This tag was protected against pass 6, which cause wrong output.
+       [l_martin@worldnet.fr]
+
+    *) Fixed wml_aux_wwwtable and wml::fmt::xtable (23-Oct-1999):
+       The <caption> tag did not work as described in the documentation
+       and tables can now be nested.
+       [hortiz@neurobio.upr.clu.edu]
+
+    *) Change how color of links are used in wml::des::navbar (18-Oct-1999):
+       The two attributes txtcol_select and txtcol_normal were joined to
+       the navbar:define tag. They are now part of the navbar:render
+       tag, which seems more logicial to me.
+       For backward compatibility, they are not removed from the
+       <navbar:define> tag, but are overridden if set in <navbar:render>.
+       [Denis Barbier]
+
+    *) Improve documentation (18-Oct-1999):
+       The PAGER and TMPDIR environment variables are now documented.
+       [Hans Ulrich Niedermann]
+
+    *) Added new variables for GMT timezones (18-Oct-1999):
+       All current WML variables refer to local time. Kurt asked for
+       a way to use GMT timezone too, which is especially useful for
+       web sites of projects whose developers live worldwide.
+       [Kurt D. Zeilenga]
+
+    *) Fixed WMu (18-Oct-1999):
+       When WMu is unable to read information files from the web server,
+       it exited with a very unclear error message. It is fixed and tell
+       now the user which file could not be downloaded.
+       [Kurt D. Zeilenga]
+
+    *) Fix infinite loops when parsing options (11-Oct-1999):
+       Under some circumstances an infinite loop occurred when parsing
+       options. When an infinite loop is detected, an error is now
+       reported.
+       [Hans Ulrich Niedermann]
+
+    *) Fixed weblint (07-Oct-1999):
+       The wml_aux_weblint script required newgetopt.pl. It now
+       use the Getopt::Long package shipped with WML.
+       [Denis Barbier]
+
+    *) Fixed documentation of include files (06-Oct-1999):
+       Added GD.pm in the list of requirements when needed.  Some links
+       were missing in all.src files.
+       [Jarda Benkovsky <pvt.benkovsk@pvtnet.cz>]
+
+  Changes between 1.7.3 and 1.7.4:
+
+    *) Modules conformance to recent changes in wml_p5_divert (04-Oct-1999):
+       Changes in wml::std::page and wml::mod::MakeMaker to conform to
+       the new preferred way of writing diversions.
+       [Denis Barbier]
+
+    *) Upgraded GNU shtool (04-Oct-1999):
+       Upgraded the GNU shtool scripts in the source tree 
+       to the latest version 1.4.6.
+       [Ralf S. Engelschall]
+
+    *) Fix performance issue with wml_p5_divert (03-Oct-1999):
+       The bugfix on wml_p5_divert in the previous version caused
+       wml_p5_divert to run dramatically slow. This problem is fixed.
+       [Anthony Fok]
+
+    *) Fix wmk (03-Oct-1999):
+       When wmk invokes wml, shell metacharacters on the command line
+       are not escaped in this version, because of a bug introduced
+       in WML-1.7.3.
+       [Jan Ulrich Hasecke]
+
+    *) Upgrade of tidy (01-Oct-1999):
+       Upgrade from tidy26jul99 to tidy27sep99.
+       [Denis Barbier]
+
+    *) Various changes in Makefile.in files (30-Sep-1999):
+       I add my cosmetics touch too, to let these files more
+       homogeneous.
+       Important changes to let ``make'' stop when an error occur in
+       ``all'' and ``install'' targets, whereas it could continue
+       when cleaning up build tree.
+       [Denis Barbier]
+
+    *) Cleanup $(RANLIB) usage for Meta-HTML (30-Sep-1999):
+       Use $(RANLIB) the correct Autoconf-way in the Meta-HTML subtree.
+       [Ralf S. Engelschall]
+
+    *) Various cosmetics (30-Sep-1999):
+       Various cosmetic changes inside the source tree to
+       make my aesthetic eye happy again.
+       [Ralf S. Engelschall]
+
+  Changes between 1.7.2 and 1.7.3:
+
+    *) Fix wml::std::logo (27-Sep-1999):
+       Fixes default logo to wml.
+       [Denis Barbier]
+
+    *) Upgrade of tidy (25-Sep-1999):
+       Upgrade from tidy15apr99 to tidy26jul99.
+       [Alvise Belotti]
+
+    *) Fix wml::std::grid (22-Sep-1999):
+       The ``height'' attribute must be applied to cells, and not
+       tables.
+       [Jacques Supcik <supcik@ip-plus.net>]
+
+    *) Fix wml::sup::path (21-Sep-1999):
+       The ``canonpath'' routine is modified to return ``./'' instead
+       of an empty string ; this fixes problems with wml::des::navbar
+       and other include files.
+       This patch is also applied to ipp.src, wmk.src and wml.src
+       [Hans Ulrich Niedermann]
+
+    *) Add documentation in wml::des::navbar (19-Sep-1999):
+       The nohints attribute of the <navbar:render> tag was missing.
+       [Hans Ulrich Niedermann <ulrich@niedermann.bb.bawue.de>]
+
+    *) Fix the <include> tag (19-Sep-1999):
+       When files are included via the <include> tag, the
+       <*parser*::push-file> and <*parser*::pop-file> tags were
+       printed, but these tags were removed from wml_p2_mhc.
+       [Denis Barbier]
+
+    *) Allow any pass order (19-Sep-1999):
+       The -p option of WML allow users to specify which pass are to
+       be invoked ; in wml-1.7.3, when pass specifications are followed
+       by an exclamation mark, passes are not sorted.
+       [Xose Manoel Ramos <xmanoel@bigfoot.com>
+
+    *) Accepts any suffix in input fle names (19-Sep-1999):
+       Many files are updated to accept any input file suffix. Temporary
+       files take the same suffix of the input file.
+       [Denis Barbier]
+
+    *) Fix the :NAME#} construction in wml_p5_divert (19-Sep-1999):
+       The wml_p5_divert accepts two equivalent sets of commands. As for
+       now, the preferred one is ``<<NAME>> ..NAME>> <<NAME..''. But
+       those angle brackets cause trouble in conjunction with wml_p2_mhc,
+       so documentation is updated to prefer alternative commands
+       ``{#NAME#} {#NAME:  :NAME#}''.
+       Moreover a bug has been fixed with the ``:NAME#}'' command.
+       [Denis Barbier]
+
+    *) Fix configure bugs with some Perl versions (19-Sep-1999):
+       Some Perl versions, like the EUC JP one caused an error when
+       running the configure script.
+       [Andrew S. Howell <andy@tibcofinance.com>]
+
+    *) Fix compilation of wml_p2_mhc (19-Sep-1999):
+       Build wml_p2_mhc with the C compiler found at configure
+       time, and not necessarily gcc.
+       [Lars Kellogg-Stedman <lars@larsshack.org>]
+
+    *) Bug fix : 1-char directory name (10-Sep-1999):
+       Wmk and wml did not handle right 1-char directory name.
+       [Nico Galoppo <scratch@ace.ulyssis.student.kuleuven.ac.be>]
+
+    *) Fix the --without-openworld configure option (09-Sep-1999):
+       The --without-openworld did not work as expected, it is fixed.
+       [Gerfried Fuchs <alfie@innocent.com>]
+
+    *) Fix the __FILE__ automatic variable in wml_p1_ipp (06-Sep-1999):
+       The __FILE__ variable did not work as expected because of a
+       problem with scope.
+       [Nobuyuki Tsuchimura <tutimura@nn.iij4u.or.jp>]
+
+    *) Use of the TMPDIR environment variable (28-Aug-1999):
+       To conform with POSIX standard, this variable contains
+       the directory name where temporary files are kept. By default,
+       this directory is /tmp.
+       [Thomas Roessler <roessler@guug.de>]
+
+    *) Use GNU shtool for configuring (25-Aug-1999):
+       All scripts in etc/ sub-directories were still replaced by
+       Ralf's shtool since 01-Jul-1999. They are now removed.
+       [Denis Barbier]
+
+    *) Fix include files (23-Aug-1999):
+       In all include files, perl ``system'' function is replaced by
+       backticks, to allow error reporting.
+       [Denis Barbier]
+
+    *) Write empty file during pass 9 (23-Aug-1999):
+       On latest version, empty output files were not written. It has 
+       been changed to suppress this error
+           cannot load /tmp/wml.xxx.tmp4 for unprotection at
+           /usr/bin/wml line 658.
+       [Denis Barbier]
+
+    *) New wml_include/mod/version.src (21-Aug-1999):
+       Provides the <require> tag to indicate a minimal WML version
+       number to process a given file.
+       [Denis Barbier]
+
+    *) Fix wml::fmt::verbatim (20-Aug-1999):
+       Added <protect></protect> to insert files really verbatim
+       [Thomas Roessler <roessler@guug.de>]
+
+    *) New wml_include/mod directory (20-Aug-1999):
+       This directory is devoted for modularity. The first include file
+       is MakeMaker.src, a Makefile generator to distribute WML modules.
+       It is inspired by the ExtUtils::MakeMaker Perl module.
+       [Denis Barbier]
+
+    *) Add wml_contrib/mkwml (20-Jul-1999):
+       This Perl script is an alternative to wmk.
+       [Jim Bowlin <bowlin@sirius.com>]
+
+    *) Fix the --safe long option name (19-Jul-1999):
+       The --speedup option was used instead of --safe in wmk.src and
+       wml.src
+       [Simon Burr <simes@bpfh.net>]
+
+    *) Better detection of relative paths in navbar.src (19-Jul-1999):
+       When including images, absolute pathnames were either paths
+       beginning with a slash or with ``http://''. Obviously other
+       cases may occur, e.g. with ftp. The new algorithm is inspired
+       from the URI perl module.
+       [Dave Plonka <plonka@doit.wisc.edu>]
+
+    *) Allow quotes around pass numbers in <protect> tags (09-Jul-1999):
+       [Davor Cengija]
+
+    *) Fix variable evaluation in Pass 1 (09-Jul-1999):
+       The regular expression used to substitute variables in wml_p1_ipp
+       was wrong with two adjacent variables, like $(foo)$(bar).
+       [Uwe Mindrup <uwe@mindrup.de>]
+
+    *) Fix installation of Perl modules (05-Jul-1999):
+       On some platforms, Perl modules are not installed under
+       ...prefix/lib/wml/perl.
+       Rules in Makefiles now invoke pure_perl_install
+       [Tobias Oetiker]
+
+    *) Define a WML environment variable (01-Jul-1999):
+       Contains the path of the wml binary. It is needed to perform
+       tests on wmk when wml is not yet installed.
+       [Denis Barbier]
+
+    *) More robust -D flag (01-Jul-1999):
+       A variable defined with the -D flag could not contain spaces or
+       metacharacters. It's fixed now, one can write
+           -DFOO="this \"and that\""
+       on the command line, the shebang line, in RC-files or in the
+       environment variable WMLOPTS.
+       [<simes@bpfh.net>, Jim Hebert]
+
+    *) Improve dependency checking (09-Jun-1999):
+       If output files depend on certain data files, one may tell WMk
+       about these dependencies by using the new ``#depends''
+       directive.  File is not included but dependency is updated.
+       The metacharacters [?*] are allowed in file names after #use
+       #include and #depends. Bracketed expressions are also recognized.
+       [Jay Treacy <treacy@debian.org>]
+
+    *) Enhanced wml::fmt::verbatim (08-Jun-1999):
+       Add the <verbatim-file> tag which is much more readable than
+       the perl wml_fmt_verbatim routine.
+       [Tobias Oetiker]
+
+    *) Makes ePerl more portable (08-Jun-1999):
+       ePerl uses the ppport.h file to deal with old and new perl.
+       [Denis Barbier]
+
+    *) Clean-up include files (06-Jun-1999):
+       Simplification have been done in include files to use the new
+       Meta-HTML tags.
+       All references to the /tmp directory have been replaced by the
+       WML_TMPDIR variable.
+       [Denis Barbier]
+
+  Changes between 1.7.1 and 1.7.2:
+
+    *) Fix wml::fmt::text (22-Jun-1999):
+       This file needs wml::std::tags.
+       [Bruno Boettcher <bboett@erm1.u-strasbg.fr>]
+
+    *) Fixed wml_include/all.wml (09-Jun-1999):
+       Removed wml::usr::all, which is no more relevant.
+       [Denis Barbier]
+
+    *) Fixed dependency checks (08-Jun-1999):
+       When touching template files, wmk does not rebuild targets.
+       [Alexander Graefe <wa0191@stud.uni-wuppertal.de>]
+
+    *) Fix wml::des::navbar (08-Jun-1999):
+       wml_p3_eperl returns an error if a button id begins with a zero.
+       If no select attribut is set in <navbar:render>, then all buttons
+       are selected.
+       [Jan Ulrich Hasecke and Christian Zuckschwerdt <zany@darkride.net>]
+
+    *) Fix the ``end of line'' bug in wml_p2_mhc (08-Jun-1999):
+       When the last character of the file is not a newline, strange
+       results occur.
+       [Jan Ulrich Hasecke]
+
+  Changes between 1.7.0 and 1.7.1:
+
+    *) Fixed mhc (05-Jun-1999):
+       When defining new tags, the %0...%9 and %attributes are expanded
+       in Meta-HTML 5.02 (pass 2) whereas they are unevalled in 5.09.
+       This breaks the preserve/restore stuff defined in wml::std::tags.
+       So the former behavior is restored.
+       [John Bazik]
+
+    *) Rewrite some include files (05-Jun-1999):
+       Replace ``%0 %1 ... %9'' by ``%attributes'' in include files.
+       [Denis Barbier]
+
+    *) Fixed WMu (05-Jun-1999):
+       To upgrade WML, the recommended way is to use WMu.
+       It worked only when invoked by the super-user.  This bug fix
+       allows a user to get and build WML, and then su root to install
+       it. 
+       [Denis Barbier]
+
+  Changes between 1.6.8 and 1.7.0:
+
+    *) Enhance documentation (30-May-1999):
+       WMd sorts keyword search results by hit count.
+       Some changes in the FAQ.
+       [Denis Barbier]
+
+    *) Check epilog and prolog filters (27-May-1999):
+       Wml and friends now report an error and exit when a prolog or
+       epilog fail.
+       [Tobias Oetiker <oetiker@ee.ethz.ch>]
+
+    *) Improve WMk (26-May-1999):
+       WMk know recognizes the -o option in .wmkrc. If the -o option is
+       used in .wmlrc, it's the only way to inform WMk about
+       dependencies.
+       [Fritz Zaucker]
+
+    *) Clean Makefiles (21-May-1999):
+       ``make distclean'' was broken and htmlclean didn't build on some
+       systems
+       [Frederic Le Mouel <Frederic.LeMouel@irisa.fr>]
+
+    *) y2k fixes (20-May-1999):
+       [Denis Barbier]
+
+    *) Variable definitions (14-May-1999):
+       The -Dfoo is now equivalent to -Dfoo=1 and -Dfoo="" or -Dfoo=
+       define an empty variable.
+       [Denis Barbier]
+
+    *) Enhanced wml and wmk (11-May-1999):
+       The -W option allows passing option to a specific pass, e.g.
+          wml -W3,-i
+       [Denis Barbier]
+
+    *) Import HTML-Clean 0.7 (11-May-1999):
+       HTML-Clean is a perl module written by
+           Paul Lindner <paul.lindner@itu.int>
+           http://people.itu.int/~lindner/
+       The wml_aux_htmlclean may be used as an epilog filter to reduce
+       the size of webpages
+       [Denis Barbier]
+
+    *) Update Perl modules (11-May-1999):
+          GetoptLong      2.19
+          Image-Size      2.901
+          TermReadKey     2.14
+       [Denis Barbier]
+
+    *) Import tidy15apr99 (11-May-1999):
+       Tidy is an HTML cleaner up
+       [Denis Barbier]
+
+    *) Enhanced wml::des::imgbg (10-May-1999):
+       Allow generation of gradient backgrounds.
+       [Denis Barbier]
+
+    *) Import slice-1.3.2 (10-May-1999):
+       Import the source distribution of slice 1.3.2 and patch it to
+       ease its inclusion into wml.
+       [Denis Barbier]
+
+    *) Fix wml.src (9-May-1999):
+       Remove an obsolete trick for writing portable dates
+       [John Bazik <jsb@cs.brown.edu>]
+
+    *) Add tests (9-May-1999):
+       [Denis Barbier]
+
+    *) Fix wml_backend/p3_eperl/eperl_sys.c (7-May-1999):
+       A bug prevented recursive calls of ePerl.
+       [Stéphane Bortzmeyer]
+
+    *) Enhanced wml::des::navbar (7-May-1999):
+       Multi-lingual navbars are easier to use, and menus can be nested.
+       Automatic buttons (up, next, prev).
+       Add the ``nohints'' attribute.
+       [Denis Barbier, Florian Hars, Tobias Oetiker]
+
+    *) Fixed documentation (7-May-1999):
+       Tiny fixes
+       [Denis Barbier]
+
+    *) Enhanced wml::std::lang (10-Apr-1999):
+       Wildcard used in <lang:star:... > tags can be changed. These tags
+       are also protected against pass 3 to ease writing multi-lingual
+       navigation bars
+       [Denis Barbier]
+
+    *) Fixed wmk (2-Apr-1999):
+       When output files were defined via the wml shebang line, wml was
+       always invoked.
+       [Jan Ulrich Hasecke <juh@pironet.de>]
+
+    *) Enhanced time dependency checks for wmk (29-Mar-1999):
+       The dependency checking with wmk now applies to every input file,
+       not only the main one. This is performed with the -MM wml option.
+       [Denis Barbier]
+
+    *) Added wml_contrib/navbar-FH.wml (26-Mar-1999):
+       This is a modified version of navbar.wml which implements nested
+       and multi-lingual navbars.
+       [Florian Hars <florian@hars.de>]
+
+    *) Fixed wml::des::navbar (22-Mar-1999):
+       When a navbar is used more than once, the rendering of rollover
+       is wrong, the rollover apply only to the last navbar.
+       The ``nopreload'' attribute is a good idea, but with a wrong
+       implementation. It is deleted, its action will be performed by
+       htmlfix or htmlstrip.
+       [Denis Barbier]
+
+    *) Automatic dependency generation (18-Mar-1999):
+       An `-M' option has been added to wml and wml_p1_ipp to write
+       `make'-rules, as gcc does.
+       [Andreas Hofmeister <hofmeist@informatik.uni-freiburg.de>]
+
+    *) Fixed cleanup (16-Mar-1999):
+       A ``make clean'' deletes wml_test/TEST.root
+       [Frederic Le Mouel <Frederic.LeMouel@irisa.fr>]
+
+    *) Fixed wml_p9_slice (16-Mar-1999):
+       An undefined slice reports a warning instead of an error
+       [Michael McNamara <mac@surefirev.com>]
+
+    *) Enhanced wml::std::tags (16-Mar-1999):
+       The m4 stuff has been fixed to allow nested definitions in the
+       ``symbol'' tag and use of non-standard m4 quotes.
+       [stiegele@informatik.uni-freiburg.de]
+
+    *) Changed bootstrapping (16-Mar-1999):
+       Passes 2, 3 and 4 have their own dedicated files into
+       wml_include/sys. For backward compatibility reasons, the
+       sys/boot.wml file has not be renamed.
+       [Denis Barbier]
+
+    *) Easier multi-lingual interface (16-Mar-1999):
+       The processing of multi-lingual documents is much easier,
+       providing an alternative to the -o option with the
+       lang:star:slice: tag.
+       [Denis Barbier, Paul Sponagl <pablo@acmedia.de>]
+
+    *) Enhanced wml (12-Mar-1999):
+       A variable may now be defined without value, in which case
+       its value is empty. This is the only way to undefine variables.
+       The %BASE/%DIR trick on output files is performed after all
+       configuration files are read, so that it can be invoked
+       in .wmlrc or even on the command-line.
+       [Denis Barbier]
+
+    *) Fixed ipp (12-Mar-1999):
+       The -i wml option did not work as explained in the doc for
+       system files.
+       [Denis Barbier]
+
+    *) Fixed wmd (21-Feb-1999):
+       When invoking ``Keyword search'', manpages were searched in
+       a wrong place and no results were found.
+       [Denis Barbier]
+
+    *) Enhanced wml::std::toc (18-Feb-1999):
+       Two new styles (ul and ol) are implemented. Both allow complete
+       control on how lists are displayed.
+       The hspace style has been rewritten to include one gif of width
+       20xN instead of N gifs of width 20.
+       The toc_hN macros accept a new "alt" attribute, which will be
+       inserted in the ToC instead of the body function. As for now,
+       the %attributes was inserted, which did not follow the WML api
+       and could cause strange behaviors when quoting.
+       [Denis Barbier]
+
+    *) Cleaned up wml_p2_mhc (16-Feb-1999):
+       Removed unnecessary files. The meta-html profiler module has
+       been included to test performance issues.
+       [Denis Barbier]
+
+    *) Upgrade of metahtml.txt (09-Feb-1999):
+       Replaced the old 5.02 documentation, involving minor bug fixes
+       in the automatic generation of this file.
+       [Denis Barbier]
+
+    *) Make wml_p2_mhc documentation automatic (08-Feb-1999):
+       To keep the wml_p2_mhc documentation up-to-date, it is generated
+       from the C sources, as meta-html does. To perform this operation,
+       mhc macros have been added to emulate database and stream
+       operations.
+       [Denis Barbier]
+
+    *) Added doc in wml_include/std/logo.src (03-Feb-1999):
+       Added documentation to the ``target'' attribute.
+       [Denis Barbier]
+
+    *) Fixed configuration (03-Feb-1999):
+       With some shells (ksh or sh-posix on HP-UX), the configure script
+       failed because the TMPDIR variable is defined to a non-existing
+       directory.
+       [Steve Sizemore <steve@cmpharm.ucsf.edu>]
+
+    *) Fixed wml (03-Feb-1999):
+       Suppress all references to tdist, which does no longer exist.
+       [Ralf S. Engelschall]
+
+    *) Fixed wmk (03-Feb-1999):
+       Suppress all references to tdist, which does no longer exist.
+       Add support to the -P wml option.
+       [Denis Barbier]
+
+    *) Fixed previous patch for perl threads (19-Jan-1999):
+       One of the 2 tests on version number was missing.
+       [Denis Barbier]
+
+    *) Upgrade of mhc (19-Jan-1999):
+       Upgraded from version 5.02 to 5.09.
+       As usually this is a heavily stripped down version of metahtml.
+       All about databases, session management, encryption,... is
+       removed (see the README.wml file for details).
+       Other unused configuration tests are removed (AC_CHECK_FUNCS)
+          flock getgrent seteuid setgid setlocale
+       Added arch/solaris/prototypes.h. Below in this file it is
+       mentioned an obsolete #include was removed for Solaris. Is it
+       this one?
+       Documentation is not yet updated.
+       Documentation inside source files have not been removed to help
+       hacking.
+       [Denis Barbier]
+
+    *) Renamed wml_docs/wml_tags.L.core (18-Jan-1999):
+       Some *BSD check for files with a .core extension and remove them
+       every night. Renamed to wml_docs/wml_tags.L.main
+       [Marc Baudoin <babafou@babafou.eu.org>]
+
+    *) Added doc in wml_include/des/typography.src (18-Jan-1999):
+       Few lines added to say that <sc> tags support i18n.
+       [Märt Laak <Mart.Laak@hansa.ee>]
+
+    *) Fixed a bug with perl threads (18-Jan-1999):
+       Added calls to dTHR, needed by perl >= 5.005
+       [Hans de Graaff <graaff@xs4all.nl>]
+
+    *) Fixed wml_frontend/wml.src (18-Jan-1999):
+       Check whether an equal sign is found after an option, which
+       is certainly due to a misunderstanding of how to invoke wml.
+       [CHristian Niss <chris@topitmagic.de>]
+
+    *) Fixed the Meta-HTML Autoconfiguration (17-Jan-1999):
+       Removed the not necessary Autoconf checks for setpgrp() and vfork()
+       because in our heavily stripped down Meta-HTML version these are no
+       longer used and the tests just caused problems on some platforms.
+       [Ralf S. Engelschall]
+
+  Changes between 1.6.7 and 1.6.8:
+
+    *) Enhanced the tarball process  (13-Jan-1999):
+       The --enable-maintainer-mode option from automake is added to
+       `configure'. It is disabled by default, suppressing dependency
+       problems that might occur when untarring. To keep all the
+       dependencies, maintainers have to specify this option.
+       Add a minus sign after gzip, to suppress a fatal error.
+       [Denis Barbier]
+
+    *) Fix <import .. format="verbatim"> command (13-Jan-1999):
+       Fix the <import src="file.txt"> or <import .. format="verbatim">
+       command which was broken because of internal changes in recent
+       versions.
+       [Ralf S. Engelschall]
+
+    *) Make tarball rolling more flexible (13-Jan-1999):
+       The process of rolling the WML distribution tarball is now more
+       flexible and secure: It used variables (which can be overridden) for
+       the tools and UID/GID 0/0 to avoid security problems (users could
+       override installed WML files when WML is installed under root).
+       Additionally the rolling process is now aware of the fact that WML
+       stays inside a CVS repository.
+       [Ralf S. Engelschall]
+
+    *) Fixed wml_frontend/wml.src (13-Jan-1999):
+       Protected areas appeared only on the first slice.
+       [Heiko Schlittermann <heiko@datom.de>]
+
+    *) Fixed wml_frontend/wml.src (13-Jan-1999):
+       Display of timers were corrupted when some passes are skipped.
+       [Denis Barbier]
+
+    *) Fixed wml_backend/p9_slice/slice.src (13-Jan-1999):
+       ``make test'' failed because a dollar sign was expanded.
+       [Denis Barbier]
+
+    *) Added wml_contrib/wml.spec (12-Jan-1999):
+       This file is used to build RedHat/Linux RPMS (binary packages).
+       [Denis Barbier]
+
+    *) Fixed wml::sys::boot (12-Jan-1999):
+       Two blank lines are suppressed.
+       [Marc Baudoin <babafou@babafou.eu.org>]
+
+    *) Removed files in wml_backend/p2_mhc/libmhtml (12-Jan-1999):
+       Unnecessary files are removed and Makefile.in is updated.
+       [Denis Barbier]
+
+    *) Enhanced Pass 1 (IPP) (12-Jan-1999):
+       The parseblock routine is called only if `/*' is read in input
+       file. This causes significant speed-up.
+       [Denis Barbier]
+
+    *) Enhanced wml::des::navbar (12-Jan-1999):
+       Added `nopreload' attribute to navbar:render. When set, prevents
+       inclusion of javascript code. Useful when navigation bars are
+       used more than once.
+       Replaced HTML javascript code by the Meta-HTML <javascript> tag.
+       [Denis Barbier]
+
+    *) Fixed wml::des::navbar and wml::des::gfont (12-Jan-1999):
+       Quotes in text attributes cause trouble. Replace quotes by
+       perl quoting (q,qq,...).
+       [Denis Barbier, clorenz@proddev-linux2.inhouse.compuserve.com]
+
+    *) Enhanced wml::std::box (12-Jan-1999):
+       Background color cells can be made in conjunction with headings.
+       [Denis Barbier]
+
+    *) New subdir: wml_contrib/ (07-Jan-1999):
+       Added a new contribution subdir wml_contrib/ where the Webdesign
+       Magnifying Glass (WMG) CGI program is now distributed and where other
+       stuff can be added in the future.
+       [Ralf S. Engelschall]
+
+    *) Fixed WMU (31-Dec-1998):
+       Fixed the download hyperlink in the WMU tool.
+       [Denis Barbier <barbier@imacs.polytechnique.fr>]
+
+    *) Upgrade of File::PathConvert (18-Dec-1998):
+       Upgraded File::PathConvert Perl module from version 0.3 to 0.83
+       [Ralf S. Engelschall]
+
+    *) Upgrade of Image::Size (18-Dec-1998):
+       Upgraded Image::Size Perl module from version 2.6 to 2.9.
+       [Ralf S. Engelschall]
+
+    *) Upgrade of Bit::Vector (18-Dec-1998):
+       Upgraded Bit::Vector Perl module from version 5.2 to 5.6.
+       [Ralf S. Engelschall]
+
+    *) Fixed double-backslash (`\\') handling (01-Nov-1998):
+       Now in Pass 1 (IPP): a double-backslash prevents line continuation as
+       one would expect. This way one can again create lines with backslashes
+       at the end.
+
+    *) Fixed `make test' (10-Aug-1998):
+       Under situation where WML was configured for a prefix not
+       containing `wml' it was failing.
+       [Torsten Naumann, Ralf S. Engelschall]
+
+    *) Fixed wml::std::grid (07-Aug-1998):
+       Some <preserve>/<restore> tags were missing for parameters.
+       [Markus Fleck <fleck@isoc.de>]
+
+    *) Fixed wml::std::logo (07-Aug-1998):
+       It was was broken because of an ePerl syntax error inside logo.src.
+       [Torsten Naumann <Torsten.Naumann@Informatik.TU-Chemnitz.DE>,
+        Denis Barbier <barbier@imacs.polytechnique.fr>]
+
+  Changes between 1.6.6 and 1.6.7:
+
+    *) Upgrade of ePerl (02-Aug-1998):
+       Upgraded ePerl from version 2.2.12 to 2.2.14. 
+       This especially provides first Perl 5.005 support ;-)
+       [Ralf S. Engelschall]
+
+    *) Enhanced Autoconf stuff (02-Aug-1998):
+       Replaced build user/host/domain/time determination stuff with a new
+       `buildinfo' script I've written for Apache which is more robust.
+       [Ralf S. Engelschall]
+
+    *) Upgrade of built tools (02-Aug-1998):
+       Replaced mkinstalldirs and install.sh scripts with my cleaned variants
+       I've done for Apache 1.3's APACI stuff.
+       [Ralf S. Engelschall]
+
+    *) Upgrade of IO (02-Aug-1998):
+       Upgraded IO Perl module from version 1.19 to 1.20.
+       [Ralf S. Engelschall]
+
+    *) Fixed wml::des::typography (01-Aug-1998):
+       Fixed the <sc>..</sc> tags in wml::des::typography which were confused
+       when in the processed body other tags occured.  
+       [Kurt D. Zeilenga <Kurt@Boolean.Net>. Ralf S. Engelschall]
+
+    *) Changed IPP/HTMLStrip (30-Jul-1998):
+       Fixed the handling of EOL-comments (#...), now ``\#xxx'' inside style
+       sheets works fine again.
+       [Ralf S. Engelschall]
+
+    *) Fixed htmlfix pass (30-Jul-1998):
+       Corrected the usage synopsis inside the htmlfix manual page.
+       [Kurt D. Zeilenga <Kurt@boolean.net>, Ralf S. Engelschall]
+
+    *) Extended wml::std::logo (29-Jul-1998):
+       Added `powered by VIM' logo for wml::std::logo.
+       [Ralf S. Engelschall]
+
+    *) Fixed wml_tutorial (26-Jul-1998):
+       Make divertion example in wml_tutorial more robust and less confusing.
+       [Florian Hars <hars@math.uni-hamburg.de>, Ralf S. Engelschall]
+
+    *) Fixed wml::des::gfont (05-Jul-1998):
+       Fixed two bugs inside wml::des::gfont.
+       [Jordan Baker <jbb@interlog.com>, Ralf S. Engelschall]
+
+    *) Upgrade of txt2html (29-Jun-1998):
+       Upgraded txt2html aux tool from version 1.24 to 1.25.
+       [Ralf S. Engelschall]
+
+    *) Enhanced wml::std::logo (28-Jun-1998):
+       Added `target' attribute to <logo> tag.
+       [Florian Kuehnert <sutok@gmx.de>]
+    
+    *) Fixed WMd page (26-Jun-1998):
+       Added missing link to wml::des::preload.
+       [Alvise Belotti <alvise@lettere.unipd.it>, Ralf S. Engelschall]
+  ___________________________________________________________________________
+
+  I've now changed the syntax of the ChangeLog file for more readability,
+  especially for posting ChangeLog entries to sw-wml.
+  ___________________________________________________________________________
+
+  Changes between 1.6.5 and 1.6.6:
+
+      970617 - upgrade CSS2 document to latest REC 12-05-1998 version
+             - fix dates of standard documents in WMd document list
+             - Upgraded Getopt::Long from 2.16 to 2.17
+      970618 - Fixed wml::std:toc which caused problems with <Hx></Hx> blocks.
+               The closing tag was always </H1>.  [Thanks to Andy Hawkins
+               <andy@gently.demon.co.uk> for patch]
+             - Add support to WMd's search feature for compressed/gzipped
+               manual pages (for instance under FreeBSD port they are gzipped)
+      970622 - Fixed the hostname determine stuff in the configure script
+               [Thanks to Clayton Wheeler <cswheeler@halcyon.com> and Aleksi
+               Niemelä <AleksiN@hex.fi> for hints]
+
+  Changes between 1.6.4 and 1.6.5:
+      980323 - added the HTML Specifications in ASCII form
+               to wml_docs/. These are now directly accessible
+               via WMd.
+      980403 - Upgraded Bit::Vector from 5.1 to 5.2
+               (which now is again under Artistic and GPL)
+             - Upgraded Getopt::Long from 2.15 to 2.16
+      980404 - Made /etc/resolv.conf parsing in configure more
+               robust [Thanks to Stephane Bortzmeyer
+               <bortzmeyer@pasteur.fr> for hint]
+             - Removed stream-stuff from Pass 2 (MHC) because
+               it's TCP stuff caused problems on some platforms
+               and WML does not need it.  [Thanks to Stephane
+               Bortzmeyer <bortzmeyer@pasteur.fr> for hint]
+      980405 - Upgraded iSelect from 1.0.4 to 1.1.0
+      980417 - Fixed generation of 'alt' tags in wml::des::navbar
+               [Thanks to Dan Ludden <dan.ludden@lmco.com> for patch]
+      980616 - Upgraded Bit::Vector from 5.2 to 5.3
+             - Fixed non-"site_lib" installation of Getopt::Long
+
+  Changes between 1.6.3 and 1.6.4:
+      980313 - fixed a few typos in the INSTALL file
+      980314 - Upgraded Bit::Vector 5.0 to 5.1
+             - Upgraded Getopt::Long 2.13 to 2.15
+      980318 - Fixed wml::des::gfont which called gfont
+               with option -s instead of -r [Thanks to Andy
+               Hawkins <andy@gently.demon.co.uk> for hint]
+      980322 - Fixed <vspace> tag in wml::des::space [Thanks to
+               Igor V.  Spiridonov <garris@trunk.uco.ru> and
+               Tomasz Cholewo <t.cholewo@ieee.org> for hint]
+      980323 - Added support for escaped sharp-comments via
+               ``\#'' for escaping such comments, for instance
+               when needed inside <verbatim> environments [Thanks
+               to Igor V. Spiridonov <garris@trunk.uco.ru> for
+               hint]
+             - Fixed Pass 7 (HTMLfix): Now the width/height=*
+               placeholder constructs are removed when the image
+               file from <img> tags are not accessible.  [Thanks
+               to Igor V. Spiridonov <garris@trunk.uco.ru> for
+               hint]
+             - Fixed etc/newvers, so that it not always just
+               tries to use "cc". Instead now first "gcc" is
+               searched and "cc" is the fallback.  [Thanks to Dan
+               Ludden <dan.ludden@lmco.com> for hint]
+             - Added SCALE=<factor> and SCALE=<percent>% to the
+               <img> support in Pass 7. This way you can scale
+               the WIDTH/HEIGHT attributes of <img> tags.
+               [Thanks to Dan Ludden <dan.ludden@lmco.com> for
+               patch]
+             - Enhanced the wml::std::toc include file: Now you
+               can use ``#use wml::std::toc
+               style=pre|nbsp|hspace'' to let the Table Of
+               Contents create in a particular style.  The "pre"
+               style is the old <pre>-based style, the
+               "nbsp"-style used plain HTML text with &nbsp;'s
+               and <br>'s and the "hspace" style uses <hspace>'s
+               (from wml::des::space) and <br>'s to layout the
+               ToC.  [Thanks to Dan Ludden <dan.ludden@lmco.com>
+               for idea]
+             - Added optional "alt" attribute to <navbar:button>
+               which can be used for explicitly setting the <img
+               alt=".."> stuff.  It defaults to the value of the
+               non-optional "txt" attribute.  [Thanks to Dan
+               Ludden <dan.ludden@lmco.com> for idea]
+             - Added generated "type" attribute to the generated
+               <script> container tag for <javascript> and added
+               "defer" attribute for HTML 4.0.  [Thanks to Any
+               Hawkins <andy@gently.demon.co.uk> for hint]
+
+  Changes between 1.6.2 and 1.6.3:
+      980219 - fixed typo in wml::std::lang manpage
+      980222 - made the non-GCC warning just a more harmless
+               attention message in the configure script.
+      980223 - removed config.args entry from config/Makefile
+      980228 - let wml::std::toc create markup code which is more
+               weblint-proof [Thanks to Andy Hawkins
+               <andy@gently.demon.co.uk> for hint]
+      980302 - Upgrade Bit::Vector 5.0b4 to 5.0 final release
+             - Changed temporary filenames in WMb frontend
+               to avoid problems with at least XEmacs 
+               [Thanks to Karl M. Hegbloom
+               <karlheg@bittersweet.inetarena.com> for hint]
+             - Fixed typo in wml_tutorial.pod [Thanks to Stefan
+               `Sec` Zehl <sec@42.org> for hint]
+      980304 - Fixed replacement for nested <center>..</center>
+               constructs in HTMLfix [Thanks to Stefan `Sec` Zehl
+               <sec@42.org> for hint]
+             - Fixed the system() call for Pass 2: the arguments
+               were not correctly escaped. Thanks to Graham
+               Hughes <thrag@treepeople.dyn.ml.org> and Anthony
+               Fok <foka@debian.org> for hint]
+             - Fixed various typo bugs in a lot of sources
+               [Thanks to Anthony Fok <foka@debian.org> for
+               patch]
+             - Fixed WMu's key handling
+             - now %DIR and %BASE are interpolated on the WML
+               shebang line which is useful for multi-lingual
+               pages [Thanks to Stefan `Sec` Zehl <sec@42.org>
+               for hint]
+             - added a second box variant to <box> from
+               wml::std::box which is a headlined one. The layout
+               idea is stolen from the QMail homepage but now
+               implemented via WML.
+             - now the <lang:area>...</lang:area> container tag
+               from wml::std::lang supports a special `(/)' tag
+               inside its body to switch back to no special
+               language.  pages [Thanks to Stefan `Sec` Zehl
+               <sec@42.org> for idea]
+      980305 - Solved Bit::Vector license conflict by now
+               obtaining a special license for WML directly from
+               the author of Bit::Vector. This is needed because
+               WML can be used free or charge both in educational
+               _AND_ commercial environments while Bit::Vector is
+               usually not allowed to be used in commercial
+               environments without paying.
+
+  Changes between 1.6.1 and 1.6.2:
+      980216 - fixed wml_faq.pod [Thanks to Robin Stephenson
+               <robin@gbhap.com> for hint]
+             - added "eperlfilter" attribute to <pod> and
+               <import> tags to allow post-filtering by an ePerl
+               function.
+      980217 - fixed FSF address and added --best option
+               for gzip on creating the tarball.  [Thanks to
+               Anthony Fok <foka@gpu.srv.ualberta.ca> for patch]
+             - fixed version comparison in the new WMu frontend
+               [Thanks to Alvise Belotti
+               <alvise@lettere.unipd.it> for hint]
+      980218 - removed bogus X%1X debugging stuff from
+               wml::std::lang which I forgot to remove.
+             - added new <lang:star:href:> tag to wml::std::lang
+             - Upgraded Bit::Vector from 5.0b2 to 5.0b4
+             - Fixed domainname determination in configure
+             - Upgraded to Slice 1.3.2
+      980219 - adjusted ANNOUNCE file
+             - stripped down the Meta-HTML documentation
+               so only features remain WML's Meta-HTML has
+
+  Changes between 1.6.0 and 1.6.1:
+      980210 - added hints for "make test" to INSTALL file
+             - changed misspelled word: "Divertion" -> "Diversion"
+             - made the determination of the WML_GEN_REALNAME and
+               WML_GEN_USERNAME variables more robust
+      980211 - now wml::sys::boot is only preloaded when actually
+               using Pass 3 (ePerl) because it exists only for
+               this.  This way "wml -p1" can be a useful command
+               for its own.  [Thanks to Jim Hebert
+               <jhebert@compu-aid.com> for hint]
+             - now the control frontend clears the CGI/1.1
+               environment variables to avoid confusion of Pass 2
+               and Pass 3 which try to determine their operation
+               mode from it.  [Thanks to Jim Hebert
+               <jhebert@compu-aid.com> for hint]
+      980214 - changed attribute name "interword" to "interchar"
+               for tag <spaced> of wml::des::typography, because
+               it is actually a inter-character spacing.
+               [Thanks to Christian Reiber for hint]
+      980215 - added missing wml_misc subdir to Makefile.in
+               so this subdir is used on all targets, too.
+               [Thanks to the Debian ports diff-file from Anthony
+               Fok <foka@debian.org> for hint]
+             - Ops, for 1.6.0 I already wanted to removed
+               wml_contrib because it is not useful for the end
+               user (only for the porters), but I forgot to do..
+
+  Changes between 1.5.1 and 1.6.0:
+      980116 - removed configure --enable-compat option
+               and wml_include/OBSOLETE* stuff
+             - Merged the <box> and <rect> tags from
+               wml::std::box into a new full-featured single tag
+               named <box>
+      980118 - Fixed temporary file usage: /tmp/wml.$$.tmp4 was
+               not removed.  [Thanks to Stefan `Sec` Zehl
+               <sec@42.org> for hint]
+             - Upgraded IO 1.1803 -> 1.1804
+             - Upgraded GD 1.16 -> 1.17
+             - removed some unnecessary stuff from
+               wml_p2_mhc/configure.in
+      980119 - recreated the "generated via WML" GIF image
+             - added more logos to wml_misc/
+             - added new wml::std::logo to insert the logos
+             - removed wml::sup::stack because its functionality
+               is already in wml::std::tags
+             - added domainname attribute to wml::std::info which
+               overrides the usage of WML_SRC_HOSTNAME
+             - removed wml::usr::rse because no one can use it
+               except RSE ;_).
+             - added hint to wml_faq.pod on how to setup a useful
+               $HOME/.wmlrc and $HOME/.wml
+             - fixed WML option -v which needs pre-processing as
+               option -r
+             - fixed RC file parsing for $HOME/.wmlrc
+             - now WML uses the homedir in passwd instead of
+               $ENV{HOME}
+      980120 - fixed tag recognition in HTMLfix:
+               ``<I>foo=bar</I>'' was incorrectly "fixed" to
+               ``<I>foo="bar</I">''. [Thanks to Tetsuya Furukawa
+               <tetsuya@secom-sis.co.jp> for patch]
+             - enhanced the -p option syntax: Now you can use the
+               more readable and shorter -p1-7,9 instead of
+               -p12345679 for all passes except Pass 8.
+             - added details about $HOME/.wmlrc setups to
+               wml_faq.pod
+             - Some WML tags were renamed to avoid namespace
+               conflicts:
+               wml::des::navbar <navbar>     -> <navbar:define>
+               wml::des::navbar <navdebug>   -> <navbar:debug>
+               wml::des::navbar <navrender>  -> <navbar:render>
+               wml::des::navbar <nb_header>  -> <navbar:header>
+               wml::des::navbar <nb_footer>  -> <navbar:footer>
+               wml::des::navbar <nb_prolog>  -> <navbar:prolog>
+               wml::des::navbar <nb_epilog>  -> <navbar:epilog>
+               wml::des::navbar <nb_filter>  -> <navbar:filter>
+               wml::std::case   <uppercase>  -> <case:upper>
+               wml::std::case   <lowercase>  -> <case:lower>
+               wml::std::tags   <array-size> -> <array:size>
+               wml::std::tags   <push>       -> <array:push>
+               wml::std::tags   <pop>        -> <array:pop>
+               wml::std::tags   <show>       -> <array:show>
+               wml::std::info <generated-via-wml> -> <logo name="wml">
+      980124 - added new "wmu" frontend
+             - added wml_common/termreadkey/
+      980126 - moved wml_pX_XXX to wml_backend/pX_XXX
+             - added wml_common/delimmatch/
+             - fixed DelimMatch version from 1.01 to 1.03
+             - expanded "distclean" target in wml_common/Makefile.in
+             - added EOL-mode (#) and Block-mode (/*...*/)
+               comment support to Pass 1 (IPP) to get rid of
+               comments as quick as possible. This way we now
+               really can comment out any stuff and as a side
+               effect processing is a little bit faster.
+             - added wml_common/blockparser/
+             - fixed tempfile remove again. This time for the
+               case where WML breaks because of a pass error.
+             - created the WML test suite and a first t/01-plain.t
+      980128 - added -P option to IPP for running prolog programs
+             - Upgraded GD 1.17 -> 1.18
+             - now the <lowsrc> tag from wml::des::lowsrc skips
+               the creation when the xxx.lowsrc.gif already
+               exists and has a higher timestamp.
+             - now WML uses the new Term::ReadKey at -v3
+             - Upgraded to Slice 1.3.1 which fixes Slice
+               errors
+             - Now all wml_pX_YYY and wml_aux_XXX scripts
+               and binaries are installed in LIBDIR/exec/
+               instead of BINDIR/.
+             - Fixed WMd: Now the ftp:// link works and also runs
+               Lynx.
+             - Fixed generation of WML command in WMk
+      980202 - Now the -V option of all frontends run wml -V..
+             - Fixed WMb message generation
+             - added new wml_tags.pod manual page
+      980204 - Added <lang:star:> tag to wml::std::lang
+             - Fixed wml::std::logo
+             - Added <say> tag for debugging to wml::std::tags
+             - Adjusted PORTING.test for new "make test" approach
+      980205 - Fixed wml::std::all because wml::std::case was
+               missing [Thanks to Alvise Belotti
+               <alvise@lettere.unipd.it> for hint]
+      980207 - Renamed --with-cc to --with-forced-cc and added
+               a new --with-cc configure option which doesn't
+               force CC for Meta-HTML and ePerl to avoid
+               conflicts under HP-UX and simular braindead
+               systems.
+             - Added more info about multi-lingual pages to
+               wml_tutorial.pod
+             - Fixed built_date determination in configure
+      980208 - Adjusted NEWS file
+             - Fixed "make test" again
+             - Now "make install" automatically runs "make all"
+               when it was not run already.
+      980209 - Fixed WMu again.
+             - Upgraded IO 1.1804 -> 1.19
+  ___________________________________________________________________________
+
+  Changes between 1.5.0 and 1.5.1:
+      980112 - Upgraded to File::PathConvert 0.3
+             - Rewritten the ANNOUNCE file
+      980115 - The PREFIX/bin is now put in front of $ENV{PATH}
+               in all frontends to avoid problems when more then
+               one WML installation exists.  [Thanks to Fritz
+               Zaucker <zaucker@ee.ethz.ch> for hint]
+             - Now WMk and WML correctly escape -o options
+               from the shebang lines when they are not quoted
+               but contain shell meta chars [Thanks to Fritz
+               Zaucker <zaucker@ee.ethz.ch> for hint]
+      980116 - fixed another bug in context of quoted -o option
+               arguments [Thanks to Fritz Zaucker
+               <zaucker@ee.ethz.ch> for hint]
+             - fixed the -v1 output because "mhc" and "epl"
+               columns usually have two digits before the point.
+             - added -v1 to wml_sample/Makefile
+             - fixed manual page of wml::std::lang [Thanks to
+               Fritz Zaucker <zaucker@ee.ethz.ch> for hint]
+             - Rewritten the README file
+             - Added the WML_SRC_BASENAME variable to the "wml"
+               frontend.
+
+  Changes between 1.4.11 and 1.5.0:
+      980101 - Updated Copyright Notices for 1998 and removed
+               still left "All Rights Reserved" trailers,
+               because this bites with GNU GPL.
+      980103 - Upgraded to iSelect 1.0.4: Now WMd is also
+               correctly terminated on CTRL-C without crashing
+               the XTerm behavior.
+      980104 - Changed "make test" to automatically check
+               for the installation
+             - Added --with-cc=PATH option to configure which is
+               equivalent to ``CC=PATH ./configure [...]'' but is
+               more intuitive because we already have
+               --with-perl=PATH.
+             - Adapted and enhanced the PORTING.test script from
+               the ePerl distribution for WML platform porting
+               tests
+             - Upgraded Meta-HTML's config.{guess,sub} files
+             - Updated NEWS file
+             - Changed Build Date in configure script to ISO
+               format
+             - Fixed wml_p4_gm4/Makefile.in for AIX 4.2
+             - Force etc/install.sh under AIX 4.x because
+               their `installbsd' program is buggy
+      980105 - Again cleaned up Pass 5 (Divert) because
+               divert.src now is a sample implementation of the
+               diversion chapter in my dimploma thesis ;_)
+      980106 - Added the various package/installation files as
+               wml_contrib/pkg/. [Thanks to Jim Hebert
+               <jhebert@compu-aid.com> for the RPM version]
+             - Added the new wml::std::lang which provides a
+               high-level interface for defining the output
+               slices for various languages.
+             - Upgraded to Slice 1.3.0: This adds a nifty
+               feature to WML's -o option. Now one can use
+               wildcarded slices like `LANG_*' which means
+               the union of all existing LANG_XXX slices.
+             - Fixed handling of ``wml -o...:-'', i.e.  when
+               stdout is explicitly requested.  WML hang in the
+               past waiting for STDIN because unprotect opened
+               the "output file "-".
+             - Added lession about wml::std::lang to
+               wml_docs/wml_tutorial.pod
+             - Added <document_url> tag to wml::std::info [Thanks
+               to Viorel Anghel <vang@ely.leader.ro> for the
+               idea]
+      980108 - Adjusted NEWS file for version 1.5
+             - Adjusted ANNOUNCE file for version 1.5
+      980110 - Fixed new <document_url> canonicalisation
+               [Thanks to Viorel Anghel <vang@roedu.net>]
+      980111 - Fixed attribute fixing in HTMLfix (Pass 8) for
+               <!-- [...] --> which is no real HTML tag.  WML
+               incorrectly fixed the following: <!-- vim:set ts=4
+               sw=4: --> to <!-- vim:set ts="4" sw="4:" -->.
+               [Thanks to Stefan `Sec` Zehl <sec@42.org> for
+               hint]
+             - let PORTING.test accept "cc -fast"
+             - let wml_p2_mhc/configure.in accept "cc -fast" and
+               do not use GCC options "-O2 -finline-functions".
+  ___________________________________________________________________________
+
+  Changes between 1.4.10 and 1.4.11:
+      971231 - Upgraded to ePerl 2.2.12: This fixes a nasty
+               syntax error in ePerl 2.2.11's configure script.
+               The result was that ePerl failed to build when
+               your Perl version was not of type 5.00X_YZ :-(
+
+  Changes between 1.4.9 and 1.4.10:
+      971228 - Upgraded to Slice 1.2.9
+      971230 - Fixed wml_sample/demo.wml: The "slices" attribute
+               for <page> has to added now. [Thanks to Anthony
+               Fok <foka@gpu.srv.ualberta.ca> for patch]
+             - Fixed wml_frontend/wml.src because now Slice no
+               longer is a special case for -v option. [Thanks to
+               Anthony Fok <foka@gpu.srv.ualberta.ca> for patch]
+             - Upgraded to ePerl 2.2.11: This makes WML the first
+               time compliant to the Perl Locale environment,
+               e.g.  the <sc> from wml::des::typography now works
+               for international characters, too.
+             - Upgraded to Bit-Vector 5.0b2
+             - Updated COPYRIGHT.OTHERS file
+             - Changed Meta-HTML version string from 5.02 to
+               5.02/wml to make it clear that this is not a
+               complete or standard Meta-HTML.
+             - Added another Q&A to wml_faq.pod and fixed
+               question numbering
+
+  Changes between 1.4.8 and 1.4.9:
+      971224 - Added the contents of the RESTRICTIONS file to
+               wml_faq.pod and removed the file.
+             - Corrected the FAQ because of new <protect>
+             - Added more info to the FAQ
+      971226 - Upgraded to GetoptLong-2.13
+             - Upgraded to Image-Size-2.5
+             - completely cleaned up the Divert (Pass 5) filter
+               and enhanced it: Now you can do a named leave,
+               i.e. leave a divertion by name which has the
+               effect of leaving it and all other divertions
+               which were entered from within it.
+             - added <page_end> to wml::std::page which can be
+               used to end a <page>. This usually is not needed
+               in standard situations, but when creating more
+               than one page via <page> and slicing then this is
+               needed to avoid nesting.
+             - Upgraded to IO-1.1803
+      971227 - changed the IPP semantics of #include and #use to
+               a better one: Now #include really does what it
+               says, it unconditionally includes a file, perhaps
+               even more then once. On the other hand #use has
+               the general "use" semantic where multiple
+               inclusion is automatically avoided. Up to this
+               time it was not possible to include a file
+               (perhaps a navigation bar) more then once, because
+               #include also had the multiple inclusion
+               detection. Now this is no longer the case.
+             - added "slices" attribute to <page> of
+               wml::std::page which now has to be used to force
+               <page> to create the WML_PAGE_XXX slices.  Because
+               these usually make problems when using <page>
+               multiple times.
+
+  Changes between 1.4.7 and 1.4.8:
+      971221 - added SUPPORT file with info about the new ML
+               sw-wml@engelschall.com
+      971222 - upgraded from GD-1.14 to GD-1.16
+      971223 - added a new trick to HTMLstrip: <suck>, this tag
+               absorbs itself and all whitespaces. This is a nice
+               feature which is now used in
+               wml::des::typography's <tul> container tag to get
+               rid of whitespaces.
+             - enhanced, cleaned up and documented
+               wml::des::typography
+             - upgraded to ePerl 2.2.9
+
+  Changes between 1.4.6 and 1.4.7:
+      971215 - Created BUGREPORT file
+      971218 - Rewritten the <sc> and <csc> tags from
+               wml::des::typography to avoid problems with
+               acented characters.  BUT NON-ASCII CHARS ONLY WORK
+               IF YOUR SYSTEM SUPPORTS LOCALES!  [Thanks to Fritz
+               Zaucker <zaucker@ee.ethz.ch> for hint]
+             - fixed incorrect scoping for $CFG variable in
+               wml::des::navbar which leads to an error under
+               some Perl versions.  [Thanks to Fritz Zaucker
+               <zaucker@ee.ethz.ch> for hint]
+             - Fixed typo in wml::des::all [Thanks to Fritz
+               Zaucker <zaucker@ee.ethz.ch> for patch]
+      971219 - Fixed and enhanced the attribute fixing in
+               HTMLfix.  Now it is tag-sensitive (i.e. name=value
+               pairs outside tags are not fixed) and the value is
+               no longer restricted to just digits.  [Thanks to
+               Carsten Braeutigam <carsten@nada.kth.se> for hint]
+             - Now the width/heigth calculation of <img> tags in
+               HTMLfix honors the aspect ratio, i.e when only one
+               attribute is given, the other one is calculated
+               relative to it. [Thanks to Carsten Braeutigam
+               <carsten@nada.kth.se> for hint]
+             - fixed a few cosmetic source parts
+             - because I really dislike the 3rd-party Meta-HTML
+               sources, I've again stripped down the stuff. This
+               time the GNU malloc was removed (was not used
+               under Solaris and Linux and under FreeBSD should
+               not) and some other not really needed files.
+
+  Changes between 1.4.5 and 1.4.6:
+      971209 - slightly adjusted ANNOUNCE file
+      971211 - fixed manpage of the new wml::des::preload
+             - fixed a few typos in wml_docs/wml_tutorial.pod
+             - rewritten and completed the 1.3->1.4 part of
+               the NEWS file.
+             - removed unneccessary stuff in Meta-HTML's
+               configure
+      971212 - fixed row/column spanning of wml::std::grid
+               [Thanks to Tetsuya Furukawa
+               <tetsuya@secom-sis.co.jp> for patch]
+             - enhanced the stripping in HTMLstrip (Pass 8). Now
+               HTMLstrip strips according to the three possible
+               areas: Inner Tag, Inner Preformatted, Plain Text.
+               So, now JavaScript code is no longer stripped
+               incorrectly.
+             - added a <nostrip> for the <javascript> container
+               to wml::std::tag because its useful here.
+             - added a <nostrip> for the <script> container to
+               wml::des::navbar because its useful here, too.
+             - added $(name:*string) syntax to IPP (Pass 1) to
+               allow real if-then-else constructs in combination
+               with the already existing $(name:+string)
+               construct.
+             - added some stuff to wml_tutorial.pod
+             - disabled warnings also for include files in
+               wml::sys:boot now to get rid of nasty warnings
+               when PERL5OPTS="-w" is set by the user.  [Thanks
+               to Oliver Hensel <oliver.hensel@gmx.de> for hint]
+             - upgraded to Slice 1.2.8
+      971215 - made username/realname determination more robust
+               against special chars like backticks [Thanks to
+               Stefan `Sec` Zehl <sec@42.org> for hint]
+             - now WML:Break-errors return the correct status and
+               rc numbers.
+             - another frontend for the user: WMb -- Website META
+               Language Bug Report Tool.
+
+  Changes between 1.4.4 and 1.4.5:
+      971205 - made configure's determination of the FQ-hostname
+               more robust
+             - added hint so S-Lang curses as an alternative to
+               NCurses
+             - made WML's username/realname determination more
+               robust
+             - done a lof porting tests on various platforms.
+               See PORTING file for details.
+      971209 - let wml/aux/Makefile.in stop on errors in subdirs
+             - slightly changed INSTALL file
+             - made Term::Cap usage more robust in WMk and
+               HTMLinfo because under some systems this does not
+               work for all terminal types.
+             - made MakeMaker's processing more quiet in
+               wml_common/Makefile.in according to the uninstall
+               warnings
+             - removed MakeMaker manpage
+               creation/installation/deleting for
+               wml_common/Makefile.in
+             - added new wml::des::preload include file for
+               preloading images
+             - again fixed the image width/height determination
+               stuff in HTMLfix.
+
+  Changes between 1.4.3 and 1.4.4:
+      971130 - fixed Pass 1 (IPP): the #use and #include argument
+               handling was not restored after first usage.
+      971201 - added <nb_filter> to wml::des::navbar because
+               sometimes one really needs some Perl stuff to
+               fixup some aspects of the generated HTML code
+               which cannot be done statically.
+             - fixed wml::des::rollover which was broken because
+               of the change in WML 1.4.2
+             - enhanced Pass 7 (HTMLfix) so you can specify
+               width/height attributes with a value of ``*''.
+               There the asterisk is replaced by the correct
+               image size while without any such attribute
+               HTMLfix just adds the missing attribute. And
+               HTMLfix now also can just add one missing
+               attribute when the other still exists.
+             - adjusted ANNOUNCE file
+             - adjusted RESTRICTIONS file
+             - fixed WMk subdir movement display
+
+  Changes between 1.4.2 and 1.4.3:
+      971129 - fixed libsubdir handling again
+      971130 - now the new wml::des::navbar killer include file
+               is finished and included as
+               wml_include/des/navbar.src.
+             - created new wml_contrib/ dir and placed
+               my .vimrc's WML stuff into it
+
+  Changes between 1.4.1 and 1.4.2:
+      971124 - added support for the global variable GFONT_BASE
+               to wml::des::gfont for redirecting images to a
+               global place.  [Thanks to Carsten Braeutigam
+               <carsten@nada.kth.se> for hint]
+             - system variables like WML_GEN_HOSTNAME now can be
+               overwritten by -D options. This is useful for the
+               <info> tag from wml::std::info to get the
+               EMail-address correct.  [Thanks to Carsten
+               Braeutigam <carsten@nada.kth.se> for hint]
+             - documented the "notag" attribute of wml::std::gfont 
+               which was undocumented up to this time.
+             - added two Q&A to wml_faq: How to combine <gfont>
+               with <href> and how to combine <gfont> with
+               <rollover>.  [Thanks to Carsten Braeutigam
+               <carsten@nada.kth.se> for answering]
+             - added "hint" attribute to <rollover> similar to
+               the one from <href> and let the URL display if no
+               such attribute is given.  [Thanks to Carsten
+               Braeutigam <carsten@nada.kth.se> for idea]
+      971127 - upgraded Bit::Vector from 4.2 to 5.0b1
+             - upgraded to Slice 1.2.7
+      971128 - slightly fixed Pass 8 (HTMLstrip) for inter-tag
+               attribute stripping
+      971129 - removed possible conflict inside
+               wml::des::rollover with the new wml::des::navbar
+               which is currently under development.
+             - fixed wml::OBSOLETE::path and wml::sup::relpath
+             - renamed wml::sup::relpath to wml::sup::path
+             - added canonpath() function to new wml::sup::path
+
+  Changes between 1.4.0 and 1.4.1:
+      971124 - fixed Version-id update for wml_frontend/wmd.txt file
+             - Corrected and Enhanced the INSTALL file
+             - upgraded to iSelect 1.0.2: This makes WML again
+               more portable, because this iSelect is the first
+               one which is widly portable between major Unix
+               derivates.
+
+  Changes between 1.3.5 and 1.4.0:
+      971114 - ** again cutted down wml_p2_mhc. This time all
+               database and session stuff (which is not needed
+               under WML) was completely removed.  This way the
+               wml_p2_mhc is smaller, build time is reduced and
+               the distribution contains fewer unneccessary
+               files.
+             - adjusted ANNOUNCE file for WML 1.4
+      971115 - ** reversed option -s: now is stands for --safe
+               instead of --speedup and the default now is to use
+               the speedup hacks.  Because experience with WML
+               1.3.x showed that this works great and reduces
+               processing time dramatically
+             - ** added wml_frontend/wmd.src which is the
+               new WML Doc Browser
+             - added wml_aux/iselect/* (iSelect 1.0.0) for
+               the new WMd frontend.
+             - fixed wml/wmk/wmd -V option (@libsubdir@ was missing)
+             - make wmk and wmd -V option similar to wml -V
+      971117 - upgraded to ePerl 2.2.8
+      971118 - changed wml_p8_htmlstrip stripping, so ``#.*''
+               is a comment and not only #[#!\n\s]*.* This was
+               done in the past intentionally, but I forgot the
+               reason, so we'll see ;_) [Thanks to Heiko
+               Schlittermann <heiko@lotte.sax.de> for hint]
+      971120 - added "target" attribute to <rollover> tag from
+               wml::des::rollover [Thanks to Carsten Braeutigam
+               <carsten@nada.kth.se> for hint]
+      971123 - made Perl's warning option quiet ;_)
+             - ** added long-awaited <protect
+               [pass=SPEC]>..</protect> internal container tag
+               which can be used to protect any data from
+               processing by _any_ pass.  While protections can
+               occur after any pass, the final output data is
+               unprotect after pass 9 only.  [Thanks to Carsten
+               Braeutigam <carsten@nada.kth.se> for forcing me to
+               create it now]
+             - fixed WMk handling when option -a is used [Thanks
+               to Stephen van Egmond <svanegmo@truespectra.com>
+               for hint]
+  ___________________________________________________________________________
+
+  Changes between 1.3.4 and 1.3.5:
+      971112 - upgraded to Slice 1.2.6 which fixes a nasty
+               slice term calculation bug.
+      971113 - added <rect> container tag to draw rectangles
+               to wml::std::box.
+             - corrected shebang hint in WMK manpage and added
+               shebang documentation to WML manpage
+             - added automatic adding of mailto: and http://
+               to wml::std::href for URLs.  [Thanks to David
+               Mentre <David.Mentre@irisa.fr> for idea]
+             - added a smaller generated-via-wml logo and added a
+               size=N attribute to the <generated-via-wml> tag
+               from wml::std::info.  [Thanks to David Mentre
+               <David.Mentre@irisa.fr> for idea]
+      971114 - added support for -V<N> where <N> is 1,2 or 3 to
+               get detailed information about WML and Perl for
+               bug reports.
+             - adjusted VERSIONS.HISTORY and CREDITS file
+             - fixed a few typos in INSTALL file
+             - fixed autoconf stuff for determining the
+               domainname via /etc/resolv.conf's "search" entry.
+             - formally upgraded to IO-1.1802 (no changes)
+             - renamed wml_sample/00README to wml_sample/README 
+             - changed wml_sample/Makefile to also test
+               speedup-mode
+
+  Changes between 1.3.3 and 1.3.4:
+      971108 - removed "All Rights reserved" from Copyright
+               notice because this one and the usage of GPL are
+               mutually exclusive.  
+               [Thanks to Bruce Perens <bruce@debian.org> for hint]
+      971110 - rewritten some regex stuff in HTMLfix (pass 7)
+               which was ok for Perl 5.004 but too complicated
+               for 5.003.  Perl 5.003 is buggy here.  [Thanks to
+               Carsten G. Braeutigam <carsten@3point.net> for hint]
+             - added a little more verbosity also for case where
+               WML runs with option -s and -vN where N >= 2.
+             - added an attribute named "target" to the <href>
+               tag from wml::std::href to be able to use
+               hyperlinks which load the new page into a
+               particular targer frames
+             - removed the pre-generated pages from wml_sample to
+               be able to run a useful "make test" 
+
+  Changes between 1.3.2 and 1.3.3:
+      971107 - fixed wml_sample according to new wml::std::page
+               which defines some slices, so UNDEF now is UNDEF2.
+               [Thanks to David Mentre <David.Mentre@irisa.fr> for hint]
+             - fixed inconsitency in wml debugging where the user
+               was prompted to display the result even for pass 9.  
+               [Thanks to David Mentre <David.Mentre@irisa.fr> for hint]
+             - upgraded to ePerl 2.2.7
+             - fixed some typos in wml_docs/*
+
+  Changes between 1.3.1 and 1.3.2:
+      971102 - fixed wrong xtable-example in wml_tutorial.pod
+               [Thanks to Boris Wesslowski <bwess@gmx.de> for hint]
+             - added new wml::std::case include file which
+               provides HTML tag translation to upper or lower
+               case. [Thanks to Boris Wesslowski <bwess@gmx.de>
+               for idea]
+             - again fixed some blank lines which were generated
+               by wml::std::page.
+      971103 - fixed ASubst (pass 6) case where file directly
+               starts with the block delimiter. This was not
+               recognized.
+             - enhanced wml::std::case to correctly translate tag
+               attributes and moved this now very complicated
+               regex stuff into wml_p7_htmlfix as internal
+               container tag <tagconv>. Now wml::std::case is
+               just a high-level frontend.
+             - slightly adjusted ANNOUNCE file
+
+  Changes between 1.3.0 and 1.3.1:
+      971019 - fixed entity in WML manualpage
+      971022 - fixed <verbcode> in wml::std::typography
+             - renamed <indent> from wml::std::typograhy
+               to <pind> because of conflict with wml_p7_htmlfix
+             - added num=0 to <indent> to remove leading
+               whitespace box from a paragraph.
+      971024 - removed wml_common/00README and added the
+               missing information to COPYRIGHT.OTHERS file
+             - upgraded to IO-1.1801
+             - adjusted ANNOUNCE file
+      971026 - fixed .wmlrc parsing: now quoted strings
+               are handled exactly the way the Bourne-Shell does, i.e. 
+               foo=bar quux   => "foo=bar", "quux"
+               "foo=bar quux" => "foo=bar quux"
+               foo="bar quux" => "foo=bar quux"
+               where the last one is an important one, too.
+             - changed imgdot height to 16 pixels (a little bit
+               greater then 12) for <pind>/<ein> tags of
+               wml::des::typography to get a better look
+      971027 - added -A (accept) and -F (forget) options to WMk
+             - added -r (norcfile) to WMk, too.
+             - added -x (exec-prolog) and -X (exec-epilog) to WMk
+             - fixed WMk to be able to process files with "::" in name
+             - upgraded to ePerl 2.2.6
+
+  Changes between 1.2.3 and 1.3.0:
+      971006 - added nice <indent>..</indent> feature to
+               wml_p7_htmlfix
+             - now wml::std::page supports bgcolor=none which
+               means "do not specifiy bgcolor=.. at all".
+      971008 - fixed wml_p6_asubst: options on substitution
+               strings were not parsed correctly
+             - added WML_STDPAGE_XXX slices to wml::std::page
+      971009 - created wml::des::imgbg to batch create background
+               GIF images
+      971010 - enhanced the -v1 processing time output: now 
+               a table is displayed showing exact times of
+               each pass
+      971014 - added <toc_hN> tags to wml::std::toc
+             - cleaned up the WMk and WML options description in
+               manual page and usage pages and added correct
+               support for GNU long-options.
+             - added support for out-commenting tags to pass 7
+               (htmlfix). Now one can comment out a tag by just
+               adding a # to its name.
+             - added a little useful and often needed feature to
+               wml::std::typography. When adding "face_shortcuts"
+               to the #use line, all ``face=helvetica'' strings
+               are replaced by ``face="Arial,Helvetica"''.
+             - added option -r/--norcfile to WMk and WML.
+      971015 - !!! added the new *EXPERIMENTAL* -s option to WML and
+               !!! WMk which stands for _SPEED_UP_. This option
+               !!! enables the pre-compiling of the passes which can
+               !!! speed-up the processing _dramatically_!!
+             - fixed IPP (pass 1) for option -s handling
+             - fixed aSubst (pass 6) for option -s handling
+             - fixed HTMLfix (pass 7) for option -s handling
+             - fixed HTMLstrip (pass 8) for option -s handling
+             - upgraded to IO-1.18
+  ___________________________________________________________________________
+
+  Changes between 1.2.2 and 1.2.3:
+      970914 - fixed whitespace handling in wml::des::imgdot
+             - fixed <ifdef> in wml::std::tags
+             - fixed wml::des::space which was broken because
+               of braindead variable scoping in Meta-HTML. ARGL!
+             - fixed WMk error message 
+      971004 - upgraded to Getopt::Long 2.12
+             - upgraded to WebLint 1.020
+             - fixed <ifdef> tag in wml::std::tags support
+               [Thanks to Heiko Schlittermann
+               <heiko@lotte.sax.de> for hint]
+             - fixed argument parsing on #include lines:
+               arguments after a boolean argument were lost
+             - now IPP supports a backslash in front of the
+               $(xxx) syntax to prevent the interpolation of
+               $(xxx). And when xxx is not defined, it
+               now interpolates to the empty string. This way
+               it now has the Bourne-Shell semantics.
+             - added Bourne-Shell-like $(xxx:-yyy), $(xxx:=yyy),
+               $(xxx:+yyy) and $(xxx:?[yyy]) syntax variants to
+               IPP (Pass 1).
+      971005 - fixed IPP usage display page
+             - fixed WMk usage display page
+             - now -DNAME~PATH is also supported on the commend
+               line: here PATH is adjusted to the dir where the
+               ``wml'' command was run from.  [Thanks to Heiko
+               Schlittermann <heiko@lotte.sax.de> for hint]
+             - added -D option to IPP to be able to also define
+               IPP variables for the top-level/initial file
+             - now WML also passes its defines (-D option) to IPP
+               via IPPs new -D option
+             - fixed ``-DROOT~.'' case where ROOT was set as
+               "../" instead of ".." which is usually needed.
+             - added a long-time missing feature to
+               wml::des::imgdot: now when no filename base is
+               specified but the variable IMGDOT_BASE is defined
+               (usually via .wmlrc as -DIMGDOT_BASE~path) then
+               this is one is taken instead of the source
+               filename base. This provides a flexible way to
+               shared imgdot images.
+             - rewritten the output of wml_aux_htmlinfo:
+               now a nice table is printed to STDOUT instead
+               of the old and ugly indented list.
+             - added "global" feature to wml::fmt::isolatin
+
+  Changes between 1.2.1 and 1.2.2:
+      970831 - added URL to ImageMagick homepage to wml::des::gfont
+             - added hints about third-party programs to INSTALL file
+             - added -DDEBUG=1 support to wml::des::imgdot; now
+               when this options is activated the 1pt dot images
+               always contain red color and are thus visible.
+             - enhanced <spaced> container tag of
+               wml::des::typography; now it can space the text
+               per character (via &nbsp;) _and_ per line (via imgdots)!
+             - created wml::OBSOLETE include file for defining
+               old tagnames in addition to old files which are
+               under wml::OBSOLETE::xxx.
+      970901 - fixed wml::sys::all [Thanks to Stephen van Egmond
+               <svanegmo@truespectra.com> for hint]
+             - fixed std/info.src: <pageinfo> -> <info> as intended.
+             - fixed and enhanced width-handling of
+               wml::std::grid [Thanks to Stephen van Egmond
+               <svanegmo@truespectra.com> for hint]
+             - fixed wml_p8_htmlstrip case where a newlines is in
+               front of a non-preformatted area
+             - disabled #-style comments for Pass 4 (GNU m4)
+               because this caused big problems with
+               xxx="#rrggbb" and is a totally unnecessary feature
+               because WML already provides #-style comment
+               support [Thanks to Heiko Schlittermann
+               <heiko@lotte.sax.de> for hint]
+      970903 - Upgraded to ePerl 2.2.5
+             - Upgraded to File-PathConvert-0.2
+             - Upgraded to Image-Size-2.4
+      970905 - Updated wml:des::gfont for new gFONT 1.0.0
+             - Now wml::des::rollover automatically names the
+               images if the "name" tag is not given
+
+  Changes between 1.2.0 and 1.2.1:
+      970825 - fixed typos in wml_tutorial.pod
+             - removed some unnecessary stuff from Makefile.in of
+               wml_p2_mhc/libutils
+      970826 - added some links to the include files
+             - added support for "-i wml::category::file" to IPP
+               and WML.
+             - overhauled the document wml_intro.pod
+             - slightly changed ANNOUNCE and README files
+      970828 - added IPP option -m to load mapping files
+             - added the old obsolete WML 1.1.0 include files for
+               backward compatibility
+             - created wml_include/compat.map with entries for
+               wml::OBSOLETE stuff
+             - removed left-over debugging statements in IPP
+             - removed wml_include/TODO file
+             - created --enable-compat option for configure to
+               enable the installation of wml::OBSOLETE stuff
+             - upgraded to Slice 1.2.5
+      970829 - created first version of a WML Make (wmk) in
+               wml_make. This is high-level frontend to wml like
+               xmkmf for imake is.
+             - slightly fixed wml_docs/wml_tutorial.pod
+             - merged wml_main and wml_make into wml_frontend
+             - moved wml_aux_XXX to wml_aux/XXX
+             - moved sample/ to wml_sample/
+             - fixed shebang support of wml
+             - added "make test" to wml_sample/Makefile
+             - again added config.guess and config.sub to etc/
+             - now the built environment is determined and
+               wml/wmk -V now display this information
+             - created PORTING file
+             - added dummy "test" target to top-level Makefile.in
+             - updated VERSION.HISTORY file for all versions
+             - added a new <spaced>..</spaced> container tag to
+               wml::des::typography for spaced text (german:
+               "gesperrter Text")
+             - added first try for a WML FAQ as wml_docs/wml_faq.pod
+             - now htmlfix also recognizes xxx=+dddd attributes
+             - fixed wml::imp::generic
+             - fixed wml::des::typography
+             - fixed again wml_common/gd/ for "distclean" target
+             - added info about long-options to wmk
+      970830 - fixed OBSOLETE.map (.src -> .wml): [Thanks to
+               Heiko Schlittermann <heiko@lotte.sax.de> for hint]
+             - make MakeMaker stuff under wml_common more quiet
+             - added the built locations to -V option of WML.
+             - added WML_LOC_XXX variables which hold the built
+               locations
+             - added <generated-via-wml> tag to wml::std::info
+               which inserts the generated-via-wml.gif file as a
+               button.
+             - fixed determination of domainname/hostname  in GNU
+               autoconf.
+
+  Changes between 1.1.0 and 1.2.0:
+      970819 - removed wml_aux_gfont because it cannot
+               be configured cleanly from within WML distribution
+               (its libfiles don't fit well for installation and
+               runtime) and this program alone is not sufficient.
+               So when one need TeX, one can also install this
+               little programm externally.
+      970820 - added REQUIRES lines to include manpages
+             - put javascript container tag into wml::std::tags
+               and removed wml::app::javascript
+      970821 - speed up the case where ``wml'' receives an empty
+               input file: Now this implies -p9, i.e.  only the
+               output pass is used. 
+             - added one single but really essential feature to
+               Pass 2 (Meta-HTML): The asterisk from tags
+               (``<tag* ...>'' and ``</tag*>'') are removed. This
+               way you can easily overwrite standard HTML tags im
+               Meta-HTML but you are still able to use the
+               standard variant directly within the definition by
+               adding an asterisk.
+             - fixed Pass 8 / htmlstrip: It removed the final
+               newline in a file also which looks ugly
+             - fixed --with-openworld option description in GNU
+               autoconf [Thanks to Heiko Schlittermann
+               <heiko@lotte.sax.de> for hint]
+             - made a kludge to wml_common/gd/libgd/Makefile.PL
+               to workaround an existing MakeMaker bug where the
+               Makefile is not removed on "distclean".   [Thanks
+               to Heiko Schlittermann <heiko@lotte.sax.de> for
+               hint]
+             - changed the "use lib" stuff in wml::sys::boot to a
+               BEGIN/@INC variant to avoid conflicts in Perl's
+               lib.pm 
+             - upgraded to ePerl 2.2.3
+             - removed obsolete wml::des::imgsize. His job
+               is already done by Pass 7 (htmlfix)
+      970822 - enhanced wml::des::grid, now it has no longer real
+               restriction on which data can be put into cells.
+      970823 - replaced wml::std::headfoot by a more powerful and
+               clean wml::std::page include file which provides a
+               singe <page> tag instead of the old and ugly
+               <header>/<footer> tags.
+             - renamed wml::std::url to wml::std::href because it
+               does not provide a <url> tag; it provides a <href>
+               tag.
+             - removed wml::msc::m4 and put the stuff from this
+               file into wml::std::tags.
+             - removed wml::std::divert and put the stuff from
+               this file into wml::std::tags.
+             - renamed wml::msc::path to wml::msc::relpath and
+               its function from from_to() to relpath().
+             - renamed wml::std::stack to wml::msc::stack because
+               this is also just a snippet
+             - removed wml::std::symbol and put the stuff into
+               wml::std::tags
+      970824 - overhauled more include files
+             - created wml_docs/ dir with wml_intro.pod and
+               wml_tutorial.pod files
+             - fixed the subdir movement strings of wml_p4_gm4
+               and wml_common
+             - moved some POD stuff from wml_main/wml.src to the
+               new wml_docs/wml_intro.pod
+             - again stripped down wml_p2_mhc (~100KB)
+             - added new feature to IPP (Pass 1): Now one can set
+               variables after #include/#use which are
+               interpolated via $(..). And there are now to
+               special string: __FILE__ and __LINE__ which are
+               similar to CPP.
+             - made a workaround for the "file" POD problem of
+               IPP manualpage.
+      970825 - fixed again htmlstrip (Pass 8)
+             - written wml_tutorial.pod
+
+  Changes between 1.0.4 and 1.1.0:
+      970817 - Fixed examples in wml(1) manpage [Thanks to Heiko
+               Schlittermann <heiko@lotte.sax.de> for hint]
+             - fixed long-standing problem with ``-DXXX=YYYY''
+               (didn't worked in the past) vs.  ``-D XXXX=YYYY''
+               (always worked).  The problem lies in
+               "$Getopt::Long::getopt_compat" defaulting to 1 in
+               Getopt::Long module :-(.  [Thanks to Heiko
+               Schlittermann <heiko@lotte.sax.de> for hint]
+      970818 - upgraded to Getopt::Long 2.10
+             - changed "perl_private" subdir in libdir
+               to just "perl" because looks ugly
+             - added a remove command to wml_common/Makefile.in
+               for manual stuff which gets created by the
+               MakeMaker install targets
+             - added some descriptive info to install target to
+               be able to easier follow an installation.
+             - added fallback to "more" for $ENV{'PAGER'} in
+               wml_main/wml.src
+             - fixed recently introduced problem with Getopt::Long
+               installation [Thanks to Heiko Schlittermann
+               <heiko@lotte.sax.de> for hint]
+             - changed --with-closedworld to --with-openworld and
+               reversed meaning: Now WML per default installs its
+               own private copies of Perl modules.  This is more
+               safe. Now when one really wants to use existing
+               versions he has to specify this option explicitly.
+             - ** removed a lot of unneccessary GNU autoconf stuff **
+             - made builds under wml_p2_mhc and wml_p4_mhc more quiet 
+             - big cleanup wml_common/Makefile.in
+             - renamed PROBLEMS file to RESTRICTIONS
+             - merged ANNOUNCE and ANNOUNCE.ADDR files
+             - fixed nasty bug in Divert which caused recursion
+               warnings and missing output where really no
+               recursion was [Thanks to Heiko Schlittermann
+               <heiko@lotte.sax.de> for hint]
+      970819 - upgraded to SLICE 1.2.4: now WML also accepts
+               empty input files which is nice when it used in a
+               pipe where it should not complain about these.
+             - fixed a few include files and generally replaced
+               #include with the more compact and more readable
+               #use variant
+             - created a useful wml::app::toc whic automatically
+               generates a table of contents out of <Hn>...</Hn>
+               tags.  [Thanks to Heiko Schlittermann
+               <heiko@lotte.sax.de> for forcing me to think about
+               this idea]
+  ___________________________________________________________________________
+
+  Changes between 1.0.3 and 1.0.4:
+      970814 - fixed wml_main option -O which was incorrectly
+               passed through.
+             - removed "perl -c" check in
+               wml_p9_slice/Makefile.in which caused problems
+               under some installations
+             - now wml correctly removes its temporary files 
+               when an error occurs in a pass.
+             - make container body end delimiter in wml::fmt::*
+               more unique to avoid conflicts with body contents.
+             - added <podfile> to wml::fmt::pod and <verbfile>
+               to wml::fmt::verb
+      970815 - fixed the private perl5 install paths, the "wml"
+               subdir is now correctly added to "libdir" when it
+               does not already contain a substring "wml".
+               [Thanks to Henrik Theiling
+               <theiling@CoLi.Uni-SB.DE> for hint]
+             - fixed demo.wml from the webpages and added
+               it to the distribution under sample/
+             - changed "my" construct in wml_p9_slice which
+               caused problems under Perl 5.003 because only Perl
+               5.004 allows "my" inside "foreach" [Thanks to Rene
+               Pijlman <R.W.Pijlman@inter.nl.ne> for hint]
+             - slightly changed syntax of wml_p6_asubst to avoid
+               conflicts with plain text [Thanks to Henrik
+               Theiling <theiling@CoLi.Uni-SB.DE> for hint]
+             - enhanced wml::fmt::isolatin to be really more
+               complete, i.e. it now converts most of the ISO
+               Latin 1 characters.  [Thanks to Henrik Theiling
+               <theiling@CoLi.Uni-SB.DE> for code]
+             - renamed wml::fmt::{pod,sdf,text} to
+               wml::imp::{pod,sdf,text}
+             - renamed wml::fmt::verb to wml::fmt::verbatim
+               and made it more simple by using asubst
+             - added wml_aux_wwwtable and corresponding
+               wml::imp::wwwtable for really nice HTML table
+               generation via expert syntax
+             - fixed distclean target in wml_p9_slice/Makefile.in
+      970816 - fixed typo in wml::std::url [Thanks to Henrik
+               Theiling <theiling@CoLi.Uni-SB.DE> for hint]
+             - added MANIFEST file and correspodning make
+               creation target for better patchfile generation
+             - made the installation prefix really variabel so
+               one can use "make prefix=.." to override it.
+               [Thanks to Heiko Schlittermann
+               <heiko@os.inf.tu-dresden.de> for idea]
+             - cleaned up configure.in
+             - removed strip commands from Makefile.in while
+               addding -s to INSTALL_PROGRAM and replacing the
+               script installations with INSTALL_SCRIPT calls.
+               This fixes problems for the FreeBSD ports.
+             - added "#use type::class::item" to wml_p1_ipp
+             - removed some more unnecessary files ;_)
+             - replaced complete slice distribution with
+               a stand-alone variant and upgraded to Slice 1.2.3
+             - fixed wml_common/getoptplong/Makefile.PL
+             - fixed wml_common/io/Makefile.PL
+      970817 - again overhauled wml_aux_htmlinfo
+
+  Changes between 1.0.2 and 1.0.3:
+      970814 - *** fixed a bug in htmlstrip recently introduced which
+               caused destroyed generated markup code!! ARGL! ***
+             - upgraded to weblint 1.019
+             - fixed problem in wml_main: using -p12345678 to see
+               the result on stdout without processing by pass 9
+               (slice) was broken
+             - added -O<LEVEL> option to htmlstrip for optimizing
+               (regarding byte length) the HTML code.  Also added
+               this option to wml_main for passing to to
+               htmlstip.
+             - Upgraded to ePerl 2.2.2
+             - added info to wml_aux_htmlinfo about which number
+               of imaga references and how much bytes of data or
+               really unique (because only that counts because
+               browsers don't load more then once). So -E htmlinfo 
+               now is more useful.
+             - fixed wml_include/std/fileinfo.src
+             - fixed wml::fmt and wml::imp include files
+             - added sample to wml_aux_txt2html/txt2html.txt
+
+  Changes between 1.0.1 and 1.0.2:
+      970812 - rewritten htmlstrip: now it works
+               also with multiply tags on a line and
+               additionally strips more whitespaces
+             - fixed MANIFEST of wml_common/gd/ which
+               was broken in 1.0.1 due to remove of io.h
+      970814 - fixed wml_common/gd/libgd/gd.h which
+               still wants io.h
+               [Thanks to Henrik Theiling 
+                <theiling@coli.uni-sb.de> for hint]
+             - upgraded to Slice 1.2.2 which introduces
+               the %!slice construct. This makes WML
+               even more flexible ;_)
+               [Thanks to Andrew Pimlott 
+                <pimlott@abel.MATH.HARVARD.EDU> for idea]
+             - created VERSION.HISTORY file
+
+  Changes between 1.0.0 and 1.0.1:
+      970808 - fixed libdir adjustment in configure.in
+             - added --with-closedworld option to configure
+               to be able to force WML to install all Perl
+               modules privately.
+             - added --with-perl=PATH option to configure
+               to be able to force the use of a specific perl
+             - added --with-perl=PATH option to configure
+               of wml_p9_slice
+             - replaced -f by -x in configure for perl test
+             - fixed malloc.h problem in wml_common/gd/libgd/
+      970811 - upgraded to SLICE 1.2.0: 
+               THIS SPEEDS UP WML PASS 9 _DRAMATICALLY_!
+               Now the processing to for pass 9 is no longer directly
+               proportional to the length of the written files.
+             - fixed reference to Bit::Vector 4.0 in configure
+             - fixed install target of wml_common/Makefile.in
+  ___________________________________________________________________________
+
+  Changes between 1.0b18 and 1.0.0:
+      970714 - fixed a problem with wml_include/std/headfoot.wml
+             - upgraded to Bit-Vector 4.2
+      970727 - added package IO-1.15 for Perl 5.003 systems
+             - slightly speeded up wml_p6_asubst
+             - upgraded to gFONT 1.0b5
+             - upgraded to ePerl 2.2.1
+             - added wml::des::rollover for RollOver-style
+               images which can be used like img-tags
+      970807 - enhanced htmlfix to do more HTML fixups
+             - removed testdir t/, because we currently
+               have no way to do a real "make test" 
+               before "make install". The tests need
+               WML to be already installed.
+             - created wml::fmt::sdf for the Simple
+               Document Format (SDF) embedding 
+             - fixed wml::fmt::pod for pod2html from Perl 5.004_02
+
+  Changes between 1.0b17 and 1.0b18:
+      970623 - upgraded newvers
+             - upgraded to ePerl 2.2b8
+             - upgraded to gFONT 1.0b4
+             - fixed a problem in wml_include/Makefile.in
+               under Solaris.
+             - fixed configure under wml_p9_slice
+               because of removed lib/ dir.
+             - upgraded to linklint 1.35
+             - upgraded to txt2html 1.24
+
+  Changes between 1.0b16 and 1.0b17:
+      970520 - upgraded to gFONT 1.0b3
+             - upgraded to SLICE 1.1.1
+             - fixed a problem a correct substituted
+               generating wml.1
+
+  Changes between 1.0b15 and 1.0b16:
+      970428 - added wml_aux_gfont
+      970429 - added -m 755 to INSTALL_PROGRAM define
+             - added warning for non-GCC compilation
+               to configure
+             - changed wml::des::gfont to use 
+               new private wml_aux_gfont
+      970502 - replaced wml_aux_webxref with 
+               enhanced successor wml_aux_linklint
+
+  Changes between 1.0b14 and 1.0b15:
+      970423 - added wml_aux_webxref
+             - adjusted weblintrc
+             - fixed manpage of wml
+             - upgraded to Image-Size-2.3 and
+               fixed wml_common/00README
+             - created Test::Harness based test suite
+               and a first test for plain throughput
+             - replaced destroyed COPYING file with
+               a fresh one from prep.ai.mit.edu
+      970427 - upgraded to final ePerl 2.1.0 release
+               and fixed the changed calling options
+               in wml
+
+  Changes between 1.0b13 and 1.0b14:
+      970423 - changed wml manpage slightly
+               to make pass4 and pass5 more distinct
+             - added -t option to wml which sets
+               the mtime of outputfile(s) to mtime
+               of inputfiles
+             - fixed outputfile epilog/time handling
+             - now -v can get an optional numeric argument
+             - now -v means only -v1 and this does only
+               display the total processing time
+             - upgraded to slice-1.1.0 which now uses
+               Bit::Vector 4.0 instead of Set::IntegerFast 3.2
+
+  Changes between 1.0b12 and 1.0b13:
+      970417 - created a new wml::imp::remote
+             - created unfinished wml::std::img
+             - now wml also processes options
+               from a pseudo-shebang line. Use this
+               for instance to remember the output options
+               like
+                  #!wml -o... -o...
+               and compile the file just via
+                  $ wml file.wml
+             - removed the demo/ subdir from the
+               distribution. It is intended for
+               the webpages or a seperate distribution
+             - removed wml_p9_slice/lib/ because
+               it is not used
+             - removed the duplicated COPYING files
+      970422 - fixed a few include files
+             - added preserve/restore facility to wml::std::tags
+      970423 - fixed preserve/restore tags
+             - rewritten wml::des::grid with preserve/restore
+             - fixed wml_include/Makefile and wml itself
+               for temporary files: they are now removed
+               and named more unique. 
+             - upgraded to ePerl 2.1b6
+             - now -v gets passed to some filter passes
+             - now htmlfix gives out the total amount
+               of bytes the images accumulate on a page
+               on option -v.
+             - added weblint 1.017 to the distribution
+               as wml_aux_weblint. This is inteded as
+               a manually used epilog filter
+             - created a wml_aux_htmlinfo which
+               summarizes the content of a webpage
+             - added -E option to wml for running epilogs
+
+  Changes between 1.0b11 and 1.0b12:
+      970410 - created new include cathegory "imp"
+             - moved wml::des::csmap to wml::imp::csmap
+             - created a new wml::imp::view
+      970413 - fixed wml::des::typography
+      970416 - fixed a few include files
+             - documented more include files
+
+  Changes between 1.0b10 and 1.0b11:
+      970409 - added wml_aux_map2html
+             - removed the list of include files in wml.src
+               and added a new updated list to wml_include/all.src
+             - renamed msc -> app and old sup -> msc
+             - again added a lot of stuff to include files
+             - added all.wml files for all cathegories
+             - fixed "make install": the aux-files were missing
+             - renamed eg -> demo and added the complete
+               installation of this dir to "make install"
+             - removed htmltoc and toc.src because
+               of a principle restriction of WML this
+               cannot be used in a really useful way :-(
+             - changed PROBLEMS file
+      970410 - fixed a quoting problem for -D option
+               and put a warning in the wml manpage
+               then -DFOO=BAR is not allowed due to
+               restrictions in Getopt::Long. We always
+               have to use -D FOO=BAR (note the blank)
+             - created the first contents for the demo/ area
+             - now wml can also read from STDIN, i.e.
+               it can now be used as real Unix filter
+             - now the inputfile can also be completely
+               missing which also means "read from stdin"
+               but additionally forces quiet mode. This
+               is useful for pipes ..| wml |...
+
+  Changes between 1.0b9 and 1.0b10:
+      970408 - fixed ANNOUNCE file
+             - added more info to INSTALL file
+             - now pod2man tempfiles while building are removed
+             - added file existence tests to pass 4-6
+             - added the long-missing feature of pass 7:
+               htmlfix now does what it was intended to do.  It automatically
+               adds WIDTH/HEIGHT and ALT attributes to IMG tags.
+             - created a nice pod.wml which convertes between
+               POD and HTML via pod2html
+             - created a nice text.wml which convertes between
+               TXT and HTML via txt2html
+      970409 - again reorganized wml_include/. Now
+               the things are sorted into subdirs
+             - now the include file sys/boot.wml is
+               automatically pre-loaded before any others
+             - reworked wml::des::grid to use a divertion
+               for cells (this way you can use any contents)
+             - created a nice wml::fmt::verb include file
+             - fixed the -i '<...>' option for wml
+             - fixed a lot of stuff in the include files
+             - added wml_aux_txt2html
+             - added wml_aux_htmltoc
+             - created a wml::std::toc which used
+               wml_aux_htmltoc
+
+  Changes between 1.0b8 and 1.0b9:
+      970408 - greatly optimized wml_p5_divert
+               which had a really horrible performance
+               in 1.2b8 (big files need 10minutes and more
+               to process, now only a few seconds)
+             - added "-q" (quiet) option to wml which
+               prevents the prop from being displayed
+             - added "-i file" option to be able to pre-load
+               include or template ;-) files.
+             - allowed "_" as an additional character
+               for Divertion names in wml_p5_divert
+             - fixed a nasty bug in wml_8_htmlstrip when
+               nested preserved blocks occured.
+             - changed the make scheme for the *.src
+               files. Now they are no longer substituted
+               by configure. Instead a sed is done.
+             - added the functionality to discard
+               divertions and to overwrite a divertion.
+               This is actually the last missing feature
+               to allow real templates!
+
+  Changes between 1.0b7 and 1.0b8:
+      970406 - finally introduced the first missing pass: GNU m4.
+               (intended for general low-level macro processing)
+             - finally introduced the second missing pass: divert
+               (intended for special divertion filtering)
+             - renamed the others passes to be in order
+      970407 - created a nice divert.wml include file
+             - added information about include files
+               to wml's manpage
+             - created the all.wml include file which
+               just includes all others
+             - added Ren'e Seindal to COPYRIGHT.OTHER
+
+  Changes between 1.0b6 and 1.0b7:
+      970403 - changed a few manpages
+             - added Image::Size and GD to wml_common/ because 
+               these are needed inside some include files.
+             - added include/bootstrap.wml which does the needed 
+               "use libs ..." for the privately installed Perl modules
+             - completed COPYRIGHT.OTHER file
+             - fixed PROBLEMS file
+             - added Disclaimer to wml -V
+      970404 - renamed wml to wml_main
+             - renamed include to wml_include
+               and created a Makefile for this dir.
+             - now all include files contain a POD section which 
+               gets installed as man3/wml::name.3
+             - fixed the typo "independend" -> "independent" 
+             - created a CREDITS file
+             - made "make" in wml_p2_mhc/ more quiet
+      970405 - upgraded to ePerl 2.1b5 and fixed the internals of 
+               "wml" which now leads to a stop on an ePerl error 
+               while processing.
+      970406 - documented the first set of include files
+             - renamed typographic.wml to typography.wml
+             - renamed VERSION.txt to just VERSION
+
+  Changes between 1.0b5 and 1.0b6:
+      970403 - upgraded to ePerl 2.1b4 which
+               fixed the problem that GNu autoconf
+               was needed for compilation (autoheader)
+             - removed obsolete doc/Makefile which
+               again appeared due to old configure 
+             - upgraded etc/newvers to 2.1.1 which
+               fixes "make new-betalevel"
+             - removed the old silly contents of eg/
+               and replaced it with the demo.wml
+               example of the webpages
+             - documented missing WML_XXX variables
+               and documented the WMLOPTS and .wmlrc
+               features
+
+  Changes between 1.0b4 and 1.0b5:
+      970402 - added wml_p2_mhc/doc/metahtml.txt which
+               gets installed as man/cat1/wml_p2_mhc.1
+             - added first official ANNOUNCE file
+             - fixed pod2html call, because new pod2html
+               from Perl 5.003_96 does write to stdout
+               per default.
+             - major documentation fixup and changes
+             - removed the obsolete doc/ directory
+             - fixed "make distclean" in wml/
+
+  Changes between 1.0b3 and 1.0b4:
+      970402 - upgraded to Slice 1.0.7 which
+               fixes a configure problem under SunOS
+             - upgraded to ePerl  2.1b3 which
+               fixes a problem with Perl 5.003_96
+             - fixed "make distclean" for doc/
+
+  Changes between 1.0b2 and 1.0b3:
+      970330 - removed a obsolete #include in
+               wml_p2_mhc/config.h.in for Solaris
+             - now when Pass 7 is not the final pass
+               (e.g. you say -p12) the output gets
+               written to stdout
+      970331 - added WML_XXX variables
+             - changed INPUTFILE to WML_INPUTFILE
+             - added WML_VERSION, wml -V option and
+               Version string to wml.pod
+             - removed a lot of not used files
+               from ePerl, Slice and MHC
+
+  Changes between 1.0b1 and 1.0b2:
+      970326 - upgraded to ePerl 2.1b1
+      970327 - upgraded gfont.wml 
+      970330 - upgraded to ePerl 2.1b2
+             - updated and fixed includes/javascript.wml
+
+  Changes between 1.0b0 and 1.0b1:
+      970323 - removed include/trail/
+             - updated README
+             - fixed "make distclean" in subdirs
+
+  Changes between 0.5.9 and 1.0b0:
+      970323 - updated ePerl to version 2.1b0
+             - updated NEWVERS to version 2.1.0
+               and added a call to configure
+             - changed VERSION.pl to VERSION.txt
+
+  Changes between 0.5.0 and 0.5.9:
+      970221 - created first real distribution
+         : 
+
+

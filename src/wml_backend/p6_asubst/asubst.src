@@ -1,0 +1,323 @@
+#!@PATH_PERL@
+eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  asubst -- Area Substitution
+##  Copyright (c) 1997,1998,1999 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+require 5.003;
+
+BEGIN { $^W = 0; } # get rid of nasty warnings
+
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
+use Getopt::Long 2.13;
+use IO::Handle 1.15;
+use IO::File 1.06;
+
+#
+#   process command line
+#
+sub usage {
+    print STDERR "Usage: asubst [options] [file]\n";
+    print STDERR "\n";
+    print STDERR "Options:\n";
+    print STDERR "  -o, --outputfile=<file>  set output file instead of stdout\n";
+    print STDERR "  -v, --verbose            verbose mode\n";
+    exit(1);
+}
+$opt_v = 0;
+$opt_o = '-';
+$Getopt::Long::bundling = 1;
+$Getopt::Long::getopt_compat = 0;
+if (not Getopt::Long::GetOptions(
+    "v|verbose",
+    "o|outputfile=s")) {
+    &usage;
+}
+sub verbose {
+    my ($str) = @_;
+    if ($opt_v) {
+        print STDERR "** ASubst:Verbose: $str\n";
+    }
+}
+sub error {
+    my ($str) = @_;
+    print STDERR "** ASubst:Error: $str\n";
+    exit(1);
+}
+
+#
+#   open input file and read into buffer
+#
+if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
+    $in = new IO::Handle;
+    $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
+    local ($/) = undef;
+    $buffer = <$in>;
+    $in->close() || error("cannot close STDIN: $!");
+}
+elsif ($#ARGV == 0) {
+    $in = new IO::File;
+    $in->open($ARGV[0]) || error("cannot load $ARGV[0]: $!");
+    local ($/) = undef;
+    $buffer = <$in>;
+    $in->close() || error("cannot close $ARGV[0]: $!");
+}
+else {
+    &usage;
+}
+
+#
+#   processing loop
+#
+
+#  ExpandBlock -- expand a delimited and perhaps nested block structure
+#
+#  ($rc, $buffer) = ExpandBlock($buffer, \&cnvpre, $startdel, \&cnvin, $enddel, \&cnvpost, $level);
+#
+sub ExpandBlock {
+    return &ExpandBlockMore(@_);
+}
+
+#   This subvariant is used to split the input into
+#   segments which only contain one block, but this
+#   itself can be still nested.
+#   input: ... < < > > ... < > < < > < > > ...
+#   inputs for ExpandBlockOne: "... < < > > ...", "< >", "< < > < > > ...", #   ...
+#
+sub ExpandBlockMore {
+    local ($buffer, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level) = @_;
+    local ($rc, $opened, $offset, @segment, $del, $openidx, $closeidx);
+    local ($bufferN, $s, $e, $i, $data);
+
+    #
+    #   first, check for corresponding delimiters
+    #   and determine (nested) block segment positions
+    #
+    $opened = 0;
+    $offset = 0;
+    @segment = (0);
+    while (1) {
+        $openidx  = index($buffer, $opendel,  $offset);
+        $closeidx = index($buffer, $closedel, $offset);
+        &Dbg(1, "buffer=<>, off=$offset, o=$openidx, c=$closeidx\n");
+        if ($openidx == -1 && $closeidx == -1) {
+            #   both not found, stop now
+            push(@segment, length($buffer));
+            last;
+        }
+        if ($openidx != -1 && $closeidx != -1) {
+            #   both found, take closer one
+            ($offset, $del, $opened) = ($openidx < $closeidx ? 
+                ($openidx, $opendel, $opened+1) :
+                ($closeidx, $closedel, $opened-1) );
+        }
+        else {
+            #   one not found, take other one
+            ($offset, $del, $opened) = ($openidx != -1 ? 
+                ($openidx, $opendel, $opened+1) :
+                ($closeidx, $closedel, $opened-1) );
+        }
+        $offset = $offset+length($del);
+        #   still reached a complete segment
+        if ($opened == 0) {
+            push(@segment, $offset);
+        }
+    }
+    if ($opened != 0) {
+        return (1, "invalid number of opening and closing delimiters");
+    }
+
+    #
+    #   now process each segment
+    #
+    $bufferN = '';
+    for ($i = 0; $i < $#segment; ) {
+        $s = $segment[$i];
+        $e = $segment[$i+1];
+        $i++;
+        $data = substr($buffer, $s, ($e-$s));
+        ($rc, $data) = &ExpandBlockOne($data, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level);
+        if ($rc != 0) {
+            return ($rc, $data);
+        }
+        $bufferN .= $data;
+    }
+
+    return (0, $bufferN);
+}
+
+#   This subvariant operates only on a buffer which
+#   contains one block (which can be still nested).
+#   input: "... < < > > ... "
+#
+sub ExpandBlockOne {
+    local ($buffer, $cnvpre, $startdel, $cnvin, $enddel, $cnvpost, $level) = @_;
+    local ($openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data);
+
+    $openidx  =  index($buffer,  $opendel);
+    $closeidx = rindex($buffer, $closedel);
+    #   either both exist or both not exist
+    if ($openidx == -1 && $closeidx == -1) {
+        if ($level == 0) {
+            $data = &$cnvpre($buffer, $level); # could also be cnvpost..
+        }
+        else {
+            $data = $buffer;
+        }
+        return (0, $data);
+    }
+    else {
+        #   convert prefix
+        $prefix  = &$cnvpre(substr($buffer, 0, $openidx), $level);
+        Dbg($level, "ExpandBlockOne::prefix", $prefix);
+
+        #   recursive into the body
+        $inner = substr($buffer, $openidx+length($opendel), $closeidx-($openidx+length($opendel)));
+        Dbg($level, "ExpandBlockOne::inner", $inner);
+        ($rc, $inner) = &ExpandBlockMore($inner, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level+1);
+        Dbg($level, "ExpandBlockOne::inner", $inner);
+        $inner = &$cnvin($inner, $level+1);
+        Dbg($level, "ExpandBlockOne::inner", $inner);
+
+        #   convert postfix
+        $postfix = &$cnvpost(substr($buffer, $closeidx+length($closedel), length($buffer)-($closeidx+length($closedel))), $level);
+        Dbg($level, "ExpandBlockOne::postfix", $postfix);
+
+        return ($rc, $prefix . $inner . $postfix);
+    }
+}
+
+$debug = 0;
+
+#   A debugging function
+sub Dbg {
+    my ($level, $name, $str) = @_;
+    my (@o, $l);
+
+    return if ($debug == 0);
+    push(@o, "    " x $level . "### $name =\n");
+    if ($str eq '') {
+        push(@o, "    " x $level . "    ||\n");
+    }
+    else {
+        foreach $l (split('\n', $str)) {
+            push(@o, "    " x $level . "    |$l|\n");
+        }
+    }
+    print STDERR @o;
+}
+
+sub cnvpre {
+    my ($str, $level) = @_;
+
+    return '' if $str eq '';
+    return $str;
+}
+sub cnvin {
+    my ($str, $level) = @_;
+
+    return '' if $str eq '';
+
+    @SCMD = ();
+    $str =~ s|\[\[(s(.)[^\2]+?\2[^\2]*?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
+    $str =~ s|\[\[(tr(.)[^\2]+?\2[^\2]+?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
+    foreach $scmd (@SCMD) {
+        eval "\$str =~ $scmd;";
+    }
+    return $str;
+}
+sub cnvpost {
+    my ($str, $level) = @_;
+
+    return '' if $str eq '';
+    return $str;
+}
+
+if (index($buffer, '{:') != -1) {
+    ($rc, $buffer) = ExpandBlock($buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost, 0);
+}
+
+if ($rc) {
+    print STDERR "aSubst:Error: $buffer\n";
+    exit(1);
+}
+
+#
+#   write to output file
+#
+if ($opt_o eq '-') {
+    $out = new IO::Handle;
+    $out->fdopen(fileno(STDOUT), 'w') || error("cannot write into STDOUT: $!");
+}
+else {
+    $out = new IO::File;
+    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
+}
+$out->print($buffer) || error("cannot write into $opt_o: $!");
+$out->close() || error("cannot close $opt_o: $!");
+
+exit(0);
+
+##EOF##
+__END__
+
+=head1 NAME
+
+asubst - Area Substitution
+
+=head1 SYNOPSIS
+
+B<asubst>
+[B<-o> I<outputfile>]
+[B<-v>]
+[I<inputfile>]
+
+=head1 DESCRIPTION
+
+The F<asubst> program reads I<inputfile> or from C<stdin> and performs the
+following action: Characters and substrings are substituted according to
+Perl-like substitution commands enclosed by surrounding area delimiters.  The
+substitution commands recognized are
+
+   [[s/pattern/string/options]]
+   [[tr/input/output/options]]
+
+and the areas are defined by blocks delimited via
+
+  {: ... :}
+
+=head1 EXAMPLE
+
+  {: [[s/ä/&auml;/]] [[s/ü/&uuml;/]]
+  Foo Bar Baz Quux with Umlauts ä and ü
+  :}
+
+=head1 OPTIONS
+
+=over
+
+=item B<-o> I<outputfile>
+
+This redirects the output to I<outputfile>. Usually the output will be send to
+C<stdout> if no such option is specified or I<outputfile> is "C<->".
+
+=item B<-v>
+
+This sets verbose mode where some processing information will be given on the
+console.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=cut
+
+##EOF##

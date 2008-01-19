@@ -1,0 +1,22 @@
+       _ _          
+   ___| (_) ___ ___ 
+  / __| | |/ __/ _ \
+  \__ \ | | (_|  __/
+  |___/_|_|\___\___|
+                  
+  Slice -- Extract pre-defined slices of an ASCII file
+
+  INSTALLATION
+
+  1. Make sure you have Perl Version 5.003 or 5.004 already
+     installed on your system.
+
+  2. Configure the package and create the script:
+
+     $ ./configure --prefix=/usr/local
+     $ make
+
+  3. Install the binary and manual page:
+
+     $ make install
+

@@ -1,0 +1,54 @@
+##
+##  wml_aux/txt2html/Makefile
+##  Copyright (c) 1997-2000 Ralf S. Engelschall, <rse@engelschall.com>
+##  Copyright (c) 2000 Denis Barbier
+##
+
+@SET_MAKE@
+SHELL           = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+INSTALL_PROGRAM = $(top_srcdir)/etc/shtool install -c -m 755 -s
+INSTALL_DATA    = $(top_srcdir)/etc/shtool install -c -m 644
+
+prefix          = @prefix@
+exec_prefix     = $(prefix)
+bindir          = $(prefix)/bin
+libsubdir       = @libsubdir@
+libdir          = $(prefix)/lib$(libsubdir)
+mandir          = $(prefix)/man
+
+PATH_PERL       = @PATH_PERL@
+INSTALLPRIVLIB  = @INSTALLPRIVLIB@
+INSTALLARCHLIB  = @INSTALLARCHLIB@
+
+SRC_FILES       = txt2html.src
+
+EXE_FILES       = $(SRC_FILES:.src=.pl)
+
+.SUFFIXES:
+.SUFFIXES: .pl .src
+
+.src.pl:
+	sed -e '/^=head1/,/^=cut/d' \
+        -e '/^__END__/,$$d' \
+	-e 's|\@PATH_PERL\@|$(PATH_PERL)|g' \
+        -e 's|\@libdir\@|$(libdir)|g' \
+        -e 's|\@INSTALLPRIVLIB\@|$(INSTALLPRIVLIB)|g' \
+        -e 's|\@INSTALLARCHLIB\@|$(INSTALLARCHLIB)|g' \
+          <$< >$@ && chmod a+x $@
+
+all: $(EXE_FILES)
+
+clean: 
+	-rm -f $(EXE_FILES)
+
+distclean: clean
+	-rm -f Makefile
+
+realclean: distclean
+
+##EOF##

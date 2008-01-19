@@ -1,0 +1,79 @@
+
+  C O P Y R I G H T . O T H E R
+  =============================
+  
+  WML -- Website META Language
+
+  This file lists all foreign WML parts written by other authors. 
+  I want to thank all of them both for writing such good software
+  and to make it freely available. The credit for these parts is yours.
+
+  For the general Copyright on WML see the file COPYRIGHT!
+
+  ________________________________________________________________________
+
+
+  GNU-m4 1.4 [wml_p4_gm4/]
+      Copyright (c) Ren'e Seindal 
+      ftp://ftp.gnu.org/gnu/m4/
+
+  txt2html 1.28 [wml_aux/txt2html/]
+      Copyright (c) Seth Golub <seth@thehouse.org>
+      http://www.aigeek.com/txt2html/
+
+  linklint 2.3.5 [wml_aux/linklint/]
+      Copyright (c) James B. Bowlin <jbowlin@linklint.org>
+      http://www.linklint.org/
+
+  weblint 1.020 [wml_aux/weblint/]
+      Copyright (c) Neil Bowers <neilb@cre.canon.co.uk>
+      http://www.cre.canon.co.uk/~neilb/weblint/
+
+  freetable 0.11 [wml_aux/freetable/]
+      Copyright (c) Tomasz Wêgrzanowski <maniek@beer.com>
+
+  htmlclean 1.25 [wml_aux/htmlclean/]
+      Copyright (c) Paul Lindner <paul.lindner@itu.int>
+      http://people.itu.int/~lindner/
+
+  tidy 04th August 2000 [wml_aux/tidy/]
+      Copyright (c) Dave Raggett <dsr@w3.org>
+      http://www.w3.org/People/Raggett/tidy/
+
+  PCRE 3.2 [wml_backend/p2_mp4h/pcre/]
+      Copyright (c) University of Cambridge
+      ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+
+  GetoptLong 2.23 [wml_common/getoptlong/]
+      Copyright (c) Johan Vromans <jvromans@squirrel.nl>
+      http://www.perl.com/CPAN/authors/id/JV/
+
+  Bit-Vector 6.0 [wml_common/bitvector/]
+      Copyright (c) Steffen Beyer, <sb@engelschall.com>
+      http://www.engelschall.com/u/sb/download/
+
+  File-PathConvert 0.85 [wml_common/filepathconvert/]
+      Copyright (c) Shigio Yamaguchi <shigio@wafu.netgate.net>
+      http://www.perl.com/CPAN/authors/id/SHIGIO/
+
+  Image-Size 2.93 [wml_common/imagesize/]
+      Copyright (c) Randy Ray <randy@byz.org>
+      http://www.perl.com/CPAN/authors/id/RJRAY/
+
+  GD 1.23 [wml_common/gd/]
+      Copyright (c) Lincoln D. Stein <lstein@genome.wi.mit.edu>
+      http://www.perl.com/CPAN/authors/id/LDS/
+
+  IO 1.20 [wml_common/io/]
+      Copyright (c) Graham Barr <bodg@tiuk.ti.com>
+      http://www.perl.com/CPAN/authors/id/GBARR/
+
+  TermReadKey 2.14 [wml_common/termreadkey/]
+      Copyright (c) Kenneth Albanowski
+      http://www.perl.com/CPAN/authors/id/KJALB/
+
+  The Bare Bones Guide to HTML, v4.0 [wml_docs/wml_barebone.txt]
+      Copyright (c) Kevin Werbach
+      http://werbach.com/barebones/
+
+

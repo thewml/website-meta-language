@@ -1,0 +1,111 @@
+##
+##  wml::sup::path - Filesystem Path Manipulation
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+<protect pass=2>
+<:
+sub relpath {
+    my ($from, $to) = @_;
+    my (@F, @T, $i, $j, $path);
+
+    #   canonicalize input
+    $from .= '/' if ($from !~ m|/$|);
+    $to   .= '/' if ($to   !~ m|/$|);
+    $from = '' if ($from eq './');
+    $to   = '' if ($to   eq './');
+    $path = '';
+
+    #   split into directory parts
+    @F = split('/', $from);
+    @T = split('/', $to);
+
+    #   skip common prefix dirs
+    for ($i = 0; $i <= $#F; $i++) {
+        last if ($F[$i] ne $T[$i]);
+    }
+
+    #   go back for remaining "from" dirs
+    for ($j = $i; $j <= $#F; $j++) {
+        $path .= '../';
+    }
+
+    #   go foreward for remaining "to" dirs
+    for ($j = $i; $j <= $#T; $j++) {
+        $path .= "$T[$j]/";
+    }
+
+    return $path;
+}
+
+sub canonpath {
+    my ($path) = @_;
+
+    my $pathL = '';
+    while ($path ne $pathL) {
+        $pathL = $path;
+        $path =~ s|/+|/|g;
+        $path =~ s|/\./|/|g;
+        $path =~ s|/\.$|/|;
+        $path =~ s|^\./(.)|$1|g;
+        $path =~ s{(^|/)([^/]+)(/\.\./)}{if ($2 ne '..') { $1 } else { $1.$2.$3 }}eg;
+    }
+    $path =~ s{(^|/)([^/]+)(/\.\.)$}{if ($2 ne '..') { $1 } else { $1.$2.$3.'/' }}eg;
+    $path = './' if $path eq '';
+    return $path;
+}
+
+sub canonurl {
+    my ($url) = @_;
+
+    if ($url =~ m|^(.+?://)(.+)|) {
+        $url = $1.&canonpath($2);
+    }
+    else {
+        $url = &canonpath($url);
+    }
+    return $url;
+}
+:>
+</protect>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::sup::path - Filesystem Path Manipulation
+
+=head1 SYNOPSIS
+
+ #use wml::sup::path
+
+ <: $relpath = &relpath($from, $to); :>
+ <: $path    = &canonpath($path);    :>
+ <: $url     = &canonurl($url);      :>
+
+=head1 DESCRIPTION
+
+This include file provides the Perl functions C<relpath>, C<canonpath> and
+C<canonurl> which calculate relative and canonical paths/urls.  For example,
+the relative path from F</foo/path/bar/quux> to F</foo/path/foobar> is
+calculated to F<../../foobar> and the canonical path of
+F<./foo/./bar/../quux//> is F<foo/quux/>.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P3
+ External: --
+
+=head1 SEEALSO
+
+perl(1)
+
+=cut
+

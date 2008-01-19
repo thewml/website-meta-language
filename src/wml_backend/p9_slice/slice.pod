@@ -1,0 +1,373 @@
+
+=head1 NAME
+
+Slice -- Extract pre-defined slices from an ASCII file
+
+=head1 SYNOPSIS
+
+B<slice>
+[B<-v>]
+[B<-y> I<outputpolicy>]
+[B<-o> I<sliceterm>:I<outputfile>[@I<chmodcmd>][#I<outputpolicy>] ..]
+[I<inputfile>]
+
+B<slice>
+[B<-V>]
+[B<-h>]
+
+=head1 VERSION
+
+@SLICE_VERSION@
+
+=head1 DESCRIPTION
+
+=head2 Input Principle
+
+The F<slice> program reads I<inputfile> (or from F<STDIN> if I<inputfile> is
+not given or equal ``C<->'') and divides its already prepared ASCII contents
+into possibly overlapping areas, called I<slices>.   These slices are
+determined by enclosing blocks defined by begin and end delimiters which have
+to be I<already> in the file. These block delimiters use the syntax
+
+  [NAME: ... :NAME]
+
+or alternatively (if there is no misinterpretation possible, i.e. no
+overlapping or stacked slices)
+
+  [NAME: ... :]
+
+
+The I<NAME> identifier has to match against the regular expression
+``C<[_A-Z0-9]+>'', i.e. I<NAME> is a string consisting only of uppercase
+letters, digits or underscore characters.
+
+There can be as many such slice definitions as you like and there can be more
+than one slice with the same name. The resulting slice is the union of all
+equal named slices. Actually use this to spread a big slice over disjunct
+peaces of I<inputfile>.
+
+=head2 Output Selection Scheme
+
+The final output data gets calculated by a slice term consisting of slice
+names and set theory operators. The following syntax is recognized (in order
+of LR(1) grammar parsing) for slice terms:
+
+=over
+
+=item SLICE_TERM ::= C<NAME>
+
+The slice NAME itself. This name has to match against the regex
+``C<[_A-Z0-9*{}]+>''. Here two cases are possible: C<NAME> is either a plain
+slice name consisting only of uppercase letters, digits or an underscore
+character. Or it is a wildcarded slice name indicated by an asterisk
+character. 
+
+The first variant just expands to the union of all slices named exactly
+C<NAME>.  The second variant expands to the union of all slices which match
+against the wildcard pattern C<NAME>. Here the asterisk has the semantical
+meaning of none or any number of characters.  There is one special case,
+when the asterisk is immediately followed by characters enclosed within
+braces, it means none or any number of characters, but not this sequence
+of characters.
+
+=item SLICE_TERM ::= C<!NAME> | C<~NAME>
+
+The B<complement> of slice NAME (i.e. ALL\NAME). 
+
+In formula: {x in ALL: x B<not> in NAME}
+
+=item SLICE_TERM ::= C<NAME1xNAME2>, C<NAME1^NAME2>
+
+The B<exclusive-or> relation between slice NAME1 and slice NAME2. In set theory
+also called B<symmetric difference>: (NAME1uNAME2)\(NAME1nNAME2) or alternatively
+(NAME1n!NAME2)u(!NAME1nNAME2). 
+
+In formula: {x in ALL: (x in NAME1 or x in NAME2) and not (x in NAME1 and x in
+NAME2)}.
+
+=item SLICE_TERM ::= C<NAME1\NAME2>, C<NAME1-NAME2>
+
+The B<difference> of slice NAME1 and slice NAME2, i.e. NAME1 minus NAME2.
+
+In formula: {x in ALL: x in NAME1 B<and> x B<not> in NAME2}
+
+=item SLICE_TERM ::= C<NAME1nNAME2> | C<NAME1%NAME2>
+
+The B<intersection> of slice NAME1 and slice NAME2.
+
+In formula: {x in ALL: x in NAME1 B<and> x in NAME2}
+
+=item SLICE_TERM ::= C<NAME1uNAME2>, C<NAME1+NAME2>
+
+The B<union> of slice NAME1 and slice NAME2.
+
+In formula: {x in ALL: x in NAME1 B<or> x in NAME2}
+
+=item SLICE_TERM ::= C<(> SLICE_TERM C<)>
+
+A grouped slice term. Use this to force a different order of evaluation.
+By default, all operators are left-associative, except complement which
+is right-associative.  Operators are listed below from lowest to highest
+precedence:
+
+    -  u  x  n  !
+
+=back
+
+=head2 Advanced Selection: Slice Levels
+
+Because slices can be overlapping and stacked, a definition level is assigned
+to each slice while the input is parsed. These levels range from 1 to the
+maximum encountered (the level 0 is the whole file, i.e. C<ALL>).  When a
+slice begins, it is assigned the lowest free level, beginning with level 1. As
+long as one level is in use, it cannot be assigned again until the end
+delimiter of the corresponding slice is seen. 
+
+An example:
+
+     [A:[B::B]:A][C:[D:[E::C]:D][F::E]:F]
+
+  3                     E-----------E
+  2      B--B        D--------D 
+  1   A--------A  C--------C     F-----F
+  0 
+
+Here slice A is assigned level 1. Then B is assigned level 2 because level 1
+is still in use by A. Then the end of B is reached, level 2 is freed.  Then
+the end of A is reached and level 1 is also free now, so C is assigned level 1
+again. Now only level 1 is in use, so D is assigned level 2. Then E is
+assigned level 3. Then the end of C is seen and level 1 freed. Then the end of
+D is seen and level 2 is freed. Now F begins and because only level 3 is in
+use, it gets level 1 assigned. Then the end of E frees level 3 and the end of
+F frees level 1. Finally no levels are still in use. This indicates that the
+slicing is correct. 
+
+If there are any used levels left at the end of this process this indicates an
+input error and F<slice> responds with an error message displaying the still
+open slices.
+
+This complicated level mechanism is needed for granular set operations where
+particular slices should be included or excluded only. So, to make life
+easier, a few pseudo-slices are automatically defined:
+
+=over
+
+=item C<DEFn>
+
+The union of all user-defined slices at exactly level n (0 <= n <= oo).
+
+=item C<UNDEFn>
+
+The union of all B<non>-user-defined slices at exactly level n (0 <= n <= oo).
+This actually is just C<!DEFn>.
+
+=item C<DEF>
+
+The union of all user-defined slices at B<all> levels, beginning at level
+B<1>.  This actually is the union of all C<DEFn> slices.
+
+=item C<UNDEF>
+
+The union of all B<non>-user-defined slices at B<all> levels, beginning with
+B<1>. This actually is just C<!DEF>.
+
+=item C<ALL>
+
+The whole file. This actually is just C<UNDEF0>, because at level 0 there are
+no user defined slices, so all is undefined.
+
+=item I<NAME>C<@>
+
+This is the slice I<NAME> minus the union of all C<DEFn> slices with min(NAME)
+<= n <= oo. Here min(NAME) is the lowest level plus one where I<NAME> ever
+occurred.  You can read this as ``NAME without all other slices at higher
+levels which overwrite it''. This sounds a little bit crazy, but actually is
+the most important construct. Try to understand it or your slice terms become
+very complicated.
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item [B<-y> I<outputpolicy>]
+
+This flag changes output policy depending on events: C<u> when an
+undefined set is encountered, C<w> for an unmatched wildcard set, C<z> when
+output is empty and C<s> if it only consists of whitespace characters.
+Each letter is followed by a digit telling which action is bound to such
+events: C<0> to ignore such events, C<1> to display a warning message
+and continue, C<2> to skip concerned file and continue, and C<3> to
+abort with an error message.
+
+This flag consists of one or more events specifications, and default is
+C<u0w0s0z0>.
+
+=item [B<-o> I<sliceterm>:I<outputfile>[@I<chmodcmd>][#I<outputpolicy>] ..]
+
+This redirects the output to a file. Usually the whole file will be send to
+C<STDOUT> (same as C<ALL:->). You can use this option I<more than once> to
+output to more than one file while the corresponding I<sliceterm> determines
+which output data will be included into each output file. 
+
+The optional I<chmodcmd> string is intended for specifying options for the
+F<chmod> command, which is applied to I<outputfile> after writing. For
+instance use ``C<a+r>'' to make sure the file is readable by a webserver of
+``C<u+x>'' to create a file with the execution bit set (usually used for SSI
+files on a webserver with the C<XBitHack> option available).
+
+The optional I<outputpolicy> string allows changing output policy for
+only this output file without changing its global meaning.  See above
+for informations on output policy.
+
+Be careful here: When you use parenthesis or asterisks inside I<sliceterm> you
+have to make sure it is really passed to F<slice> this way, i.e. usually you
+have to escape these characters from interpolation by the used shell. Do this
+either by adding backslashes in front of these characters or just surround the
+complete option argument with single quotes ('').
+
+=item B<-v>
+
+This sets verbose mode where some processing information will be given on the
+console for debugging purpose.
+
+=item B<-V>
+
+Displays the version identification string.
+
+=item B<-h>
+
+Displays the usage page.
+
+=back
+
+=head1 SPECIAL FEATURE
+
+Sometimes it can be very useful to be able to provide command line options
+directly within the input file, for instance to setup one or more B<-o>
+options. For this F<slice> recognizes lines of the form
+
+   %!slice OPTIONS
+
+in the input file and automatically adds OPTIONS to the argument line options.
+These lines have to start in column 0.
+
+Example:
+
+   %!slice -oTOC:contents.txt
+
+=head1 EXAMPLE
+
+Assume the following simple multi-language article file F<article.src>,
+written in HTML:
+
+  <html>
+  <head>
+  <title>[EN:Titlepage:][DE:Titelseite:]</title>
+  </head>
+  <body>
+
+  <center>
+  <h1>[EN:The Title itself:][DE:Der Titel selbst:]</h1>
+  </center>
+
+  <blockquote>
+  [EN:...English Abstract...:]
+  [DE:...Deutsche Zusammenfassung...:]
+  </blockquote>
+
+  [EN:...English Text...:]
+  [DE:...Deutscher Text...:]
+
+  </body>
+  </html>
+
+The command 
+
+  slice -o ENuUNDEF:article.html.en -o DEuUNDEF:article.html.de
+
+then creates the following to files:
+
+=over
+
+=item F<article.html.en>:
+
+  <html>
+  <head>
+  <title>Titlepage</title>
+  </head>
+  <body>
+
+  <center>
+  <h1>The Title itself</h1>
+  </center>
+
+  <blockquote>
+  ...English Abstract...
+  </blockquote>
+
+  ...English Text...
+  </body>
+  </html>
+
+=item F<article.html.de>:
+
+  <html>
+  <head>
+  <title>Titelseite</title>
+  </head>
+  <body>
+
+  <center>
+  <h1>Der Titel selbst</h1>
+  </center>
+
+  <blockquote>
+  ...Deutsche Zusammenfassung...
+  </blockquote>
+
+  ...Deutscher Text...
+  </body>
+  </html>
+
+=back
+
+=head1 RESTRICTION
+
+The current implementation only handles anonymous end delimiters ``C<:]>''
+correct in clear cases where no mis-interpretation is possible, i.e. when no
+overlapping occurs. For instance in
+
+   ...[A:...[B:...:A]...:]...
+
+the end delimiter is not correctly assign to the `B' slice. So, be careful
+when using anonymous end delimiters in overlapping situations. Pure stacking
+like
+
+   ...[A:...[B:...:]...:]...
+
+is allowed and handled correctly, but only when you interpret this as
+
+   ...[A:...[B:...:B]...:A]...
+
+=head1 COPYRIGHT
+
+  Copyright (c) 1997-2002 Ralf S. Engelschall.
+  Copyright (c) 1999-2002 Denis Barbier.
+
+=head1 SEEALSO
+
+Slice Home: http://www.engelschall.com/sw/slice/
+
+=head1 AUTHORS
+
+  Ralf S. Engelschall
+  rse@engelschall.com
+  www.engelschall.com
+
+  Denis Barbier
+  barbier@engelschall.com
+
+=cut
+

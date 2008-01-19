@@ -1,0 +1,234 @@
+##
+##  wml::des::imgbg - Background Images
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 2000-2001 Denis Barbier
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+#use wml::sup::hextriple
+
+<protect pass=2>
+<:
+use WML::GD;
+
+#   general function for creating the image
+sub imgbg {
+    my ($base, $direction, $content, $pixels, $format) = @_;;
+    my ($file, $id, @C, $size, $im, $c, $r, $g, $b, $col, $w, $x);
+    my ($nbcol, $bcol, $ecol, $rmin, $gmin, $bmin, $rmax, $gmax, $bmax);
+    my ($i, $dx, $dy, $data);
+    local (*FP);
+
+    #   determine filename
+    $id = "$direction-$pixels-$content";
+    $id =~ s|[,:]|-|g;
+    $id =~ s|#||g;
+    $file = "${base}imgbg-$id.$format";
+
+    #   create content list
+    if ($content !~ m|,|) {
+        @C = ($content);
+    }
+    else {
+        @C = split(/,/, $content);
+    }
+
+    #   determine size
+    $size = 0;
+    foreach $c (@C) {
+        $size += $1 if ($c =~ m|^(\d+):.+|);
+    }
+
+    #   create GIF image if still not exist
+    if (not -f $file) {
+        $x = 0;
+        if ($direction eq 'h') {
+            #   horizontal image
+            $im = new WML::GD::Image($size, $pixels);
+            $dx = 1;
+            $dy = 0;
+        } else {
+            #   vertical image
+            $im = new WML::GD::Image($pixels, $size);
+            $dx = 0;
+            $dy = 1;
+        }
+        foreach $c (@C) {
+            ($w, $bcol, $ecol, $nbcol) =
+                ($c =~ m|^(\d+):([^:]+)(?::)?([^:]+)?(?::)?(\d+)?$|);
+            if ($ecol eq '' ) {
+                ($ecol, $nbcol) = ($bcol, 1);
+            } elsif ($nbcol eq '' ) {
+                $nbcol = 10;
+            }
+            ($rmin, $gmin, $bmin) = &triple2rgb($bcol);
+            ($rmax, $gmax, $bmax) = &triple2rgb($ecol);
+            for ($i=1; $i<=$nbcol; $i++) {
+                $r = $rmin + ($rmax-$rmin)*$i/$nbcol;
+                $g = $gmin + ($gmax-$gmin)*$i/$nbcol;
+                $b = $bmin + ($bmax-$bmin)*$i/$nbcol;
+                $col = $im->colorAllocate($r, $g, $b);
+                if ($pixels == 1) {
+                    $im->line($dx*($x+$w*($i-1)/$nbcol),
+                          $dy*($x+$w*($i-1)/$nbcol),
+                          $dx*($x+$w*$i/$nbcol),
+                          $dy*($x+$w*$i/$nbcol),
+                          $col);
+                }
+                else {
+                    $im->filledRectangle($dx*($x+$w*($i-1)/$nbcol),
+                          $dy*($x+$w*($i-1)/$nbcol),
+                          ($dx == 0 ? $pixels : $dx*($x+$w*$i/$nbcol)),
+                          ($dy == 0 ? $pixels : $dy*($x+$w*$i/$nbcol)),
+                          $col);
+                }
+            }
+            $x += $w;
+        }
+        eval "\$data = \$im->$format";
+        if ($@) {
+            warn "Error: wml::des::imgbg: " . $@;
+        }
+        else {
+            open(FP, ">$file");
+            print FP $data;
+            close(FP);
+        }
+    }
+    return $file;
+}
+:>
+</protect>
+
+<define-tag imgbg whitespace=delete>
+<preserve base format direction content pixels />
+<set-var %attributes />
+<defvar base <or <get-var BGIMG_BASE /> <get-var IMAGE_BASE /> /> />
+<defvar format <or <get-var IMAGE_FORMAT /> gif /> />
+<defvar pixels 1 />
+<perl>
+    #   import attributes to ePerl 
+    $base      = qq|<get-var base />|;
+    $direction = qq|<get-var direction />|;
+    $content   = qq|<get-var content />|;
+    $format    = qq|<downcase <get-var format /> />|;
+    $pixels    = qq|<get-var pixels />|;
+
+    #   determine parameter values
+    if ($base ne '' && $base !~ m|/$|) {
+        if (-d $base) {
+            $base .= '/';
+        }
+        else {
+            $base .= '.';
+        }
+    }
+    $direction = 'h' if ($direction eq '');
+    $content = '100:#000000,900:#ffffff' if ($content eq '');
+
+    #   create the actual GIF image file
+    $file = &imgbg($base, $direction, $content, $pixels, $format);
+
+    #   insert the corresponding filename
+    <perl:print: $file />
+</perl>
+<restore  base format direction content pixels />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::imgbg - Background Images
+
+=head1 SYNOPSIS
+
+ #use wml::des::imgbg
+
+ <: $file = &imgbg($base, $direction, $content, $pixels, $format); :>
+
+ <body ... background=<imgbg [attributes]> ...>
+
+=head1 DESCRIPTION
+
+The usual purpose of this tag is to create a PNG or GIF image containing
+a background image and to expand to its filename. Its contents is
+specified via the C<content> attribute by use of size/color pairs.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item C<base>
+
+Usually the created images are named
+F<imgbg-xxxxxx.png> where C<xxxxxx> is the content id of the image.
+When you use a
+C<base=foo> attribute, then the resulting files are named
+F<foo.imgbg-xxxxxx.png>.  Actually you can even use a complete filename
+including a directory prefix, i.e. when you use C<base=../../common/foo>
+attribute, then the images are created as
+F<../../common/foo.imgbg-xxxxxx.png>. 
+
+And for most flexibility when no base is specified and the variable
+C<BGIMG_BASE> is defined (usually from within a F<.wmlrc> file via
+C<-DBGIMG_BASE~path/to/imgbg/dir/base>) it is used.  Use this feature to
+redirect the created images to a particular directory.
+
+You may also use the variable C<IMAGE_BASE> which defines in a single line
+all base names for images generated by WML.
+
+=item C<format>
+
+By default, GIF images are generated. This attribute lets you use an
+alternate image format (actually only PNG and GIF are recognized).
+You may also change the default format with the variable C<IMAGE_FORMAT>.
+
+=item C<direction>
+
+Specifies the color change direction of the image: ``C<h>'' for horizontal
+(default) or ``C<v>'' for vertical.
+
+=item C<pixels>
+
+Size of the image in the other direction, 1 by default.
+
+=item C<content>
+
+This is a comma-separated list of size/color specifications
+``I<pixels>C<:#>I<rrggbb>C<:#>I<rrggbb>C<:>I<slices>''
+
+The last two arguments are optional, only present for gradient images. 
+In this case, a linear gradient line is drawn from color 1 to color 2,
+with I<slices> different colors.
+
+To get a background with two columns, a black one with 150 point in size
+and a white one which fills the rest of the page use
+``C<150:#000000,1200:#ffffff>''. 
+
+=back
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+
+=head1 SEEALSO
+
+HTML E<lt>C<body>E<gt> tag.
+
+=cut
+

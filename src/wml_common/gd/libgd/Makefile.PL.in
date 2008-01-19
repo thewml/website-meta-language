@@ -1,0 +1,26 @@
+use ExtUtils::MakeMaker;
+WriteMakefile(
+	'NAME'     =>   'libgd',
+        'LINKTYPE'  => 'static',
+        'DEFINE'    => '@DEFS@',
+        'SKIP'      => [qw(static dynamic test)],
+	'H'         => [qw(gd.h gd_io.h)],
+        'C'         => [qw(gd.c gd_gif.c gd_png.c gd_io.c gd_io_dp.c)],
+        'clean'    =>   {'FILES' => 'libgd.a'}
+);
+
+sub MY::top_targets {
+'
+all    ::    static
+
+static ::    libgd$(LIB_EXT)
+
+test:
+	
+
+libgd$(LIB_EXT): $(O_FILES)
+	$(AR) cr libgd$(LIB_EXT) $(O_FILES)
+	$(RANLIB) libgd$(LIB_EXT)
+';
+}
+

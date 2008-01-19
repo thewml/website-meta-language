@@ -1,0 +1,133 @@
+##
+##  wml::fmt::sdf - Simple Document Format (SDF)
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<protect pass=2>
+<:
+#   the conversion function
+sub wml_fmt_sdf {
+    my ($arg) = @_;
+    my ($buf);
+    local (*FP);
+
+    #   read the sdf result
+    my $sdf = '';
+    foreach $path (split(/:/, $ENV{PATH})) {
+        if (-x "$path/sdf") {
+            $sdf = "$path/sdf";
+            last;
+        }
+    }
+    if ($sdf eq '') {
+        print STDERR "** wml::fmt::sdf: external filter `sdf' not found\n";
+        exit(1);
+    }
+    open(FP, "$sdf -2html -o- $arg->{FILE}|");
+    local ($/) = undef;
+    $buf = <FP>;
+    close(FP);
+
+    #   cut out the body
+    $buf =~ s|^.*<BODY>||is;
+    $buf =~ s|</BODY>.*$||is;
+
+    #   make headlines more typographic
+    if (not $arg->{NOTYPO}) {
+        $buf =~ s|^(<H([1-6])><A NAME="(.+?)">)(.+?)(</A></H\2>)|$1<font face=\"Arial,Helvetica\">$4</font>$5|mg;
+    }
+
+    #   remove the nasty horizontal rules
+    if (not $arg->{KEEPHR}) {
+        $buf =~ s|<HR>||isg;
+    }
+
+    #   more cleanup of HTML markup
+    $buf =~ s|<P>\s*\n<P>|<P>|isg;
+    $buf =~ s|</DL>\s*\n?$||is;
+
+    return $buf;
+}
+:>
+</protect>
+
+<define-tag sdf endtag=required>
+<preserve keephr notypo />
+<set-var keephr=* />
+<set-var notypo=* />
+<set-var %attributes />
+<perl>
+{
+    my $tmpfile    = "$(WML_TMPDIR)/wml.sdf2html.$$.tmp";
+    my $keephr     = (qq|<get-var keephr />| eq '' ? 1 : 0);
+    my $notypo     = (qq|<get-var notypo />| eq '' ? 1 : 0);
+
+    my $buf;
+    <perl:assign:sq $buf>%body</perl:assign:sq>
+
+    #   there is no reason to nest <sdf> tags, so the <perl:print>
+    #   statement is unnecessary
+    open(SDF, ">$tmpfile");
+    print SDF $buf;
+    close(SDF);
+    <perl:print:
+         "&wml_fmt_sdf({ FILE       => $tmpfile, 
+                         KEEPHR     => $keephr, 
+                         NOTYPO     => $notypo     })" />
+
+    unlink($tmpfile);
+}
+</perl>
+<restore  keephr notypo />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt::sdf - Simple Document Format (SDF)
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::sdf
+
+ <: print &wml_fmt_sdf({ FILE => $file, ... }); :>
+
+ <sdf>
+ H1: ...
+ ...
+ H2: ...
+ ...
+ </sdf>
+
+=head1 DESCRIPTION
+
+The usage is simple: surround all SDF source text with the C<E<lt>sdfE<gt>>
+container tag and then just write SDF format inside it as you would do when
+writing plain SDF documents. The corresponding HTML code is created via SDF's
+F<sdf2html> filter.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: sdf
+
+=head1 SEEALSO
+
+sdf(1), http://www.mincom.com/mtr/sdf/
+
+=cut
+

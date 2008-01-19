@@ -1,0 +1,271 @@
+
+;;;
+;;;    Sectioning
+;;;
+<define-tag section endtag=required whitespace=delete>
+<set-var body=%body />
+<subst-in-var body "^\n*(.*?)\n*$" "\\1" reflags=s />
+=head1 <upcase <get-var body /> />
+</define-tag>
+
+<define-tag subsection endtag=required whitespace=delete>
+<set-var body=%body />
+<subst-in-var body "^\n*(.*?)\n*$" "\\1" reflags=s />
+=head2 <get-var body />
+</define-tag>
+
+;;;
+;;;    Set text in typewriter or bold face font
+;;;    Constructs like <tt><tt>a</tt></tt> are valid but we
+;;;    prefer to avoid them.
+;;;
+<set-var _text:tt=0 />
+<set-var _text:b=0 />
+<set-var _text:em=0 />
+<define-tag texttt endtag=required whitespace=delete>
+<increment _text:tt />
+<ifeq <get-var _text:tt /> 1 "C_LT_" />
+%body
+<ifeq <get-var _text:tt /> 1 "_GT_" />
+<decrement _text:tt />
+</define-tag>
+
+<define-tag textbf endtag=required whitespace=delete>
+<increment _text:b />
+<ifeq <get-var _text:b /> 1 "B_LT_" />
+%body
+<ifeq <get-var _text:b /> 1 "_GT_" />
+<decrement _text:b />
+</define-tag>
+
+<define-tag textem endtag=required whitespace=delete>
+<increment _text:em />
+<ifeq <get-var _text:em /> 1 "I_LT_" />
+%body
+<ifeq <get-var _text:em /> 1 "_GT_" />
+<decrement _text:em />
+</define-tag>
+
+;;;
+;;;    Common names
+;;;
+<define-tag program><textbf>%attributes</textbf></define-tag>
+<define-entity mp4h><program mp4h /></define-entity>
+<define-entity WML><program WML /></define-entity>
+<define-entity m4><program m4 /></define-entity>
+<define-entity Meta-HTML><program Meta-HTML /></define-entity>
+
+<define-tag var><textem>%attributes</textem></define-tag>
+<define-tag value><texttt>%attributes</texttt></define-tag>
+<define-tag command><texttt>%attributes</texttt></define-tag>
+<define-tag full-command><texttt>E_LT_lt_GT_%attributesE_LT_gt_GT_</texttt></define-tag>
+<define-tag slash><texttt>S</texttt></define-tag>
+<define-tag true><texttt>true</texttt></define-tag>
+<define-tag optflag><texttt>-%attributes</texttt></define-tag>
+<define-tag file><texttt>%attributes</texttt></define-tag>
+<define-tag anchor></define-tag>
+
+<define-tag tag:slash><slash/></define-tag>
+<define-tag tag:V><texttt>V</texttt></define-tag>
+
+;;;
+;;;    Alias for writing URLs
+;;;
+<define-tag URL whitespace=delete>
+<preserve name src />
+<set-var %attributes />
+<get-var name /> C_LT_E_LT_lt_GT_URL:<get-var src />E_LT_gt_GT__GT_
+<restore name src />
+</define-tag>
+
+;;;
+;;;    Header of the POD document
+;;;
+<define-tag header>
+=pod
+
+=head1 NAME
+
+<get-var title />
+
+=head1 VERSION
+
+This documentation describes <get-var package /> version <__version__ />.
+
+</define-tag>
+
+;;;
+;;;    Footer of the POD document
+;;;
+<define-tag footer>
+
+=cut
+
+</define-tag>
+
+;;;
+;;;    Description of mp4h tags
+;;;
+<define-tag tag:description endtag=required>;;;
+<preserve complex verbatim />;;;
+<set-var complex=* />;;;
+<set-var verbatim=* />;;;
+<set-var %attributes />;;;
+<set-var list-attributes="%body" />;;;
+<subst-in-var list-attributes "^\n*(.*?)\n*$" "\\1" reflags=s />
+
+=over 2
+
+=item * %0 ;;;
+   <if <get-var complex /> "<tag:slash/>" />;;;
+   <if <get-var verbatim /> "" "<tag:V/>" />
+
+<foreach attr list-attributes>;;;
+<if <get-var attr /> <group C_LT_<get-var attr />_GT_ /> /> ;;;
+</foreach>
+
+=back
+
+<restore complex verbatim />;;;
+</define-tag>
+
+<define-tag attributes:description endtag=required>
+
+=over 4
+
+%body
+
+=back
+
+</define-tag>
+
+<define-tag attributes:item endtag=required>
+=item <attribute %0 />
+
+%body
+
+</define-tag>
+
+;;;
+;;;    Paragraphs
+;;;
+<define-tag para endtag=required>
+
+%body
+
+</define-tag>
+
+;;;
+;;;    Notes
+;;;
+<define-tag note endtag=required>;;;
+<para>B_LT_Note:_GT_ %body</para></define-tag>
+
+;;;
+;;;    Lists
+;;;
+<define-tag list endtag=required>
+
+=over 2
+
+%body
+
+=back
+
+</define-tag>
+<define-tag item endtag=required>
+
+=item *
+
+%body
+</define-tag>
+
+;;;
+;;;    Quotes
+;;;
+<set-quotes />
+<define-tag begin-quote><@[</define-tag>
+<define-tag end-quote>]@></define-tag>
+
+;;;
+;;;    Example of mp4h code
+;;;
+<set-eol-comment "###" />
+<define-tag three-colon>;;;</define-tag>
+<define-tag example endtag=required attributes=verbatim whitespace=delete>
+<set-var-verbatim verb-body=%ubody />
+<subst-in-var verb-body "<" "_LT_" />
+<subst-in-var verb-body ">" "_GT_" />
+<subst-in-var verb-body "^\n*" "" />
+<subst-in-var verb-body "^" "   " reflags=m />
+<set-var body=%body />
+<subst-in-var body "<three-colon/>[^;\n]*\n[ \t]*" "" />
+<subst-in-var body "<three-colon/>$" "" reflags=m />
+<subst-in-var body "^\n*" "" />
+<subst-in-var body "^" "   " reflags=m />
+<group "Source:
+
+<get-var-once verb-body />
+
+Output:
+
+<get-var-once body />
+
+" />
+</define-tag>
+<set-eol-comment ";;;" />
+
+<define-tag pseudo-func>;;;
+<set-var liste-funcs="%Aattributes" />;;;
+<foreach func liste-funcs>;;;
+  <subst-in-string "=LT=define-tag <get-var func />>=LT=/define-tag>" "=LT=" "<" />;;;
+</foreach>;;;
+</define-tag>
+;;;
+;;;    Verbatim code
+;;;
+<define-tag code endtag=required attributes=verbatim whitespace=delete>
+<set-var-verbatim verb-body=%ubody />
+<subst-in-var verb-body "<" "_LT_" />
+<subst-in-var verb-body ">" "_GT_" />
+<subst-in-var verb-body "^" "   " reflags=m />
+<get-var-once verb-body />
+</define-tag>
+
+;;;
+;;;    Attributes
+;;;
+<define-tag attribute>C_LT_%attributes_GT_</define-tag>
+
+;;;
+;;;    HTML Comments
+;;;
+<define-tag html:comment endtag=required>
+<!--%body-->
+</define-tag>
+
+<define-tag pre endtag=required>
+%body
+</define-tag>
+
+<define-tag option-list endtag=required>
+
+=over 2
+
+%body
+
+=back
+
+</define-tag>
+
+<define-tag option endtag=required>
+
+=item B_LT_%attributes_GT_ %body
+
+</define-tag>
+
+<let option-desc=para />
+
+<define-tag optmand>C_LT_%attributes_GT_</define-tag>
+<define-tag optopt>C_LT_[%attributes]_GT_</define-tag>
+

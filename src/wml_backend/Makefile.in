@@ -1,0 +1,59 @@
+##
+##  wml_backend/Makefile
+##  Copyright (c) 1997-2001 Ralf S. Engelschall
+##
+@SET_MAKE@
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+SHELL           = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+SUBDIRS = \
+   p1_ipp       \
+   p2_mp4h      \
+   p3_eperl     \
+   p4_gm4       \
+   p5_divert    \
+   p6_asubst    \
+   p7_htmlfix   \
+   p8_htmlstrip \
+   p9_slice
+
+# ------------------------------------------------
+#   THE DEFAULT TARGETS
+# ------------------------------------------------
+
+all:
+	@set -e; \
+	set dummy $(MAKEFLAGS); amf=$$2; \
+	for dir in $(SUBDIRS); do \
+	    echo "===> wml_backend/$$dir ($@)"; \
+	    (cd $$dir && $(MAKE) SDP="wml_backend/$$dir/") \
+	    || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	    echo "<=== wml_backend/$$dir"; \
+	done && test -z "$$fail"
+
+clean:
+	-@for dir in $(SUBDIRS); do \
+	    echo "===> wml_backend/$$dir ($@)"; \
+	    (cd $$dir && $(MAKE) SDP="wml_backend/$$dir/" clean); \
+	    echo "<=== wml_backend/$$dir"; \
+	done
+
+distclean: 
+	-@for dir in $(SUBDIRS); do \
+	    echo "===> wml_backend/$$dir ($@)"; \
+	    (cd $$dir && $(MAKE) SDP="wml_backend/$$dir/" distclean); \
+	    echo "<=== wml_backend/$$dir"; \
+	done
+	-rm -f Makefile
+
+realclean: distclean
+
+##EOF##

@@ -1,0 +1,116 @@
+##
+##  wml::std::href - Enhanced Hyperlink
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1999-2001 Denis Barbier
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+<define-tag href whitespace=delete>
+<preserve url name image hint target alternative />
+<set-var %attributes />
+<if <get-var name />
+    <copy-var name alternative />
+    <group <set-var name="<tt><get-var url /></tt>" />\
+          <if <get-var hint />
+              <copy-var hint alternative />
+              <copy-var url alternative />
+          />\
+    />
+/>
+<if <get-var hint />
+    <set-var hint=" onmouseover=\"self.status='<get-var hint />';return true\" \
+                onmouseout=\"self.status='';return true\" \
+                onfocus=\"self.status='<get-var hint />';return true\" \
+                onblur=\"self.status='';return true\"" \
+    />
+/>
+<if <get-var target />
+    <set-var target=" target=\"<get-var target />\"" />
+/>
+<when <not <match "<downcase <get-var url /> />"
+              "^(http|ftp|telnet|gopher|news|mailto):" /> />>
+<if <match "<get-var url />" ".+@.*[^.]+\\.[^.]+" />
+    <set-var url="mailto:<get-var url />" />
+/>
+<if <match "<get-var url />" "^www\\.[^.]+\\..+" />
+    <set-var url="http://<get-var url />" />
+/>
+<if <match "<get-var url />" "^ftp\\.[^.]+\\..+" />
+    <set-var url="ftp://<get-var url />" />
+/>
+</when>
+<if <get-var image /> <group
+   "<a href="<get-var url />"<get-var hint /><get-var target />\
+        <attributes-quote <attributes-extract :a:(.*) %attributes /> />>\
+      <img src="<get-var image />" alt="<get-var alternative />" border=0\
+        <attributes-quote <attributes-extract :img:(.*) %attributes /> /> />\
+    </a>" />          <group
+   "<a href="<get-var url />"<get-var hint /><get-var target />\
+        <attributes-quote <attributes-extract :a:(.*) %attributes /> />>\
+        <get-var name /></a>"
+   />
+/>
+<restore  url name image hint target alternative />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::href - Enhanced Hyperlink
+
+=head1 SYNOPSIS
+
+ #use wml::std::href
+
+ <href url="..." [name="..."] [image="..."] [hint="..."] [target="..."]> 
+
+=head1 DESCRIPTION
+
+This is an interface to the standard HTML anchor tag (C<E<lt>a
+href="..."E<gt>...E<lt>/aE<gt>>).  The intended use of C<E<lt>hrefE<gt>> is to
+simplify the creation of hyperlinks. The following
+
+  <href url="THE://URL">
+  
+  <href url="THE://URL" name="THE_NAME">
+  <href url="THE://URL" image="THE_IMG.EXT">
+  
+  <href url="THE://URL" name="THE_NAME" image="THE_IMG.EXT">
+  
+  <href url="THE://URL" hint="THE_HINT">
+  <href url="THE://URL" name="THE_NAME" image="THE_IMG.EXT" hint="THE_HINT">
+
+gets expanded to
+
+  <a href="THE://URL"><tt>THE://URL</tt></a>
+  
+  <a href="THE://URL">THE_NAME</a>
+  <a href="THE://URL"><img src="THE_IMG.EXT" alt="THE://URL" border="0"></a>
+  
+  <a href="THE://URL"><img src="THE_IMG.EXT" alt="THE_NAME" border="0"></a>
+  
+  <a href="THE://URL" onmouseover="self.status='THE_HINT';return true" onmouseout="self.status='';return true" onfocus="self.status='THE_HINT';return true" onblur="self.status='';return true"><tt>THE://URL</tt></a>
+  <a href="THE://URL" onmouseover="self.status='THE_HINT';return true" onmouseout="self.status='';return true" onfocus="self.status='THE_HINT';return true" onblur="self.status='';return true"><img src="THE_IMG.EXT" alt="THE_NAME" border="0"></a>
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2
+ External: --
+
+=head1 SEEALSO
+
+HTML C<E<lt>aE<gt>> and C<E<lt>imgE<gt>> tags.
+
+=cut
+

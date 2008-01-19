@@ -1,0 +1,89 @@
+##
+##  wml::des::space - Layout Space
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::des::imgdot
+
+<let space=imgdot />
+
+<define-tag hspace>\
+<imgdot width=%0 height=1 />\
+</define-tag>
+
+<define-tag vspace>\
+<imgdot width=1 height=%0 />\
+</define-tag>
+
+<define-tag over endtag=required>
+<table cellspacing=0 cellpadding=0 border=0 summary="">
+<tr>
+<td><imgdot width=<or %0 20 /> /></td>\
+<td>%body</td>
+</tr>
+</table>\
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::space - Layout Space
+
+=head1 SYNOPSIS
+
+ #use wml::des::space
+
+ <space [width=X] [height=Y]>
+
+ <hspace X>
+
+ <vspace Y>
+
+ <over X>
+ </over>
+
+=head1 DESCRIPTION
+
+These are high-level layouting tags for preserving whitespace which use the
+C<E<lt>imgdotE<gt>> tag from wml::des::imgdot(3). Use them to create
+whitespace on a webpage.
+
+=over 4
+
+=item C<E<lt>space> [C<width=>X] [C<height=>Y]C<E<gt>>
+
+Creates a 1pt transparent dot-image and resizes it to the size X times Y in
+points, so a rectangular white area if size XxY is the effect.
+
+=item C<E<lt>hspace> XC<E<gt>>
+
+Creates a horizontal line, i.e. a rectangular area of size Xx1.
+
+=item C<E<lt>vspace> YC<E<gt>>
+
+Creates a vertical line, i.e. a rectangular area of size 1xY.
+
+=item C<E<lt>over> XC<E<gt>>...C<E<lt>/overE<gt>>
+
+This pushs over contained body X pixels to the right.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, wml::des::imgdot (WML)
+
+=head1 SEEALSO
+
+wml::des::imgdot(3)
+
+=cut
+

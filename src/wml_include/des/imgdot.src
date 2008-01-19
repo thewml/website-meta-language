@@ -1,0 +1,225 @@
+##
+##  wml::des::imgdot - 1pt Dot-Images for Webdesign
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 2000-2001 Denis Barbier
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+#use wml::sup::hextriple
+
+<protect pass=2>
+<:
+use WML::GD;
+
+#   general function for creating a dot image
+sub imgdot {
+    my ($base, $x, $y, $c, $r, $g, $b, $transp, $format) = @_;
+    my ($file, $im, $col, $data);
+    local (*FP);
+
+    if ($base ne '' && $base !~ m|/$|) {
+        if (-d $base) {
+            $base .= '/';
+        }
+        else {
+            $base .= '.';
+        }
+    }
+    if ($main::DEBUG) {
+        # use -DDEBUG=1 for seeing the imgdot's
+        $c = 'DEBUG';
+        ($r, $g, $b) =  (255, 64, 64);
+        $transp = 0;
+    }
+    $file = "${base}imgdot-${x}x${y}-$c.$format";
+
+    #   create image if it does not still exist
+    if (not -f $file) {
+        $im = new WML::GD::Image($x, $y);
+        $col = $im->colorAllocate($r, $g, $b);
+        $im->transparent($col) if $transp;
+        eval "\$data = \$im->$format";
+        if ($@) {
+            warn "Error: wml::des::imgdot: " . $@;
+        }
+        else {
+            open(FP, ">$file");
+            print FP $data;
+            close(FP);
+        }
+    }
+    return $file;
+}
+:>
+</protect>
+
+<define-tag imgdot whitespace=delete>
+<preserve base format width height color align noscale />
+<set-var noscale=* />
+<set-var %attributes />
+<defvar base <or <get-var IMGDOT_BASE /> <get-var IMAGE_BASE /> /> />
+<defvar format <or <get-var IMAGE_FORMAT /> gif /> />
+<perl>
+    #   import attributes to ePerl 
+    $base    = qq|<get-var base />|;
+    $format  = qq|<downcase <get-var format /> />|;
+    $width   = qq|<get-var width />|;
+    $height  = qq|<get-var height />|;
+    $color   = qq|<get-var color />|;
+    $align   = qq|<get-var align />|;
+    $noscale = (qq|<get-var noscale />| eq '' ? 1 : 0);
+
+    #   determine parameter values
+    $width  = 1 if ($width  eq '');
+    $height = 1 if ($height eq '');
+    $align = 'bottom' if ($align eq '');
+    if ($color eq '') {
+        $transp = 1;
+        ($r, $g, $b) = (255, 255, 255);
+        $c = 'transp-' . &rgb2triple($r, $g, $b);
+    }
+    elsif ($color =~ s/^-//) {
+        $transp = 1;
+        ($r, $g, $b) = &triple2rgb($color);
+        $c = 'transp-' . &rgb2triple($r, $g, $b);
+    }
+    else {
+        $transp = 0;
+        ($r, $g, $b) = &triple2rgb($color);
+        $c = &rgb2triple($r, $g, $b);
+    }
+    $x = ($noscale ? $width  : 1);
+    $y = ($noscale ? $height : 1);
+
+    #   create the actual GIF image file
+    $file = &imgdot($base, $x, $y, $c, $r, $g, $b, $transp, $format);
+
+    #   insert the corresponding HTML markup code
+    <perl:print>\
+      <img src="$file" alt="" width=$width height=$height \
+           align=$align border=0 \
+           <attributes-quote <attributes-extract :img:(.*) %attributes /> /> />
+    </perl:print>
+</perl>
+<restore  base format width height color align noscale />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::imgdot - 1pt Dot-Images for Webdesign
+
+=head1 SYNOPSIS
+
+ #use wml::des::imgdot
+
+ <: $file = &imgdot($base, $x, $y, $c, $r, $g, $b, $transp, $format); :>
+
+ <imgdot [attributes]>
+
+=head1 DESCRIPTION
+
+Currently (as of HTML 3.2 and 1997 ;_) webdesigners use two commonly known
+tricks for creating their layout on webpages: HTML tables and so-called 1pt
+Dot-Images.  The first one is nicely supported by the WML tag
+C<E<lt>gridE<gt>> (see wml::des::grid(3) for details), the latter is supported
+by this C<E<lt>imgdotE<gt>> tag.
+
+The usual purpose of this tag is to create a transparent PNG or GIF image with a
+physical size of 1x1 points and a corresponding C<E<lt>imgE<gt>> tag which
+includes this image with appropriate C<width> and C<height> attributes. The
+visual result is a invisible reserved space of size C<width>XC<height>.
+Alternatively this tag can create the image with the requested size instead of
+scaling the 1pt image (see the C<noscale> attribute below). This approach is
+more safe (all browsers support this) but wastes bandwith and increases page
+load time.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item base
+
+Usually the created images are named
+F<imgdot-XxY-rrggbb.png> where C<XxY> is the dimension of the image and
+C<rrggbb> the used color (or `C<transp>' for transparent). When you use a
+C<base=foo> attribute, then the resulting files are named
+F<foo.imgdot-XxY-rrggbb.gif>.  Actually you can even use a complete filename
+including a directory prefix, i.e. when you use C<base=../../common/foo>
+attribute, then the PNG images are created as
+F<../../common/foo.imgdot-XxY-rrggbb.png>. 
+
+And for most flexibility when no base is specified and the variable
+C<IMGDOT_BASE> is defined (usually from within a F<.wmlrc> file via
+C<-DIMGDOT_BASE~path/to/imgdot/dir/base>) it is used.  Use this feature to
+redirect the created images to a particular directory.
+
+You may also use the variable C<IMAGE_BASE> which defines in a single line
+all base names for images generated by WML.
+
+=item format
+
+By default, GIF images are generated. This attribute lets you use an
+alternate image format (actually only PNG and GIF are recognized).
+You may also change the default format with the variable C<IMAGE_FORMAT>.
+
+=item width
+
+Specifies the width (x-dimension) of the reserved space in pixel. Default is
+1 pixel.
+
+=item height
+
+Specifies the height (y-dimension) of the reserved space in pixel. Default is
+1 pixel.
+
+=item color
+
+Sets the color of the image. Default is transparent, i.e. no color. In
+fact, this is not true, transparency is rendered by choosing a color
+which is made transparent, which is white by default.
+Prepending an hyphen to the C<color> attribute sets the color of the
+transparent color.
+
+=item align
+
+Sets the alignment of the image. Default is `C<bottom>'. This alignment is
+used for the C<align> attribute of the inserted C<E<lt>imgE<gt>> tag.
+
+=item noscale
+
+Indicates if the image should be created with 1pt in size and scaled online by
+the browser (default) or should be created with the correct physical size
+(this option).
+
+=item :img:I<ATTR>=I<STR>
+
+The ``I<ATTR>=I<STR>'' pairs are passed along to the C<E<lt>imgE<gt>> HTML tag.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+
+=head1 SEEALSO
+
+HTML E<lt>C<img>E<gt> tag.
+
+=cut
+

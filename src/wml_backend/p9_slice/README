@@ -1,0 +1,34 @@
+       _ _          
+   ___| (_) ___ ___ 
+  / __| | |/ __/ _ \
+  \__ \ | | (_|  __/
+  |___/_|_|\___\___|
+                  
+  Slice -- Extract out pre-defined slices of an ASCII file
+
+  Version 1.3.8 (10-Feb-2002)
+
+  The slice program reads an input file and divide its prepared ASCII contents
+  into possibly overlapping slices. These slices are determined by enclosing
+  blocks which are defined by begin and end delimiters which have to be
+  already in the file.   The final output gets calculated by a slice term
+  consisting of slice names, set theory operators and optional round brackets.
+
+  The latest release can be found on
+  http://www.engelschall.com/sw/slice/
+
+  Copyright (c) 1997-2002 Ralf S. Engelschall.
+  Copyright (c) 1999-2002 Denis Barbier.
+
+  This program is free software; it may be redistributed and/or modified only
+  under the terms of the GNU General Public License, which may be found in the
+  SLICE source distribution.  Look at the file COPYING.   This program is
+  distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See either the GNU General Public License for more
+  details.
+
+                              Ralf S. Engelschall
+                              rse@engelschall.com
+                              www.engelschall.com
+

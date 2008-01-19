@@ -1,0 +1,4 @@
+Cygwin users need to cd into config and type "make" before building wml.
+
+Alternatively, you can nullify the SUBDIRS variable in 
+wml_backend/p2_mp4h/modules/Makefile.

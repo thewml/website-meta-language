@@ -1,0 +1,120 @@
+
+Website META Language, Version 2.0.9 (18-Oct-2002)
+Copyright (c) 1996-2001 Ralf S. Engelschall
+Copyright (c) 1999-2001 Denis Barbier
+
+Official homepage and distribution area:
+http://www.engelschall.com/sw/wml/ <s>
+ ftp://ftp.engelschall.com/sw/wml/ <s>
+
+Keyword search the WML documentation <s:search=%[Keyword]S>
+
+Basics:
+wml_intro(7) .............<s> An introduction to WML's basic concepts
+wml_tutorial(7) ..........<s> Understanding WML step-by-step 
+wml_macros(7) ............<s> Writing WML powerful macros
+wml_faq(7) ...............<s> Frequently Asked Questions on WML 
+wml_tags(7) ..............<s> Permuted index of defined WML tags
+wml_barebone(7) ..........<s> Bare Bones Guide to HTML 4.0
+
+Standard References:
+wml_std_xhtml10(7) .......<s> XHTML 1.0 Specification   (W3C REC 26-Jan-2000)
+wml_std_html401(7) .......<s> HTML 4.01 Specification   (W3C REC 24-Dec-1999)
+wml_std_html40(7) ........<s> HTML 4.0 Specification    (W3C REC 18-Dec-1997)
+wml_std_html32(7) ........<s> HTML 3.2 Specification    (W3C REC 14-Jan-1997)
+wml_std_html20(7) ........<s> HTML 2.0 Specification    (W3C REC 22-Sep-1995)
+wml_std_css1(7) ..........<s> Cascading Style Sheets L1 (W3C REC 17-Dec-1996)
+wml_std_css2(7) ..........<s> Cascading Style Sheets L2 (W3C REC 12-May-1998)
+wml_std_csspos(7) ........<s> HTML Positioning with CSS (W3C WD  19-Aug-1997)
+wml_std_wai10(7) .........<s> Web Content Accessibility (W3C REC 05-May-1999)
+
+Frontends:
+wml(1) ...................<s> Website META Language Control
+wmk(1) ...................<s> Website META Language Make
+wmd(1) ...................<s> Website META Language Documentation Browser
+wmb(1) ...................<s> Website META Language Bug Reporting Tool
+wmu(1) ...................<s> Website META Language Upgrade Tool
+
+Backends:
+wml_p1_ipp(1) ............<s> Include Pre-Processor
+wml_p2_mp4h(1) ...........<s> Macro Processor for HTML
+wml_p3_eperl(1) ..........<s> Embedded Perl 5 Language
+wml_p4_gm4(1) ............<s> GNU m4 Macro Processor
+wml_p5_divert(1) .........<s> Diversion Filter
+wml_p6_asubst(1) .........<s> Area Substitution Filter
+wml_p7_htmlfix(1) ........<s> HTML Fixup Filter
+wml_p8_htmlstrip(1) ......<s> HTML Stripping Filter
+wml_p9_slice(1) ..........<s> Slicing and Output Filter
+
+Auxiliaries:
+wml_aux_htmlinfo(1) ......<s> HTML Information
+wml_aux_linklint(1) ......<s> Hyperlink Checker
+wml_aux_weblint(1) .......<s> HTML Checker
+wml_aux_tidy(1) ..........<s> HTML Clean up
+wml_aux_htmlclean(1) .....<s> HTML Optimizer
+wml_aux_map2html(1) ......<s> Server-Side to Client-Side Map Converter
+wml_aux_txt2html(1) ......<s> Text to HTML Converter
+wml_aux_freetable(1) .....<s> Table to HTML Converter
+wml_aux_iselect(1) .......<s> Interactive Selection
+
+Includes: Overview
+wml::all(3) ..............<s> WML Include Files Of All Categories
+
+Includes: Webdesign (des)
+wml::des::all(3) .........<s> All of Webdesign (DES) category
+wml::des::gfont(3) .......<s> Graphical Font Tag
+wml::des::imgbg(3) .......<s> Background Images
+wml::des::imgdot(3) ......<s> 1pt Dot-Images for Webdesign
+wml::des::lowsrc(3) ......<s> Create Image and LOWSRC-Attribute
+wml::des::navbar(3) ......<s> Navigation Bar
+wml::des::preload(3) .....<s> Preload Page Contents
+wml::des::rollover(3) ....<s> RollOver-Style Image-Button
+wml::des::space(3) .......<s> Layout Space
+wml::des::typography(3) ..<s> Typography
+
+Includes: Formatting (fmt)
+wml::fmt::all(3) .........<s> All of Formatting (FMT) category
+wml::fmt::isolatin(3) ....<s> ISO-Latin-1 to HTML Entity Conversion
+wml::fmt::pod(3) .........<s> Plain Old Document (POD) Format
+wml::fmt::sdf(3) .........<s> Simple Document Format (SDF)
+wml::fmt::text(3) ........<s> Plain ASCII with Special Formatting
+wml::fmt::url(3) .........<s> Recognize Uniform Resource Locator
+wml::fmt::verbatim(3) ....<s> Really Preformatted Verbatim Text
+wml::fmt::xtable(3) ......<s> HTML tables through Advanced Syntax
+
+Includes: Import (imp)
+wml::imp::all(3) .........<s> All of Import (IMP) category
+wml::imp::csmap(3) .......<s> Import External Server-Side Map
+wml::imp::fsview(3) ......<s> View Box for Filesystem Resource
+wml::imp::generic(3) .....<s> Generic Import Of External Resources
+
+Includes: Standard (std)
+wml::std::all(3) .........<s> All of Standard (STD) category
+wml::std::box(3) .........<s> Easily Create Rectangular Box
+wml::std::case(3) ........<s> Convert Tags to Upper or Lower Case
+wml::std::grid(3) ........<s> Layout Grid
+wml::std::href(3) ........<s> Enhanced Hyperlink
+wml::std::info(3) ........<s> Page Information
+wml::std::label(3) .......<s> Labels and References
+wml::std::lang(3) ........<s> Multi-Lingual Support
+wml::std::logo(3) ........<s> Logo Insertion
+wml::std::page(3) ........<s> Standard HTML Page Header and Footer
+wml::std::tags(3) ........<s> Standard Support Tags
+wml::std::toc(3) .........<s> Table of Contents Generation
+
+Includes: Support (sup)
+wml::sup::all(3) .........<s> All of Support (SUP) category
+wml::sup::hextriple(3) ...<s> Convert #rrggbb String to RGB Value
+wml::sup::path(3) ........<s> Filesystem Path Manipulation
+
+Includes: Modularity (mod)
+wml::mod::all(3) .........<s> All of Modularity (MOD) category
+wml::mod::MakeMaker(3) ...<s> Write Makefiles for modules
+wml::mod::version(3) .....<s> Checks running WML version number
+
+Includes: System (sys)
+wml::sys::all(3) .........<s> All of System (SYS) category
+wml::sys::bootp3(3) ......<s> WML Bootstrap Code for Pass 3
+wml::sys::bootp4(3) ......<s> WML Bootstrap Code for Pass 4
+wml::sys::compat1(3) .....<s> Backward Compatibility to WML 1.x
+

@@ -1,0 +1,1218 @@
+##
+##  wml::des::navbar -- Navigation Bar
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1999-2001 Denis Barbier
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+#use wml::sup::path
+
+<set-var __nbcount=0 />
+
+#
+#   navbar definition
+#
+<define-tag navbar:define endtag=required>
+<preserve name imgstar imgbase urlbase target txtcol_normal txtcol_select />
+<set-var %attributes />
+<defvar name "unknown-navbar" />
+<defvar imgstar "n:s:o" />
+<set-var __countbuttons=1 />
+<perl> 
+  #   The $name variable is used in other <navbar:*> tags and
+  #   so is global
+  $name = '<get-var name />';
+  {
+    my ($p, $i);
+
+    #   initialise the data structure for this particular navbar
+    #   and fill it with some already known information
+    my $CFG = {};
+    $NAVBAR{$name} = $CFG;
+
+    $CFG->{NAME} = $name;
+
+    $CFG->{IMGSTAR}  = '<get-var imgstar />';
+    $CFG->{IMGBASE}  = '<get-var imgbase />';
+    $CFG->{URLBASE}  = '<get-var urlbase />';
+    $CFG->{TARGET}   = '<get-var target />';
+    $CFG->{TXTCOL_N} = '<get-var txtcol_normal />';
+    $CFG->{TXTCOL_S} = '<get-var txtcol_select />';
+
+    $CFG->{HEADER} = '';
+    $CFG->{FOOTER} = '';
+
+    $CFG->{PROLOG} = {};
+    $CFG->{PROLOG}->{N}  = {};
+    $CFG->{PROLOG}->{S}  = {};
+    $CFG->{PROLOG}->{SS} = {};
+    $CFG->{PROLOG}->{N}->{'any'} = '';
+
+    $CFG->{EPILOG} = {};
+    $CFG->{EPILOG}->{N}  = {};
+    $CFG->{EPILOG}->{S}  = {};
+    $CFG->{EPILOG}->{SS} = {};
+    $CFG->{EPILOG}->{N}->{'any'} = "\n";
+
+    $CFG->{BUTTON} = [];
+
+    $CFG->{OPEN}  = 0;
+    $CFG->{INDEX} = 0;
+
+    $CFG->{PREV}   = '';
+    $CFG->{NEXT}   = '';
+    $CFG->{UP}     = '';
+
+    $CFG->{FILTER} = '';
+
+    #   here the other tags now fill in more information...
+</perl>
+%body
+<perl>
+    #   ...and finally we do some cleanups
+
+    $last = $#{$NAVBAR{$name}->{BUTTON}}+1;
+    foreach $what (qw(PROLOG EPILOG)) {
+        foreach $type (qw(N S SS)) {
+            foreach $pos (keys(%{$NAVBAR{$name}->{$what}->{$type}})) {
+                if ($pos eq 'first') {
+                    $NAVBAR{$name}->{$what}->{$type}->{1} =
+                        $NAVBAR{$name}->{$what}->{$type}->{$pos};
+                    delete $NAVBAR{$name}->{$what}->{$type}->{$pos};
+                }
+                elsif ($pos eq 'last') {
+                    $NAVBAR{$name}->{$what}->{$type}->{$last} =
+                        $NAVBAR{$name}->{$what}->{$type}->{$pos};
+                    delete $NAVBAR{$name}->{$what}->{$type}->{$pos};
+                }
+                elsif ($pos !~ m;^(any|\d+)$;) {
+                    foreach $p (split(',', $pos)) {
+                        my $pfirst = 1;
+                        my $plast  = $last;
+                        my $pstep  = 1;
+                        if ($p =~ m|:(\d+)$|) {
+                            $pstep = $1;
+                            $p     = $`;
+                        }
+                        if ($p =~ m|^(\d+)|) {
+                            $pfirst = $1;
+                        }
+                        if ($p =~ m|(\d+)$|) {
+                            $plast = $1;
+                        }
+                        for ($i = $pfirst; $i <= $plast; $i+=$pstep) {
+                            $NAVBAR{$name}->{$what}->{$type}->{$i} =
+                                $NAVBAR{$name}->{$what}->{$type}->{$pos};
+                        }
+                    }
+                    delete $NAVBAR{$name}->{$what}->{$type}->{$pos};
+                }
+            }
+        }
+    }
+  }
+</perl>
+<restore  name imgstar imgbase urlbase target txtcol_normal txtcol_select />
+</define-tag>
+
+<define-tag navbar:header endtag=required>
+<perl>
+    <perl:assign $_navvar>%body</perl:assign>
+    $NAVBAR{$name}->{HEADER} = $_navvar;
+</perl>
+</define-tag>
+
+<define-tag navbar:footer endtag=required>
+<perl>
+    <perl:assign $_navvar>%body</perl:assign>
+    $NAVBAR{$name}->{FOOTER} = $_navvar;
+</perl>
+</define-tag>
+
+<define-tag navbar:prolog endtag=required>
+<preserve type pos />
+<set-var %attributes />
+<defvar type "N" />
+<defvar pos "any" />
+<subst-in-var pos "next" <get-var __countbuttons /> />
+<perl>
+    <perl:assign $_navvar>%body</perl:assign>
+    $NAVBAR{$name}
+        ->{PROLOG}
+        ->{'<get-var type />'}
+        ->{'<get-var pos />'} = $_navvar;
+</perl>
+<restore  type pos />
+</define-tag>
+
+<define-tag navbar:epilog endtag=required>
+<preserve type pos />
+<set-var %attributes />
+<defvar type "N" />
+<defvar pos "any" />
+<subst-in-var pos "next" <get-var __countbuttons /> />
+<perl>
+    <perl:assign $_navvar>%body</perl:assign>
+    $NAVBAR{$name}
+        ->{EPILOG}
+        ->{'<get-var type />'}
+        ->{'<get-var pos />'} = $_navvar;
+</perl>
+<restore  type pos />
+</define-tag>
+
+<define-tag navbar:open endtag=required>
+<preserve name />
+<set-var %attributes />
+<defvar name "unknown-navbar" />
+<perl>
+    $NAVBAR{'<get-var name />'}->{OPEN} = 1;
+</perl>
+<restore name />
+</define-tag>
+
+#
+#   buttons definition
+#
+<set-var __buttoncnt=1 />
+<define-tag navbar:button>
+<preserve id alias txt alt img hint url target menu />
+<set-var %attributes />
+<increment __countbuttons />
+<if <get-var alias /> <set-var id= /> />
+<if <get-var id /> "" <group
+    <set-var id=button<get-var __buttoncnt /> />
+    <increment __buttoncnt />
+/>/>
+#    Skip the navigation buttons
+<if <match <get-var url /> "^#[a-zA-Z]+#$" />
+    <set-var alias="_nav_" /> />
+<subst-in-var id "[^a-zA-Z0-9]" "_" />
+<subst-in-var alias "[^a-zA-Z0-9]" "_" />
+
+<perl>
+{
+    my $B = {};
+    push(@{$NAVBAR{$name}->{BUTTON}}, $B);
+
+    $B->{ID}     = '<get-var id />';
+    $B->{ALIAS}  = '<get-var alias />';
+    $B->{TXT}    = qq|<get-var txt />|;
+    $B->{ALT}    = qq|<get-var alt />|;
+    $B->{IMG}    = '<get-var img />';
+    $B->{HINT}   = qq|<get-var hint />|;
+    $B->{URL}    = '<get-var url />';
+    $B->{TARGET} = '<get-var target />';
+    $B->{MENU}   = '<get-var menu />';
+
+    my %tag_attr<get-var id /> = ();
+<set-var __list_tags="a\nimg" />
+<set-var __list_sel="N\nS\nSS" />
+<foreach __tag __list_tags>
+  <set-var __nb_attr=<attributes-quote <attributes-extract
+        :<get-var __tag />:(.*) %attributes /> /> />
+  <foreach __sel __list_sel>
+    $tag_attr<get-var id />{'<get-var __tag /><get-var __sel />'} =  qq(<or
+      <attributes-quote <attributes-extract
+          :<get-var __tag />\\.<get-var __sel />:(.*) %attributes /> />
+      <get-var __nb_attr /> />);
+  </foreach>
+</foreach>
+    #   Perform some clean ups
+    foreach my $key (keys %tag_attr<get-var id />) {
+        $tag_attr<get-var id />{$key} =~ s/^\s*/ /;
+        delete $tag_attr<get-var id />{$key} if $tag_attr<get-var id />{$key} =~ m/^\s*$/;
+    }
+    $B->{TAG_ATTR}= \%tag_attr<get-var id />;
+}
+</perl>
+<restore  id alias txt alt img hint url target menu />
+</define-tag>
+
+#   this is a special case since its body can contain any Perl
+#   statements, so we use the <<'HERE' syntax.
+<define-tag navbar:filter endtag=required>
+<perl>
+    <perl:assign:sq $_navvar>%body</perl:assign:sq>
+    $NAVBAR{$name}->{FILTER} = $_navvar;
+</perl>
+</define-tag>
+
+#
+#   navbar debugging
+#
+<define-tag navbar:debug>
+<preserve name />
+<navbar:index %attributes />
+<set-var %attributes />
+<defvar name "unknown-navbar" />
+<perl>
+    use Data::Dumper;
+    <perl:print: "Data::Dumper::Dumper($NAVBAR{'<get-var name />'})" />
+</perl>
+<restore name />
+</define-tag>
+
+#
+#   navbar indexing
+#      * compute automatic links (UP/PREV/NEXT)
+#      * determine which menus are open/closed
+#
+<define-tag navbar:index>
+<preserve name select subselected />
+<set-var %attributes />
+<subst-in-var select "[^a-zA-Z0-9]" "_" />
+<defvar name "unknown-navbar" />
+<perl>
+{
+    my $name = '<get-var name />';
+    my $subselected = (qq|<get-var subselected />| eq '' ? 1 : 0);
+
+    &navbar_index($NAVBAR{$name}, $name, '<get-var select />', $subselected, '', '', 0);
+    $NAVBAR{$name}->{OPEN} = 1;
+}
+</perl>
+<restore  name select subselected />
+</define-tag>
+
+#    This does the job.
+<protect pass=2>
+<:
+sub navbar_index {
+    my ($CFG, $name, $select, $subselected, $up, $prev, $next) = @_;
+    my ($id, $alias);
+
+    #     Stop if this navbar has already been processed
+    return if $CFG->{INDEX};
+    $CFG->{INDEX} = 1;
+
+    foreach my $B (@{$CFG->{BUTTON}}) {
+        $alias = $B->{ALIAS};
+        $id    = $B->{ID};
+        if ($alias ne '') {
+            #     This button is an alias, so it must not be a target
+            #     for UP/PREV/NEXT.
+            #     If it is a menu, look after, otherwise skip it
+            next if $B->{MENU} eq '';
+
+            if ($select eq $id or $select eq $alias) {
+                $NAVBAR{$B->{MENU}}->{OPEN} = 1
+            }
+            ($prev, $next) = &navbar_index($NAVBAR{$B->{MENU}}, $name,
+                $select, $subselected, $B->{URL}, $prev, $next);
+            $CFG->{OPEN} = 1 if $NAVBAR{$B->{MENU}}->{OPEN};
+        }
+        else {
+            #     Regular button
+            if ($next) {
+                $NAVBAR{$name}->{NEXT} = $B->{URL};
+                $next = 0;
+                last;
+            }
+            if ($select eq $id) {
+                $NAVBAR{$name}->{UP}   = $up;
+                $NAVBAR{$name}->{PREV} = $prev;
+                $CFG->{OPEN} = 1;
+                $next = 1;
+            }
+            if ($B->{MENU} ne '') {
+                #     This button opens a menu
+                $NAVBAR{$B->{MENU}}->{OPEN} = 1 if ($select eq $id);
+                $prev = $B->{URL};
+                ($prev, $next) = &navbar_index($NAVBAR{$B->{MENU}}, $name,
+                    $select, $subselected, $B->{URL}, $prev, $next);
+                $CFG->{OPEN} = 1 if $NAVBAR{$B->{MENU}}->{OPEN};
+            }
+            else {
+                $prev = $B->{URL};
+            }
+        }
+    }
+    return ($prev, $next);
+}
+:>
+</protect>
+
+#   This macro must be defined.
+<provide-tag lang:current></provide-tag>
+
+#
+#   navbar rendering
+#
+<define-tag navbar:render>
+<preserve name select subselected menumode txtonly nohints txtcol_normal txtcol_select />
+<set-var subselected=* />
+<set-var menumode=inner />
+<set-var txtonly=* />
+<set-var nohints=* />
+<navbar:index %attributes />
+<set-var %attributes />
+<subst-in-var select "[^a-zA-Z0-9]" "_" />
+<increment __nbcount />
+<defvar name "unknown-navbar" />
+<perl>
+sub navbar_render_<get-var __nbcount /><lang:current /> {
+    my($name, $select, $subselected, $txtcol_n, $txtcol_s,
+       $menumode, $txtonly, $nohints, $nbcount) = @_;
+
+    #   select the correct navigation bar configuration
+    my $CFG = $NAVBAR{$name};
+
+    #   retrieve parts of config
+    my @imgstar  = split(':', $CFG->{IMGSTAR});
+    my $imgbase  = $CFG->{IMGBASE};
+    my $urlbase  = $CFG->{URLBASE};
+    $txtcol_n    = $CFG->{TXTCOL_N} if $txtcol_n eq '';
+    $txtcol_s    = $CFG->{TXTCOL_S} if $txtcol_s eq '';
+    my $filter   = $CFG->{FILTER};
+
+    #   initialise output creation
+    my $O = '';
+    my $n = 0;
+    my @preload = ();
+    my $nb = 'nb_img' . $nbcount;
+
+    my $tag_attr = {};
+    #   Initialize extra attributes
+    #   This must be done in pass 2
+<set-var __list_tags="a\nimg" />
+<set-var __list_sel="N\nS\nSS" />
+<foreach __tag __list_tags>
+  <set-var __nb_attr=<attributes-quote <attributes-extract
+        :<get-var __tag />:(.*) %attributes /> /> />
+  <foreach __sel __list_sel>
+    $tag_attr{'<get-var __tag /><get-var __sel />'} =  qq(<or
+      <attributes-quote <attributes-extract
+          :<get-var __tag />\\.<get-var __sel />:(.*) %attributes /> />
+      <get-var __nb_attr /> />);
+  </foreach>
+</foreach>
+
+    #   Perform some clean ups
+    foreach my $key (keys %tag_attr) {
+        $tag_attr{$key} =~ s/^\s*/ /;
+        delete $tag_attr{$key} if $tag_attr{$key} =~ m/^\s*$/;
+    }
+
+    #   output the global header
+    $mcode = $CFG->{HEADER};
+    $mcode =~ s|^\s+||;
+    $mcode =~ s|\s+$||;
+    $O .= $mcode."\n";
+
+    #   now iterate over every defined button
+    foreach $B (@{$CFG->{BUTTON}}) {
+        #   count the buttons
+        $n++;
+
+        #   retrieve information about button
+        my $id     = $B->{ID};
+        my $alias  = $B->{ALIAS};
+        my $txt    = $B->{TXT};
+        my $alt    = $B->{ALT};
+        my @img    = split(':', $B->{IMG});
+        my $url    = $B->{URL};
+        my $target = ($B->{TARGET} eq '' ? $CFG->{TARGET} : $B->{TARGET});
+        my $hint   = $B->{HINT};
+        my $menu   = $B->{MENU};
+
+        my $idselect = ($select eq $id or ($select eq $alias and $alias ne '') ? 1 : 0);
+        my $buttontype = 'N';
+        $buttontype = ($subselected ? 'SS' : 'S') if $idselect;
+        my %extra_attr = (
+                a       => (${$B->{TAG_ATTR}}{'a'.$buttontype} || $tag_attr{'a'.$buttontype}),
+                img     => (${$B->{TAG_ATTR}}{'img'.$buttontype} || $tag_attr{'img'.$buttontype}),
+        );
+
+        #
+        #   PROLOG
+        #
+
+        #   determine list of prolog/epilog types to search
+        my @Ltype = ($buttontype, 'N');
+
+        #   output corresponding prolog for this type of button
+        L1: foreach $type (@Ltype) {
+            foreach $pos (($n, 'any')) {
+                if ($CFG->{PROLOG}->{$type}->{$pos}) {
+                    $mcode = $CFG->{PROLOG}->{$type}->{$pos};
+                    $mcode =~ s|^\s+||;
+                    $mcode =~ s|\s+$||;
+                    $O .= $mcode;
+                    last L1;
+                }
+            }
+        }
+
+        #
+        #   THE BUTTON ITSELF
+        #
+
+        #   cleanup image information
+        if ($#img == 0 and $img[0] =~ m|\*|) {
+            ($img[2] = $img[0]) =~ s|\*|$imgstar[2]|g;
+            ($img[1] = $img[0]) =~ s|\*|$imgstar[1]|g;
+            $img[0] =~ s|\*|$imgstar[0]|g;
+        }
+        if ($#img == 0) {
+            $img[1] = $img[0] 
+        }
+        for ($i = 0; $i <= $#img; $i++) {
+            $img[$i] = "$imgbase/$img[$i]" if ($imgbase ne '' and 
+                                               $img[$i] !~ m;^([.+\-\w]+:)?/;);
+            $img[$i] = &canonpath($img[$i]) if ($img[$i] !~ m;^[.+\-\w]+:/;);
+        }
+
+        #   cleanup url information
+        if ($url =~ m|#([a-zA-Z]+)#|) {
+            $url = $NAVBAR{$name}->{uc($1)};
+        }
+        if ($url ne '') {
+            $url  = "$urlbase/$url" if ($urlbase ne '' and $url !~ m;^([.+\-\w]+:)?/;);
+            $url  = &canonpath($url) if ($url !~ m;^[.+\-\w]+:/;);
+        }
+
+        #   cleanup target information
+        $target = " target=\"$target\"" if ($target ne '');
+
+        #   alt attribute defaults to txt attribute if missing
+        if ($alt eq '') {
+            $alt = $txt;
+        }
+
+        #   output the button markup code
+        if ($#img < 0 or $txtonly) {
+            #   cleanup txt information:
+            #   special feature for supporting colorized hyperlinks
+            if ($idselect and $txtcol_s) {
+                $txt = '<*font color="'.$txtcol_s.'">'.$txt.'<*/font>';
+            }
+            elsif ($txtcol_n) {
+                $txt = '<*font color="'.$txtcol_n.'">'.$txt.'<*/font>';
+            }
+            #
+            #   for a button without images
+            #
+            $hint = $url if ($hint eq '');
+            $hint = '' if $nohints;
+            if (($idselect and not $subselected) or $url eq '') {
+                $O .= $txt;
+            }
+            else {
+                $js = '';
+                if ($hint ne '') {
+                    $js = qq# onmouseover="self.status = '$hint'; return true"# .
+                          qq# onmouseout="self.status = ''; return true"# .
+                          qq# onfocus="self.status = '$hint'; return true"# .
+                          qq# onblur="self.status = ''; return true"#;
+                }
+                $O .= '<*a href="'.$url.'"'.$target.$js.$extra_attr{'a'}.'>'.$txt.'<*/a>';
+            }
+        }
+        else {
+            #
+            #   for a button with images
+            #
+            $hint = $txt if ($hint eq '');
+            $hint = '' if $nohints;
+            if (($idselect and not $subselected) or $url eq '') {
+                $O .= '<img src="'.$img[1].'" alt="'.$alt.'"'.$extra_attr{'img'}.' />';
+            }
+            elsif ($idselect and $subselected) {
+                $js = '';
+                if ($#img == 2) {
+                    $js = qq# onmouseover="nb_imgOver('${nb}_$id', $nohints, '$hint'); return true"# .
+                          qq# onmouseout="nb_imgSelect('${nb}_$id'); return true"# .
+                          qq# onfocus="nb_imgOver('${nb}_$id', $nohints, '$hint'); return true"# .
+                          qq# onblur="nb_imgSelect('${nb}_$id'); return true"#;
+                    push(@preload, [ $id, "s:$img[1]", "o:$img[2]" ]);
+                }
+                elsif ($hint ne '') {
+                    $js = qq# onmouseover="self.status = '$hint'; return true"# .
+                          qq# onmouseout="self.status = ''; return true"# .
+                          qq# onfocus="self.status = '$hint'; return true"# .
+                          qq# onblur="self.status = ''; return true"#;
+                }
+                $O .= '<*a href="'.$url.'"'.$target.$js.$extra_attr{'a'}.'>' .
+                      '<img name="'.$nb.'_'.$id.'" src="'.$img[1].'" alt="'.$alt.'" border=0'.$extra_attr{'img'}.' />' .
+                      '<*/a>';
+            }
+            else { # not selected 
+                $js = '';
+                if ($#img == 2) {
+                    $js = qq# onmouseover="nb_imgOver('${nb}_$id', $nohints, '$hint'); return true"# .
+                          qq# onmouseout="nb_imgNormal('${nb}_$id'); return true"# .
+                          qq# onfocus="nb_imgOver('${nb}_$id', $nohints, '$hint'); return true"# .
+                          qq# onblur="nb_imgNormal('${nb}_$id'); return true"#;
+                    push(@preload, [ $id, "n:$img[0]", "o:$img[2]" ]);
+                }
+                elsif ($hint ne '') {
+                    $js = qq# onmouseover="self.status = '$hint'; return true"# .
+                          qq# onmouseout="self.status = ''; return true"# .
+                          qq# onfocus="self.status = '$hint'; return true"# .
+                          qq# onblur="self.status = ''; return true"#;
+                }
+                $O .= '<*a href="'.$url.'"'.$target.$js.$extra_attr{'a'}.'>' .
+                      '<img name="'.$nb.'_'.$id.'" src="'.$img[0].'" alt="'.$alt.'" border=0'.$extra_attr{'img'}.' />' .
+                      '<*/a>';
+            }
+        }
+
+        if ($menumode eq 'inner' and $menu ne '' and $NAVBAR{"$menu"}->{OPEN}) {
+            $O .= &navbar_render_<get-var __nbcount /><lang:current />($menu,
+                $select, $subselected, $txtcol_n, $txtcol_s,
+                $menumode, $txtonly, $nohints, $nbcount);
+        }
+        
+        #
+        #   EPILOG
+        #
+
+        #   output corresponding epilog for this type of button
+        L2: foreach $type (@Ltype) {
+            foreach $pos (($n, 'any')) {
+                if ($CFG->{EPILOG}->{$type}->{$pos}) {
+                    $mcode = $CFG->{EPILOG}->{$type}->{$pos};
+                    $mcode =~ s|^\s+||;
+                    $mcode =~ s|[ \t]+$||;
+                    $O .= $mcode;
+                    last L2;
+                }
+            }
+        }
+
+        if ($menumode ne 'inner' and $menu ne '' and $NAVBAR{"$menu"}->{OPEN}) {
+            $O .= &navbar_render_<get-var __nbcount /><lang:current />($menu,
+                $select, $subselected, $txtcol_n, $txtcol_s,
+                $menumode, $txtonly, $nohints, $nbcount);
+        }
+        
+
+    }
+
+    #   output the global footer
+    $mcode = $CFG->{FOOTER};
+    $mcode =~ s|^\s+||;
+    $mcode =~ s|\s+$||;
+    $O .= $mcode."\n";
+    $P = <<'EOT';
+<navbar:jsfuncs />
+EOT
+
+    #   prefix the output with some JavaScript
+    #   aux functions and the preloading of used images
+    if ($#preload >= 0) {
+        $P .= <<'EOT';
+<javascript>
+if (document.images) {
+EOT
+        foreach $p (@preload) {
+            my $name = $p->[0];
+            my ($normtag, $normpath) = ($p->[1] =~ m|^([nso]):(.+)$|);
+            my ($overtag, $overpath) = ($p->[2] =~ m|^([nso]):(.+)$|);
+            $P .= "    ${nb}_${name}_${normtag} = new Image();\n";
+            $P .= "    ${nb}_${name}_${normtag}.src = '$normpath';\n";
+            $P .= "    ${nb}_${name}_${overtag} = new Image();\n";
+            $P .= "    ${nb}_${name}_${overtag}.src = '$overpath';\n";
+        }
+        $P .= <<'EOT';
+}
+</javascript>
+EOT
+        $O = $P.$O;
+    }
+
+    #   additionally apply an existing Perl filter
+    if ($filter ne '') {
+        eval("\$filter_func = sub {" . $filter . "};");
+        $O = &{$filter_func}($O, $CFG, $select);
+    }
+
+    #   finally produce the HTML markup code
+    return $O;
+}
+{
+    #   import attributes to ePerl
+    my $select      =  qq|<get-var select />|;
+    my $subselected = (qq|<get-var subselected />| eq '' ? 1 : 0);
+    my $menumode    =  qq|<get-var menumode />|;
+    my $txtonly     = (qq|<get-var txtonly />|     eq '' ? 1 : 0);
+    my $nohints     = (qq|<get-var nohints />|     eq '' ? 1 : 0);
+
+    <perl:print: \
+       "&navbar_render_<get-var __nbcount /><lang:current />('<get-var name />',
+             $select, $subselected,
+             '<get-var txtcol_normal />', '<get-var txtcol_select />', 
+             $menumode, $txtonly, $nohints, <get-var __nbcount />)" />
+}
+</perl>
+<restore  name select subselected menumode txtonly nohints txtcol_normal txtcol_select />
+</define-tag>
+
+<define-tag navbar:jsfuncs>
+<javascript>
+function nb_imgNormal(imgName) {
+    if (document.images) {
+        document[imgName].src = eval(imgName + '_n.src');
+        self.status = '';
+    }
+}
+function nb_imgSelect(imgName) {
+    if (document.images) {
+        document[imgName].src = eval(imgName + '_s.src');
+        self.status = '';
+    }
+}
+function nb_imgOver(imgName, nohints, descript) {
+    if (document.images) {
+        document[imgName].src = eval(imgName + '_o.src');
+        if (! nohints) self.status = descript;
+    }
+}
+</javascript>
+<define-tag navbar:jsfuncs></define-tag>
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::navbar - Navigation Bar
+
+=head1 SYNOPSIS
+
+ #use wml::des::navbar
+
+ #   explicitly write javascript code now
+ <navbar:jsfuncs>
+
+ #   define a navigation bar
+ <navbar:define name=<name> [<options>]>
+     <navbar:header>...</navbar:header>
+     <navbar:footer>...</navbar:footer>
+     <navbar:prolog [<options>]>...</navbar:prolog>
+     <navbar:epilog [<options>]>...</navbar:epilog>
+     <navbar:button id=<id1> txt=... [<options>]> 
+          : 
+     <navbar:button id=<idN> txt=... [<options>]> 
+     <navbar:filter>...</navbar:filter> 
+ </navbar:define>
+
+ #   debug the internal structure
+ <navbar:debug name=<name>>
+
+ #   render the navigation bar
+ <navbar:render name=<name> [options]>
+
+=head1 DESCRIPTION
+
+This include file defines a complex navigation bar container tag named
+C<E<lt>navbar:defineE<gt>>. It can be used to define navigation bars of any
+optical style by specifying its parts in general and individually and letting
+the C<E<lt>navbar:renderE<gt>> tag create the complete particular HTML code.
+Creating a navigation bar is a two step process. First you define it according
+to this grammar:
+
+   navbar   ::= HEADER{0,1} 
+                PROLOG{0,3} BUTTON{1,N} EPILOG{0,3} 
+                FOOTER{0,1}
+                FILTER{0,1}
+
+   HEADER   ::= navbar:header
+
+   PROLOG   ::= navbar:prolog (type=N) 
+              | navbar:prolog (type=S)
+              | navbar:prolog (type=SS)
+
+   BUTTON   ::= navbar:button
+
+   EPILOG   ::= navbar:epilog (type=N)
+              | navbar:epilog (type=S)
+              | navbar:epilog (type=SS)
+
+   FOOTER   ::= navbar:footer
+
+   FILTER   ::= navbar:filter
+
+or in other words: navigation bar consists of an optional header and
+footer, up to three different (according to C<type>) prologs and epilogs for
+the navigation buttons and at least one actual navigation button.
+Additionally a filter can be applied. The C<navbar:XXXX> names in the above
+grammar directly correspond to the existing tags you have to use.
+
+After you have defined such a navigation bar (which is usually done inside an
+include file) you can create the corresponding HTML markup code by placing
+C<E<lt>navbar:renderE<gt>> at the point where this markup code should occur.
+This tag can be used more then once when you want (for instance inside a page
+header I<and> its footer or once with graphics and once with the C<txtonly>
+attribute for the textual version, etc.).
+
+Always notice that C<E<lt>navbar:renderE<gt>> has no internal built-in
+knowledge of your navigation bar except its structure according to the above
+grammar. So, you only receive nice results when you define a nice grammar
+instance with the available C<navbar:XXXX> tags. The
+C<E<lt>navbar:renderE<gt>> tag is not there to create nice things you usually
+couldn't do yourself. It is there to avoid the nasty compilation of one
+million prologs and epilogs for each button where each of these consists of
+similar HTML code. So, C<E<lt>navbar:renderE<gt>> is your workhorse, the
+intelligence is yours. 
+
+But how do we actually get navigation bars? Haven't we forgot something which
+is essential to navigation bars? Yes, we have. Navigation bars feature is that
+we can define them at one point for the underlaying hyperlink structure and
+use them at any point inside this structure while the hyperlinks are
+automatically aligned for the current location. But this feature the core of
+WML already provides through its adjustable path variables. So, this include
+file is useless without this feature. Or in other words: You really have to
+define some root-variable of your structure in a F<.wmlrc> file and then use
+this variable when defining the hyperlinks inside the C<E<lt>navbar:buttonE<gt>>'s
+C<url> attribute.  Never forget this point!
+
+For complete examples see under C<EXAMPLES> below.
+
+=head1 OPTIONS
+
+=head2 B<Options of C<E<lt>navbar:defineE<gt>>:>
+
+This defines the navigation bar.
+
+=over 4
+
+=item name=I<STR>
+
+This sets the name of the navigation bar which is used both for internal data
+respresentation and for referencing in C<E<lt>navbar:debugE<gt>> and
+C<E<lt>navbar:renderE<gt>>. Always use this attribute (or you risk other
+navigation bars to be overwritten) and always use a unique name here when
+using more then one navigation bar.
+
+=item imgstar=I<SPEC>
+
+This contains a colon-separated list of three strings. They are used for
+substitution of asterisks in the C<E<lt>navbar:buttonE<gt>>'s C<img> attribute
+when this attribute only contains one image filename and this filename
+contains an asterisk. In other words: this single image filename is expanded
+to a colon-separated list of three image filenames while for each filename the
+asterisk is substituted with the corresponding string from the C<imgstar>
+attribute. 
+
+Example:
+
+  <navbar:define imgstar=std:sel:ovr ...>
+    ...
+    <navbar:button img=button-1-*.gif ...>
+    <navbar:button img=button-2-*.gif ...>
+    ... 
+  </navbar:define>
+
+This is equivalent to the following:
+
+  <navbar:define ...>
+    ...
+    <navbar:button img=button-1-std.gif:button-1-sel.gif:button-1-ovr.gif ...>
+    <navbar:button img=button-2-std.gif:button-2-sel.gif:button-2-ovr.gif ...>
+    ... 
+  </navbar:define>
+
+=item imgbase=I<PATH>
+
+Defines a common image base directory, i.e. all non-absolute pathnames in
+C<E<lt>navbar:buttonE<gt>>'s C<img> attributes are prefixed with I<PATH>. Per
+default there is no such prefix.
+
+=item urlbase=I<PATH>
+
+Defines a common navigation base directory, i.e. all non-absolute pathnames in
+C<E<lt>navbar:buttonE<gt>>'s C<url> attributes are prefixed with I<PATH>. Per
+default there is no such prefix. Is is useful that I<PATH> itself contains an
+WML adjustable path variable.
+
+=item target=I<STR>
+
+The target frame or window to which all hyperlinks are per default redirected
+to. This can be overwritten by the C<target> attribute of
+C<E<lt>navbar:buttonE<gt>>.
+
+=back
+
+=head2 B<Options of C<E<lt>navbar:headerE<gt>>:>
+
+This defines the global header for the navigation bar.
+Currently there are no attributes used.
+
+=head2 B<Options of C<E<lt>navbar:footerE<gt>>:>
+
+This defines the global footer for the navigation bar.
+Currently there are no attributes used.
+
+=head2 B<Options of C<E<lt>navbar:prologE<gt>>:>
+
+This defines the prolog of C<E<lt>navbar:buttonE<gt>>s, i.e.  the local header for
+each navigation button.
+
+=over 4
+
+=item pos=I<SPEC>
+
+This sets the button position where to apply this prolog, i.e.  the number of
+the button starting with the number 1. Use this to apply a special prolog to a
+particular button only. The default is C<any> for I<SPEC> which means: apply
+this prolog to any button as long as there is no specially defined one for it.
+There are three important special values for I<SPEC>: C<first> (=1), C<last>
+(=number of used C<E<lt>navbar:buttonE<gt>>'s) and C<next> which
+applies to the next button only.
+
+=item type=I<SPEC>
+
+This sets the type of application of this button. There are three possible
+values for I<SPEC>: ``C<N>'' (normal: used for buttons in normal state),
+``C<S>'' (selected: used for selected buttons) and ``C<SS>'' (sub-selected:
+used for selected buttons but level is deeper).
+
+This type is triggered by the C<select=I<ID>> and C<subselected> attributes of
+C<E<lt>navbar:renderE<gt>>.
+
+=back
+
+=head2 B<Options of C<E<lt>navbar:epilogE<gt>>:>
+
+This defines the epilog of C<E<lt>navbar:buttonE<gt>>s, i.e.  the local footer
+for each navigation button. The available attributes or the same as for
+C<E<lt>navbar:prologE<gt>>.
+
+=head2 B<Options of C<E<lt>navbar:buttonE<gt>>:>
+
+This defines a particular navigation button, i.e. a text or image surrounded
+by a hyperlink plus a few special features like status bar hints and a
+rollover effect for images.
+
+=over 4
+
+=item id=I<STR>
+
+The identification string for this button. This has to be a unique identifier
+which later is used with C<E<lt>navbar:renderE<gt>>'s C<select> attribute to
+mark this button as selected.
+
+=item alias=I<STR>
+
+The former C<id> attribute has to be unique. This tag allows you to
+group buttons as if they had the same C<id> attribute.
+
+=item txt=I<STR>
+
+The textual representation of the button which is displayed. 
+When no C<alt> attribute is specified, it defaults to the value
+of this C<txt> attribute.
+
+=item alt=I<STR>
+
+The C<alt> attribute for the created C<E<lt>imgE<gt>> tags.  When images are
+not displayed this is used instead by most browsers. If images are displayed
+this is ignored by most browsers. It defaults to the value of the C<txt>
+attribute.
+
+=item img=I<SPEC>
+
+The image(s) to display for this button. This can be a single image file or a
+colon-separated list of three images. The first one is the normal button, the
+second one is the selected button variant and the third one is the variant
+which is displayed when the mouse is over the button (but only if the button
+is not a selected one).
+
+=item hint=I<STR>
+
+The text displayed in the browsers status bar when the mouse
+is over the button.
+
+=item url=I<PATH>
+
+The hyperlink URL which is activated when the button is pressed. There
+are three special URLs: C<#UP#>, C<#PREV#> and C<#NEXT#>, which refer
+to the node one level up, the previous or the next node.
+
+=item target=I<STR>
+
+A target frame or window where the hyperlink is redirected to.
+
+=item menu=I<STR>
+
+The name of a navigation bar to insert at this point.
+
+=item :a:I<ATTR>=I<STR> :img:I<ATTR>=I<STR>
+
+The ``I<ATTR>=I<STR>'' pairs are passed along to the desired HTML tags.
+It is also possible to add a prefix to tag name to select only normal
+(C<.N>), selected (C<.S>) or subselected (C<.SS>) buttons.
+
+=back
+
+=head2 B<Options of C<E<lt>navbar:debugE<gt>>:>
+
+Use this tag while developing your navigation bar definition.
+It dumps the internal structure of this definition.
+
+=over 4
+
+=item name=I<STR>
+
+The name of the navigation bar to dump. See the corresponding C<name>
+attribute of C<E<lt>navbar:defineE<gt>>.
+
+=back
+
+=head2 B<Options of C<E<lt>navbar:renderE<gt>>:>
+
+=over 4
+
+=item name=I<STR>
+
+The name of the navigation bar definition to use when rendering.
+
+=item select=I<ID>
+
+Select a particular button as selected.
+
+=item subselected
+
+Marks the selected button as a subselected one, i.e. the current page for
+which the button is selected is deeper than the original page for which
+this button stands.
+
+=item txtcol_select=I<#rrggbb>
+
+This is a hack because of the HTML rendering of typical browsers on anchors.
+You have to use this attribute when you want to create textual
+navigations bars with specific colors, this can not be performed with
+prologs and epilogs when defining navbars.
+
+=item txtcol_normal=I<#rrggbb>
+
+This is the corresponding tag to C<txtcol_select> because we want to
+have a homogen configuration style.
+
+=item menumode=I<inner|outer>
+
+With B<menumode=inner> (default), a selected sub-menu is inserted
+before epilog of current entry, otherwise it is put after.
+
+=item txtonly
+
+Forces the rendering to ignore all defined images.
+
+=item nohints
+
+Do not create Javascript hints for navigation buttons.
+
+=item :a:I<ATTR>=I<STR> :img:I<ATTR>=I<STR>
+
+The ``I<ATTR>=I<STR>'' pairs are passed along to all the desired HTML
+tags found in this navbar.  It is also possible to add a prefix to tag
+name to select only normal (C<.N>), selected (C<.S>) or subselected
+(C<.SS>) buttons.  For instance with
+
+   <navbar:render name=main :img:class=nav
+      :a.N:class=nav-n :a.S:class=nav-s :a.SS:class=nav-ss />
+
+attribute ``class="nav"'' is added to all images, ``class="nav-s"'' is
+added to anchor when button is selected (this is a dummy example, since
+when button is selected, there is no such anchor), ``class="nav-ss"'' is
+added when button is subselected, and normal links have ``class="nav-n"''.
+
+=back
+
+=head2 B<Options of C<E<lt>navbar:filterE<gt>>:>
+
+This defines the body of a Perl filtering function which can be used to
+post-process the generated HTML markup code before it is written out.
+Currently there are no attributes used.
+
+When no C<E<lt>navbar:filterE<gt>> tag is specified, no such
+filtering occurs. When 
+
+  <navbar:filter> BODY </navbar:filter>
+
+is specified, internally an anonymous Perl function is created
+and the HTML markup code is filtered through this function
+as follows:
+
+  $func = sub { BODY };
+  $markup_code = &{$func}($markup_code, $CFG, $select);
+
+where C<$CFG> is the internal configuration structure as seen with
+C<E<lt>navbar:debugE<gt>> and C<$markup_code> is a literal string holding the
+HTML markup code. In other words, when you want to apply a filter, you have to
+do it with the following skeleton:
+
+  <navbar:filter>
+      my ($mcode, $CFG, $select) = @_;
+      ...
+      return $mcode;
+  </navbar:filter>
+
+=head2 B<Options of C<E<lt>navbar:jsfuncsE<gt>>:>
+
+This prints Javascript functions used for rollover effects on images.
+This macro discards itself after first invocation so that definitions
+are printed only once.  It is automatically called by
+C<E<lt>navbar:renderE<gt>>, so it could looks useless.  But if you
+consider
+
+  <en><navbar:render name=main></en>
+  <fr><navbar:render name=main></fr>
+
+javascript code only appears in English version.  The correct solution
+is to put this tag outside of any slice:
+
+  <navbar:jsfuncs>
+  <en><navbar:render name=main></en>
+  <fr><navbar:render name=main></fr>
+
+=head1 EXAMPLES
+
+=head2 Classic Navigation bar
+
+File: nb.inc
+
+  <navbar:define name=test 
+          imgbase="img/" urlbase="$(ROOT)"
+          txtcol_normal="#000000" txtcol_select="#ffffff">
+    <navbar:header> 
+      <table cellspacing=1 cellpadding=2 border=0>
+      <tr>
+    </navbar:header>
+
+    <navbar:prolog>        <td bgcolor="#cccccc"> </navbar:prolog>
+    <navbar:prolog type=S> <td bgcolor="#cc3333"> </navbar:prolog>
+
+    <navbar:button id=foo txt="Foo" url="foo.html" hint="The Foo Page"> 
+    <navbar:button id=bar txt="Bar" url="bar.html" hint="The Bar Page"> 
+    <navbar:button id=baz txt="Baz" url="baz.html" hint="The Baz Page"> 
+
+    <navbar:epilog> </td> </navbar:epilog> 
+
+    <navbar:footer> 
+      </tr>
+      </table> 
+    </navbar:footer>
+  </navbar:define>
+
+  <navbar:render name=$(name) select=$(select)>
+
+File: .wmlrc
+
+  -DROOT~.
+  -I.
+
+File: foo.wml
+  
+  #use wml::std::page
+  #use wml::des::navbar
+  
+  <page indent=2>
+
+  #include "nb.inc" name=test select=foo
+
+  <h1>The Foo Page</h1>
+  <p>
+  Foo...
+
+File: bar.wml
+
+  #use wml::std::page
+  #use wml::des::navbar
+  
+  <page indent=2>
+
+  #include "nb.inc" name=test select=bar
+
+  <h1>The Bar Page</h1>
+  <p>
+  Bar...
+
+=head2 Nested Navigation bar
+
+File: nb.inc
+
+  <navbar:define
+          name=test imgbase="img/"
+          txtcol_normal="#000000" txtcol_select="#ffffff">
+    <navbar:header>
+      <ul>
+    </navbar:header>
+    <navbar:prolog><li></navbar:prolog>
+
+    <navbar:button id=foo txt="Foo" url="foo.html">
+    <navbar:button id=bar txt="Bar" url="bar.html" menu="nb-bar"> 
+
+    <navbar:footer>
+      </ul> 
+    </navbar:footer>
+  </navbar:define>
+  <navbar:define name="nb-bar">
+    <navbar:header>
+      <ul>
+    </navbar:header>
+    <navbar:prolog><li></navbar:prolog>
+
+    <navbar:button txt="First bar item">
+    <navbar:button txt="Second bar item">
+
+    <navbar:footer>
+      </ul> 
+    </navbar:footer>
+  </navbar:define>
+
+  <navbar:render name=test select=$(select)>
+
+File: foo.wml
+  
+  #use wml::std::page
+  #use wml::des::navbar
+  
+  <page indent=2>
+
+  #include 'nb.inc' select=foo
+
+  <h1>The Foo Page</h1>
+  <p>
+  Foo...
+
+File: bar.wml
+
+  #use wml::std::page
+  #use wml::des::navbar
+  
+  <page indent=2>
+
+  #include 'nb.inc' select=bar
+
+  <h1>The Bar Page</h1>
+  <p>
+  Bar...
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: --
+
+=head1 SEEALSO
+
+wml(1)
+
+=cut
+

@@ -1,0 +1,207 @@
+##
+##  wml::std::page - Standard HTML Page Header and Footer
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::info
+
+#
+#   the page counter for multiple pages
+#
+<set-var __std_page_cnt=0 />
+
+#
+#   the new PAGE tag
+#
+<define-tag page>
+<preserve title indent info background color bgcolor text link alink vlink
+          onload slices />
+<set-var info=* />
+<set-var slices=* />
+<set-var %attributes />
+<increment __std_page_cnt />
+<ifeq "<get-var slices />" "" "[WML_STDPAGE_HEAD:" /><html*>
+<head*>
+<ifeq "<get-var info />" "" <info style=meta /> />\
+<if "<get-var title />" "<title*><get-var title /></title*>
+" />\
+{#WML_PAGE_HEAD_<get-var __std_page_cnt />#}\
+</head*>
+<body*<if <get-var background /> " background=\"<get-var background />\"" "" />\
+      <when <not <get-var color /> />>\
+      <if <get-var bgcolor /> <group <ifeq "<get-var bgcolor />" "none" "" " bgcolor=\"<get-var bgcolor />\"" /> /> " bgcolor=\"#ffffff\"" />\
+      <if <get-var text /> " text=\"<get-var text />\"" " text=\"#000000\"" />\
+      <if <get-var link /> " link=\"<get-var link />\"" " link=\"#333399\"" />\
+      <if <get-var alink /> " alink=\"<get-var alink />\"" " alink=\"#9999ff\"" />\
+      <if <get-var vlink /> " vlink=\"<get-var vlink />\"" " vlink=\"#000066\"" />\
+      </when>\
+      <if <get-var onload /> " onload=\"<get-var onload />\"" "" />\
+>
+<set-var __i=0 />
+<while <lt <get-var __i /> <get-var indent /> />>
+<blockquote*>
+<increment __i />
+</while><ifeq "<get-var slices />" "" ":WML_STDPAGE_HEAD]" />\
+<ifeq "<get-var slices />" "" "[WML_STDPAGE_BODY:" />{#WML_PAGE_BODY_<get-var __std_page_cnt />#}<ifeq "<get-var slices />" "" ":WML_STDPAGE_BODY]" />\
+<ifeq "<get-var slices />" "" "[WML_STDPAGE_FOOT:" />\
+<set-var __i=0 />
+<while <lt <get-var __i /> <get-var indent /> />>
+</blockquote*>
+<increment __i />
+</while>
+</body*>
+</html*><ifeq "<get-var slices />" "" ":WML_STDPAGE_FOOT]" />
+{#WML_PAGE_BODY_<get-var __std_page_cnt />#:\
+<restore  title indent info background color bgcolor text link alink vlink
+          onload slices />
+</define-tag>
+
+#   end page
+<define-tag page_end>
+:#WML_PAGE_BODY_<get-var __std_page_cnt />#}
+</define-tag>
+
+#   divert HEAD tag body to header
+<define-tag head endtag=required>
+{#WML_PAGE_HEAD_<get-var __std_page_cnt />#:
+%body
+:##}
+</define-tag>
+
+#   divert TITLE tag to header
+<define-tag title endtag=required>
+{#WML_PAGE_HEAD_<get-var __std_page_cnt />#:
+<title*>%body</title*>
+:#WML_PAGE_HEAD_<get-var __std_page_cnt />#}
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::std::page - Standard HTML Page Header and Footer
+
+=head1 SYNOPSIS
+
+ #use wml::std::page
+
+ <page [attributes]>
+ [<page_end>]
+
+ <head>...</head>
+ <title>...</title>
+
+=head1 DESCRIPTION
+
+This include file provides the new C<E<lt>pageE<gt>> tag which is a advanced
+combination of the HTML C<E<lt>bodyE<gt>> and C<E<lt>headE<gt>> container
+tags. The idea is to provide complete header and footer tags via one single
+tag while providing new features like page indentation, easy title
+specification and setup of default values for the page colors.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item C<title>
+
+This is a shorthand for the container tag C<E<lt>titleE<gt>>. The value of
+this attribute is placed in the C<E<lt>headE<gt>> section of the page,
+surrounded with the C<E<lt>titleE<gt>> tag.
+
+=item C<indent>
+
+This sets the indentation level of the page in units of
+C<E<lt>blockquoteE<gt>>'s.  Default is no indentation. Setting C<indent> to a
+value of N means the page is surrounded by N C<E<lt>blockquote>E<gt>> tags.
+The attribute C<indent=1> or C<indent=2> usually provides the best readable
+layout.
+
+=item C<background>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets the background image.  This is per default not used.
+
+=item C<bgcolor>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets the background color.  Default is C<bgcolor="#ffffff"> (white).
+
+=item C<text>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets the text color.  Default is C<text="#000000"> (black).
+
+=item C<link>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets the normal hyperlink color. Default is C<text="#333399"> (medium blue).
+
+=item C<alink>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets the color for activated hyperlinks. Default is C<text="#9999ff"> (light
+blue).
+
+=item C<vlink>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets the color for already visited hyperlinks. Default is C<text="#000066">
+(dark blue).
+
+=item C<color>
+
+When setting C<color="none">, the five previous attributes are not put
+into the C<E<lt>bodyE<gt>> tag.
+
+=item C<onload>
+
+This just corresponds to the same attribute of the C<E<lt>bodyE<gt>> tag and
+sets a JavaScript even handler which is activated after page was loaded.  This
+is per default not used.
+
+=item C<info>
+
+This automatically puts a C<E<lt>info style=metaE<gt>> tag into the
+C<E<lt>headE<gt>> section of the page. See wml::std::info(3) for more details.
+
+=item C<slices>
+
+This enables the creating of three slices: C<WML_STDPAGE_HEAD>,
+C<WML_STDPAGE_BODY> and C<WML_STDPAGE_FOOT>. These can be used later in
+Pass 9 (Slice) for cutting out parts of the page.
+
+=back
+
+=head1 OTHER COMMANDS
+
+This module implements two new macros, called
+C<E<lt>titleE<gt>>...C<E<lt>/titleE<gt>>
+and C<E<lt>headE<gt>>...C<E<lt>/headE<gt>>. The first one defines the
+title of the page, and the second appends its body into the HEAD section
+of the HTML documents.  Its main purpose is to add meta-tags, either
+directly or with the help of wml::std::info(3).
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P5
+ External: --
+
+=head1 SEEALSO
+
+HTML C<E<lt>headE<gt>>, C<E<lt>bodyE<gt>> and C<E<lt>titleE<gt>> tags;
+wml::std::info(3)
+
+=cut
+

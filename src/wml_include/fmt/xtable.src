@@ -1,0 +1,86 @@
+##
+##  wml::fmt::xtable - HTML tables through Advanced Syntax
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::std::tags
+
+<set-var __xtable:level=0 />
+<define-tag xtable endtag=required>
+<increment __xtable:level />
+<perl filehandle="FH_XTABLE">
+{
+    my $tmpfile = "$(WML_TMPDIR)/wml.table.$$.tmp";
+    my $options;
+    <perl:assign $options>%attributes</perl:assign>;
+    <when <eq <get-var __xtable:level /> 1 />>
+    local *FH_XTABLE;
+    open(FH_XTABLE, ">$tmpfile");
+    </when>
+    <perl:assign>
+      <wwwtable $options>
+        %body
+      </wwwtable>
+    </perl:assign>
+</perl>
+#   we cut here to change filehandle
+<perl>
+    <when <eq <get-var __xtable:level /> 1 />>
+    print FH_XTABLE <perl:var />;
+    close(FH_XTABLE);
+    open(FH_XTABLE_IN,
+       "$(WML_LOC_LIBDIR)/exec/wml_aux_freetable $tmpfile < /dev/null |");
+    local ($/) = undef;
+    <perl:var /> = <*FH_XTABLE_IN>;
+    close(FH_XTABLE_IN);
+    <perl:print:var />
+    unlink("$tmpfile");
+    </when>
+}
+</perl>
+<decrement __xtable:level />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt::xtable - HTML tables through Advanced Syntax
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::xtable
+ 
+ <xtable table-options>
+   initial text (e.g. <caption> ... </caption>).
+   (X, Y) options for cell (X, Y)
+   text for cell (X,Y)...
+   ((X,Y)) options for header cell X,Y
+   text for header cell (X,Y)...
+ </xtable>
+
+=head1 DESCRIPTION
+
+This is just a WML wrapper for interfacing the wml_aux_freetable(1) utility
+which converts its advanced table syntax to plain HTML table markup code. See
+wml_aux_freetable(1) for more details.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3, wml_aux_freetable (PATH)
+ External: --
+
+=head1 SEEALSO
+
+wml_aux_freetable(1),
+HTML C<E<lt>tableE<gt>> tag.
+
+=cut
+

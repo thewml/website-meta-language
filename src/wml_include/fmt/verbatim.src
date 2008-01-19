@@ -1,0 +1,104 @@
+##
+##  wml::fmt::verbatim - Really Preformatted Verbatim Text
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::std::tags
+
+<protect pass=2>
+<:
+#   the conversion function
+#   provided just for wml::imp::generic
+sub wml_fmt_verbatim {
+    my ($arg) = @_;
+    my ($buf);
+    local (*FP);
+
+    open(FP, "<$arg->{FILE}") || die;
+    local ($/) = undef;
+    $buf = <FP>;
+    close(FP);
+
+    $buf =~ s|&|&amp;|sg;
+    $buf =~ s|<|&lt;|sg;
+    $buf =~ s|>|&gt;|sg;
+    $buf =~ s|\n+\s*$||s;
+
+    #   WARNING: protect tags cannot be nested, so they are escaped here
+    return "<"."protect pass=4-9><pre>\n$buf</pre><"."/protect>";
+}
+:>
+</protect>
+
+<define-tag verbatim endtag=required whitespace=delete>
+<pre<attributes-quote <attributes-extract :pre:(.*) %attributes /> />>
+<protect pass=3-5><protect pass=7-9>
+{:
+[[s|&|&amp;|sg]]
+[[s|<|&lt;|sg]]
+[[s|>|&gt;|sg]]
+[[s|\n+\s*$||s]]
+[[s|^\s*\n+||s]]
+%body
+:}
+</protect></protect>
+</pre>
+</define-tag>
+
+<define-tag verbatim-file>
+<preserve src />
+<set-var %attributes />
+<perl>
+  <perl:print:
+       "&wml_fmt_verbatim({ FILE => '<get-var src />'})" />
+</perl>
+<restore src />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt::verbatim - Really Preformatted Verbatim Text
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::verbatim
+
+ <verbatim>
+ Text with <,> and & characters,
+     leading whitespaces and
+ pre  formatted   blocks
+ </verbatim>
+
+ #     To include the file ``bar'' verbatim
+ <verbatim-file src="bar">
+
+=head1 DESCRIPTION
+
+This is an enhanced C<E<lt>preE<gt>> tag which really formats as plain text,
+i.e. escapes the characters `C<E<lt>>', `C<E<gt>>' and `C<&>'.
+
+The usage is simple: Just surround the text with the C<E<lt>verbatimE<gt>>
+container tag and then all text inside it will be threated as really verbatim
+text, i.e. a I<pre>formatted area with all problematic characters sequences
+escaped.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P6
+ External: --
+
+=head1 SEEALSO
+
+HTML C<E<lt>preE<gt>> tag
+
+=cut
+

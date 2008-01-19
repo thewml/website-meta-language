@@ -1,0 +1,33 @@
+
+   mp4h -- Macro Processor for HTML Documents
+   Version 1.3.0 (06-Jul-2002)
+
+              http://www.engelschall.com/sw/mp4h/
+
+   Copyright (C) 2000-2002, Denis Barbier
+   All rights reserved.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.  See the COPYING file for details.
+
+                      ----------------
+
+   Mp4h is a text processor specifically designed for HTML documents.
+   It has two ancestors: Meta-HTML <URL:http://www.metahtml.org/>
+   and GNU m4 <URL:http://www.gnu.org/software/m4/>. The former
+   inspired mp4h syntax whereas source code is derived from the
+   latter.
+
+   Mp4h syntax is immediately familiar to HTML programmers. Users
+   can define their own tags, and programming constructs like loops,
+   arrays, conditionals make mp4h very powerful.
+
+   Mp4h is extendable to fit every needs.  It can of course load
+   new macro definitions put in package files, but also dynamically
+   load shared libraries containing compiled macro definitions.
+
+-- 
+Denis Barbier
+<barbier@linuxfr.org>

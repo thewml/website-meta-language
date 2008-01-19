@@ -1,0 +1,206 @@
+##
+##  Makefile -- iSelect Makefile
+##
+@SET_MAKE@
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+#   compiler tools
+CC      = @CC@
+CFLAGS  = @CFLAGS@ -I.
+LDFLAGS = @LDFLAGS@
+LIBS    = @LIBS@
+debug   = @debug@
+
+#   installation tools
+SHTOOL          = $(top_srcdir)/etc/shtool
+INSTALL_PROGRAM = $(SHTOOL) install -c -m 755 -s
+INSTALL_DATA    = $(SHTOOL) install -c -m 644
+MKDIR           = $(SHTOOL) mkdir -p -f -m 755
+VERSION_TOOL    = $(SHTOOL) version
+FIXPERM         = $(SHTOOL) fixperm
+
+#   installation paths
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+bindir          = @bindir@
+mandir          = ${exec_prefix}/man
+tmpdir          = @tmpdir@
+
+OBJS = \
+   iselect_main.o iselect_browse.o iselect_keys.o \
+   iselect_getopt.o iselect_version.o iselect_help.o iselect_readme.o
+
+# ------------------------------------------------
+#   THE DEFAULT TARGETS
+# ------------------------------------------------
+
+all: iselect iselect.1
+
+# ------------------------------------------------
+#   THE CONFIGURATION SUPPORT
+# ------------------------------------------------
+
+config: configure config_ac.h.in
+
+configure: configure.in aclocal.m4 acconfig.h
+	rm -f configure
+	autoconf configure.in >configure
+	chmod 770 configure
+
+config_ac.h.in: configure.in acconfig.h
+	rm -f config_ac.h.in
+	autoheader configure.in >config_ac.h.in
+
+etc/shtool:
+	shtoolize -o $@ install mkdir version echo fixperm
+
+# ------------------------------------------------
+#   THE RELEASE STUFF
+# ------------------------------------------------
+
+_GETDISTINFO = \
+    _version=`$(VERSION_TOOL) -lc -d short iselect_version.c`; \
+    _date=`date '+%Y%m%d_%H%M'`
+
+_BUILDDIST = \
+    echo "Creating tarball..."; \
+    find * -depth -print |\
+    sort | xargs tar --no-recursion -cf - |\
+    tarcust --user-name=rse --group-name=en --prefix=$${_distname} \
+            --exclude='.*CVS.*' --exclude='.*\.cvsignore' \
+            --exclude='iselect-.*\.tar\.gz' |\
+    gzip -9 >$${_tarball}; \
+    echo "Done"; \
+    ls -l $${_tarball}
+
+_NEWVERS = \
+	$(VERSION_TOOL) -lc -p iSelect $$OPT iselect_version.c; \
+	V=`$(VERSION_TOOL) -lc -d long iselect_version.c`;\
+	sed -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README; \
+	sed -e "s/Version .*(.*)/Version $$V/g" <iselect_readme.txt >iselect_readme.txt.n && mv iselect_readme.txt.n iselect_readme.txt;
+
+_UPDATEVERS = \
+	V=`$(VERSION_TOOL) -lc -d short iselect_version.c`;\
+	$(VERSION_TOOL) -lc -p iSelect -s $$V iselect_version.c; \
+	V=`$(VERSION_TOOL) -lc -d long iselect_version.c`;\
+	sed -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README; \
+	sed -e "s/Version .*(.*)/Version $$V/g" <iselect_readme.txt >iselect_readme.txt.n && mv iselect_readme.txt.n iselect_readme.txt;
+
+release: distclean fixperm
+	@$(_GETDISTINFO) \
+    _distname="iselect-$${_version}"; \
+    _tarball="$(tmpdir)/$${_distname}.tar.gz"; \
+    echo "Release Distribution: iSelect Version $$_version"; \
+    $(_BUILDDIST); \
+    mv $(tmpdir)/$${_distname}.tar.gz $${_distname}.tar.gz; \
+
+snap: distclean fixperm
+	@$(_GETDISTINFO) \
+    _distname="iselect-$${_version}-SNAP"; \
+    _tarball="$(tmpdir)/$${_distname}.tar.gz"; \
+    echo "Snap of whole source tree: iSelect Version $$_version as of $$_date"; \
+    $(_BUILDDIST); \
+    mv $(tmpdir)/$${_distname}.tar.gz $${_distname}.tar.gz 
+
+new-version:
+	OPT=-iv; $(_NEWVERS)
+
+new-revision:
+	OPT=-ir; $(_NEWVERS)
+
+new-betalevel:
+	OPT=-ib; $(_NEWVERS)
+
+new-patchlevel:
+	OPT=-iP; $(_NEWVERS)
+
+new-release:
+	OPT=-s$(R); $(_NEWVERS)
+
+update-version:
+	$(_UPDATEVERS)
+
+fixperm:
+	$(FIXPERM) *
+
+# ------------------------------------------------
+#   THE PROGRAM
+# ------------------------------------------------
+
+iselect: $(OBJS)
+	$(CC) $(LDFLAGS) -o iselect $(OBJS) @LIBS@
+
+iselect_main.o: iselect_main.c
+	$(CC) $(CFLAGS) -o iselect_main.o -c iselect_main.c
+
+iselect_browse.o: iselect_browse.c
+	$(CC) $(CFLAGS) -o iselect_browse.o -c iselect_browse.c
+
+iselect_keys.o: iselect_keys.c
+	$(CC) $(CFLAGS) -o iselect_keys.o -c iselect_keys.c
+
+iselect_getopt.o: iselect_getopt.c
+	$(CC) $(CFLAGS) -o iselect_getopt.o -c iselect_getopt.c
+
+iselect_version.o: iselect_version.c
+	$(CC) $(CFLAGS) -o iselect_version.o -c iselect_version.c
+
+iselect_help.o: iselect_help.c
+	$(CC) $(CFLAGS) -o iselect_help.o -c iselect_help.c
+
+iselect_help.c: #iselect_help.txt iselect_version.c
+	V=`$(VERSION_TOOL) -lc -d long iselect_version.c`; \
+	./etc/asc2c iselect_help.txt iselect_help iSelect_Help "$$V"
+
+iselect_readme.o: iselect_readme.c
+	$(CC) $(CFLAGS) -o iselect_readme.o -c iselect_readme.c
+
+iselect_readme.c: #iselect_readme.txt iselect_version.c
+	V=`$(VERSION_TOOL) -lc -d long iselect_version.c`; \
+	./etc/asc2c iselect_readme.txt iselect_readme iSelect_README "$$V"
+
+# ------------------------------------------------
+#   THE DOCUMENTATION
+# ------------------------------------------------
+
+iselect.1: iselect.pod iselect_version.c
+	set -e; \
+	V=`$(VERSION_TOOL) -lc -d long iselect_version.c`; \
+	pod2man --section=1 \
+	        --center="Ralf S. Engelschall" \
+	        --release="EN" \
+	    iselect.pod | sed -e "s|\@V\@|$$V|g" >iselect.1
+
+# ------------------------------------------------
+#   INSTALLATION
+# ------------------------------------------------
+
+install: all
+	$(MKDIR) $(bindir)
+	$(MKDIR) $(mandir)
+	$(MKDIR) $(mandir)/man1
+	$(INSTALL_PROGRAM) iselect $(bindir)/iselect
+	$(INSTALL_DATA) iselect.1 $(mandir)/man1/iselect.1
+
+# ------------------------------------------------
+#   CLEANUP
+# ------------------------------------------------
+
+clean: 
+	-rm -f *.o
+	-rm -f iselect iselect.1
+	-rm -f core *.core
+
+distclean: clean
+	-rm -f config_ac.h config_sc.h
+	-rm -f config.status config.cache config.log
+	-rm -f iselect-*.tar.gz
+	-rm -f Makefile
+
+##EOF##

@@ -1,0 +1,303 @@
+##      _ ____       _           _   
+##     (_) ___|  ___| | ___  ___| |_ 
+##    / /\___ \ / _ \ |/ _ \/ __| __|
+##   / /  ___) |  __/ |  __/ (__| |_ 
+##  (_(  |____/ \___|_|\___|\___|\__|
+##
+##  iSelect -- Interactive Selection Tool
+##
+##  iSelect is a Curses-based tool for interactive line selection 
+##  in an ASCII file via a full-screen terminal session.
+##  
+##  ======================================================================
+##
+##  Copyright (c) 1996-1999 Ralf S. Engelschall.
+##
+##  This program is free software; it may be redistributed and/or
+##  modified only under the terms of the GNU General Public License, 
+##  which may be found in the iSelect source distribution.  
+##  Look at the file COPYING for details. 
+##  
+##  This program is distributed in the hope that it will be useful, 
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+##  See the the GNU General Public License for more details.
+##
+##  ======================================================================
+##
+##  iselect.pod -- manual page 
+##
+
+=head1 NAME
+
+iSelect -- Interactive Selection Tool
+
+=head1 SYNOPSIS
+
+B<iselect>
+[B<-d> I<STR>,I<STR>]
+[B<-c>]
+[B<-f>]
+[B<-a>]
+[B<-e>]
+[B<-p> I<NUM>]
+[B<-k> I<KEY>[:I<OKEY>]]
+[B<-m>]
+[B<-n> I<STR>]
+[B<-t> I<STR>]
+[B<-S>]
+[B<-K>]
+[B<-P>]
+[B<-Q> I<STR>]
+[I<line1> I<line2> ...]
+
+B<iselect>
+[B<-V>]
+
+=head1 VERSION
+
+@V@
+
+=head1 DESCRIPTION
+
+=head2 Intend
+
+iSelect is an interactive line selection tool for ASCII files, operating via a
+full-screen Curses-based terminal session. It can be used either as an user
+interface frontend controlled by a Bourne-Shell, Perl or other type of script
+backend as its wrapper or in batch as a pipe filter (usually between F<grep>
+and the final executing command). In other words: iSelect was designed to be
+used for any types of interactice line-based selections.
+
+=head2 Input Data
+
+Input is read either from the command line (I<line1> I<line2> ...) where each
+argument corresponds to one buffer line or from F<stdin> (when no arguments
+are given) where the buffer lines are determined according to the newline
+characters. 
+
+You can additionally let substrings displayed in Bold mode for non-selectable
+lines (because the selectable lines are always displayed bold) by using the
+construct ``C<E<lt>bE<gt>>...C<E<lt>/bE<gt>>'' as in HTML.
+
+=head2 Selections
+
+The selection is either just a single line (default) or multiple lines (option
+B<-m>). Per default no lines are selectable. If a line contains the string
+``C<E<lt>sE<gt>>'' (or a string with different delimiters configured via
+option B<-d>) at any position this string is stripped and the line is
+selectable. Its result (printed to F<stdout>) is the line contents itself (but
+without the ``C<E<lt>sE<gt>>'' string of course). If option B<-a> is used all
+lines are selectable and their result is again the line itself, i.e. using
+option B<-a> is the same as adding ``C<E<lt>sE<gt>>'' to every line of the
+input data.  When you want a specific result (i.e. not just the line contents
+itself), you have to use the special variant ``C<E<lt>s:result textE<gt>>''
+which results in the output ``C<result text>'' when the corresponding line is
+selected.
+
+When you use a specific result via ``C<E<lt>s:result textE<gt>>'' the I<result
+text> can contain ``C<%s[query text]s>'' and ``C<%s[query text]S>''
+constructs. For every such construct an interactive query is done and the
+result replaces the construct.  The ``C<%s[query text]S>'' construct is like
+``C<%s[query text]s>'' except that the empty string as the query result is not
+accepted on input.
+
+The Curses-based full-screen selection is always done via F</dev/tty>, because
+the F<stdin> and F<stdout> filehandles are usually tied to the input and
+output data streams.
+
+=head2 Output Data
+
+The output is the line itself or the string given with ``C<E<lt>s:result
+textE<gt>>''.  When multiple line selection mode (option B<-m>) is used the
+output is all selected lines theirself or their configured result strings.
+Output always is written to F<stdout>.
+
+=head1 OPTIONS
+
+=head2 Input Options
+
+These options control how I<iSelect> parses its input.
+
+=over 4
+
+=item B<-d> I<STR>, B<--delimiter=>I<STR>
+
+Sets the delimiters for the selection tags. The default is `C<E<lt>,E<gt>>',
+i.e. the selection tags have to read ``C<E<lt>sE<gt>>'' and ``C<E<lt>s:result
+textE<gt>>''
+
+=item B<-c>, B<--strip-comments>
+
+Strips all sharp comment lines from the input buffer before parsing.
+
+=item B<-f>, B<--force-browse>
+
+Browse always, i.e. even when the input buffer contains no or only one line.
+
+=item B<-a>, B<--all-select>
+
+Force all lines to be selectable.
+
+=item B<-e>, B<--exit-no-select>
+
+Exit immediately if no lines are selectable. In this case not even the Curses
+screen is initialized.
+
+=back
+
+=head2 Display Options
+
+=over 4
+
+=item B<-p> I<NUM>, B<--position=>I<NUM>
+
+Sets the cursor position to line I<NUM>.
+
+=item B<-k> I<KEY>[:I<OKEY>], B<--key=>I<KEY[:I<OKEY>]>
+
+Defines an additional input key. Per default I<OKEY> is C<RETURN>, i.e.  for
+instance B<-kf> defines another selection key `C<f>'.
+
+=item B<-m>, B<--multi-line>
+
+Enable multi-line selection where you can select more then one line via SPACE
+key.
+
+=item B<-n> I<STR>, B<--name=>I<STR>
+
+Sets the name string, displayed flush left at the bottom of the
+browser window.
+
+=item B<-t> I<STR>, B<--title=>I<STR>
+
+Sets the title bar string, displayed centered at the bottom of the
+browser window.
+
+=back
+
+=head2 Output Options
+
+=over 4
+
+=item B<-S>, B<--strip-result>
+
+Strip all leading and trailing whitespaces from the result string.
+
+=item B<-K>, B<--key-result>
+
+Prefix the result string (given on F<stdout>) with the corresponding selection
+key which was used. This usually is C<RETURN> or C<KEY_RIGHT> but can be any
+of the additional keys defined by option B<-k>.  When you use B<-kf> and
+select a line C<Foo Bar> with key `C<f>' the result string is ``C<f:Foo
+Bar>''.
+
+=item B<-P>, B<--position-result>
+
+Prefix the result string (given on F<stdout>) with the corresponding cursor
+position followed by a colon. When you selected line I<N> and this line has
+the result C<Foo Bar> configured the result string is ``C<N:Foo Bar>''.
+
+=item B<-Q> I<STR>, B<--quit-result=>I<STR>
+
+Sets the result string on quit. Default is the empty string.
+
+=back
+
+=head2 Giving Feedback
+
+=over 4
+
+=item B<-V>, B<--version>
+
+Displays version identification string.
+
+=back
+
+=head1 KEYSTROKES
+
+=head2 Cursor Movement
+
+Use these to browse through the selection list.
+
+  CURSOR-UP ..... Move cursor one line up
+  CURSOR-DOWN ... Move cursor one line down
+  PAGE-UP ....... Move cursor one page up
+  PAGE-DOWN ..... Move cursor one page down
+  g ............. Goto first line
+  G ............. Goto last line
+
+=head2 Line Selection
+
+Use these to select one line and exit in standard mode or one or more lines in
+multi-line mode.
+
+  RETURN ........ Select line and exit
+  CURSOR-RIGHT .. Select line and exit
+  SPACE ......... Select line and stay (multi-line mode only)
+
+=head2 Others
+
+Use these to quit iSelect or to show its help and
+version page.
+
+  q ............. Quit (exit without selection)
+  CURSOR-LEFT ... Quit (exit without selection)
+  h ............. Help Page
+  v ............. Version Page
+
+=head1 EXAMPLE
+
+As an example we present a real-life situation where iSelect can enhance an
+existing functionality. We define two Bash functions (for your
+F<$HOME/.bashrc> file) which enhance the built-in `F<cd>' command of the
+shell.
+
+ #   database scan for enhanced cd command
+ cds () {
+     (cd $HOME; 
+      find . -type d -print |\
+      sed -e "s;^\.;$HOME;" |\
+      sort -u >$HOME/.cdpaths ) &
+ }
+
+ #   definition of the enhanced cd command
+ cd () {
+     if [ -d $1 ]; then
+          builtin cd $1
+     else
+          builtin cd `egrep "/$1[^/]*$" $HOME/.cdpaths |\
+                      iselect -a -Q $1 -n "chdir" \
+                              -t "Change Directory to..."` 
+     fi
+     PS1="\u@\h:$PWD\n:> "
+ }
+
+This new `F<cd>' command is compatible with Bashs built-in variant for the case
+where the specified directory actually exists. When it doesn't, the original
+`F<cd>' would immediately give an error (assuming we have no F<CDPATH>
+variable defined).  Here this enhanced version tries harder. First it searches
+for such a directory in a previously built (via F<cds>) F<$HOME/.cdpaths>
+files. When no line was found, iSelect just returns the given directory as the
+default result and `F<cd>' then fails as usual with an error message. When
+only one directory was found, iSelect directly results this particular line to
+`F<cd>'. And only when more then one directory was found, iSelect opens its
+Curses-based selection screen and lets the user choose interactively between
+those directories. The chosen directory is then finally given to `F<cd>'.
+
+For more useful examples on how to use iSelect, see the F<contrib/> directory
+of the iSelect distribution tarball.
+
+=head1 AUTHOR
+
+  Ralf S. Engelschall
+  rse@engelschall.com
+  www.engelschall.com
+
+=head1 SEE ALSO
+
+  iSelect Home: http://www.engelschall.com/sw/iselect/
+
+=cut
+
+##EOF##

@@ -1,0 +1,161 @@
+
+ INSTALLATION
+ ============
+
+[Note: Cygwin users see INSTALL.CYGWIN.]
+
+ 1. Overview for the impatient
+    --------------------------
+
+    $ ./configure --prefix=/path/to/wml
+    $ make
+    $ make test
+    $ make install
+
+ 2. Requirements
+    ------------
+
+    The following requirements exist for building WML:
+
+    o  Disk Space: 
+       Make sure you have 8 MB of temporary free disk space.  After
+       installation WML occupies approximately 3 MB of disk space.
+
+    o  Perl Interpreter: 
+       Make sure you have Perl 5.003 (works, but perhaps problems can occur),
+       Perl 5.005 (works best) or later already installed on your system. You
+       can find the homepage of Perl on <URL:http://www.perl.com/> and the
+       Perl distribution on <URL:http://language.perl.com/info/software.html>.
+
+    o  ANSI-C Compiler: 
+       Make sure you have an ANSI-C compiler installed.  The GNU C compiler
+       (GCC) from the Free Software Foundation (FSF) is recommended. You
+       can find the homepage of GNU on <URL:http://gcc.gnu.org/> and the
+       GCC distribution on <URL:ftp://gcc.gnu.org/pub/gcc/>.
+    
+    o  SVr4 compatible Curses library: 
+       Make sure you have a SVr4-like Curses library installed. If your
+       systems Curses library is not of this time, then you have to install
+       one of these free variants:
+           - GNU NCurses, Version 4.2 or 5.0 recommended:
+             <URL:ftp://ftp.clark.net/pub/dickey/ncurses/>
+             (works best, so this is recommended to use)
+           - S-Lang, Version 1.4 recommended:
+             <URL:http://www.s-lang.org/>
+             <URL:ftp://space.mit.edu/pub/davis/slang/>
+             (works ok, but a little bit restricted)
+       ATTENTION! The standard `old' BSD Curses library does _not_ work. So,
+       under SunOS and other old BSD-based systems you really need NCurses or
+       S-Lang installed. The modern BSD-variants like FreeBSD and NetBSD
+       already have NCurses, of course.
+
+ 3. Configuring the source tree
+    ---------------------------
+
+    The next step is to configure the WML source tree for your particular
+    system/platform. The important information here is to set a location
+    prefix where WML is to be installed later, because WML has to be
+    configured for this location to work correctly.
+
+        $ ./configure --prefix=/path/to/wml/
+                     [--with-perl=/path/to/bin/perl]
+                     [--with-perl-opts=string]
+                     [--with-cc=/path/to/bin/cc]
+                     [--with-forced-cc=/path/to/bin/cc]
+                     [--with-openworld]
+
+    Use the --with-perl option to configure WML to use a particular Perl
+    interpreter on your system. Usually WML will use the latest one it is able
+    to found.
+
+    Use the --with-cc option to configure WML to use a particular C compiler
+    for building C language sources, except for ePerl, because this package
+    usually checks its own for a suitable compiler.  It needs to be
+    compiled with the same compiler the Perl system was compiled on your
+    system.
+
+    Use the --with-forced-cc option to configure WML to globally use a
+    particular C compiler for building C language sources, including sources
+    in the ePerl package.
+
+    Use the --with-openworld option to let WML's configure script test for
+    already existing Perl modules in your Perl system.  This way WML can use
+    the already installed versions of those modules if present.  Per default
+    WML installs private copies of the used Perl modules to be maximum
+    independed of the underlaying system and to avoid problems when the Perl
+    system is upgraded.
+
+ 3. Building the toolkit
+    --------------------
+    
+    Now you can build the programs, manpages and include files which form the
+    WML toolkit by running the command
+
+       $ make 
+
+    Please be patient, this takes approximately 2 minutes to complete on a
+    Pentium-II/400 platform. 
+
+ 4. Testing the toolkit
+    -------------------
+
+    Now you can partially test the toolkit by running a small test suite via:
+
+       $ make test
+
+ 5. Installing the toolkit
+    ----------------------
+    
+    Now its time to install the toolkit's programs in $prefix/bin, the
+    manpages in $prefix/man and auxiliary, include and Perl-Module files in
+    $prefix/lib/ (or $prefix/lib/wml/ if $prefix does not already contain the
+    string `wml'!):
+
+       $ make install
+
+    For the paranoid hackers under us: The above command really installs under
+    $prefix _only_, i.e. no other stuff from your system is touched. I say
+    this explicitly here, because I hate "make install"'s which destroy parts
+    of my system, too. But the amount of installation steps is too huge to do
+    it manually, really!
+
+    One special case for package maintainers: If you want to install the stuff
+    inside a different location than the pre-configured one (for instance when
+    creating system packages via dpkg under Debian GNU/Linux or RPM under
+    RedHat Linux, etc), you can alternatively use
+
+       $ make install prefix=/somewhere/tmp
+
+    This will install the toolkit inside /somewhere/tmp for rolling the
+    package tarball, although the toolkit is still configured for the correct
+    prefix (specified at point 3).
+
+ 6. Additional programs
+    -------------------
+
+    While the WML toolkit itself is a self-contained all-in-one package which
+    comes with all parts it needs under runtime, there are some include files
+    (see wml::all(3)) which need third-party programs to be able to provide
+    their full functionality:
+
+    o wml::fmt::sdf 
+
+      To use this include file you need the Simple Document Format (SDF)
+      package. You can find the package at <URL:http://www.mincom.com/mtr/sdf/>.
+
+    o wml::des::gfont
+      
+      To use this include file you need at least the gFONT program from
+      Ralf S. Engelschall which can be found at
+      <URL:http://www.engelschall.com/sw/gfont/>.
+      And because this program makes use of an underlaying TeX installation,
+      you should be sure that TeX is already installed on your system. If not
+      I recommend you to install teTeX which can be found at
+      <URL:http://www.tex.ac.uk/tex-archive/systems/unix/teTeX/> or any CTAN
+      mirror.
+
+      Additionally when you want to use the `crop' attribute of the <gfont>
+      tag (which crops empty edges of the generated image) then you also
+      have to install the ImageMagick package which can be found at
+      <URL:http://www.wizards.dupont.com/cristy/ImageMagick.html>.
+

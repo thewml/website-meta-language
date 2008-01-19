@@ -1,0 +1,28 @@
+##
+##  WML Missing Documentation
+##  Copyright (c) 2000-2001 Denis Barbier, All Rights Reserved. 
+##
+
+=head1 NAME
+
+WML Missing Doc - Requested Program Not Installed
+
+=head1 DESCRIPTION
+
+WML is a bunch of programs, some are essential (like the 9 passes) but
+other are optional.  If you are reading this manpage, this means that
+you asked WMd to display the documentation of an optional program which
+is not installed.
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 SEEALSO
+
+wmd(1)
+
+=cut
+
+##EOF##

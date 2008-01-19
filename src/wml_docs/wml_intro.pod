@@ -1,0 +1,446 @@
+##
+##  WML Introduction
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+=head1 NAME
+
+WML Introduction - An introduction to WML's basic concepts
+
+=head1 DESCRIPTION
+
+WML is a free HTML generation toolkit for Unix, internally consisting of 9
+independent languages. The main idea of WML is a sequential filtering scheme
+where each language provides one of 9 processing passes.  So the frontend
+F<wml> reads I<inputfile> (or from C<stdin> if I<inputfile> is a dash or
+completely missing), applies passes 1-9 (or only the I<passes> specified by
+B<-p>) and finally produces one or more I<outputfile>s.
+
+WML implements a total of three essential concepts which interact with each
+other:
+
+
+=head2 CONCEPT 1: SEQUENTIAL FILTERING SCHEME
+
+This concept implements the various language features by making use of maximum
+software leverage, i.e. WML is built on top of 9 languages which are run in a
+well-ordered fashion by the F<wml> frontend.
+
+=over
+
+=item B<Pass 1: Source Reading and Include File Expansion>
+
+ Processing:     explicit
+ Implementation: Include Pre-Processor (IPP)
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p1_ipp(1)
+
+B<Description:>
+
+This first pass reads I<inputfile> and expands all inlined include file
+directives by (perhaps recursively) substituting them with the contents of the
+corresponding file.  The file itself will be read from the current working
+directory or from a list of dedicated include directories (compiled in ones
+and also given via option B<-I>). When C<name=value> pairs are appended to the
+include directive C<$(name)> is expanded to C<value> in this particular
+include file and all its recursively included files.  Additionally this Pass
+provides an End-Of-Line continuation feature and three special strings.
+``C<__FILE__>'' and ``C<__LINE__>'' expand to the current include file and
+line number while ``C<__END__>'' terminates the reading of the current include
+file.
+
+B<Summary Of Essential Features:>
+
+  #include 'file.wml' [name[=value] ...]
+  #include "file.wml" [name[=value] ...]
+  #include <category/file.wml> [name[=value] ...]
+  #use wml::category::file [name[=value] ...]
+
+  some text which is \
+      continued at this line
+
+  $(name)
+
+  __FILE__, __LINE__
+  __END__
+
+B<Example:>
+
+  #use wml::std::tags
+  This FooBar, contained in file __FILE__, line __LINE__.
+
+  __END__
+  Documentation of FooBar...
+
+=item B<Pass 2: High-Level Macro Construct Expansion>
+
+ Processing:     explicit
+ Implementation: Macro Processor for HTML Documents (mp4h)
+ Author:         Denis Barbier <barbier@engelschall.com>
+ See Also:       wml_p2_mp4h(1)
+                 http://www.engelschall.com/sw/mp4h/
+
+B<Description:>
+
+This is the HTML-like macro definition and expansion pass. Here new HTML
+tags are defined via C<E<lt>define-tag fooE<gt>> and later expanded at
+the location of their usage (C<E<lt>fooE<gt>>.  The goal of this pass is
+to create new HTML tags which encapsulate either raw text or even
+programmed functionality of Pass 3 (ePerl).
+
+B<Summary Of Essential Features:>
+
+  <define-tag foo>
+  ...%attributes...
+  </define-tag>
+
+  <define-tag bar endtag=required>
+  ...%attributes...%body...
+  </define-tag>
+
+  <foo ...>
+  <bar ...>...</bar>
+
+B<Example:>
+
+  <define-tag me>RSE</define-tag>
+  This is <me>.
+
+=item B<Pass 3: Programming Construct Expansion>
+
+ Processing:     explicit
+ Implementation: Embedded Perl 5 Language (ePerl)
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p3_eperl(1)
+                 http://www.engelschall.com/sw/eperl/
+
+B<Description:>
+
+In this pass the real programming takes place. The used language is Larry
+Wall's Perl 5 scripting language. The language constructs are bristled into
+the HTML markup code by the use of begin (C<E<lt>:>) and end (C<:E<gt>>)
+delimiters. Additionally this pass provides some nice shortcut: First a
+<#if..#elsif..#else..#endif> construct which gets expanded to the
+corresponding Perl construct, second a shorthand (C<E<lt>:= ...:E<gt>>) for
+the construct (C<E<lt>: print ...:E<gt>> which is used most of the time.  And
+there is a container tag in F<wml::std::tags> which provides the more
+high-level container tag C<E<lt>perlE<gt>>.
+
+B<Summary Of Essential Features:>
+
+  <perl> ...Perl 5 constructs... </perl>
+  <: ...Perl 5 constructs... :>
+  <:= ... :>
+
+B<Example:>
+
+  #use wml::std::tags
+
+  <perl>
+  sub isotime {
+      my ($time) = @_;
+  
+      my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = 
+          localtime($time);
+      my ($str) = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
+           $year+1900, $mon+1, $mday, $hour, $min, $sec);
+      return $str;
+  }
+  </perl>
+
+  The current date is <:= &isotime(time()) :>.
+
+=item B<Pass 4: Low-Level Macro Construct Expansion>
+
+ Processing:     explicit
+ Implementation: GNU m4
+ Author:         Ren'e Seindal (FSF)
+ See Also:       wml_p4_gm4(1)
+                 http://www.gnu.mit.edu/
+
+B<Description:>
+
+In this pass another macro processor run takes place. While in pass 2 a macro
+processor with a HTML-like syntax was used for high-level macro programming,
+this pass uses a macro processor for low-level programming. Mainly this pass
+is intended to provide low-level symbol and function definitions
+(C<m4_define()>. There is a definition in F<wml::std::tags> which provides a
+more high-level usage via the C<E<lt>symbolE<gt>> tag.
+
+I<Notice:> This pass is run under a special environment: First, all m4 builtin
+macros have to be prefixed with "C<m4_>". Second, all variables which are
+defined by WML (both internal ones and the ones from the B<-D> option) are
+directly accessible via symbols prefixed with C<m4_>, i.e. variable C<NAME> is
+interpolated when C<m4_NAME> occurs. Third, the quoting characters are
+disabled per default to prevent problems with the generated content. If you
+need quotes (for instance in include files) you have to enable them via
+C<m4>C<_quotes> and disable them later via C<m4>C<_noquotes>.
+
+B<Summary Of Essential Features:>
+
+  m4_quotes
+  m4_define(`name', `value')
+  m4_noquotes
+
+  <symbol name value>
+
+B<Example:>
+
+  #use wml::std::tags
+  <symbol bar BAZ>
+
+  foo bar quux
+
+=item B<Pass 5: Diversion Filter>
+
+ Processing:     explicit
+ Implementation: Divert
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p5_divert(1)
+
+B<Description:>
+
+In this pass a flexible and powerful diversion filter is applied. This is
+intended to provide a mechanism to change and intermix the order of data
+blocks. Do not intermix this with neither the general macro mechanisms of pass
+2 and 4 nor the less powerful C<divert> mechanism of GNU m4.  The idea is to
+define I<locations> (via C<{#NAME#}>) at any point and fill
+such locations later by diverting the data flow to it (via C<{#NAME#:>
+and C<:#NAME#}>) at another point. What makes this filter such powerful is
+the fact that both the definition points and the diversion points can be done
+in any order and they can even be nested.  Again WML provides high-level
+support tags in F<wml::std::tags> for this functionality.
+
+B<Summary Of Essential Features:>
+
+  {#NAME#}
+  <dump NAME>
+
+  {#NAME#:
+  data for location `NAME'
+  :##}
+
+  <enter NAME>
+  data for location `NAME'
+  <leave>
+
+  <divert NAME>
+  data for location `NAME'
+  </divert>
+
+B<Example:>
+
+  <table>
+  <tr>
+  <td><dump LBORDER></td>
+  <td><dump BODY></td>
+  <td><dump RBORDER></td>
+  </tr>
+  </table>
+
+  <divert LBORDER>
+  Stuff for the left border
+  </divert>
+
+  <divert RBORDER>
+  Stuff for the right border
+  </divert>
+
+  <divert BODY>
+  The main data
+  </divert>
+
+=item B<Pass 6: Character and String Substitution>
+
+ Processing:     explicit
+ Implementation: Area Subst (ASubst)
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p6_asubst(1)
+
+B<Description:>
+
+In this pass single characters or substrings are substituted within dedicated
+areas (delimited by C<{: ... :}>).  The intend is to support ISO-Latin-1 or
+other special characters which will be entered as 8 Bit character codes and
+are substituted by their HTML entity-encoding string. Do not intermix this
+with macro-expansion of Pass 2 or 4. This is generalized regular expression
+based substitution pass where you can use Perl's C<s/../../> and C<tr/../../>
+commands to specify the substitutions. These can be placed anywhere inside the
+substitution area and just have to be marked by C<[[...]]> delimiters. But the
+commands are always applied to the whole area.
+
+B<Summary Of Essential Features:>
+
+  {: ...text..[[s/../../flags]]..
+     ...text..[[tr/../../flags]].. :}
+
+B<Example:>
+
+  {: [[s|ä|&auml;|]] [[s|ü|&uuml;|]]
+  Foo Bar Baz Quux with Umlauts ä and ü
+  :}
+
+=item B<Pass 7: Markup Code Fixup>
+
+ Processing:     implicit
+ Implementation: HTMLfix
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p7_htmlfix(1)
+
+B<Description:>
+
+In this pass some commonly known HTML markup code fixups are done.  For
+instance missing C<WIDTH> and C<HEIGHT> attributes for all C<IMG> tags are
+calculated and added, C<ALT> tags are added where missing, missing `C<#>'
+characters in front of hextriple color attributes are added, numeric attribute
+values are surrounded by quotes, obsolete HTML markup code like the
+proprietary C<E<lt>centerE<gt>> tag is replaced by new standard HTML 3.2 tags
+(C<E<lt>div align=centerE<gt>>), etc. pp.
+
+=item B<Pass 8: Markup Code Stripping>
+
+ Processing:     implicit
+ Implementation: HTMLstrip
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p8_htmlfix(1)
+
+B<Description:>
+
+Because macro definitions add newlines to the output (or you have to always
+use "C<...>E<lt>C</define-tag>E<gt>C<;;;>", etc), additional comments
+shell-style would be useful and whitespaces can often be stripped from HTML
+markup code without changing the result, this special HTML markup code
+reducement pass is done. The amount of stripping can be controlled by the WML
+option B<-O>. Default is B<-O2> which does a really good job without
+destroying anything. There is one special feature one should know: This pass
+recognizes pre-formatted areas ( C<E<lt>preE<gt>..E<lt>/preE<gt>>) and skips
+them. Additionally when you want some area of your input file Threaten like
+pre-formatted, then this Pass also supports its own container tag named
+C<E<lt>nostripE<gt>...E<lt>/nostripE<gt>>. This has the same effect like
+C<E<lt>preE<gt>> but is itself stripped, too.
+
+=item B<Pass 9: Markup Code Splitting and Output Generation>
+
+ Processing:     implicit/explicit
+ Implementation: Slice
+ Author:         Ralf S. Engelschall <rse@engelschall.com>
+ See Also:       wml_p9_slice(1)
+                 http://www.engelschall.com/sw/slice/
+
+B<Description:>
+
+The last and final pass is a really tricky one again, because one feature is
+still not implemented. We need some way to conditionally create output to
+different output files. To accomplish this another source file construct
+(C<[NAME:...:NAME]>) is recognized which defines so-called I<slices>.  Those
+slices are (possibly overlapped or nested) named areas of the input file which
+can be used via WML's B<-o> option. This option can contain a I<slice-term> in
+front of the filename which selects the slices to be written to the output
+file. Such slice-terms are actually set theory terms where slices with the
+same name define a set.
+
+B<Summary Of Essential Features:>
+
+  [NAME: ... :NAME]
+  [NAME: ... :]
+
+B<Example:>
+
+  [EN:Welcome to:][DE:Willkommen zu:] Foo Bar Baz Quux!
+
+=back
+
+
+
+=head2 CONCEPT 2: WMLRC FILE HIERARCHY AND WMLOPTS VARIABLE
+
+The second essential idea of WML is the use of F<.wmlrc> files and a
+C<WMLOPTS> environment variable for additionally command line options.  On
+startup the frontend F<wml> first processes all options found in C<WMLOPTS>,
+then it reads all options from F<$HOME/.wmlrc> followed by the options of all
+F<.wmlrc> files found in all parent directories (i.e. F<../.wmlrc>,
+F<../../.wmlrc>, etc) of the directory containing input file.  And finally it
+processes all options given on the command line.   For instance this feature
+provides you with the ability to setup defaults via B<-D> options in the
+F<.wmlrc> file at the top of your Webarea.
+
+And there is one more special case: The option form
+
+   -DNAME~VALUE 
+
+is always sticky to its location, i.e. it always gets evaluated for its local
+directory context instead of the current working directory where F<wml> was
+started. Use this to easily introduce path or URL variables which adjust
+automatically to the current context of the generated webpage. 
+
+
+
+=head2 CONCEPT 3: AUTO-ADJUSTED URL AND FILENAME VARIABLES
+
+The third essential idea of WML is the above shortly described variable
+adjustment concept which can be used via variable interpolation.  The frontend
+F<wml> provides a B<-D> option for defining variables which get interpolated
+in each pass:
+
+  -DNAME=VALUE
+  -DNAME~VALUE
+
+For both forms the value can be interpolated via E<lt>C<get-var NAME>E<gt>
+inside Pass 2 and via C<E<lt>:=$NAME:E<gt>> in Pass 3. The difference between
+the two forms is the tricky part of adjustment here:
+
+=over 4
+
+=item C<-D NAME=VALUE>
+
+Here the variable NAME gets statically set to VALUE. Each time you interpolate
+the variable the result is exactly VALUE.
+
+=item C<-D NAME~VALUE>
+
+Here the variable NAME gets initialized with VALUE and VALUE will be treated
+as either a (not fully qualified) URL or filename.  When you interpolate the
+variable the result is VALUE if the current working directory is the same as
+where you used the B<-D> option (either where you run the frontend F<wml> or a
+F<.wmlrc> file). Else the result is VALUE relative path-adjusted for the
+current working directory. 
+
+=back
+
+On the first look this seems useless, but combined with CONCEPT 2 this
+provides a very essential feature. Here it provides a powerful mechanism to
+automatically let URLs or pathnames re-calculated for the local context.  For
+instance when you define C<-DROOT~.> in your top-level F<.wmlrc> file then the
+variable C<ROOT> will be interpolated to `C<.>' at the top-level, to `C<..>'
+at the first subdir level, to `C<../..>' at the second subdir level, etc.  Use
+this for creating navigation bars or URL references across subtrees.
+
+=head1 MORE INFORMATION
+
+Now you've seen the various core languages of WML. For a step-by-step
+introduction to this functionality and to see real examples, I recommend you
+to read the WML tutorial in wml_tutorial(7) now.
+
+Additionally can can step through the set of available standard include files
+WML ships with. Start with the top-level include file wml::all(3).
+
+=head1 SEEALSO
+
+wml_tutorial(7),
+wml_tags(7).
+
+wml_p1_ipp(1),
+wml_p2_mp4h(1),
+wml_p3_eperl(1),
+wml_p4_gm4(1),
+wml_p5_divert(1),
+wml_p6_asubst(1),
+wml_p7_htmlfix(1),
+wml_p8_htmlstrip(1),
+wml_p9_slice(1).
+
+wml::all(3)
+
+=cut
+
+##EOF##

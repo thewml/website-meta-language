@@ -1,0 +1,390 @@
+#!@PATH_PERL@
+eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  WMu -- Website META Language Upgrade Utility
+##  
+##  Copyright (c) 1996-2001 Ralf S. Engelschall.
+##  Copyright (c) 1999-2001 Denis Barbier.
+##  
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 of the License, or
+##  (at your option) any later version.
+##  
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##  
+##  You should have received a copy of the GNU General Public License
+##  along with this program; if not, write to
+##  
+##      Free Software Foundation, Inc.
+##      59 Temple Place - Suite 330
+##      Boston, MA  02111-1307, USA
+##  
+##  Notice, that ``free software'' addresses the fact that this program
+##  is __distributed__ under the term of the GNU General Public License
+##  and because of this, it can be redistributed and modified under the
+##  conditions of this license, but the software remains __copyrighted__
+##  by the author. Don't intermix this with the general meaning of 
+##  Public Domain software or such a derivated distribution label.
+##  
+##  The author reserves the right to distribute following releases of
+##  this program under different conditions or license agreements.
+##
+
+require 5.003;
+
+BEGIN { $^W = 0; } # get rid of nasty warnings
+
+$VERSION = "@WML_VERSION@";
+
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
+use Getopt::Long 2.13;
+use IO::Socket::INET;
+use Term::ReadKey;
+
+
+##
+##  INIT
+##
+
+if ($ENV{'PATH'} !~ m|@bindir@|) {
+    $ENV{'PATH'} = '@bindir@:'.$ENV{'PATH'};
+}
+
+
+##
+##  PROCESS ARGUMENT LINE
+##
+
+sub usage {
+    my ($progname) = @_;
+    my ($o);
+
+    print STDERR "Usage: $progname [options] [path ...]\n";
+    print STDERR "\n";
+    print STDERR "Giving Feedback:\n";
+    print STDERR "  -V, --version[=NUM]    display version and build information\n";
+    print STDERR "  -h, --help             display this usage summary\n";
+    print STDERR "\n";
+    exit(1);
+}
+
+sub version {
+    system("wml -V$opt_V");
+    exit(0);
+}
+
+#   options
+$opt_V = -1;
+$opt_h = 0;
+
+sub ProcessOptions {
+    $Getopt::Long::bundling = 1;
+    $Getopt::Long::getopt_compat = 0;
+    $SIG{'__WARN__'} = sub { 
+        print STDERR "WMu:Error: $_[0]";
+    };
+    if (not Getopt::Long::GetOptions(
+            "V|version:i",
+            "h|help"
+    )) {
+        print STDERR "Try `$0 --help' for more information.\n";
+        exit(0);
+    }
+    &usage($0) if ($opt_h);
+    $SIG{'__WARN__'} = undef;
+}
+&ProcessOptions();
+
+#   fix the version level
+if ($opt_V == 0) {
+    $opt_V = 1; # Getopt::Long sets 0 if -V only
+}
+if ($opt_V == -1) {
+    $opt_V = 0; # we operate with 0 for not set
+}
+&version if ($opt_V);
+
+sub GetTermKey {
+    my ($prompt) = @_;
+    my ($rc, $key);
+
+    print STDERR "$prompt: [Ynq]";
+    while (1) {
+        ReadMode 4;
+        $key = ReadKey(0);
+        ReadMode 0;
+        if ($key =~ m|[qQ]|) {
+            print STDERR "\r$prompt  (Quiet)\n";
+            print STDERR "WMu:Break: User cancelled operation\n";
+            exit(0);
+        }
+        elsif ($key =~ m|[\nYy]|) {
+            print STDERR "\r$prompt  (Yes)\n";
+            $rc = 'y';
+            last;
+        }
+        elsif ($key =~ m|[nN]|) {
+            print STDERR "\r$prompt  (No) \n";
+            $rc = 'n';
+            last;
+        }
+    }
+    return $rc;
+}
+
+print STDERR "This is WML UPGRADE (WMu), Version $VERSION\n";
+print STDERR "Copyright (c) 1996-2001 Ralf S. Engelschall.\n";
+print STDERR "\n";
+
+##
+##  Find latest version
+##
+
+sub GetURL {
+    my ($method, $url, $display, $prefix) = @_;
+
+    my ($host, $port, $path) = ($url =~ m/^http:\/\/([^\/:]+)(?::(\d)|)(\/.*)$/);
+    $port = 80 if $port eq '';
+
+    my $s = IO::Socket::INET->new(
+        PeerAddr => $host,
+        PeerPort => $port,
+        Proto    => 'tcp'
+    );
+    if (not defined $s) {
+        print STDERR sprintf("Unable to get %s%s\n", $prefix, $url);
+        exit(1);
+    }
+    $s->autoflush(1);
+    $s->send("$method $path HTTP/1.0\n" .
+             "Host: $host\n" .
+             "User-Agent: WML-wmu/$VERSION\n" .
+             "\n");
+    my $r = '';
+    my $b = 0;
+    my $max = '';
+    print STDERR sprintf("%s%s\n", $prefix, $url) if $display;
+    while (<$s>) {
+        $r .= $_;
+        $b += length($_);
+        if ($max eq '' and $r =~ m|^Content-Length:\s+(\d+)\s*$|im) {
+            $max = $1;
+        }
+        if ($max eq '') {
+            print STDERR sprintf("%sRetrieved: %9d bytes\r", $prefix, $b) if $display;
+        }
+        else {
+            print STDERR sprintf("%sRetrieved: %9d/%d bytes\r", $prefix, $b, $max) if $display;
+        }
+    }
+    $s->close;
+    print STDERR sprintf("%s                         \r", $prefix) if $display;
+
+    my ($response, $headers, $body) = ($r =~ m|^(.+?)\r?\n(.+?)\r?\n\r?\n(.*)$|s);
+    my ($rc) = ($response =~ m|^HTTP/1\.\d\s+(\d+)|s);
+
+    if ($rc == 302 or $rc == 301) {
+        ($url) = ($headers =~ m|^Location:\s+(.+?)$|im);
+        return &GetURL($method, $url, $display, $prefix);
+    }
+    else {
+        return ($response, $headers, $body);
+    }
+}
+
+$url = "http://www.engelschall.com/sw/wml/distrib";
+
+print STDERR "1. Determine latest version:\n";
+($x, $x, $d) = &GetURL("GET", "$url/index.current", 0, '');
+$d =~ s|^\s+||;
+$d =~ s|\s+$||;
+($v) = ($d =~ m|^wml-(.+).tar.gz$|);
+$f = $d;
+print STDERR "   Website META Language, Version $v\n";
+
+if ($VERSION eq $v) {
+    print STDERR "\n";
+    print STDERR "No need to upgrade, you are still running the latest version.\n";
+    exit(0);
+}
+
+print STDERR "2. Determine distribution details:\n";
+($x, $h, $x) = &GetURL("HEAD", "$url/$d", 0, '');
+$l = "UNKNOWN";
+if ($h =~ m|^Content-Length:\s+(\d+)\s*$|im) {
+    $l = $1;
+}
+$t = "UNKNOWN";
+if ($h =~ m|^Last-Modified:\s+(.+?)\s*$|im) {
+    $t = $1;
+}
+print STDERR "   $f, $l bytes, $t\n";
+
+##
+##  Fetch latest distribution tarball
+##
+
+if (! -f $d) {
+    $rc = &GetTermKey("3. Retrieving distribution tarball");
+    if ($rc eq 'y') {
+        $tarball = &GetURL("GET", "$url/$d", 1, "   ");
+        open(TB, ">$d");
+        print TB $tarball;
+        close(TB);
+    }
+    else {
+        print "   [skipped]\n";
+    }
+}
+else {
+    print STDERR "3. Retrieving distribution tarball\n";
+    print STDERR "   [tarball already exists]\n";
+}
+
+##
+##  Extract distribution tarball
+##
+
+$x = $d;
+$x =~ s|\.tar\.gz$||;
+if (! -d $x) {
+    $rc = &GetTermKey("4. Extracting distribution tarball");
+    if ($rc eq 'y') {
+        print STDERR "   ";
+        system("gunzip <$d | tar xvf - | " .
+               "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'");
+        print STDERR "\n";
+    }
+}
+else {
+    print STDERR "4. Extracting distribution tarball\n";
+    print STDERR "   [source tree already exists]\n";
+}
+
+##
+##  Determine configuration
+##
+
+print STDERR "5. Determining configure arguments:\n";
+$args = '@WML_CONFIG_ARGS@';
+$args =~ s|^\s+||s;
+$args =~ s|\s*\n$||s;
+$x = $args;
+$x =~ s|\s+--|\n   --|sg;
+print STDERR "   $x\n";
+
+##
+##  Buidling the programs
+##
+
+$rc = &GetTermKey("6. Building Website META Language");
+$d =~ s|\.tar\.gz$||;
+if ($rc eq 'y') {
+    print STDERR "   ";
+    $rc = system("(cd $d; ./configure $args; make) 2>&1 | tee $d.log |" .
+                 "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'");
+    if ($rc != 0) {
+        print STDERR "**WMu:Error: Build failed:\n";
+        print STDERR `tail $d.log`;
+        print STDERR "\n";
+        exit(1);
+    }
+}
+else {
+        print STDERR "   [skipped]\n";
+}
+
+##
+##  Installing the programs
+##
+
+$rc = &GetTermKey("7. Installing Website META Language");
+if ($rc eq 'y') {
+    print STDERR "   ";
+    $rc = system("(cd $d; make install) 2>&1 | tee $d.log |" .
+                 "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'");
+    if ($rc != 0) {
+        print STDERR "**WMu:Error: Install failed:\n";
+        print STDERR `tail $d.log`;
+        print STDERR "\n";
+        exit(1);
+    }
+}
+else {
+        print STDERR "   [skipped]\n";
+}
+
+##
+##  Cleaning up
+##
+
+$rc = &GetTermKey("8. Cleaning up");
+if ($rc eq 'y') {
+    system("rm -rf $d $d.log");
+}
+else {
+        print STDERR "   [skipped]\n";
+}
+
+
+#   exit gracefully
+exit(0);
+
+##EOF##
+__END__
+
+=head1 NAME
+
+WMu - Website META Language Upgrade Utility
+
+=head1 VERSION
+
+@WML_VERSION@
+
+=head1 SYNOPSIS
+
+B<wmu>
+[B<-V>]
+[B<-h>]
+
+=head1 DESCRIPTION
+
+This is the upgrade utility for the Website META Language. It automatically
+determines if a new WML release exists, fetches it via HTTP, extracts the
+distribution, builds the systems and installs it. Each of these steps just
+have to interactively accepted by a keystroke.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-V>, B<--version>
+
+Gives the version identification string of WMd. Use this to determine the
+version of a installed WML toolkit. 
+
+=item B<-h>, B<--help>
+
+Prints the usage summary page.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 SEEALSO
+
+wml(1)
+
+=cut
+

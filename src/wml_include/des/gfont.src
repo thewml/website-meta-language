@@ -1,0 +1,332 @@
+##
+##  wml::des::gfont - Graphical Font Tag
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<protect pass=2>
+<:
+use Image::Size;
+
+#   global variables for gfont tag
+$gfont_cnt     = 0;
+@gfont_size    = ( 12, 16, 20, 32, 40, 50, 60, 80, 100, 120, 140, 160);
+@gfont_size_CM = qw( F F T T S S L L H H V V V V );
+
+sub read_gfont_info {
+    my ($file, $cmd) = @_;
+    my $info_cmd;
+
+    $file .= '.cmd';
+    return 0 if (! -r $file);
+
+    open (INFO, "< $file");
+    $info_cmd = <INFO>;
+    close (INFO);
+    if ($info_cmd eq $cmd) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub write_gfont_info {
+    my ($file, $cmd) = @_;
+
+    $file .= '.cmd';
+    open (INFO, "> $file") || return;
+    print INFO $cmd;
+    close (INFO);
+}
+:>
+</protect>
+
+<define-tag gfont endtag=required whitespace=delete>
+<preserve base color bgcolor face size align crop adjust file notag />
+<set-var crop=* />
+<set-var notag=* />
+<set-var %attributes />
+<defvar base <or <get-var GFONT_BASE /> <get-var IMAGE_BASE />
+                 <get-var WML_SRC_BASENAME /> /> />
+<perl>
+{
+    #   import attributes to ePerl 
+    my $base    = '<get-var base />';
+    my $color   = '<get-var color />';
+    my $bgcolor = '<get-var bgcolor />';
+    my $face    = '<get-var face />';
+    my $size    = '<get-var size />';
+    my $align   = '<get-var align />';
+    my $crop    = (qq|<get-var crop />| eq '' ? 1 : 0);
+    my $adjust  = '<get-var adjust />';
+    my $file    = '<get-var file />';
+    my $notag   = (qq|<get-var notag />| eq '' ? 1 : 0);
+    my $error, $result, $gfont_cmd;
+
+    my $srcfile = $WML_SRC_BASENAME;
+
+    #   import the tag body
+    my $str;
+    <perl:assign:sq $str>%body</perl:assign:sq>
+
+    #   create the output filename
+    if ($file eq '') {
+        if (-d $base && $base !~ m|/$|) {
+            $base .= '/' . $srcfile;
+        }
+        $file = sprintf("%s.gfont%"."03d.gif", $base, $gfont_cnt++);
+    }
+
+    #   determine fontface, fontsize and thus fontname
+    $face = 'ps:ptmr8r' if ($face eq '');
+    $size = 0 if ($size eq '');
+    $size = -2 if ($size <= -2);
+    $size =  9 if ($size >= 9);
+    $size += 2;
+    $result = `gfont -q -F $face 2>/dev/null`;
+    if ($result eq '') {
+        if ($face =~ /^(mf|ps):/) {
+            $result = $face;
+        } else {
+            $result = ($face =~ /^(CM|EC)/ ? "mf:" : "ps:");
+        }
+    }
+    if ($result eq '' && $face !~ /^(mf|ps):/) {
+        $result = ($face =~ /^(CM|EC)/ ? "mf:" : "ps:");
+    }
+    if ($result =~ /^mf:/) {
+        $size = $gfont_size_CM[$size+2];
+    }
+    elsif ($result =~ /^ps:/) {
+        $size = $gfont_size[$size];
+    }
+    #  there is no need to put an ``else'' statement to report this
+    #  error. Let's continue and gFONT will return a nice error message
+    #  below.
+
+    $font = "-F $face-$size";
+
+    #   determine colors
+    if ($bgcolor =~ m|^#([0-9a-fA-F]+)$|) {
+        $bgcolor = "-b $1";
+    }
+    else {
+        # default is transparent if -b is missing
+        $bgcolor = '';
+    }
+    if ($color =~ m|^#([0-9a-fA-F]+)$|) {
+        $color = "-f $1";
+    }
+    else {
+        # default is black
+        $color = '-f 000000'; 
+    }
+    $align = " align=$align" if ($align ne '');
+
+    #   cropping and size support
+    if ($crop) {
+        $crop = '-c';
+    }
+    else {
+        $crop = '';
+    }
+    if ($adjust) {
+        $adjust = "-r '$adjust'";
+    }
+    else {
+        $adjust = '';
+    }
+
+    #   create GIF image via external gFONT tool
+    $gfont_cmd = "gfont -o " . $file . " " . $crop . " " . $adjust
+        . " " . $bgcolor . " " . $color . " " .  $font . " '".$str."'";
+    if (! &read_gfont_info ($file, $gfont_cmd)) {
+        $error = `$gfont_cmd 2\>&1`;
+        if ($? >> 8) {
+            print STDERR "** wml::des::gfont:\n$error";
+            exit(1);
+        }
+        &write_gfont_info ($file, $gfont_cmd);
+    }
+
+    if (not $notag) {
+        #   determine image size
+        my ($w, $h) = Image::Size::imgsize($file);
+
+        #   insert the replacement HTML markup code
+        <perl:print>\
+          <img src="$file" alt="$str" width="$w" \
+               height="$h" border="0" $align \
+               <attributes-quote <attributes-extract :img:(.*) %attributes /> /> \
+          />\
+        </perl:print>
+    }
+}
+</perl>
+<restore  base color bgcolor face size align crop adjust file notag />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::gfont - Graphical Font Tag
+
+=head1 SYNOPSIS
+
+ #use wml::des::gfont
+
+ <gfont [attributes]>One Single Line Of Text</gfont>
+
+=head1 DESCRIPTION
+
+This is a nice interface to the B<gFONT> program which can be found at
+http://www.engelschall.com/sw/gfont/. It provides a C<E<lt>gfontE<gt>> tag
+which can be used similar to the standard HTML tag C<E<lt>fontE<gt>>. But
+instead of online rendering by the webbrowser the text is rendered offline via
+F<gfont> into a GIF image.  This has the following advantages:
+
+=over 4
+
+=item All TeX-available fonts can be used.
+
+you can use any TeX-available fonts instead of the commonly known ones the
+typical browsers support. These fonts will actually look like you want, i.e.
+Helvetica _is_ Helvetica with C<E<lt>gfontE<gt>> while it can be Arial or a
+totally different (substituted) font when using the C<E<lt>fontE<gt>> tag.
+
+=item Fonts with much greater size can be used.
+
+With C<E<lt>gfontE<gt>> you can increase the C<size> attribute up to C<+9>
+which is actually 200pt in size while the HTML B<font> tag usually stops at
+C<+4>. So C<E<lt>gfontE<gt>> can be used for big headlines.
+
+=item You can create banners with colored backgrounds.
+
+The standard C<E<lt>fontE<gt>> tag cannot use a different background color in
+HTML 3.2, C<E<lt>gfontE<gt>> can. Because it directly renders into a GIF image
+which background has not to be transparent.
+
+=back
+
+When an image is generated, a text file containing the command which has
+been run is created, its name is the image file name with a C<.cmd>
+suffix.  When WML is re-run, this file is searched for and gFONT
+executed only if command line has changed.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item base=I<filename>
+
+Usually the created images for a source file F<page.wml> are named
+F<page.gfontXXX.gif> where C<XXX> is a number starting with C<000>. When you
+use a C<base=foo> attribute, then the resulting files are named
+F<foo.gfontXXX.gif>.  Actually you can even use a complete filename including
+a directory prefix, i.e.  when you use C<base=../../common/foo> attribute,
+then the GIF images are created as F<../../common/foo.gfontXXX.gif>. Use this
+feature to direct the images to a particular directory. Additionally using a
+C<base=""> attribute leads to images which are so-called hidden Unix files or
+dot-files.
+
+And for most flexibility when no base is specified and the variable
+C<GFONT_BASE> is defined (usually from within a F<.wmlrc> file via
+C<-DGFONT_BASE~path/to/gfont/dir/base>) it is used.  Use this feature to
+redirect the created images to a particular directory.
+
+You may also use the variable C<IMAGE_BASE> which defines in a single line
+all base names for images generated by WML.
+
+=item file=I<filename>
+
+Use this to explicitly set the output filename for the GIF image.  This is
+usually not used, because you don't need to know the actual filename. But
+sometimes it can be useful to explicitly set it.
+
+=item notag
+
+This forces C<E<lt>gfontE<gt>> to expand to nothing, i.e. no resulting
+C<E<lt>imgE<gt>> tag. The image itself is still generated. In combination with
+the above C<file> attribute this can be used to generate images to particular
+files which can be used at other positions, for instance inside
+C<E<lt>rolloverE<gt>> (see wml::des::rollover(3)) tags.
+
+=item color=#I<rrggbb>
+
+Sets the font (foreground) color. Default is C<#000000> which is black.
+
+=item bgcolor=#I<rrggbb>
+
+Sets the image background color. Default is no color at all, i.e. transparent
+background.
+
+=item face=I<fontname>
+
+Sets the type of the used font where I<fontname> is actually any TeX-available
+font or a name alias from the F<Fontmap> file of gFONT. See gfont(1) for more
+details. Default is C<Times>.
+
+=item size=I<number>
+
+Sets the relative size of the font, similar to the HTML 3.2 C<E<lt>fontE<lt>>
+tag. Default is 0. The following correspondence to pt-sizes exists:
+
+ size:  -2 -1  0  1  2  3  4  5   6   7   8   9 
+   pt:  12 16 20 32 40 50 60 80 100 120 140 160
+
+This leads to nearly the same font sizes for C<E<lt>fontE<gt>> and
+C<E<lt>gfontE<gt>> tags on typical browser setups.
+
+=item align=I<location>
+
+This directly corresponds to the C<align> attribute of the C<E<lt>imgE<gt>>
+tag.
+
+=item crop
+
+This indicates that the image should be cropped, i.e. the edges containing only
+the background color should be removed. 
+
+=item adjust=I<spec>
+
+This passes through I<spec> to the B<-r> option of gFONT which adjusts the
+size of the final image. Use this to expand the image and/or align it.
+
+=item :img:I<ATTR>=I<STR>
+
+The ``I<ATTR>=I<STR>'' pairs are passed along to the C<E<lt>imgE<gt>> HTML tag.
+
+=back
+
+=head1 EXAMPLE
+
+ <gfont face="HelveticaBold" size=+6 color="#3333cc">
+ A sample Headerline
+ </gfont>
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3, Image::Size (P5M)
+ External: gfont (PATH)
+
+=head1 SEEALSO
+
+HTML C<E<lt>fontE<gt>> tag,
+gfont(1),
+http://www.engelschall.com/sw/gfont/
+
+=cut
+

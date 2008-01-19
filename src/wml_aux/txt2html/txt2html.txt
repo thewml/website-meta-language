@@ -1,0 +1,184 @@
+
+  txt2html -- Text to HTML converter
+  http://www.aigeek.com/txt2html/
+
+  SAMPLE INPUT
+  ============
+
+  +----------------------------------------------------------------
+  |   txt2html Sample Conversion
+  |
+  |   I used the following command to convert this document:
+  |
+  |    txt2html -tf --mail -H '^ *--[\w\s]+-- *$' -a sample.foot sample.txt > sample.html
+  |
+  |   ======================================================================
+  |
+  |   From bozo@clown.wustl.edu
+  |   Return-Path: <bozo@clown.wustl.edu>
+  |   Message-Id: <9405102200.AA04736@clown.wustl.edu>
+  |   Content-Length: 1070
+  |   From: bozo@clown.wustl.edu (Bozo the Clown)
+  |   To: seth@aigeek.com (Seth Golub)
+  |   Subject: Re: txt2html
+  |   Date: Fri, 6 May 94 10:01:10 -0500
+  |
+  |   Bozo wrote:
+  |   BtC> Can you post an example text file with its html'ed output?
+  |   BtC> That would provide a much better first glance at what it does
+  |   BtC> without having to look through and see what the perl code does.
+  |
+  |   Good idea.  I'll write something up.
+  |
+  |          -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  |
+  |   The header lines were kept separate because they looked like mail
+  |   headers and I have mailmode on.  The same thing applies to Bozo's
+  |   quoted text.  Mailmode doesn't screw things up very often, but since
+  |   most people are usually converting non-mail, it's off by default.
+  |
+  |   Paragraphs are handled ok.  In fact, this one is here just to
+  |   demonstrate that.
+  |
+  |   THIS LINE IS VERY IMPORTANT!
+  |   (Ok, it wasn't *that* important)
+  |
+  |
+  |   EXAMPLE HEADER
+  |   ==============
+  |
+  |   Since this is the first header noticed (all caps, underlined with an
+  |   "="), it will be a level 1 header.  It gets an anchor named
+  |   "section-1".
+  |
+  |   Another example
+  |   ===============
+  |   This is the second type of header (not all caps, underlined with "=").
+  |   It gets an anchor named "section-1.1".
+  |
+  |   Yet another example
+  |   ===================
+  |
+  |   This header was in the same style, so it was assigned the same header
+  |   tag.  Note the anchor names in the HTML. (You probably can't see them
+  |   in your current document view.)  Its anchor is named "section-1.2".
+  |   Get the picture?
+  |
+  |
+  |
+  |                       -- This is a custom header --
+  |
+  |   You can define your own custom header patterns if you know what your
+  |   documents look like.
+  |
+  |
+  |
+  |   Features of txt2html
+  |   ====================
+  |
+  |    * Handles different kinds of lists
+  |      1. Bulleted
+  |      2. Numbered
+  |         - You can nest them as far as you want.
+  |         - It's pretty decent about figuring out which level of list it
+  |           is supposed to be on.
+  |           - You don't need to change bullet markers to start a new list.
+  |      3. Lettered
+  |         A. Finally handles lettered lists
+  |         B. Upper and lower case both work
+  |            a) Here's an example
+  |            b) I've been meaning to add this for some time.
+  |         C. Of course, HTML can't specify how ordered lists should be
+  |            indicated, so it may be a numbered list in some
+  |   	 browsers. (Ok, most browsers)
+  |    * Doesn't screw up mail-ish things
+  |    * Spots preformated text sometimes
+  |
+  |                    It just needs to have enough whitespace in the line.
+  |           Surrounding blank lines aren't necessary.  If it sees enough
+  |           whitespace in a line, it preformats it.  How much is enough?
+  |           Set it yourself at command line if you want.
+  |
+  |    * You can append a file automatically to all converted files.  This
+  |      is handy for adding signatures to your documents.
+  |
+  |    * Deals with paragraphs decently.
+  |
+  |      o looks for short lines in the middle of paragraphs and keeps them
+  |        short with the use of breaks (<BR>).  How short the lines need to
+  |        be is configurable.
+  |      o Unhyphenates split words that are in the middle of para-
+  |        graphs.  Let me know if trailing punctuation isn't handled "prop-
+  |        erly".  It should be.
+  |
+  |    * Puts anchors at all headers and, if you're using the mail header
+  |      features, at the beginning of each mail message.  The anchor names
+  |      for headings are based on guessed section numbers.
+  |
+  |    * Groks Mosaic-style "formatted text" headers (like the one below)
+  |
+  |    * Can hyperlink things according to a dictionary file.
+  |      The sample dictionary handles URLs like
+  |      http://www.aigeek.com/ and also shows how to do simpler
+  |      things such as linking the word txt2html the first time it appeared.
+  |
+  |   Example of short lines
+  |   ----------------------
+  |
+  |   We're the knights of the round table
+  |   We dance whene'er we're able
+  |   We do routines and chorus scenes
+  |   With footwork impeccable.
+  |   We dine well here in Camelot
+  |   We eat ham and jam and spam a lot.
+  |
+  |   ----------------------------------------
+  |
+  |   The signature is everything from the end of this sentence to the
+  |   </BODY> tag.
+  |
+  +----------------------------------------------------------------
+
+  OPTIONS
+  =======
+
+  Usage: txt2html.pl [options]
+
+  where options are:
+     [-v         ] | [--version                       ]
+     [-h         ] | [--help                          ]
+     [-t <title> ] | [--title <title>                 ]
+     [-tf/+tf    ] | [--titlefirst / --notitlefirst   ]
+     [-dt <doct> ] | [--doctype <doctype>             ]
+     [+dt        ] | [--nodoctype                     ]
+     [-l <file>  ] | [--link <dictfile>               ]
+     [+l         ] | [--nolink                        ]
+     [-H <regexp>] | [--heading <regexp>              ]
+     [-EH/+EH    ] | [--explicit-headings / --noexplicit-headings ]
+     [-ab <file> ] | [--append_body <file>            ]
+     [+ab        ] | [--noappend_body                 ]
+     [-ah <file> ] | [--append_head <file>            ]
+     [+ah        ] | [--noappend_head                 ]
+     [-pp <file> ] | [--prepend_body <file>           ]
+     [+pp        ] | [--noprepend_body <file>         ]
+     [-ec/+ec    ] | [--escapechars / --noescapechars ]
+     [-e/+e      ] | [--extract / --noextract         ]
+     [-c <n>     ] | [--caps <n>                      ]
+     [-ct <tag>  ] | [--capstag <tag>                 ]
+     [-m/+m      ] | [--mail     / --nomail           ]
+     [-u/+u      ] | [--unhyphen / --nounhyphen       ]
+     [-ul <n>    ] | [--ulength <n>                   ]
+     [-uo <n>    ] | [--uoffset <n>                   ]
+     [-tw <n>    ] | [--tabwidth <n>                  ]
+     [-iw <n>    ] | [--indent <n>                    ]
+     [-s <n>     ] | [--shortline <n>                 ]
+     [-p <n>     ] | [--prewhite <n>                  ]
+     [-pb <n>    ] | [--prebegin <n>                  ]
+     [-pe <n>    ] | [--preend <n>                    ]
+     [-r <n>     ] | [--hrule <n>                     ]
+     [-LO/+LO    ] | [--linkonly / --nolinkonly       ]
+     [-db <n>    ] | [--debug <n>                     ]
+
+  More complete explanations of these options can be found in 
+  comments near the beginning of the script.
+

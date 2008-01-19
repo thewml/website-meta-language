@@ -1,0 +1,366 @@
+#!@PATH_PERL@
+eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  WMb -- Website META Language Bug Reporting Tool
+##  
+##  Copyright (c) 1996-2001 Ralf S. Engelschall.
+##  Copyright (c) 1999-2001 Denis Barbier.
+##  
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 of the License, or
+##  (at your option) any later version.
+##  
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##  
+##  You should have received a copy of the GNU General Public License
+##  along with this program; if not, write to
+##  
+##      Free Software Foundation, Inc.
+##      59 Temple Place - Suite 330
+##      Boston, MA  02111-1307, USA
+##  
+##  Notice, that ``free software'' addresses the fact that this program
+##  is __distributed__ under the term of the GNU General Public License
+##  and because of this, it can be redistributed and modified under the
+##  conditions of this license, but the software remains __copyrighted__
+##  by the author. Don't intermix this with the general meaning of 
+##  Public Domain software or such a derivated distribution label.
+##  
+##  The author reserves the right to distribute following releases of
+##  this program under different conditions or license agreements.
+##
+
+require 5.003;
+
+BEGIN { $^W = 0; } # get rid of nasty warnings
+
+$VERSION = "@WML_VERSION@";
+
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
+use Getopt::Long 2.13;
+use Term::ReadKey;
+
+
+##
+##  INIT
+##
+
+if ($ENV{'PATH'} !~ m|@bindir@|) {
+    $ENV{'PATH'} = '@bindir@:'.$ENV{'PATH'};
+}
+
+
+##
+##  PROCESS ARGUMENT LINE
+##
+
+sub usage {
+    my ($progname) = @_;
+    my ($o);
+
+    print STDERR "Usage: $progname [options] [path ...]\n";
+    print STDERR "\n";
+    print STDERR "Giving Feedback:\n";
+    print STDERR "  -V, --version[=NUM]    display version and build information\n";
+    print STDERR "  -h, --help             display this usage summary\n";
+    print STDERR "\n";
+    exit(1);
+}
+
+sub version {
+    system("wml -V$opt_V");
+    exit(0);
+}
+
+#   options
+$opt_V = -1;
+$opt_h = 0;
+
+sub ProcessOptions {
+    $Getopt::Long::bundling = 1;
+    $Getopt::Long::getopt_compat = 0;
+    $SIG{'__WARN__'} = sub { 
+        print STDERR "WMd:Error: $_[0]";
+    };
+    if (not Getopt::Long::GetOptions(
+            "V|version:i",
+            "h|help"
+    )) {
+        print STDERR "Try `$0 --help' for more information.\n";
+        exit(0);
+    }
+    &usage($0) if ($opt_h);
+    $SIG{'__WARN__'} = undef;
+}
+&ProcessOptions();
+
+#   fix the version level
+if ($opt_V == 0) {
+    $opt_V = 1; # Getopt::Long sets 0 if -V only
+}
+if ($opt_V == -1) {
+    $opt_V = 0; # we operate with 0 for not set
+}
+&version if ($opt_V);
+
+##
+##   Header
+##
+print STDERR "This is WML BUGREPORT (WMb), Version $VERSION\n";
+print STDERR "Copyright (c) 1996-2001 Ralf S. Engelschall.\n";
+print STDERR "\n";
+
+##
+##   Determining Information
+##
+print STDERR "Determining your information...";
+
+@pwinfo = getpwuid($<);
+
+$username = $pwinfo[0];
+$username =~ s|[\'\$\`\"]||g;
+
+$realname = $pwinfo[6];
+$realname =~ s|^([^\,]+)\,.*$|$1|;
+
+$hostname = `hostname`;
+$hostname =~ s|\n$||;
+if ($hostname =~ m|^[a-zA-Z0-9_-]+$| and -f "/etc/resolv.conf") {
+    $domain = '';
+    open(TMP, "</etc/resolv.conf");
+    while (<TMP>) {
+        if (m|^domain\s+\.?(\S+)|) {
+            $domain = $1;
+            last;
+        }
+    }
+    close(TMP);
+    if ($domain ne '') {
+        $hostname = "$hostname.$domain";
+    }
+}
+
+$version = `wml -V3 2>&1`;
+$version =~ s|^.*?(Built)|Used WML System:\n$1|s;
+
+$editor = $ENV{'EDITOR'} || 'vi';
+$editoropt = '';
+if ($editor =~ m|^vim?|) {
+    $editoropt = '+17';
+}
+
+$mailer = '';
+@M = ( 
+    { PRG => 'elm'     , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '-d "$ENV{\'HOME\'}/.elm"' },
+    { PRG => 'mutt'    , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '-f "$ENV{\'HOME\'}/.muttrc"' },
+    { PRG => 'pine'    , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '-d "$ENV{\'HOME\'}/.pine"' },
+    { PRG => 'mail'    , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '1' },
+    { PRG => 'sendmail', HDR => 1, OPT => '%t <%F', TST => '1' },
+);
+LOOP: foreach $m (@M) {
+    $prg = $m->{PRG};
+    $hdr = $m->{HDR};
+    $opt = $m->{OPT};
+    $tst = $m->{TST};
+    foreach $p (split(/:/, $ENV{'PATH'})) {
+        if (-x "$p/$prg") {
+            $rc = 0;
+            eval "\$rc = 1 if ($tst)";
+            if ($rc) {
+                $mailer = "$p/$prg";
+                $mailerhdr = "$hdr";
+                $maileropt = "$opt";
+                last LOOP;
+            }
+        }
+    }
+}
+
+print STDERR "done.\n";
+
+if ($mailer eq '') {
+    print STDERR "\n";
+    print STDERR "** Sorry, cannot find a useable MTA on your system for E-Mail.\n";
+    print STDERR "** Please send the bug report online via HTTP by opening the URL\n";
+    $v = $VERSION;
+    $v =~ s|^([0-9.]+).*$|$1|;
+    print STDERR "** http://www.engelschall.com/sw/bugreport/?package=WML&version=$v\n";
+    print STDERR "\n";
+    exit(0);
+}
+
+
+#
+#   Creating message
+#
+print STDERR "Creating bug report skeleton...";
+
+$tmpdir = $ENV{'TMPDIR'} || '/tmp';
+
+$tmpfile  = "$tmpdir/wmb.$$.1.tmp";
+$tmpfile2 = "$tmpdir/wmb.$$.2.tmp";
+unlink($tmpfile);
+
+open(MAIL, ">$tmpfile");
+print MAIL <<'EOT';
++------------------------------------------------------+
+| Please complete this bug report message by at least  |
+| specifing the correct reply-to e-mail address and    |
+| the detailed problem description.                    |
++------------------------------------------------------+
+__        ___  __ _     
+\ \      / / \/  | |      Website META Language
+ \ \ /\ / / |\/| | |      Version @WML_VERSION@
+  \ V  V /| |  | | |___ 
+   \_/\_/ |_|  |_|_____|  BUG REPORT
+_________________________________________________________
+
+EOT
+print MAIL "From:     $realname\n";
+print MAIL "Reply-To: $username\@$hostname\n";
+print MAIL "\n";
+print MAIL "PROBLEM DESCRIPTION:\n";
+print MAIL "\n";
+print MAIL "\n";
+print MAIL "PLATFORM CHARACTERISTICS:\n";
+print MAIL $version;
+close(MAIL);
+print STDERR "done.\n";
+
+#
+#   Editing the message   
+#
+system("$editor $editoropt $tmpfile");
+
+
+#
+#   Send the message
+#
+print STDERR "Send report [Y/n]: ";
+ReadMode 4;
+$rc = ReadKey(0);
+ReadMode 0;
+print STDERR "\n";
+if ($rc eq '' or $rc eq "\n" or $rc eq "\r") {
+    $rc = 'y'; 
+}
+if ($rc =~ m|[yY]|) {
+    print STDERR "Sending bug report...";
+
+    open(FP, "<$tmpfile");
+    while (<FP>) {
+        if (m|^From:\s+(.+)\s*$|) {
+            $from = $1;
+        }
+        if (m|^Reply-To:\s+(.+)\s*$|) {
+            $replyto = $1;
+        }
+    }
+    close(FP);
+
+    $subject = "BUG REPORT: Website META Language $VERSION";
+    $to = 'sw-wml@engelschall.com';
+    $maileropt =~ s|%r|$replyto|g;
+    $maileropt =~ s|%s|$subject|g;
+    $maileropt =~ s|%t|$to|g;
+    $maileropt =~ s|%F|$tmpfile2|g;
+
+    open(IN, "<$tmpfile");
+    $msg = '';
+    while (<IN>) {
+        $msg .= $_;
+    }
+    close(IN);
+    $msg =~ s|^.+--.+?\-\+\n_|_|s;
+
+    open(OUT, ">$tmpfile2");
+    if ($mailerhdr) {
+        print OUT "From: $replyto ($from)\n";
+        print OUT "Reply-To: $replyto\n";
+        print OUT "Subject: $subject\n";
+        print OUT "To: $to\n";
+        print OUT "\n";
+    }
+    print OUT $msg;
+    close(OUT);
+
+    system("$mailer $maileropt >/dev/null");
+    print STDERR "done.\n";
+    print STDERR "\n";
+    print STDERR "Thanks for using WML and giving feedback.\n";
+    print STDERR "\n";
+}
+else {
+    print STDERR "\n";
+    print STDERR "Stopped: No report send.\n";
+    print STDERR "\n";
+}
+
+#
+#   cleanup
+#
+unlink($tmpfile)  if (-f $tmpfile);
+unlink($tmpfile2) if (-f $tmpfile2);
+
+#   exit gracefully
+exit(0);
+
+##EOF##
+__END__
+
+=head1 NAME
+
+WMb - Website META Language Bug Reporting Tool
+
+=head1 VERSION
+
+@WML_VERSION@
+
+=head1 SYNOPSIS
+
+B<wmb>
+[B<-V>]
+[B<-h>]
+
+=head1 DESCRIPTION
+
+This is the bug reporting tool for the I<Website META Language> (WML), a free
+HTML generation toolkit for Unix.  See wml(1) for more details on WML.  Use
+this program for quickly sending a bug report to the WML author via EMail.  As
+an alternative (when this program does not work from your platform) you can
+send the bug report manually to sw-wml@engelschall.com.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-V>, B<--version>
+
+Gives the version identification string of WMb. Use this to determine the
+version of a installed WML toolkit. 
+
+=item B<-h>, B<--help>
+
+Prints the usage summary page.
+
+=back
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 SEEALSO
+
+wml(1)
+
+=cut
+

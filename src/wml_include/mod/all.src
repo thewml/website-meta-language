@@ -1,0 +1,45 @@
+##
+##  wml::mod:all - All of Modularity (MOD) category 
+##  Copyright (c) 1999-2001 Denis Barbier, All Rights Reserved. 
+##
+
+#use wml::mod::MakeMaker
+#use wml::mod::version
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::mod:all - All of Modularity (MOD) category 
+
+=head1 SYNOPSIS
+
+ #use wml::mod::all
+
+=head1 DESCRIPTION
+
+This includes all existing include files of the B<Modularity> (MOD) category,
+i.e. all includes with prefix B<wml::mod>.  The following files currently
+exist:
+
+  wml::mod::MakeMaker(3) ... Write Makefiles for modules
+  wml::mod::version(3) ..... Checks running WML version number
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::mod::MakeMaker(3),
+wml::mod::version(3).
+
+=cut
+

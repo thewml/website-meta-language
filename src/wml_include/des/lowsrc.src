@@ -1,0 +1,73 @@
+##
+##  wml::des::lowsrc - Create Image and LOWSRC-Attribute for IMG-Tag
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::std::tags
+
+<define-tag lowsrc>
+<perl>
+{
+    my $src;
+    <perl:assign:sq $src>%0</perl:assign:sq>
+    my $lowsrc = $src;
+    $lowsrc =~ s|\.([^.]+)$|.lowsrc.$1|;
+    if (not -f $src) {
+        print STDERR "wml::des::lowsrc, Error: Image `$src' not found\n";
+    }
+    my $skip = 0;
+    if (-f $lowsrc) {
+        $skip = 1 if ((stat($src))[9] <= (stat($lowsrc))[9]);
+    }
+    if (not $skip) {
+        my $error = `convert -monochrome $src $lowsrc`;
+        if ($? >> 8) {
+            print STDERR "** wml::des::lowsrc:\n$error";
+            exit(1);
+        }
+    }
+    <perl:print> lowsrc="$lowsrc"</perl:print>
+}
+</perl>
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::lowsrc - Create Image and LOWSRC-Attribute for IMG-Tag
+
+=head1 SYNOPSIS
+
+ #use wml::des::lowsrc
+
+ <img ...src="image.ANY" <lowsrc "image.ANY"> ...>
+
+=head1 DESCRIPTION
+
+This creates an F<image.lowsrc.ANY> file out of the F<image.ANY> one
+containing only a monochrome bitmap (black/white) of the image's content and
+prints out the corresponding C<lowsrc="image.lowsrc.gif"> string.
+
+This include file needs the external program F<convert> from the
+I<ImageMagick> package which can be found on
+http://www.wizards.dupont.com/cristy/.
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: convert (PATH)
+
+=head1 SEEALSO
+
+ImageMagick
+
+=cut
+

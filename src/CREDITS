@@ -1,0 +1,125 @@
+
+  C R E D I T S
+  =============
+
+  Credit has to given to the following people:
+
+  o Ralf S. Engelschall   <rse@engelschall.com>
+    The original author of the WML package and
+    package maintainer between WML version 1.0 and 1.6.7
+
+  o Denis Barbier         <barbier@engelschall.com>
+    The current WML maintainer since WML version 1.6.8
+
+  Additional credit has to be given to the following people who contributed
+  ideas, stuff, bugfixes, hints etc. (in alphabetical order):
+
+  o Thomas Akin           <takin@kennesaw.edu>
+  o Petr Andreyev         <petr@xanadu.ru>
+  o Viorel Anghel         <vang@roedu.net>
+  o Jordan Baker          <jbb@interlog.com>
+  o Marc Baudoin          <babafou@babafou.eu.org>
+  o John Bazik            <jsb@cs.brown.edu>
+  o Axel Beckert          <rse-wml@deuxchevaux.org>
+  o Alvise Belotti        <alvise@lettere.unipd.it>
+  o Jarda Benkovsky       <pvt.benkovsk@pvtnet.cz>
+  o Bruno Boettcher       <bboett@erm1.u-strasbg.fr>
+  o Stephane Bortzmeyer   <bortzmeyer@pasteur.fr>
+  o Jim Bowlin            <bowlin@sirius.com>
+  o Simon Burr            <simes@bpfh.net>
+  o Carsten G. Braeutigam <carsten@3point.net>
+  o Tomasz Cholewo        <t.cholewo@ieee.org>
+  o Wolfgang Dautermann   <dauti@oeh.tu-graz.ac.at>
+  o Max H. Duenki         <duenki@isi.ee.ethz.ch>
+  o Stephen van Egmond    <svanegmo@truespectra.com>
+  o Claus Faerber         <claus@faerber.muc.de>
+  o Markus Fleck          <fleck@isoc.de>
+  o Anthony Fok           <foka@gpu.srv.ualberta.ca>
+  o Gerfried Fuchs        <alfie@innocent.com>
+  o Tetsuya Furukawa      <tetsuya@secom-sis.co.jp>
+  o Nico Galoppo          <scratch@ace.ulyssis.student.kuleuven.ac.be>
+  o Tom Gilbert           <gilbertt@linuxbrit.co.uk>
+  o Rajendra Gokhale      <rvg@creato.org>
+  o Hans de Graaff        <graaff@xs4all.nl>
+  o Alexander Graefe      <wa0191@stud.uni-wuppertal.de>
+  o Norbert Gruener       <nog@mpa-garching.mpg.de>
+  o Thomas Guettler       <guettli@web.de>
+  o Florian Hars          <hars@math.uni-hamburg.de>
+  o Jan Ulrich Hasecke    <juh@pironet.de>
+  o Andy Hawkins          <andy@gently.demon.co.uk>
+  o Jim Hebert            <jhebert@compu-aid.com>
+  o Karl M. Hegbloom      <karlheg@bittersweet.inetarena.com>
+  o Oliver Hensel         <oliver.hensel@gmx.de>
+  o Joey Hess             <joeyh@debian.org>
+  o Werner Heuser         <wehe@snafu.de>
+  o Andreas Hoffmann      <hoffmana@mathematik.tu-muenchen.de>
+  o Andreas Hofmeister    <hofmeist@informatik.uni-freiburg.de>
+  o Andrew S. Howell      <andy@tibcofinance.com>
+  o Graham Hughes         <thrag@treepeople.dyn.ml.org>
+  o Lars Kellogg-Stedman  <lars@larsshack.org>
+  o Franz Knipp           <franz@knipp.org>
+  o Florian Kuehnert      <sutok@gmx.de>
+  o Märt Laak             <Mart.Laak@hansa.ee>
+  o Ghislaine Labouret    <Ghislaine.Labouret@hsc.fr>
+  o Howard A. LaHurreau   <alexdw@locl.net>
+  o Benoit des Ligneris   <benoit.des.ligneris@physique.usherb.ca>
+  o Thomas Lotterer       <thomas.lotterer@cw.com>
+  o Dan Ludden            <dan.ludden@lmco.com>
+  o Martin Maechler       <maechler@stat.math.ethz.ch>
+  o Gerd Maier            <gerd.maier@gmx.net>
+  o Ilya Martynov         <m_ilya@agava.com>
+  o Michael McNamara      <mac@surefirev.com>
+  o David Mentre          <David.Mentre@irisa.fr>
+  o Uwe Mindrup           <uwe@mindrup.de>
+  o Frederic Le Mouel     <Frederic.LeMouel@irisa.fr>
+  o Torsten Naumann       <Torsten.Naumann@informatik.tu-chemnitz.de>
+  o Hans U. Niedermann    <ulrich@niedermann.bb.bawue.de>
+  o Aleksi Niemelä        <AleksiN@hex.fi>
+  o Christian Niss        <chris@topitmagic.de>
+  o Clemens Oertel        <oertel@uni-tuebingen.de>
+  o Tobias Oetiker        <oetiker@ee.ethz.ch>
+  o Stian Storengen Olsen <stiano@tihlde.org>
+  o Bruce Perens          <bruce@debian.org>
+  o Stephan Petersen      <sp@gtt.lth.rwth-aachen.de>
+  o Rene Pijlman          <R.W.Pijlman@inter.nl.ne>
+  o Andrew Pimlott        <pimlott@abel.math.harvard.edu>
+  o Joerg Plate           <Joerg@Plate.cx>
+  o Dave Plonka           <plonka@doit.wisc.edu>
+  o A. Poulain-Maubant    <Aymeric.PoulainMaubant@jipo.com>
+  o Martin Quinson        <Martin.Quinson@ens-lyon.fr>
+  o Xose Manoel Ramos     <xmanoel@bigfoot.com>
+  o John Ranck            <ranck@husc.harvard.edu>
+  o Christian Reiber      <chrei@en.muc.de>
+  o Albert Reiner         <areiner@tph.tuwien.ac.at>
+  o Laurent Riesterer     <riesterer@celar.fr>
+  o Josip Rodin           <joy@cibalia.gkvk.hr>
+  o Thomas Roessler       <roessler@guug.de>
+  o Roland Rosenfeld      <roland@spinnaker.rhein.de>
+  o Jean-Michel Sauvage   <jean-michel.sauvage@club-internet.fr>
+  o Wayne Schlitt         <wayne@midwestcs.com>
+  o Heiko Schlittermann   <heiko@lotte.sax.de>
+  o Martin Schulze        <joey@infodrom.north.de>
+  o Felix Seeger          <felix.seeger@gmx.de>
+  o Steve Sizemore        <steve@cmpharm.ucsf.edu>
+  o Joey Smith            <joey@joeysmith.com>
+  o Igor V. Spiridonov    <garris@trunk.uco.ru>
+  o Robin Stephenson      <robin@gbhap.com>
+  o Jacques Supcik        <supcik@ip-plus.net>
+  o Henrik Theiling       <theiling@coli.uni-sb.de>
+  o Jay Treacy            <treacy@debian.org>
+  o Nobuyuki Tsuchimura   <tutimura@nn.iij4u.or.jp>
+  o Tommi Vainikainen     <thv@iki.fi>
+  o Ralf Vissers          <ravis@web.de>
+  o Boris Wesslowski      <bwess@gmx.de>
+  o Clayton Wheeler       <cswheeler@halcyon.com>
+  o Craig Wiegert         <wiegert@quintessence.uchicago.edu>
+  o Sebastian Wilhelmi    <wilhelmi@ira.uka.de>
+  o Blair Zajac           <blair@orcaware.com>
+  o Fritz Zaucker         <zaucker@ee.ethz.ch>
+  o Stefan `Sec` Zehl     <sec@42.org>
+  o Kurt D. Zeilenga      <Kurt@boolean.net>
+  o Frediano Ziglio       <freddy77@angelfire.com>
+  o C. Zuckschwerdt       <zany@darkride.net>
+
+  ...and all other WML users who gave us feedback but we've forgot...
+

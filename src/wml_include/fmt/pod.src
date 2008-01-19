@@ -1,0 +1,161 @@
+##
+##  wml::fmt::pod - Plain Old Document (POD) Format
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<protect pass=2>
+<:
+#   the conversion function
+sub wml_fmt_pod {
+    my ($arg) = @_;
+    my ($buf);
+    local (*FP);
+
+    #   read the txt2html result
+    open(FP, "pod2html --norecurse" .
+                       ($arg->{KEEPINDEX}  ? ' --index' : ' --noindex') .
+                       ($arg->{NONETSCAPE} ? ' --nonetscape' : ' --netscape') .
+                       " $arg->{FILE}|");
+    local ($/) = undef;
+    $buf = <FP>;
+    close(FP);
+    unlink("pod2html-dircache");
+    unlink("pod2html-itemcache");
+
+    #   cut out the body
+    $buf =~ s|^.*<BODY>||is;
+    $buf =~ s|</BODY>.*$||is;
+
+    #   remove stuff from name kludge
+    if ($arg->{NAMEKLUDGE}) {
+        $buf =~ s|<LI><A HREF="#NAME">NAME</A>||is;
+        $buf =~ s|<H1><A NAME="NAME">NAME.+?<H1>|<H1>|is;
+    }
+
+    #   make headlines more typographic
+    if (not $arg->{NOTYPO}) {
+        $buf =~ s|^(<H[1-6]><A NAME="([A-Za-z_]+).*?">)(.+)(\n?)$|$1<font face=\"Arial,Helvetica\">$3</font>$4|mg;
+    }
+
+    #   remove the nasty horizontal rules
+    if (not $arg->{KEEPHR}) {
+        $buf =~ s|<HR>||isg;
+    }
+
+    #   remove uncommented index
+    if (not $arg->{KEEPINDEX}) {
+        $buf =~ s|<!-- INDEX BEGIN -->.+?<!-- INDEX END -->||is;
+    }
+
+    #   more cleanup of HTML markup
+    $buf =~ s|<P>\s*\n<P>|<P>|isg;
+    $buf =~ s|</DL>\s*\n?$||is;
+
+    if ($arg->{EPERLFILTER}) {
+        eval "\$buf = \&".$arg->{EPERLFILTER}."(\$buf);";
+    }
+
+    return $buf;
+}
+:>
+</protect>
+
+<define-tag pod endtag=required>
+<preserve keepindex keephr nonetscape notypo eperlfilter />
+<set-var keepindex=* />
+<set-var keephr=* />
+<set-var nonetscape=* />
+<set-var notypo=* />
+<set-var %attributes />
+<perl>
+{
+    my $tmpfile     = "$(WML_TMPDIR)/wml.pod2html.$$.tmp";
+    my $keepindex   = (qq|<get-var keepindex />| eq '' ? 1 : 0);
+    my $keephr      = (qq|<get-var keephr />| eq '' ? 1 : 0);
+    my $nonetscape  = (qq|<get-var nonetscape />| eq '' ? 1 : 0);
+    my $notypo      = (qq|<get-var notypo />| eq '' ? 1 : 0);
+    my $eperlfilter = qq|<get-var eperlfilter />|;
+    my $namekludge  = 0;
+
+    my $buf;
+    <perl:assign:sq $buf>%body</perl:assign:sq>
+
+    #   add NAME header if missing to avoid warnings
+    if ($buf !~ m|=head1\s+NAME|) {
+        $buf = "=head1 NAME\n\nDUMMY - __NAME_KLUDGE__\n\n" . $buf;
+        $namekludge = 1;
+    }
+
+    #   there is no reason to nest <pod> tags, so the <perl:print>
+    #   statement is unnecessary
+    open(POD, ">$tmpfile");
+    print POD $buf;
+    close(POD);
+    <perl:print:
+         "&wml_fmt_pod({ FILE        => $tmpfile, 
+                         NAMEKLUDGE  => $namekludge,
+                         KEEPINDEX   => $keepindex, 
+                         KEEPHR      => $keephr, 
+                         NONETSCAPE  => $nonetscape, 
+                         NOTYPO      => $notypo,
+                         EPERLFILTER => $eperlfilter })" />
+
+    unlink($tmpfile);
+}
+</perl>
+<restore  keepindex keephr nonetscape notypo eperlfilter />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::fmt::pod - Plain Old Document (POD) Format
+
+=head1 SYNOPSIS
+
+ #use wml::fmt::pod
+
+ <: print &wml_fmt_pod({ FILE => $file, ... }); :>
+
+ <pod [keepindex] [keephr] [nonetscape] [notypo] [eperlfilter=func]>
+ =head1 ...
+ ...
+ =head2 ...
+ ...
+ </pod>
+
+=head1 DESCRIPTION
+
+The usage is simple: Just surround all POD source text with the B<pod>
+container tag and then just write POD format inside it as you would do when
+writing plain POD documents. The corresponding HTML code is created via Perl's
+C<pod2html> filter. 
+
+B<ATTENTION! There are a lot of pod2html versions around from the various Perl
+versions. I really recommend you the pod2html from Perl 5.004!>
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2, P3
+ External: pod2html (PATH)
+
+=head1 SEEALSO
+
+perlpod(1), http://www.perl.com/perl/
+
+=cut
+

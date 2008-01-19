@@ -1,0 +1,6 @@
+
+ These are so-called "powered-by" logos.
+ The file logo-xxx.gif can be included into a webpage via
+ #use wml::std::logo
+ <logo src="xxx">
+

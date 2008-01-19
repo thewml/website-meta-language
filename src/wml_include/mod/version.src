@@ -1,0 +1,155 @@
+##
+##  wml::mod::version - Checks software version numbers
+##  Copyright (c) 1999-2001 Denis Barbier, All Rights Reserved.
+##
+
+#   WML version numbers:
+#   they consist of 3 numbers separated by a dot, e.g. 1.3.2
+#
+#   But the last dot may be replaced by letters ``a'' (for alpha
+#   release) and ``b'' (for beta release). In these cases, the last
+#   number is different : for instance, after version 1.2.4 we want to
+#   release an alpha version of 1.2.5. This version will be numbered
+#   1.2a501. It means first alpha-release for version 1.2.5. We have
+#   just 99 alpha releases before a beta release, so we must be careful ;-)
+#
+<define-tag require>
+<set-var __result= />
+<if <match %0 "^([0-9]+)\\.([0-9]+)([ab.])([0-9]+).*$" /> 
+        "" <set-var __result="undef" /> />
+<if <match "$(WML_VERSION)" "^([0-9]+)\\.([0-9]+)([ab.])([0-9]+).*$" />
+        "" <set-var __result="undef" /> />
+#
+#   First compute the members of tne number version
+#
+<when <not <get-var __result /> />>
+  <subst-in-string 
+    <subst-in-string %0
+      "^([0-9]+)\\.([0-9]+)([ab.])([0-9]+).*$"
+        "<-set-var- __version=\\1 __revision=\\2 __type=\\3 __patch=\\4 />" />
+  "-set-var-" "set-var" />
+  <subst-in-string 
+    <subst-in-string <get-var WML_VERSION />
+      "^([0-9]+)\\.([0-9]+)([ab.])([0-9]+).*$"
+        "<-set-var- __wml_version=\\1 __wml_revision=\\2 __wml_type=\\3 __wml_patch=\\4 />" />
+  "-set-var-" "set-var" />
+</when>
+#
+#   check wether version number differ
+#
+<when <not <get-var __result /> />>
+<if <lt <get-var __version /> <get-var __wml_version /> />
+    <set-var __result="ok" /> />
+<if <gt <get-var __version /> <get-var __wml_version /> />
+    <set-var __result="bad" /> />
+</when>
+#
+#   check wether revision number differ
+#
+<when <not <get-var __result /> />>
+<if <lt <get-var __revision /> <get-var __wml_revision /> />
+    <set-var __result="ok" /> />
+<if <gt <get-var __revision /> <get-var __wml_revision /> />
+    <set-var __result="bad" /> />
+</when>
+#
+#   the first 2 numbers are the same.
+#   We have to check
+#       - types (a, b or .)
+#       - patch number
+#   With types ``a'' and ``b'', patch numbers are multiplied by 100.
+#   In other words, 1.7.2 = 1.7a300 < 1.7a333 < 1.7b301 < 1.7.3
+#
+<when <not <get-var __result /> />>
+<ifeq <get-var __type /> "."
+    <group
+       <set-var __type="a" />
+       <set-var __patch=<multiply <add <get-var __patch /> 1 /> 100 /> />
+    />
+/>
+<ifeq <get-var __wml_type /> "."
+    <group
+       <set-var __wml_type="a" />
+       <set-var __wml_patch=<multiply <add <get-var __wml_patch /> 1 /> 100 /> />
+    />
+/>
+#
+#   Check first digit of patch number
+#
+<if <lt <divide <get-var __patch /> 100 />
+        <divide <get-var __wml_patch /> 100 /> />
+    <set-var __result="ok" /> />
+<if <gt <divide <get-var __patch /> 100 />
+        <divide <get-var __wml_patch /> 100 /> />
+    <set-var __result="bad" /> />
+</when>
+#
+#   First digits are the same. We now test 1.7a3xx < 1.7b3yy
+#
+<when <not <get-var __result /> />>
+<ifeq "<get-var __type /><get-var __wml_type />" "ab"
+    <set-var __result="ok" /> />
+<ifeq "<get-var __type /><get-var __wml_type />" "ba"
+    <set-var __result="bad" /> />
+</when>
+#
+#   Numbers may only dff by the last 2 digits.
+#
+<when <not <get-var __result /> />>
+<if <gt <get-var __patch /> <get-var __wml_patch /> />
+    <set-var __result="bad" />
+    <set-var __result="ok" /> />
+</when>
+#   And now, writes an error message if version does not match
+#   I would like to use pass 2, but can't yet.
+<ifeq <get-var __result /> "bad"
+  <exit message="Version %0 required.
+Only WML version $(WML_VERSION) installed.
+" /> />
+<ifeq <get-var __result /> "undef"
+  <exit message="Version %0 required.
+Could not find whether your version of WML is newer or not.
+" /> />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::mod::version - Checks WML version number
+
+=head1 SYNOPSIS
+
+ #use wml::mod::version
+
+ <require 1.7.1 />
+
+=head1 DESCRIPTION
+
+As WML evolves, some new features appear and some input files requires
+new version to be processed. This include file provides the
+C<E<lt>requireE<gt>> tag, which checks whether running WML program is
+new enough to process input file.
+
+=head1 ATTRIBUTES
+
+The C<E<lt>requireE<gt>> tag takes an argument : the WML version number
+needed to process the file in which this tag appears. This number is a
+dot separated list of 3 numbers, from left to right : version, revision
+and patchlevel. 
+
+Comparison between numbers is numerical, so that 1.7.50 E<gt> 1.7.6
+
+=head1 AUTHOR
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P2
+ External: --
+
+=cut
+

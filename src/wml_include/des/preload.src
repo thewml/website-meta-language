@@ -1,0 +1,108 @@
+##
+##  wml::des::preload - Preload Page Contents
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 2000-2001 Denis Barbier
+##
+
+#  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
+#use wml::mod::version
+<require 2.0.3 />
+
+#use wml::std::tags
+
+<set-var __pl:count=0 />
+
+<define-tag preload whitespace=delete>
+<preserve src via />
+<set-var via=size />
+<set-var %attributes />
+<increment __pl:count />
+<when <string-eq "<get-var via />" "size" />>
+<img name=preload_img_<get-var __pl:count />
+     src="<get-var src />"
+     width=1 height=1 alt="" />
+</when>
+<when <string-eq "<get-var via />" "js" />>
+<copy-var src __pl:src />
+#   the <group> tag prevents deletion of newlines
+<group "
+<javascript>
+if (document.images) {
+    preload_img_<get-var __pl:count /> = new Image();
+    preload_img_<get-var __pl:count />.src = '<get-var __pl:src />';
+}
+</javascript>
+" />
+</when>
+<restore  src via />
+</define-tag>
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::des::preload - Preload Images
+
+=head1 SYNOPSIS
+
+ #use wml::des::preload
+
+ <preload src=<image filename> via=<trick>>
+
+=head1 DESCRIPTION
+
+This include file provides the C<E<lt>preloadE<gt>> tag which can be used to
+preload images. Such preloading is usually done to speedup access for following
+pages. Currently there are only a few tricks how this can be done.
+    
+The following combinations are currently supported:
+
+=over 4
+
+=item C<src=>I<anyimage> C<via=size>
+
+Preloads the image I<anyimage> by using an C<E<lt>imgE<gt>> tag with the
+attributes C<width=1 height=1> which leads to the loading of the image but
+only to a 1 pixel in display.
+
+Advantage: Works for all browsers.
+
+Disadvantage: This approach has the nasty side-effect of an occuring 1 pixel
+in display because C<width=0 height=0> does not work as expected in most
+browsers (especially in Netscape 4.x). So, position your C<E<lt>preloadE<gt>>
+tag somewhere it does not destroy the look and feel of your page. 
+
+=item C<src=>I<anyimage> C<via=js>
+
+Preloads the image I<anyimage> by using a JavaScript snippet which loads
+the image by declaring an unused C<Image> object. 
+
+Advantage: Silently preloads the image without displaying anything.
+
+Disadvantage: Only works for browsers with a JavaScript implementation and
+only for those who support the C<Image> object (currently NS/3, NS/4, IE/4).
+
+=back
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1, P2
+ External: --
+
+=head1 SEEALSO
+
+wml::std::tags(3)
+HTML 3.2 C<E<lt>imgE<gt>> tag.
+
+=cut
+

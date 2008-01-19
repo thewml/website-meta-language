@@ -1,0 +1,11 @@
+src/builtin.c
+src/debug.c
+src/devel.c
+src/freeze.c
+src/input.c
+src/macro.c
+src/module.c
+src/mp4h.c
+src/output.c
+src/path.c
+src/symtab.c

@@ -1,0 +1,615 @@
+
+=head1 NAME
+
+Linklint - fast link checker and website maintenance tool
+
+=head1 SYNOPSIS
+
+B<linklint> 
+[B<-cache I<directory>>]
+[B<-case>]
+[B<-checksum>]
+[B<-concise_url>]
+[B<-db1..9>]
+[B<-delay I<d>>]
+[B<-doc>]
+[B<-docbase I<base>>]
+[B<-dont_output I<xxxx>>]
+[B<-error>]
+[B<-flush>]
+[B<-forward>]
+[B<-help>]
+[B<-help_all>]
+[B<-host I<hostname:port>>]
+[B<-host I<hostname>>]
+[B<-htmlonly>]
+[B<-http>]
+[B<-http_header I<name:value>>]
+[B<-ignore I<ignoreset>>]
+[B<-index I<file>>]
+[B<-language I<zz>>]
+[B<-limit I<n>>]
+[B<-list>]
+[B<-local I<linkset>>]
+[B<-map I</a=[/b]>>]
+[B<-net>]
+[B<-netmod>]
+[B<-netset>]
+[B<-no_anchors>]
+[B<-no_query_string>]
+[B<-no_warn_index>]
+[B<-orphan>]
+[B<-out I<file>>]
+[B<-output_frames>]
+[B<-output_index I<filename>>]
+[B<-password I<realm user:password>>]
+[B<-proxy I<hostname[:port]>>]
+[B<-quiet>]
+[B<-redirect>]
+[B<-retry>]
+[B<-silent>]
+[B<-skip I<skipset>>]
+[B<-textonly>]
+[B<-timeout I<t>>]
+[B<-url_doc_prefix I<url/>>]
+[B<-version>]
+[B<-warn>]
+[B<-xref>]
+I<linkset>
+
+=head1 VERSION
+
+2.3.5 August 13, 2001
+
+=head1 DESCRIPTION
+
+This manual page documents briefly the Linklint program, which is an
+Open Source Perl program that checks local and remote HTML links.
+
+This manual page was written for the Debian distribution because the
+original program does not have a manual page.  Instead, it has
+documentation in the HTML format; see below.
+
+=head1 OPTIONS
+
+=head2 Input File Selection
+
+Whether you are doing a local site check or an HTTP site check, you
+specify which directories (presumably containing HTML files) to check
+with one or more linksets. A linkset uses two wildcard characters
+@ and #.
+Each linkset specifies one or more directories much like the standard
+* and ? wildcard characters are used to specify the characters in the
+* names of files in one directory.
+
+The @ character matches any string of characters (this kind of acts like
+"*"), and the # character (which is kind of like "?") matches any string
+of characters except "/" . The best way to understand how @ and # work
+is to look at a few examples:
+
+                          the entire site /@
+              the homepage only (default) /
+         files in the root directory only /#
+             . . . and one directory down /#/#
+          files in the sub directory only /sub/#
+     files in the sub directory and below /sub/@
+                           specific files /file1 /file2 ...
+                  specific subdirectories /sub1/@ /sub2/@ ...
+
+If you specify more than one linkset, files matching any of the linksets
+will be checked. HTML files that don't match any of the linksets will be
+skipped. Linklint will see if they exist but won't check any of their
+links.
+
+=head2 Other File Selection Options
+
+=over 4
+
+=item B<-skip> I<skipset>
+
+Skips HTML files that match I<skipset>.  C<Linklint> will make sure
+these files exist but won't add any of their links to the list of files
+to check.  Multiple I<skipsets> are allowed, but each must be preceded
+with B<-skip> on the command line. Skipsets use the same wildcard
+characters as linksets.
+
+=item B<-ignore> I<ignoreset>
+
+Ignores files matching I<ignoreset>.  C<Linklint> doesn't even check to
+see if these files exist.  Multiple I<ignoresets> are allowed, but each
+must be preceded with B<-ignore> on the command line.  Ignoresets use
+the same wildcard characters as linksets.
+
+=item B<-limit> I<n>
+
+Limits checking to I<n> HTML files (default 500).  All HTML files after
+the first I<n> are skipped.
+
+=back
+
+=head2 Local Site Checking
+
+If you are developing HTML pages on a computer that does not have an
+http server, or if you are developing a simple site that does not use
+Server Redirection or extensive CGI, you should use local site checking.
+
+     linklint /@
+
+Checks all HTML files in the current directory and below. Assumes that
+the current directory is the server root directory so links starting
+with "/" default to this directory. You must specify B</@> to check the
+entire site. See Which Files to Check for details.
+
+     linklint -root dir /@
+
+Checks all HTML files in dir and below. This is useful if you want to
+check several sites on the same machine or if you don't want to run
+Linklint in your public HTML directory.
+
+=head2 Other Local Site Options
+
+=over 4
+
+=item B<-host> I<hostname>
+
+By default C<Linklint> assumes all links on your site that start with
+C<http://> are remote links to other sites.  If you have absolute links
+to your own site, give C<Linklint> your hostname and links starting with
+C<http://hostname> will be treated as local files.  If you specify
+B<-host hostname:port,> only http links to this hostname and port will
+be treated as local files.
+
+=item B<-case>
+
+Makes sure that the filename (upper/lower) case used links inside of
+html tags matches the case used by the file system.  This is for
+Windows only and is very handy if you are porting a site to a Unix
+host.
+
+=item B<-orphan>
+
+Checks all directories that contain files used on the site for unused
+(orphan) files.
+
+=item B<-index> I<file>
+
+Uses I<file> as the default index file instead of the default list used
+by C<Linklint>. You can specify more than one file but each one must be
+preceded by B<-index> on the command line.  If a default index file is
+not found, C<Linklint> uses a listing of the entire directory. See the
+Default File section for details.
+
+=item B<-map> I</a=[/b]>
+
+Substitutes leading I</a> with I</b>.  For server-side image maps or to
+simulate Server Redirection.
+
+=item B<-no_warn_index>
+
+Turns of the "index file not found" warning.  Applies to local site
+checking only.
+
+=item B<-no_anchors>
+
+Tells C<Linklint> to ignore named anchors.  This could ease memory
+problems for people with large sites who are primarily interested in
+missing pages and not missing named anchors.  This option works for
+both HTTP and local site checks.
+
+=back
+
+=head2 HTTP Site Checking
+
+If you have a complicated site that uses lots of CGI or Server
+Redirection, you should use HTTP site checking. Even though an HTTP
+site check reads pages via your HTTP server, you will get the best
+performance if you do your checking on a machine that has a high speed
+connection to your server.
+
+     linklint -http -host www.site.com /@
+
+The B<-http> flag tells C<Linklint> to check HTML files on the site
+www.site.com via a remote http connection. You must specify a -host
+whenever you do an HTTP site check (otherwise Linklint won't where to
+get your pages). You can specify B</@> to check the entire site.  See Which
+Files to Check for details.
+
+=head2 HTTP Site Check Options
+
+=over 4
+
+=item B<-http>
+
+This flag tells Linklint to perform an HTTP site check instead of a
+local site check.  All files (except server side image maps) will be
+read via the HTTP protocol from your web server.
+
+=item B<-host> I<hostname:port>
+
+If you include I<:port> at the end of your
+hostname, Linklint uses this port for the HTTP site check.
+
+=item B<-password> I<realm user:password>
+
+Uses I<user> and I<password> as authorization to enter password
+protected I<realm.> Realms are named areas of a site that share a common
+set of usernames and passwords.  If passwords are needed to check your
+site, Linklint will tell you which realms need passwords in warning
+messages.  Enclose the realm in double quotes if it contains spaces.  If
+no password is given for a specific realm, Linklint will try using the
+password for the "C<DEFAULT>" realm if it was provided.
+
+=item B<-timeout> I<t>
+
+Times out after I<t> seconds (default 15) when
+getting files via http.  Once data is received, an additional
+I<t> seconds is allowed.  The timeout is
+disabled on Windows machines since the Windows port of Perl does not
+support the C<alarm()> function.
+
+=item B<-delay> I<d>
+
+Delays I<d> seconds between requests to the same
+host (default 0).  This is a friendly thing to do especially if you are
+checking many links on the same host.
+
+=item B<-local> I<linkset>
+
+Gets files that match I<linkset> locally.  The default B<-local>
+I<linkset> is B<@.map> (which matches any link ending in F<.map>).  This
+allows Linklint to follow links through server-side image maps.  The
+default is ignored if you specify your own B<-local> expressions.  You
+need to specify the B<-root> directory for this option to work propery.
+
+=item B<-map> I</a=[/b]>
+
+Substitutes leading I</a> with I</b>.  For server-side image maps or to
+simulate Server Redirection.
+
+=item B<-no_anchors>
+
+Tells C<Linklint> to ignore named anchors.
+
+=item B<-no_query_string>
+
+Up until version 2.3.4, Linklint did not use query strings while doing
+HTTP site checks.  Query strings were removed before making HTTP
+requests.  As of 2.3.4 query strings in links are used in the
+requests.  Use the B<-no_query_string> flag to get back the "old"
+behavior.
+
+=item B<-http_header> I<Name:value>
+
+Adds the HTTP header I<Name: value> to all HTTP requests
+generated by Linklint.  You will need to use quotation marks to hide
+spaces in the header line from the command line interpreter. Linklint
+will automatically add a space after the first colon if there is not
+one there already.  Multiple (unique) header lines are allowed.
+
+=item B<-language> I<zz>
+
+This option is only useful if you are checking a site that uses
+content negotiation to present the same URL in different languages.
+
+Creates an HTTP Request header of the form
+B<Accept-Language: zz> that is included as part of all HTTP
+requests generated by Linklint.  Multiple B<-language>
+specifications are allowed.  This will result in a single
+B<Accept-Language:> header that lists all of the languages you
+have specified in alphabetical order.  Some web sites can use this
+information to return pages to you in a specific language.
+
+If you need to get more complicated than this, use the more general
+purpose B<-http_header> to create your own header.  There is a partial
+list of language abbreviations (taken from Debian) included as part of
+the Linklint documentation.
+
+=back
+
+=head2 Remote URL Checking
+
+A remote URL check is used to see if a remote URL exists (or has been
+recently modified). Links in the remote pages are not checked nor does
+Linklint look for named anchors in remote URLs.
+     
+Remote URL checking can be used to check all of the "remote" links on
+your site (those that link to pages on other sites) or it can check a
+list of URLs. There are several ways to specify which remote URLs to
+check:
+     
+     linklint http://somehost/file.html
+
+Checks to see if F</file.html> exists on somehost. Multiple URLs can be
+entered on the command line, in an I<@commandfile>, or in an
+I<@@httpfile>.  Every URL to be checked must begin with C<http://>. This
+will disable site checking.
+     
+     linklint @@httpfile
+
+Checks all the remote http URLs found in httpfile. Anything in the file
+starting with C<http://> is considered to be a URL. If the file looks
+like a F<remoteX.txt> file generated by Linklint then all failed URLs will
+be cross referenced.
+     
+     linklint @@ -doc linkdoc
+
+Assuming you have already done a site check and used B<-doc linkdoc> to
+put all of your output files in the linkdoc directory, Linklint will
+check all the remote links that were found on your site and cross
+reference all failed URLs without doing a site check. You can use the
+B<-netmod> or B<-netset> flags to enable the status-cache.
+     
+     linklint -net [site check options]
+
+The B<-net> flag tells Linklint to check all remote links after doing
+either a local or HTTP site check site. If you are having memory
+problems, don't use the B<-net> option, instead use one of the B<@@>
+options above.
+
+=head2 Other Remote URL Options
+
+=over 4
+
+=item B<-timeout> I<t>
+
+Times out after I<t> seconds (default 15) when getting files via http.
+Once data is received, an additional I<t> seconds is allowed.  The
+timeout is disabled on Windows machines since the Windows port of Perl
+does not support the C<alarm()> function.
+
+=item B<-delay> I<d>
+
+Delays I<d> seconds between requests to the same host (default 0).  This
+is a friendly thing to do especially if you are checking many links on
+the same host.
+
+=item B<-redirect>
+
+Checks for E<lt>metaE<gt> redirects in the headers of remote  URLs that
+are html files.  If a redirect is found it is followed.  This feature is
+disabled if the status cache is used.
+
+=item B<-proxy> I<hostname[:port]>
+
+Sends all remote HTTP requests through the proxy server I<hostname> and
+the optional I<port>.  This allows you to check remote URLs or (new with
+version 2.3.1) your entire site from within a firewall that has an http
+proxy server.  Some error messages (relating to host errors) may not be
+available through a proxy server.
+
+=item B<-concise_url>
+
+Turns off printing successful URLs to STDOUT during remote link
+checking.
+
+=back
+
+=head2 Status Cache Options
+
+The Status Cache is a very powerful feature. It allows you to keep track
+of recent changes in all of the remote (off-site) pages you link to. You
+can then use the Linklint output files to quickly check changed pages to
+see if they still meet your needs.
+     
+The flags below make use of the status cache file linklint.url (kept in
+your HOME or LINKLINT directory). This file keeps track of the
+modification dates of all the remote URLs that you check.
+
+=over 4
+
+=item B<-netmod>
+
+Operates just like B<-net> but makes use of the status cache.  Newly
+checked URLs will be entered in the cache.  Linklint will tell you which
+(previously cached) URLs have been modified since the last B<-netset>.
+
+=item B<-netset>
+
+Like B<-netmod> but also resets the last modified status in the cache
+for all URLs that checked ok.  If you always use B<-netset>, modified
+URLs will be reported just once.
+
+=item B<-retry>
+
+Only checks URLs that have a host fail status in the cache.  Sometimes a
+URL fails because its host is temporarily down.  This flag enables you
+to recheck just those links.  An easy way to recheck all the cached URLs
+with host failures is C<linklint @@ -retry>.  Use
+C<linklint @@linkdoc/remoteX.txt -retry> if you want failed URLs to be
+cross referenced.
+
+=item B<-flush>
+
+Removes all URLs from the cache that are not currently being checked.
+The B<-retry> flag has no effect on which URLs are flushed.
+
+=item B<-checksum>
+
+Ensures that every URL that has been modified is reported as such.  This
+flag can make the remote checking take longer.  Many of the pages that
+require a checksum are dynamically generated and will always be reported
+as modified.
+
+=item B<-cache> I<directory>
+
+Reads and writes the F<linklint.url> cache file in this directory.  The
+default directory is set by your LINKLINT or HOME environment variables.
+
+=back
+
+=head2 Output Options
+
+No output files are generated by default, only progress and a brief
+summary of the results are printed to the screen. You can produce
+complete documentation (split up into separate files) in a B<-doc>
+directory or put selected output in a single B<-out> file or by
+redirecting the standard output to a file. See the Output File
+Specification section for a detailed description of all output files.
+
+=head2 Multi File Output
+
+=over 4
+
+=item B<-doc> I<linkdoc>
+
+Sends all output to the I<linkdoc> directory.  The output is divided
+into separate F<.txt> and F<.html> files.  Complete documentation is
+always produced regardless of the single file flags.
+
+The file F<index.txt> contains an index to all the other files;
+F<index.html> is an HTML version of the index.  The index files for
+remote URL checking are F<ur_lindex.txt> and F<url_index.html>.
+
+=item B<-textonly>
+
+Prevents any HTML files from being created in the B<-doc> directory.
+
+=item B<-htmlonly>
+
+Erases redundant text files in the B<-doc> directory after they have
+been used to create the HTML output files.  The files F<remote.txt> and
+F<remoteX.txt> are not erased since they can be used by Linklint to
+recheck remote URLs.
+
+=item B<-docbase> I<base>
+
+Overrides the default I<base> expression used for directing a browser to
+the resources listed in the output HTML files.  The base is prepended to
+local links in the output HTML files.  This only affects the links in
+HTML output files, it has no effect on what is displayed in these files.
+Ordinarily this flag would only be used during a local site check to set
+the base to C<http://host>.
+
+=item B<-output_frames>
+
+All HTML output data files are linked to from F<index.html>.  If you use
+this flag then the the data files will be opened up in a new frame
+(window) which can be handy in some cases since it always leaves the
+F<index.html> file open in its own window.
+
+=item B<-output_index> I<filename>
+
+The output index files were previously named F<linklint.txt> and
+F<linklint.html>.  These have now been changed to F<index.txt> and
+F<index.html>.  You can use the B<-output_index> option to change this
+name back to C<linklint> or to something else.
+
+=item B<-url_doc_prefix> I<url/>
+
+By default, the output files associate with remote URL checking all
+start with "url".  You can change this with the B<-url_doc_prefix>
+option.  If the url_doc_prefix contains a "/" character then the
+appropriate directory will be created (as a subdirectory of the -doc
+directory).
+
+=item B<-dont_output> I<xxxx>
+
+Don't create output files that contain "xxxx".  Can be repeated.
+Example:
+
+        -dont_output "X$"
+
+will supress the output of all cross reference files.
+
+=back
+
+=head2 Single File Output
+
+=over 4
+
+=item B<-error>
+
+Lists missing files and other errors.
+
+=item B<-out> I<file>
+
+Sends list output and summary information to I<file>.
+
+=item B<-list>
+
+Lists all found files, links, directories etc.
+
+=item B<-warn>
+
+Lists all warnings.
+
+=item B<-xref>
+
+Adds cross references to the lists.
+
+=item B<-forward>
+
+Sorts lists by referring file.
+
+=back
+
+=head2 Debug and other Flags
+
+=over 4
+
+=item B<-db1>
+
+Debugs command line input and linkset expressions.
+
+=item B<-db2>
+
+Prints the name of every file that gets checked (not just HTML files).
+
+=item B<-db3>
+
+Debugs HTML parser, prints out tags and resulting links.
+
+=item B<-db4>
+
+Debugs socket connection (kind of).
+
+=item B<-db5>
+
+Not used.
+
+=item B<-db6>
+
+Details last-modified status for remote URLs (requires B<-netset> or
+B<-netmod>).
+
+=item B<-db7>
+
+Prints brief debug information while checking remote URLs.
+
+=item B<-db8>
+
+Prints all http headers while checking remote URLs.
+
+=item B<-db9>
+
+Generates random http errors.
+
+=item B<-version>
+
+Gives version information.
+
+=item B<-help>
+
+Lists a few simple examples of how to use Linklint.
+
+=item B<-help_all>
+
+Lists all help (contained in program) including every input option.
+
+=item B<-quiet>
+
+Disables printing progress to the screen.
+
+=item B<-silent>
+
+Disables printing summarys to the screen.
+
+=back
+
+=head1 AUTHOR
+
+Linklint is written by James B. Bowlin E<lt>jbowlin@linklint.orgE<gt>.
+This manual page was written by Denis Barbier
+E<lt>barbier@debian.orgE<gt> for the Debian system (but may be used by
+others) by cut'n'paste from original documentation written in HTML.
+

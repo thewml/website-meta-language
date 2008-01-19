@@ -1,0 +1,494 @@
+#!@PATH_PERL@ -w
+eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+    if $running_under_some_shell;
+##
+##  divert -- Diversion Filter
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
+##  Copyright (c) 1999-2001 Denis Barbier, All Rights Reserved.
+##
+
+require 5.003;
+
+BEGIN { $^W = 0; } # get rid of nasty warnings
+
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
+use Getopt::Long 2.13;
+use IO::Handle 1.15;
+use IO::File 1.06;
+
+#
+#   process command line
+#
+sub usage {
+    print STDERR "Usage: divert [options] [file]\n";
+    print STDERR "\n";
+    print STDERR "Options:\n";
+    print STDERR "  -o, --outputfile=<file>  set output file instead of stdout\n";
+    print STDERR "  -q, --quiet              quiet mode (no warnings)\n";
+    print STDERR "  -v, --verbose            verbose mode\n";
+    exit(1);
+}
+$opt_v = 0;
+$opt_q = 0;
+$opt_o = '-';
+$Getopt::Long::bundling = 1;
+$Getopt::Long::getopt_compat = 0;
+if (not Getopt::Long::GetOptions(
+    "v|verbose",
+    "q|quiet",
+    "o|outputfile=s")) {
+    usage();
+}
+sub verbose {
+    my ($str) = @_;
+    if ($opt_v) {
+        print STDERR "** Divert:Verbose: $str\n";
+    }
+}
+sub error {
+    my ($str) = @_;
+    print STDERR "** Divert:Error: $str\n";
+    exit(1);
+}
+sub warning {
+    my ($file, $line, $str) = @_;
+    if (not $opt_q) {
+        print STDERR "** Divert:Warning: $file:$line: $str\n";
+    }
+}
+
+#
+#   open input file and read into buffer
+#
+my $file;
+my $in;
+
+if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
+    $in = new IO::Handle;
+    $file = 'STDIN';
+    $in->fdopen(fileno(STDIN), "r") || error("cannot load STDIN: $!");
+}
+elsif ($#ARGV == 0) {
+    $in = new IO::File;
+    $file = $ARGV[0];
+    $in->open($file) || error("cannot load $file: $!");
+}
+else {
+    usage();
+}
+
+
+##
+##   Pass 1: Parse the input data into disjunct location buffers
+##           Each location buffer contains plain text blocks and
+##           location pointers.
+##
+
+my $location = 'main';                       # currently active location
+my @LOCSTACK = ('null');                     # stack of remembered locations
+my %BUFFER   = ('null' => [], 'main' => []); # the location buffers
+my %OVRWRITE = ();                           # the overwrite flags
+my $line = 0;
+my $remain;
+
+while (<$in>) {
+    $remain = $_;
+    $line++;
+    while ($remain) {
+        if (   $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||
+            or $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}||) {
+            ##
+            ##  Tag: dump location
+            ##
+    
+            #   initialize new location buffer
+            $BUFFER{$1} = [] if (not exists($BUFFER{$1}));
+    
+            #   insert location pointer into current location
+            if ($BUFFER{$location} == $BUFFER{$1}) {
+                warning($file, $line, "self-reference of location ``$location'' - ignoring");
+            }
+            else {
+                push(@{$BUFFER{$location}}, $BUFFER{$1});
+            }
+        }
+        elsif (   $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>||
+               or $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||) {
+            ##
+            ##  Tag: enter location
+            ##
+    
+            #   remember old location on stack
+            push(@LOCSTACK, $location);
+    
+            #   determine location and optional
+            #   qualifies, then enter this location
+            $location = $1;
+            my $rewind_now  = 0;
+            my $rewind_next = 0;
+            if ($location =~ m|^\!(.*)$|) {
+                #   location should be rewinded now
+                $location = $1;
+                $rewind_now = 1;
+            }
+            if ($location =~ m|^(.*)\!$|) {
+                #   location should be rewinded next time
+                $location = $1;
+                $rewind_next = 1;
+            }
+    
+            #   initialize location buffer
+            $BUFFER{$location} = [] if (not exists($BUFFER{$location}));
+    
+            #   is a "rewind now" forced by a "rewind next" from last time?
+            if ($OVRWRITE{$location}) {
+                $rewind_now = 1;
+                $OVRWRITE{$location} = 0;
+            }
+    
+            #   remember a "rewind next" for next time
+            $OVRWRITE{$location} = 1 if ($rewind_next);
+    
+            #   execute a "rewind now" by clearing the location buffer
+            if ($rewind_now == 1) {
+                while ($#{$BUFFER{$location}} > -1) {
+                    shift(@{$BUFFER{$location}});
+                }
+            }
+        }
+        elsif (   $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)?\.\.||
+               or $remain =~ s|^:#([a-zA-Z][a-zA-Z0-9_]*)?#}||) {
+            ##
+            ##  Tag: leave location
+            ##
+    
+            if ($#LOCSTACK == -1) {
+                warning($file, $line, "already in ``null'' location -- ignoring leave");
+            }
+            else {
+                my $loc = $1;
+                if ($loc eq 'null') {
+                    warning($file, $line, "cannot leave ``null'' location -- ignoring named leave");
+                }
+                elsif ($loc ne '' and $loc ne $location) {
+                    #   leave the named location and all locations
+                    #   on the stack above it.
+                    my $n = -1;
+                    for (my $i = $#LOCSTACK; $i >= 0; $i--) {
+                        if ($LOCSTACK[$i] eq $loc) {
+                            $n = $i;
+                            last;
+                        }
+                    }
+                    if ($n == -1) {
+                        warning($file, $line, "no such currently entered location ``$loc'' -- ignoring named leave");
+                    }
+                    else {
+                        splice(@LOCSTACK, $n);
+                        $location = pop(@LOCSTACK);
+                    }
+                }
+                else {
+                    #   leave just the current location
+                    $location = pop(@LOCSTACK);
+                }
+            }
+        }
+        else {
+            ##
+            ##  Plain text
+            ##
+    
+            #   calculate the minimum amount of plain characters we can skip
+            my $l = length($remain);
+            my $i1 = index($remain, '<<');  $i1 = $l if $i1 == -1;
+            #   Skip ../ which is often used in URLs
+            my $i2 = -1;
+            do {
+                $i2 = index($remain, '..', $i2+1);
+            } while ($i2 > -1 and $i2+2 < $l and substr($remain, $i2+2, 1) eq '/');
+            $i2 = $l if $i2 == -1;
+    
+            my $i3 = index($remain, '{#');  $i3 = $l if $i3 == -1; #}
+            my $i4 = index($remain, ':#');  $i4 = $l if $i4 == -1;
+    
+            my $i = $i1;
+            $i = $i2 if $i > $i2;
+            $i = $i3 if $i > $i3;
+            $i = $i4 if $i > $i4;
+    
+            #   skip at least 2 characters if we are sitting
+            #   on just a "<<", "..", "{#" or ":#"
+            $i = 1 if ($i == 0);
+    
+            #   append plain text to remembered data and adjust $remain
+            #   variable
+            if ($i == $l) {
+                push(@{$BUFFER{$location}}, $remain);
+                $remain = '';
+            } else {
+                #   substr with 4 arguments was introduced in perl 5.005
+                push(@{$BUFFER{$location}}, substr($remain, 0, $i));
+                substr($remain, 0, $i) = '';
+            }
+        }
+    }
+}
+$in->close();
+
+
+##
+##   Pass 2: Recursively expand the location structure
+##           by starting from the main location buffer
+##
+
+@LOCSTACK = ();
+
+sub ExpandDiversion {
+    my ($loc) = @_;
+    my ($data, $locseen, $name, $n, $el);
+
+    #   check for recursion by making sure
+    #   the current location has not already been seen.
+    foreach $locseen (@LOCSTACK) {
+        if ($locseen == $loc) {
+            #   find name of location via location pointer
+            #   for human readable warning message
+            $name = 'unknown';
+            foreach $n (keys(%BUFFER)) {
+                if ($BUFFER{$n} == $loc) {
+                    $name = $n;
+                    last;
+                }
+            }
+            warning($file, $line, "recursion through location ``$name'' - break");
+            return '';
+        }
+    }
+
+    #   ok, location still not seen,
+    #   but remember it for recursive calls.
+    push(@LOCSTACK, $loc);
+
+    #   recursively expand the location
+    #   by stepping through its list elements
+    $data = '';
+    foreach $el (@{$loc}) {
+        if (ref($el)) {
+            #   element is a location pointer, so
+            #   recurse into the expansion of it
+            $data .= ExpandDiversion($el);
+        }
+        else {
+            #   element is just a plain text block
+            $data .= $el;
+        }
+    }
+
+    #   we can remove the location from
+    #   the stack because we are back from recursive calls.
+    pop(@LOCSTACK);
+
+    #   return expanded buffer
+    return $data;
+}
+
+
+#
+#   create output file
+#
+my $out;
+if ($opt_o eq '-') {
+    $out = new IO::Handle;
+    $out->fdopen(fileno(STDOUT), "w") || error("cannot write into STDOUT: $!");
+}
+else {
+    $out = new IO::File;
+    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
+}
+$out->print(ExpandDiversion($BUFFER{'main'}))
+    || error("cannot write into $opt_o: $!");
+$out->close() || error("cannot close $opt_o: $!");
+
+#
+#   die gracefully
+#
+exit(0);
+
+
+##EOF##
+__END__
+
+=head1 NAME
+
+Divert - Text Diversion Filter
+
+=head1 SYNOPSIS
+
+B<divert>
+[B<-o> I<outputfile>]
+[B<-q>]
+[B<-v>]
+[I<inputfile>]
+
+=head1 DESCRIPTION
+
+The F<divert> program reads I<inputfile> or from C<stdin> and applies a 2-pass
+diversion filter to its contents. In pass 1 all diversion locations are
+accumulated and in pass 2 these locations are recursively expanded at their
+dump positions.  The diversion filter is controlled by directives found in the
+input data:
+
+=over 4
+
+=item B<{#>I<NAME>B<#}> (or B<E<lt>E<lt>>I<NAME>B<E<gt>E<gt>>)
+
+This defines the dump position of the location I<NAME>. All accumulated data
+which I<finally> has to been diverted to I<NAME> is inserted at this data
+position.  Notice: the final data of a location I<NAME> has not to be known at
+this point, because the expansion of such location dumps are done in pass 2.
+You can also dump a location more than once, but the contents is always the
+same, independent of the data position where the location dump tag stays.  The
+I<NAME> can be any symbolic name matching C<[a-zA-Z][a-zA-Z0-9_]*>.
+
+=item B<{#>[B<!>]I<NAME>[B<!>]B<#:> (or B<..>[B<!>]I<NAME>[B<!>]B<E<gt>E<gt>>)
+
+This enters the location I<NAME> (or I<diverts> the data flow to it, hence the
+name for this filter).  In other words: the data flow now goes on at location
+I<NAME>. All following data (up to end of file or the next location leave tag)
+gets appended to location I<NAME>. You can nest diversions by entering other
+locations at any point, because the locations are remembered on a stack. The
+default entered location is named ``C<main>''. The top most location is named
+``C<null>'' which neither can be entered nor leaved explicitly. But of course
+the ``C<null>'' diversion can be manually dumped, for instance when using it
+for error messages.
+
+There are two special features for diverting data which are controlled by the
+"C<!>" characters preceding or following the I<NAME> identifier:
+
+=over 4
+
+=item B<!>I<NAME>
+
+This sets the data flow position to the I<begin> of location I<NAME>, i.e. it
+actually discards the current (already diverted) contents of location I<NAME>
+before entering it. Use this to overwrite a locations contents.
+
+=item I<NAME>B<!>
+
+This marks this location entry as I<overwritable>, i.e. it enters location
+I<NAME> but when the corresponding leave tag is found, the data-flow position
+for I<NAME> gets automatically reset to its begin. Use this if you want to set
+the default contents for a location which only gets used if no other
+diversions occur to it (because any following diversions to this location
+will be overwrite the contents). This feature is usually used for a
+template scheme.
+
+=item B<!>I<NAME>B<!>
+
+Just the combination of the above two features. Use this to both discard the
+current contents of location I<NAME> and set a new default for it.
+
+=back
+
+=item B<:#>[I<NAME>]B<#}> (or B<E<lt>E<lt>>[I<NAME>]B<..>)
+
+This leaves the current location, i.e. enters again the location which was
+active when this location was entered.  There is no need to leave all
+locations at the end of the input data. All still entered locations are
+automatically left at end of file because this is essential for a template
+scheme.
+
+=back
+
+Notice that there are two ways of using (and thinking) about the filtering
+mechanism this program provides:
+
+=over 4
+
+=item B<Macro Mechanism>
+
+This is the "predefined" way of thinking here. Use it like this:
+
+  FOO
+  {#BAR#}
+  QUUX
+  {#BAR#:
+  BAZ
+  :##}
+
+Here you are thinking of the mechanism as a macro mechanism where you
+I<expand> a macro at one data position while you define it via I<begin> and
+I<end> tags.
+
+=item B<Diversion Mechanism>
+
+This is the alternative way of thinking. Use it like this:
+
+  FOO
+  <<BAR>>
+  QUUX
+  ..BAR>>
+  BAZ
+  <<..
+
+In other words: You are thinking of the mechanism as a diversion mechanism
+where you I<dump> a location at one data position while you divert to it by
+I<entering> end I<leaving> the location (here B<BAR>) at other positions.
+
+=back
+
+You can even intermix both ways because both are just alternative syntax
+variants which are treated the same.
+
+=head1 EXAMPLE
+
+  {#HEAD#}
+  {#BODY#}
+  {#FOOT#}
+
+  {#FOOT#:
+  Quux
+  :##}
+
+  {#BODY#:
+  Bar
+  :##}
+
+  {#HEAD#:
+  Foo
+  :##}
+
+=head1 OPTIONS
+
+=over
+
+=item B<-o> I<outputfile>
+
+This redirects the output to I<outputfile>. Usually the output will be send to
+F<stdout> if no such option is specified or I<outputfile> is ``C<->''.
+
+=item B<-q>
+
+This sets quiet mode where warnings are suppressed.
+
+=item B<-v>
+
+This sets verbose mode where some processing information will be given on
+F<stderr>.
+
+=back
+
+=head1 AUTHORS
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+ Denis Barbier
+ barbier@engelschall.com
+
+=cut
+

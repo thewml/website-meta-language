@@ -1,0 +1,40 @@
+--- ltdl.c	Tue Jun 11 18:23:20 2002
++++ ltdl.c	Sun Jun 30 23:23:36 2002
+@@ -2039,7 +2039,7 @@
+ 	}
+ 
+       /* try to open the not-installed module */
+-      if (!installed)
++      if (!installed && objdir)
+ 	{
+ 	  if (tryall_dlopen_module (handle, dir, objdir, dlname) == 0)
+ 	    return 0;
+@@ -2047,7 +2047,7 @@
+ 
+       /* maybe it was moved to another directory */
+       {
+-	  if (tryall_dlopen_module (handle,
++	  if (dir && tryall_dlopen_module (handle,
+ 				    (const char *) 0, dir, dlname) == 0)
+ 	    return 0;
+       }
+@@ -2691,10 +2691,6 @@
+ 	    }
+ #endif
+ 	}
+-      if (!file)
+-	{
+-	  file = fopen (filename, LT_READTEXT_MODE);
+-	}
+ 
+       /* If we didn't find the file by now, it really isn't there.  Set
+ 	 the status flag, and bail out.  */
+@@ -2990,7 +2986,7 @@
+      failed, it is better to return an error message here than to
+      report FILE_NOT_FOUND when the alternatives (foo.so etc) are not
+      in the module search path.  */
+-  if (handle || ((errors > 0) && file_not_found ()))
++  if (handle || ((errors > 0) && !file_not_found ()))
+     {
+       LT_DLFREE (tmp);
+       return handle;

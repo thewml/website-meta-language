@@ -1,0 +1,16 @@
+GD.pm
+GD.xs
+MANIFEST
+Makefile.PL
+README
+libgd/COPYING
+libgd/Makefile.PL
+libgd/README
+libgd/gd.c
+libgd/gd.h
+libgd/gd_gif.c
+libgd/gd_io.c
+libgd/gd_io.h
+libgd/gd_io_dp.c
+libgd/gd_png.c
+typemap

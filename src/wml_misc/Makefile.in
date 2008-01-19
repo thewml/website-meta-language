@@ -1,0 +1,51 @@
+##
+##  wml_misc/Makefile
+##  Copyright (c) 1997-2001 Ralf S. Engelschall.
+##
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+@SET_MAKE@
+SHELL = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+PATH_PERL       = @PATH_PERL@
+INSTALL_PROGRAM = $(top_srcdir)/etc/shtool install -c -m 755 -s
+INSTALL_DATA    = $(top_srcdir)/etc/shtool install -c -m 644
+MKDIR           = $(top_srcdir)/etc/shtool mkdir -f -p -m 755
+
+prefix          = @prefix@
+exec_prefix     = $(prefix)
+bindir          = $(prefix)/bin
+libsubdir       = @libsubdir@
+libdir          = $(prefix)/lib$(libsubdir)
+mandir          = $(prefix)/man
+
+# ------------------------------------------------
+#   TARGETS
+# ------------------------------------------------
+
+all: 
+
+install:
+	$(MKDIR) $(libdir)/data/logos
+	@set -e; \
+	files=`echo logo-*`; \
+	for file in $$files; do \
+          echo "$(INSTALL_DATA) $$file $(libdir)/data/logos/$$file"; \
+          $(INSTALL_DATA) $$file $(libdir)/data/logos/$$file; \
+	done
+
+clean:
+
+distclean: clean
+	-rm -f Makefile
+
+realclean: distclean
+
+##EOF##

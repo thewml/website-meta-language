@@ -1,0 +1,46 @@
+;;;
+;;;  Checks 
+;;;
+
+<define-tag check-tag>
+  <provide-tag %0>
+  <exit status=1
+        message="The `%0' tag is not defined" />
+  </provide-tag>
+</define-tag>
+
+<check-tag mp4h />
+<check-tag Meta-HTML />
+<check-tag m4 />
+<check-tag WML />
+<check-tag URL />
+
+<check-tag section />
+<check-tag subsection />
+<check-tag para />
+<check-tag note />
+
+<check-tag code />
+<check-tag var />
+<check-tag value />
+<check-tag command />
+<check-tag full-command />
+<check-tag slash />
+<check-tag true />
+<check-tag optflag />
+<check-tag file />
+<check-tag three-colon />
+<check-tag anchor />
+
+<check-tag tag:slash />
+<check-tag tag:V />
+<check-tag tag:description />
+<check-tag attributes:description />
+<check-tag attributes:item />
+<check-tag example />
+
+<check-tag option-list />
+<check-tag option />
+<check-tag optmand />
+<check-tag optopt />
+

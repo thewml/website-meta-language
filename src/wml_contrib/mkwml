@@ -1,0 +1,156 @@
+#!/usr/bin/perl
+
+#--- mkwml -------------------------------------------------------------------#
+# Jim Bowlin <bowlin@sirius.com>
+# My make program for the wml program suite.
+#-----------------------------------------------------------------------------#
+
+use strict;
+
+my $usage=<<EO_USAGE;
+Usage: mkwml [options]  [filespec filespec ...]
+
+Options:  
+  -nn  Just show the list of commands to process
+  -n   Just show list of files to process
+  -q   Is obeyed and passed onto wml
+  -no-option=regex  ignores -option that matches regex in .wmlrc files
+   (treats -o and --option seperately right now).
+   Anything else starting with - gets passed to wml.  Use a single - to denote
+   no options
+
+Filespec:  
+Only files that match (RE) the file spec will get processed.  If a spec begins
+with ^ then it means NOT those files.
+EO_USAGE
+
+@ARGV or die $usage;
+
+my @cmd_args;
+my ($nop, $fop, $quiet, @no_opt, %rc_hash);
+
+while (@ARGV and $ARGV[0] =~ /^-/) { 
+    my $arg = shift @ARGV;
+    $arg eq '-nn'      and do {$nop = 1;           next};
+    $arg eq '-n'       and do {$fop = 1;           next};
+    $arg =~ s/^-no-/-/ and do {push @no_opt, $arg; next};
+    $arg eq '-q'       and $quiet = 1;
+    length($arg) > 1   and push @cmd_args, $arg;
+}
+
+my $inc_files = make_filespec(grep /^[^^]/,  @ARGV);
+my $exc_files = make_filespec(grep s/^\^//,  @ARGV);
+
+my @files = `find -name '*.wml' -print`;
+for (@files) {s!^\./!!; chomp}
+
+@files = grep /$inc_files/o, @files;
+$exc_files and @files = grep {$_ !~ /$exc_files/o} @files;
+
+my ($opt_regex, %arg_regex, $errors);
+for (@no_opt) {
+    m/^(-\w|--\w+=)(.*)/ or do {print STDERR "$0: invalid flag -no$_\n"; $errors++; next};
+    push @{$arg_regex{$1}}, $2;
+}
+
+$opt_regex = join "|", keys %arg_regex;
+for (keys %arg_regex) {
+    $arg_regex{$_} = join "|", @{$arg_regex{$_}};
+}
+
+0 and do {
+    print "opt_regex: $opt_regex\n";
+    for (sort keys %arg_regex) {
+        print "$_ -no- $arg_regex{$_}\n";
+    }
+};
+
+$errors and exit;
+
+my $root_path = 'html';   #-- NOT PORTABLE (yet)
+
+#--- main loop --------------------------------------------------------------#
+
+$quiet or print join("\n", @files), "\n\n";
+
+SRC_FILE:
+foreach my $full (@files) { 
+    my ($path, $file) = $full =~ m!(.*)/([^/]+$)! ? ($1, $2) : ("", $full);
+    my $base = $file =~ /^([^\.]+)/ ? $1 : $file;
+    my $rel_path = $path =~ m!^/?$root_path/(.*)! ? $1 : 'home';
+    my @args = grab_rc($path);
+
+    my @out_files = ();
+    for my $arg (@args) {
+        $arg =~ s/%BASE/$base/g;
+        $arg =~ s/%DIR/$path/g;
+        $opt_regex and do {                           #-- process -no--option
+            $arg =~ m/^($opt_regex)(.*)/ or next;
+            my ($option, $data) = ($1, $2);
+            $data =~ $arg_regex{$option} and $arg = "";
+            next;
+        };  
+        $arg =~ m/^(:?-o|--outputfile=)(.*)/ or next;
+        my $out_file = $2;
+        $out_file =~ s/^[^:]*://;
+        $out_file =~ s/@[^@]*$//;
+        push @out_files, $out_file;
+    }
+
+    @out_files or do {
+        print STDERR "skipping $full\n";
+        next SRC_FILE;
+    };
+
+    $fop and do { print "$full\n"; next};
+    my $cmd = "wml -r -DBASE_NAME=$base -DREL_PATH=$rel_path @args $full";
+    $quiet or print "$cmd\n";
+    $nop or `$cmd`;
+}
+
+#--- Subroutines ------------------------------------------------------------#
+
+sub make_filespec {
+    my $spec = join "|", @_;
+    $spec =~ s!\.!\\.!g;
+    $spec =~ s!\*!.*!g;
+    $spec=~ s!\@![^/]*!g;
+    $spec;
+}
+
+sub grab_rc  {
+    my $path = shift;
+    my @args;
+    my @paths = ($path);
+    while($path =~ s!/[^/]+$!!) {unshift @paths, $path}
+    unshift @paths, '.';
+
+    for my $path (@paths) {
+        unless ($rc_hash{$path}) {
+            $rc_hash{$path} = [];
+            my $rc_file = "$path/.wmlrc";
+            -f $rc_file and @{$rc_hash{$path}} = read_rc($rc_file);
+        }
+        push @args, @{$rc_hash{$path}};
+    }
+    @args;
+}
+
+sub read_rc {
+    my ($file) = @_;
+    my @out;
+    open(RC, $file) or return;
+    while (<RC>) {
+        s/\s+$//;
+        s/^\s+//;
+        m/^#/ and next;
+        m/\S/ or next;
+        push @out, split /\s+/, $_;
+    }
+    close RC;
+    @out;
+}
+
+__END__
+
+

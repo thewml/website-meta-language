@@ -1,0 +1,877 @@
+                                                     WD-positioning-19970819
+
+                         Positioning HTML Elements
+                         with Cascading Style Sheets
+
+                        W3C Working Draft 19-Aug-1997
+
+Latest version:
+     /TR/WD-positioning
+This version:
+     http://www.w3.org/TR/WD-positioning-19970819
+Previous version:
+     http://www.w3.org/TR/WD-positioning-970131
+Editor:
+     Robert Stevahn, Hewlett Packard Co.
+Authors:
+     Scott Furman, et.al., Netscape Communications Corp.
+     Scott Isaacs, et.al., Microsoft Corp.
+
+  ------------------------------------------------------------------------
+
+Status of this document
+
+This document is an intermediate draft produced by the W3C CSS Working Group
+as part of the Stylesheets Activity; it is stable enough to be released for
+public comment (to www-style@w3.org) but may change before approval as (part
+of) a recommendation. Hence it should not be implemented as part of a
+production system, but may be implemented on an experimental basis.
+
+This is a W3C Working Draft for review by W3C members and other interested
+parties. It is a draft document and may be updated, replaced or obsoleted by
+other documents at any time. It may be updated, replaced or obsoleted by
+other documents at any time. If citing W3C Working Drafts, please refer to
+them as "works in progress." A list of current W3C technical reports can be
+found at http://www.w3.org/TR.
+  ------------------------------------------------------------------------
+
+Abstract
+
+The HyperText Markup Language (HTML) is a simple markup language used to
+create hypertext documents that are portable from one platform to another.
+HTML documents are SGML documents with generic semantics that are
+appropriate for representing information from a wide range of applications.
+CSS (Cascading Style Sheets) is a style sheets language that can be applied
+to HTML to control the style of a document: which fonts and colors to use,
+how much white space to insert, etc. The following specification extends CSS
+to support the positioning and visibility of HTML elements in
+three-dimensional space. Familiarity with both CSS1 and HTML 3.2 are
+assumed.
+
+  ------------------------------------------------------------------------
+
+Contents
+
+Abstract
+Contents
+
+1 Introduction
+2 Positioning Elements by example
+2.1 'Absolute' Positioning
+2.2 'Relative' Positioning
+2.3 Placing 'absolute' positioned elements relative to the flow
+2.3.1 Implementing change bars
+2.4 'Static' Positioning
+2.5 Floating elements
+2.6 Visibility
+2.7 Z-order
+3 CSS Positioning Properties
+3.1 'position'
+3.1.2 The <HTML> element
+3.2 'left', 'top'
+3.3 'width', 'height'
+3.4 'clip'
+3.5 'overflow'
+3.6 'z-index'
+3.7 'visibility'
+4 Glossary
+5 Questions and Answers
+
+  ------------------------------------------------------------------------
+
+1 Introduction
+
+Designers want to explicitly control the position of HTML elements to
+produce rich, static HTML documents. They also want powerful layout control
+to enable dynamic, animated HTML-based content. This document describes
+extensions to CSS that allow authors to exercise greater accuracy in page
+description and layout for both purposes.
+
+This document introduces two methods of positioning HTML elements using the
+new 'position' property: 1) 'relative' positioning allows elements to be
+offset relative to their natural position in the document's flow, and 2)
+'absolute' positioning allows elements to be removed from the document's
+flow and positioned arbitrarily. The examples below demonstrate these
+features. Dynamic aspects of managing positioned elements, such as hiding,
+displaying and movement can only be performed using an external scripting
+language. The W3C Document Object Model Working Group (DOM-WG) is working on
+the dynamic aspects of HTML.
+
+  ------------------------------------------------------------------------
+
+2 Positioning Elements by example
+
+Elements can be positioned through use of the new 'position:' property.
+Let's examine each of this new property's possible values. Most of the
+examples below utilize the following HTML snippet:
+
+<body>
+<p>Beginning of body contents.
+<span id=outer> Start of outer contents.
+<span id=inner> Inner contents.</span>
+End of outer contents.</span>
+End of body contents.
+</p>
+</body>
+
+Each example will declare different CSS styles for outer and inner.
+
+2.1 'Absolute' Positioning
+
+Elements with 'absolute' positioning are formatted as rectangular overlays,
+outside the normal flow of the document, into which their contents flow. An
+'absolute' positioned element is laid out independently of both its parent
+and child elements, without regard for their dimensions or position. For
+that matter, the layout of each 'absolute' positioned element is independent
+of any others. The contents of an element with a higher z-order may obscure
+the contents of an element with a lower z-order. Text in one positioned
+element cannot be flowed around an image in another positioned element. By
+default, a positioned element will be placed just above (in z-space) its
+parent.
+
+Example 1
+
+Consider the following CSS declarations for outer and inner:
+
+#outer {position:absolute; top: 200px; left: 200px; width: 200px; color:
+red;}
+#inner {color: blue;}
+
+This results in something like the following:
+
+(0,0)
++----------document window----------+(400,0)
+|Beginning of body contents. End of |
+|body contents.                     |
+|                                   |
+|                                   |
+|                                   |
+|                                   |
+|                +-----------------+|
+|                |Start of outer   ||
+|                |contents. Inner  ||
+|                |contents. End of ||
+|                |outer contents.  ||
+|                +-----------------+|
+|                                   |
+|                                   |
++-----------------------------------+(400,400)
+(0, 400)
+
+'Absolute' positioned elements have the following characteristics:
+
+   * They define a new rectangular context into which their contents are
+     flowed, just as the HTML inside the <BODY> element flows into the
+     document window.
+   * They are positioned within the current positioning context by means of
+     the 'top' and 'left' properties.
+   * Their height and width may be specified using the 'height' and 'width'
+     properties. If the width is not specified, the element will extend to
+     immediately inside the right inner edge of the parent element. The
+     height, if not specified, will be just large enough for the contents of
+     the element. Like floating elements, absolutely positioned elements are
+     considered to be block-level in nature.
+   * They define a box positioning context for child elements.
+
+Note: This draft does not specify the behavior of dynamic elements in
+scripting environments. For example, what happens when an element having
+'width: auto' is repositioned? Do the contents reflow, or do they maintain
+their original formatting? The answer is outside the scope of this draft,
+and such behavior is likely to differ in initial implementations of CSS
+Positioning. The DOM-WG is addressing issues such as this.
+
+2.2 'Relative' Positioning
+
+Elements with 'relative' positioning flow into place just like any other
+HTML, and can be positioned relative to their natural position within the
+document flow. When these elements are positioned, they keep their naturally
+rendered shape, including line breaks, and the space originally reserved for
+them remains. Any following elements do not reflow. Dynamic movement of
+'relative' elements can provide animation effects in scripting environments.
+
+Relative positioning could also be used as a general form of super- and
+subscripting, although the line height will not be automatically adjusted to
+take the positioning into consideration. The following example, admittedly
+contrived, demonstrates relative positioning without utilizing a script:
+
+Example 2
+
+BODY {line-height: 200%}
+#outer {position: relative; top: -12px; color: red;}
+#inner {position: relative; top: 12px; color: blue;}
+
+This results in the outer text being superscripted, while the inner text is
+subscripted relative to the outer text (but even with the normal body text).
+In the illustration below, the numbers to the left of the illustration
+indicate the normal position of the double-spaced lines.
+
+ +----------document window----------+
+ |                            Start  |
+1|Beginning of body contents.        |
+ |of outer contents.                 |
+2|                   Inner contents. |
+ |End of outer contents.             |
+3|                       End of body |
+ |                                   |
+4|contents.                          |
+ |                                   |
+5|                                   |
+ |                                   |
+6|                                   |
+ |                                   |
+7|                                   |
+ |                                   |
+ |                                   |
+ +-----------------------------------+
+
+'Relative' positioned elements have the following characteristics:
+
+   * Their contents flow naturally into position, just like "normal" HTML
+     elements.
+   * They can be positioned relative to their natural position in the
+     document. This is most useful in scripting environments, where
+     animation effects can be created through relative positioning.
+   * They define a Cartesian positioning context for absolutely positioned
+     child elements, with the origin located in the position where the
+     element is initially rendered.
+
+2.3 'Absolute' positioning relative to the flow
+
+Example 1 demonstrated absolute positioning in a box positioning context.
+That is, it demonstrated what happens when absolutely positioned elements
+are nested. The following example demonstrates an absolutely positioned
+element that is a child of a relatively positioned element. Instead of being
+positioned inside of a box, the element is positioned on a two-dimensional
+plane having its origin at the "logical beginning" of the relatively
+positioned element. In this example, the outer span is never intended to be
+explicitly positioned. Instead, relative positioning is used only to provide
+a local context for positioning a child element.
+
+Example 3
+
+#outer {position: relative; color: red;}
+#inner {position: absolute; top: 200px; left: -100px; height: 130px; width:
+130px; color: blue;}
+
+This results in something like the following:
+
+(0,0)
++----------document window----------+(0,400)
+|Beginning of body contents. Start  |
+|of outer contents. End of outer    |
+|contents. End of body contents.    |
+|                                   |
+|                                   |
+|                                   |
+|                  +----------+     |
+|                  |Inner     |     |
+|                  |contents. |     |
+|                  |          |     |
+|                  |          |     |
+|                  +----------+     |
+|                                   |
+|                                   |
++-----------------------------------+(400,400)
+(400,0)
+
+Note that 'inner' is positioned relative to 'outer', rather than being
+positioned within the default positioning context.
+
+2.3.1 Implementing change bars with relative and absolute positioning
+
+Using 'auto' for the value of the 'top' property, an 'absolute' positioned
+element may be used to display change bars, as demonstrated by the example
+below. 'Auto' results in the element being placed at the "current" location
+in the document window, just as if the element were being flowed into that
+space.
+
+Example 4
+
+<P STYLE="position: relative; margin-right: 10px; left: 10px;">
+I used two red hyphens to serve as a change bar. They
+will "float" to the left of the line containing THIS
+<SPAN STYLE="position: absolute; top: auto; left: 0px; color: red;">--</SPAN>
+word.</P>
+
+This might result in something like:
+
++----------document window----------+
+|   I used two red hyphens to serve |
+|   as a change bar. They will      |
+|   "float" to the left of the line |
+|-- containing THIS word.           |
+|                                   |
+|                                   |
+|                                   |
+|                                   |
++-----------------------------------+
+
+2.4 Static Positioning
+
+'Static' is the default value for 'position'. Static elements cannot be
+positioned or repositioned, nor do they define a positioning context for
+child elements.
+
+Example 5
+
+Compare the following to Example 3. The only difference in the CSS is that
+in this case the outer element is static, rather than relative.
+
+#outer {/* position: static; */ color: red;}
+#inner {position: absolute; top: 200px; left: -100px; height: 130px; width:
+130px; color: blue;}
+
+Since the static element does not establish a new positioning context, the
+inner element is positioned within the default positioning context:
+
+(0,0)
++----------document window----------+(0,400)
+|Beginning of body contents. Start  |
+|of outer contents. End of outer    |
+|contents. End of body contents.    |
+|                                   |
+|                                   |
+|                                   |
+|------+                            |
+|r     |                            |
+|ents. |                            |
+|      |                            |
+|      |                            |
+|------+                            |
+|                                   |
+|                                   |
++-----------------------------------+(400,400)
+(400,0)
+
+2.5 Floating elements
+
+Floating elements can already be created using CSS1, as demonstrated by the
+following example. We anticipate future extensions to the 'float:' property
+to allow more flexibility in flowing text around elements.
+
+Example 6
+
+#outer {color: red;}
+#inner {float: right; width: 130px; color: blue;}
+
+(0,0)
++----------document window----------+(0,400)
+|Beginning of body contents. Start  |
+|of outer contents. End+-----------+|
+|of outer contents.    |Inner      ||
+|End of body contents. |contents.  ||
+|                      +-----------+|
++-----------------------------------+
+
+2.6 Visibility
+
+The 'visibility' property determines whether or not an element is initially
+displayed. In scripting environments, this property can be dynamically
+modified to hide or show an element. Unlike 'display: none', elements that
+are not visible still take up space--they are simply rendered transparently.
+Example:
+
+Example 7
+
+<P>Choose a suspect:</P>
+<DIV ID="container1" STYLE="position:relative">
+   <IMG WIDTH=100 HEIGHT=100 SRC="suspect1.jpg">
+   <P>Name: Al Capone</P>
+   <P>Residence: Chicago</P>
+</DIV>
+
+<DIV ID="container2" STYLE="position:relative">
+   <IMG WIDTH=100 HEIGHT=100 SRC="suspect2.jpg">
+   <P>Name: Lucky Luciano</P>
+   <P>Residence: New York</P>
+</DIV>
+
+<FORM NAME="myForm">
+   <INPUT TYPE="button" VALUE="Capone" onClick='show("container1");hide("container2")'>
+   <INPUT TYPE="button" VALUE="Luciano" onClick='show("container2");hide("container1")'>
+</FORM>
+
+Pressing either form button invokes a user-defined script function that
+causes the corresponding element to become visible and the other element to
+be hidden. Because the elements' positioning is 'relative', they have no
+effect on the document's layout. The HTML contained in each element is laid
+out within the flow of the enclosing block, just as it normally is. A more
+visually appealing version of the above might be designed using overlapping
+'absolute' positioned elements:
+
+Example 8
+
+<HEAD>
+<STYLE type="text/css">
+<!--
+   #container1 { position: absolute; top: 2in; left: 2in; width: 2in}
+   #container2 { position: absolute; top: 2in; left: 2in; width: 2in;
+                 visibility: hidden; }
+-->
+</STYLE>
+</HEAD>
+<BODY>
+<P>Choose a suspect:</P>
+<DIV ID="container1">
+   <IMG WIDTH=100 HEIGHT=100 SRC="suspect1.jpg">
+   <P>Name: Al Capone</P>
+   <P>Residence: Chicago</P>
+</DIV>
+
+<DIV ID="container2">
+   <IMG WIDTH=100 HEIGHT=100 SRC="suspect2.jpg">
+   <P>Name: Lucky Luciano</P>
+   <P>Residence: New York</P>
+</DIV>
+
+<FORM NAME="myform">
+   <INPUT TYPE="button" VALUE="Capone" onClick='show("container1");hide("container2")'>
+   <INPUT TYPE="button" VALUE="Luciano" onClick='show("container2");hide("container1")'>
+</FORM>
+
+In this example, 'container2' has the same origin as 'container1', and it
+occupies the same area. Note also that the visibility property has been used
+to specify that 'container2' is initially invisible. The scripted event
+handler of the 'Capone' button can hide 'container1' and show 'container2'.
+Since the containers occupy the same position, and are the same size, the
+effect is that of one replacing the other.
+
+2.7 Z-order
+
+By default, the z-ordering of elements in a document is back-to-front in the
+order they appear in the HTML. In Example 8, therefore, 'container2' will be
+stacked immediately above 'container1', since it appeared after 'container1'
+in the document. It is possible to explicitly specify a element's z-order,
+relative to other containers, through the 'z-index' property. For example:
+
+Example 9
+
+<STYLE type="text/css">
+<!--
+.pile { position: absolute; left: 2in; top: 2in; width: 3in; height: 3in; }
+-->
+
+<IMG SRC="butterfly.gif" CLASS="pile" ID="image" STYLE="z-index: 1">
+
+<DIV CLASS="pile" ID="text1" STYLE="z-index: 3">
+   This text will overlay the butterfly image.
+</DIV>
+
+<DIV CLASS="pile" ID="text2" STYLE="z-index: 2">
+   This text will underlay text1, but overlay the butterfly image
+</DIV>
+
+In this example, the order of the elements, listed back-to-front is:
+
+   * image
+   * text2
+   * text1
+
+Example 9 also demonstrates the notion of transparency. The default behavior
+of an element is to allow elements below it to be visible through
+transparent areas in its HTML content. In this example, each element
+transparently overlays the elements below it. This behavior can be
+overridden by utilizing one of the existing background-related properties
+like 'background'.
+
+2.8 'overflow'
+
+The overflow property is used to specify the User Agent's behavior when the
+contents of an absolutely positioned element exceed its declared bounds. The
+examples below utilize the following stylesheet, which describes a simple
+100 pixel box with a thin solid red border:
+
+#overlay {position: absolute; top: 50px; left: 50px; height: 100px;
+          width: 100px; border: thin solid red;}
+
+Applied to an empty <DIV>, this would look something like:
+
+     +------------+
+     |            |
+     |            |
+     |            |
+     |            |
+     |            |
+     +------------+
+
+First, let's consider the default value of 'overflow', which is 'visible'.
+This value indicates that all contents of an element should be rendered,
+even if these contents exceed the declared width or height of the element.
+Consider a block of long, preformatted text:
+
+Example 10
+
+<P ID=overlay><PRE>Here is some long preformatted text.</PRE><P>
+
+With overflow set to 'visible', all of the text will be visible even though
+it exceeds the declared width of the element. The element will be made wider
+than its declared width, and any padding or border will be rendered outside
+of this new width. The example might be rendered something like:
+
++--------------------------------------+
+| Here is some long preformatted text. |
+|                                      |
+|                                      |
+|                                      |
+|                                      |
++--------------------------------------+
+
+Similarly, the height of the element will be extended should the rendered
+contents exceed the declared height. Consider the following:
+
+Example 11
+
+<DIV ID=overlay>Here is a block of text that will cause this element to
+exceed its declared height of 100 pixels.</DIV>
+
+This division should be rendered something like this:
+
++------------+
+| Here is a  |
+| block of t |
+| ext that w |
+| ill cause  |
+| this eleme |
+| nt to exce |
+| ed its dec |
+| lared heig |
+| ht of 100  |
+| pixels.    |
++------------+
+
+The 'hidden' value of the 'overflow' property indicates that any content
+which exceed the declared bounds of the element should not be rendered at
+all. The user will have no way to view these "overflowed" contents. With
+'overflow' set to 'hidden', the two examples above should be rendered
+something like this:
+
+Example 12
+
++------------+
+| Here is so |
+|            |
+|            |
+|            |
+|            |
++------------+
+
+Example 13
+
++------------+
+| Here is a  |
+| block of t |
+| ext that w |
+| ill cause  |
+| this eleme |
++------------+
+
+Another value for 'overflow' is 'auto', which indicates that the user agent
+should provide for a scrolling mechanism when the contents overflow the
+bounds of the element. Finally, a value of 'scroll' indicates that a
+scrolling mechanism should always be present, whether or not the contents
+exceed the element's bounds. If the user agent utilizes scrollbars, the
+examples might look something like:
+
+Example 14
+
++------------+
+| Here is som|
+|            |
+|            |
+|____________|
+||<|X|    |>||
++------------+
+
+Example 15
+
++------------+
+|Here is a |^|
+|block of  |-|
+|text that | |
+|will      |-|
+|cause this|v|
++------------+
+
+2.9 'clip'
+
+[Examples will be added in the next public draft.]
+
+  ------------------------------------------------------------------------
+
+3 CSS Positioning properties
+
+This section utilizes the same notation for property values as the CSS1
+Specification to describe the new CSS properties.
+
+3.1 'position'
+
+Value: absolute | relative | static
+Initial: static
+Applies to: all elements
+Inherited: no
+Percentage values: N/A
+
+Each variety of 'position' establishes one or more of the following:
+
+   * A new rectangular overlay, outside of the document flow, into which the
+     element's contents are flowed (absolute)
+   * A box positioning context (absolute) or a Cartesian positioning context
+     (relative) for absolutely positioned child elements
+   * A new clipping region for child elements (absolute)
+   * A position either within the current positioning context (absolute) or
+     relative to the normally rendered position (relative)
+   * A z-order relative to the current positioning context (absolute,
+     relative)
+
+'Absolute' Positioned elements act like block-level elements from a CSS1
+formatting perspective. However, since they fall completely outside of the
+normal document flow, the following CSS1 properties do not apply: 'float',
+'clear', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+'margin'.
+
+3.1.2 The <HTML> Element
+
+The <HTML> element defines a special implicit container having the following
+properties:
+
+   * Its position, width, height and clipping region are determined by the
+     User Agent, and may not be modified.
+   * It establishes a box positioning context for child elements.
+
+3.2 'left', 'top'
+
+Value: <length> | <percentage> | auto
+Initial: auto
+Applies to: elements with the 'position' property of type 'absolute' or
+'relative'.
+Inherited: no
+Percentage values: refer to parent element's width and height. If parent's
+height is set to 'auto', percentage is undefined.
+
+For elements with 'absolute' positioning, 'left' and 'top' are based on the
+current positioning context.
+
+For elements with 'relative' positioning:
+
+   * 'Left' and 'top' are offsets to the normally rendered position of the
+     element. For 'left', positive offsets are toward the right side of the
+     document. For 'top', positive offsets are toward the bottom of the
+     document.
+   * The space reserved for the normally rendered element does not move with
+     the element. When the contents of these elements are moved, they may
+     obscure any content below them depending upon the corresponding z-index
+     attribute. These elements maintain their original shape, including line
+     breaks, if any.
+   * If the element is moved, its positioning context moves with it.
+     Similarly, elements that are positioned 'relative' within another
+     'relative' element will move when the parent 'relative' element is
+     moved.
+
+The default value ('auto') represents the current position in the document
+at the time the element is rendered. This value is calculated by the UA for
+'absolute' positioned elements, and is 0 (no offset) for 'relative'
+positioned elements.
+
+3.3 'width', 'height'
+
+Value: <length> | <percentage> | auto
+Initial: auto
+Applies to: block-level and replaced elements, elements with 'position'
+property value of 'absolute'
+Inherited: no
+Percentage values: refer to parent element's width and height. If parent's
+height is 'auto', percentage of height is undefined.
+
+For elements with 'position' of type 'relative' and 'static', the behavior
+of 'width' and 'height' is unchanged from that defined by the CSS1
+formatting model.
+
+For 'absolute' positioned elements:
+
+   * The 'auto' value of the width property is such that the right edge of
+     the positioned element is placed immediately inside the right inner
+     edge of its enclosing element. If this places the right edge of the
+     element to the left of its left edge, the width is set to zero.
+   * Percentage values can be specified for both 'height' and 'width', and
+     are computed with respect to the height and width of the parent
+     element. However, specifying a percentage value for 'height' if the
+     parent element's height is set to 'auto' has undefined behavior.
+
+3.4 'clip'
+
+Value: <shape> | auto
+<shape>: rect (<top> <right> <bottom> <left>)
+<top> <right> <bottom> <left>: auto | <length>
+Initial: auto
+Applies to: elements with the 'position' property of type 'absolute'.
+Inherited: no
+Percentage values: N/A
+
+Clipping alters the display of HTML, though it does not affect how it is
+laid out. The clipping region defines what portion of the element's physical
+representation is visible. It is computed by the intersection of the
+parent's clipping region with the value of the element's 'clip' property.
+
+[Note: We may redefine the clipping rectangle to better fit within the CSS
+box-oriented formatting model, where each coordinate is relative to its
+respective edge, rather than basing the rectangle on a fixed origin.
+Specifying a top-left origin only works correctly for left-to-right
+languages.]
+
+Lengths are specified with respect to the element's top-left corner.
+Negative values are permitted. When converted to pixel coordinates, the
+bottom-right corner is excluded from the clipping rectangle. This rule is
+necessary to permit the definition of zero-width or zero-height rectangles.
+
+Any length can be replaced by the value 'auto', which causes the respective
+extent of the clipping rectangle to match the element's extent in the given
+direction, including padding, borders and child elements. The default value
+for the 'clip' property causes the clip rectangle to encompass the entire
+element. In effect, 'auto' provides for an infinite clipping region.
+
+For now, all clipping regions are rectangular. We anticipate future
+extensions to permit non-rectangular clipping.
+
+Note: If the clipping region exceeds the bounds of the UA's document window,
+contents may be clipped to that window by the native operating environment.
+
+3.5 'overflow'
+
+Value: visible | hidden | scroll | auto
+Initial: visible
+Applies to: elements with the 'position' property of type 'absolute'.
+Inherited: no
+Percentage values: N/A
+
+'Overflow' determines what happens when an element's rendered contents
+exceed its height or width.
+
+A value of 'visible' indicates that the element's bounding box should be
+enlarged enough to contain all of its rendered contents. In other words, its
+height or width can be made bigger than the declared value. Any padding or
+border will remain outside the rendered content. Any additional width will
+be added in the direction of primary text flow, e.g. to the right side in
+left-to-right languages, while additional height will be added to the
+bottom.
+
+A value of 'hidden' indicates that the element's contents should be clipped
+to its height and width, and that no scrolling mechanism should be provided.
+Padding and border will be applied to the regular height and width of the
+element, as if its contents did not exceed its bounds. Any contents that
+exceed the element's bounds will be unavailable to the user.
+
+The behavior of the 'auto' value is UA-dependent, but should cause a
+scrolling mechanism to be invoked when the element's rendered contents
+exceed its bounds.
+
+Finally, the 'scroll' value indicates that if the UA supports a visible
+scrolling mechanism, that mechanism should be displayed whether or not the
+element's rendered contents exceed its bounds. This avoids any problem with
+scrollbars appearing and disappearing in a dynamic environment.
+
+Note: Even if 'overflow' is set to 'visible', contents may be clipped to a
+UA's document window by the native operating environment. In addition, the
+'clip' property can cause otherwise visible "overflowed" contents to be
+clipped.
+
+3.6 'z-index'
+
+Value: auto | <integer>
+Initial: auto
+Applies to: positionable elements
+Inherited: no
+Percentage values: N/A
+
+The 'z-index' property is used to specify the stacking order of positionable
+elements. The default ('auto') behavior is to stack them bottom-to-top in
+the order they appear in the HTML source within the current positioning
+context. The 'z-index' property allows an element's z-order to be given as
+an integer that specifies stacking order relative to its positionable
+sibling and parent elements:
+
+   * Sibling elements are stacked bottom-to-top in order of increasing
+     'z-index' value. Sibling elements with identical 'z-index' values have
+     unspecified relative stacking order.
+   * Elements that have negative 'z-index' values are stacked below their
+     parent element and elements with positive 'z-index' values are stacked
+     above their parent element. In other words, each positionable element
+     defines a positioning context for z-order in which their own 'z-index'
+     is 0.
+
+The relative z-order of two elements that are neither siblings nor
+parent/child can be determined by evaluation of the above rules for both
+elements' ancestors.
+
+3.7 'visibility'
+
+Value: inherit | visible | hidden
+Initial: inherit
+Applies to: all elements
+Inherited: if value is 'inherit'
+
+Visibility determines the initial display state of an element, but does not
+affect its layout. Elements that are hidden still take up the same physical
+space as they would were they visible, they are just rendered transparently.
+This differs from the behavior of 'display: none', in which the element is
+ignored, as if it were not present in the document at all. Visibility can be
+used in a scripting environment to dynamically display only one of several
+elements which overlap one another.
+
+  ------------------------------------------------------------------------
+
+4 Glossary
+
+Box Positioning Context
+     A box positioning context is based on the CSS box-oriented formatting
+     model. In this context, positioning properties ('left:', 'top:') work
+     like the 'margin' properties defined by CSS1. In a box positioning
+     context, 'left: 10px' means that the left edge of the element being
+     positioned will be placed 10 pixels inside the left inner edge of the
+     element that established the positioning context. Percentages are based
+     on the width/height of the element that established the positioning
+     context. As with margins, negative values are allowed, but there may be
+     implementation-specific limits.
+Cartesian Positioning Context
+     A Cartesian positioning context is based on a two-dimensional
+     coordinate system with its origin ('left: 0; top: 0') established at
+     the initial rendering position of a relatively positioned element. For
+     left-to-right, top-to-bottom languages, this corresponds to the top
+     left extent of the first rendered constituent of the element. X
+     coordinates ('left:') increase toward the right, while Y coordinates
+     ('top') increase toward the bottom. The origin established by a
+     relatively positioned element moves with that element when that element
+     is repositioned.
+Current Positioning Context
+     The positioning context currently in effect. Positioning contexts apply
+     only to 'absolute' positioned elements with respect to horizontal and
+     vertical positioning, but apply to both 'absolute' and 'relative'
+     elements with respect to z-order. Positioning contexts can be
+     established in three ways:
+       1. A default box positioning context is established by the top-level
+          (<HTML>) document element.
+       2. Elements with a 'position' value of 'absolute' establish a box
+          positioning context for their child elements.
+       3. Elements with a 'position' value of 'relative' establish a
+          Cartesian positioning context for their child elements.
+Default Positioning Context
+     The box positioning context created implicitly by the <HTML> element.
+Positionable Elements
+     Elements whose 'position' property is set to either 'absolute' or
+     'relative'. 'Static' elements are not positionable.
+
+  ------------------------------------------------------------------------
+
+5 Questions and Answers
+
+Q: We really appreciate the SRC attribute to Netscape's new <LAYER> tag. Can
+we duplicate this using CSS Positioning?
+
+A: Yes. You can use a positioned <OBJECT> element that references and
+renders the linked data. You can choose to position the element with a style
+attribute or as a rule in the <STYLE> element. This works since <OBJECT> can
+point to any data that the user agent can learn how to render. This includes
+HTML itself. Although WD-object is not yet a W3C Recommendation, we expect
+it to be part of the upcoming version of HTML, code named Cougar.
+
+  ------------------------------------------------------------------------
+Robert Stevahn

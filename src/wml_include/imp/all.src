@@ -1,0 +1,48 @@
+##
+##  wml::imp:all -- All of Import (IMP) category
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+#use wml::imp::csmap
+#use wml::imp::fsview
+#use wml::imp::generic
+
+##EOF##
+__END__
+
+=head1 NAME
+
+wml::imp:all - All of Import (IMP) category
+
+=head1 SYNOPSIS
+
+ #use wml::imp::all
+
+=head1 DESCRIPTION
+
+This includes all existing include files of the B<Import> (IMP) category, i.e.
+all includes with prefix B<wml::imp>.  The following files currently exist:
+
+ wml::imp::csmap(3)   ... Import External Server-Side Map as Inlined Client-Side Map
+ wml::imp::fsview(3)  ... View Box for Filesystem Resource
+ wml::imp::generic(3) ... Generic Import Of External Resources
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=head1 REQUIRES
+
+ Internal: P1
+ External: --
+
+=head1 SEEALSO
+
+wml::imp::csmap(3),
+wml::imp::fsview(3),
+wml::imp::generic(3).
+
+=cut
+
