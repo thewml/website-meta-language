@@ -12,22 +12,22 @@ SET(perl_prog ${PERL_EXECUTABLE})
 # TODO - this is just to get it working - change to something more meaningful
 SET(prefix "/usr")
 
-EXEC_PROGRAM(${PERL_EXECUTABLE}
-    ARGS "-e" "use Config\; print \$Config{archlib}"
+EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
+    "-e" "use Config; print \$Config{archlib}"
     OUTPUT_VARIABLE perl_archlib
 )
-EXEC_PROGRAM(${PERL_EXECUTABLE}
-    ARGS "-e" "printf '%.3f',\$]"
+EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
+    "-e" "printf '%.3f',\$]"
     OUTPUT_VARIABLE perl_vers
 )
 
-EXEC_PROGRAM(${PERL_EXECUTABLE}
-    ARGS "-e" "use Config\; print \$Config{libs}"
+EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE} 
+    "-e" "use Config; print \$Config{libs}"
     OUTPUT_VARIABLE perl_libs
 )
 
-EXEC_PROGRAM(${PERL_EXECUTABLE}
-    ARGS "-e" "use Config\; print \$Config{usedl}"
+EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
+    "-e" "use Config; print \$Config{usedl}"
     OUTPUT_VARIABLE usedl
 )
 
@@ -38,14 +38,20 @@ ELSE(usedl STREQUAL "define")
     SET (perl_dla "")
 ENDIF(usedl STREQUAL "define")
 
-EXEC_PROGRAM("whoami"
+EXECUTE_PROCESS(COMMAND "whoami"
     OUTPUT_VARIABLE build_user
 )
 
-EXEC_PROGRAM("date"
-    ARGS "+%D-%m-%Y"
+EXECUTE_PROCESS(COMMAND "date" "+%D-%m-%Y"
     OUTPUT_VARIABLE build_time_iso
 )
+
+MACRO(CHOMP VAR)
+    STRING(REGEX REPLACE "[\r\n]+$" "" ${VAR} "${${VAR}}")
+ENDMACRO(CHOMP)
+
+CHOMP(build_user)
+CHOMP(build_time_iso)
 
 SET (INCLUDE_FILES_TO_CHECK
     ctype.h
