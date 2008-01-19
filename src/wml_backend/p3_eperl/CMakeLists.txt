@@ -101,6 +101,21 @@ ADD_EXECUTABLE(eperl
     ${SOURCES}
 )
 
+SET(SCRIPT "eperl_perl5_sm.pl")
+SET(HEADER "ieperl_perl5_sm.h")
+ADD_CUSTOM_COMMAND(
+    OUTPUT ${HEADER}
+    COMMAND ${PATH_PERL} 
+    ARGS ${SCRIPT}
+    DEPENDS ${SCRIPT}
+    VERBATIM
+)
+
+
+SET_SOURCE_FILES_PROPERTIES("eperl_perl5.c"
+    PROPERTIES OBJECT_DEPENDS ${HEADER}
+)
+
 SET_SOURCE_FILES_PROPERTIES(${SOURCES}
     PROPERTIES COMPILE_FLAGS "${perl_optimize} ${perl_ccflags} -I${perl_archlib}/CORE -I."
 )
