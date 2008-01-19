@@ -1,5 +1,8 @@
+include(CheckIncludeFile)
 SUBDIRS (
     src
 )
 SET (PACKAGE_VERSION "\"1.3.0\"")
+CHECK_INCLUDE_FILE("stdarg.h" HAVE_STDARG_H)
+CHECK_INCLUDE_FILE("stdlibs.h" STDC_HEADERS)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config.h)

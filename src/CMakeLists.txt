@@ -1,2 +1,4 @@
+# see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
+SET(CMAKE_VERBOSE_MAKEFILE ON)
 SUBDIRS ( wml_aux wml_backend wml_common wml_docs 
     wml_frontend wml_include wml_misc wml_test )

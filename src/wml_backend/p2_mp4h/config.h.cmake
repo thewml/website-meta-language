@@ -230,7 +230,7 @@
 #undef HAVE_SHL_LOAD
 
 /* Define to 1 if you have the <stdarg.h> header file. */
-#undef HAVE_STDARG_H
+#cmakedefine HAVE_STDARG_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #undef HAVE_STDDEF_H
