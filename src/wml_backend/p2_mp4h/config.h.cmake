@@ -34,38 +34,38 @@
 #undef ENABLE_NLS
 
 /* Define to 1 if you have `alloca', as a function or macro. */
-#undef HAVE_ALLOCA
+#cmakedefine HAVE_ALLOCA 1
 
 /* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
    */
-#undef HAVE_ALLOCA_H
+#cmakedefine HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the `argz_append' function. */
-#undef HAVE_ARGZ_APPEND
+#cmakedefine HAVE_ARGZ_APPEND 1
 
 /* Define to 1 if you have the `argz_create_sep' function. */
-#undef HAVE_ARGZ_CREATE_SEP
+#cmakedefine HAVE_ARGZ_CREATE_SEP 1
 
 /* Define to 1 if you have the <argz.h> header file. */
-#undef HAVE_ARGZ_H
+#cmakedefine HAVE_ARGZ_H 1
 
 /* Define to 1 if you have the `argz_insert' function. */
-#undef HAVE_ARGZ_INSERT
+#cmakedefine HAVE_ARGZ_INSERT 1
 
 /* Define to 1 if you have the `argz_next' function. */
-#undef HAVE_ARGZ_NEXT
+#cmakedefine HAVE_ARGZ_NEXT 1
 
 /* Define to 1 if you have the `argz_stringify' function. */
-#undef HAVE_ARGZ_STRINGIFY
+#cmakedefine HAVE_ARGZ_STRINGIFY 1
 
 /* Define to 1 if you have the <assert.h> header file. */
-#undef HAVE_ASSERT_H
+#cmakedefine HAVE_ASSERT_H 1
 
 /* Define to 1 if you have the `bcopy' function. */
-#undef HAVE_BCOPY
+#cmakedefine HAVE_BCOPY 1
 
 /* Define to 1 if you have the <ctype.h> header file. */
-#undef HAVE_CTYPE_H
+#cmakedefine HAVE_CTYPE_H 1
 
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
@@ -73,7 +73,7 @@
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
-#undef HAVE_DIRENT_H
+#cmakedefine HAVE_DIRENT_H
 
 /* Define if you have the GNU dld library. */
 #undef HAVE_DLD
