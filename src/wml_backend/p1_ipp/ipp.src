@@ -7,12 +7,9 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved. 
 ##
 
-require 5.003;
+require 5.006;
 
 BEGIN { $^W = 0; } # get rid of nasty warnings
-
-use lib "@INSTALLPRIVLIB@";
-use lib "@INSTALLARCHLIB@";
 
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
