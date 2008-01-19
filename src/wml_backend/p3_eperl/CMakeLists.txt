@@ -19,7 +19,7 @@ MACRO(GET_PERL_CONFIG cfg)
     )    
 ENDMACRO(GET_PERL_CONFIG)
 
-SET (PERL_CONFIGS archlib libs usedl ccflags optimize)
+SET (PERL_CONFIGS archlib libs usedl ccflags optimize ccdlflags ldflags)
 FOREACH (cfg ${PERL_CONFIGS})
     GET_PERL_CONFIG(${cfg})
 ENDFOREACH(cfg)
@@ -30,7 +30,9 @@ EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
 )
 
 IF(perl_usedl STREQUAL "define")
-    SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
+    # TODO : Temporary workaround for perl-5.10.0
+    # SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
+    SET (perl_dla "")
     SET (HAVE_PERL_DYNALOADER 1)
 ELSE(perl_usedl STREQUAL "define")
     SET (perl_dla "")
@@ -97,7 +99,8 @@ SET (SOURCES
     eperl_version.c
 )
 
-ADD_EXECUTABLE(eperl
+SET(EXE "eperl")
+ADD_EXECUTABLE(${EXE}
     ${SOURCES}
 )
 
@@ -118,6 +121,10 @@ SET_SOURCE_FILES_PROPERTIES("eperl_perl5.c"
 
 SET_SOURCE_FILES_PROPERTIES(${SOURCES}
     PROPERTIES COMPILE_FLAGS "${perl_optimize} ${perl_ccflags} -I${perl_archlib}/CORE -I."
+)
+
+SET_TARGET_PROPERTIES(${EXE}
+    PROPERTIES LINK_FLAGS "${perl_ccdlflags} ${perl_ldflaags} -L${perl_archlib}/CORE ${perl_dla} -lperl ${perl_libs}"
 )
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h)
