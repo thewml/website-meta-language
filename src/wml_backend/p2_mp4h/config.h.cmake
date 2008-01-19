@@ -358,7 +358,7 @@
 #undef LTDL_SYSSEARCHPATH
 
 /* Default location for mp4h modules */
-#undef MP4HLIBDIR
+#cmakedefine MP4HLIBDIR "foo"
 
 /* Define if dlsym() requires a leading underscore in symbol names. */
 #undef NEED_USCORE

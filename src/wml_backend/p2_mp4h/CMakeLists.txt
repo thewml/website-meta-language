@@ -6,6 +6,9 @@ SET (PACKAGE_VERSION "\"${VERSION_RAW}\"")
 
 SET (PACKAGE_DATE "\"19-Jan-2008\"")
 
+# see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
+SET(CMAKE_VERBOSE_MAKEFILE ON)
+
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
@@ -26,5 +29,7 @@ SET (VERSION ${PACKAGE_VERSION})
 SET (PACKAGE_NAME ${PACKAGE})
 
 SET (PACKAGE_STRING "\"${PACKAGE_RAW} ${VERSION_RAW}\"")
+
+SET (MP4HLIBDIR "${CMAKE_INSTALL_PREFIX}/lib/mp4h")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config.h)
