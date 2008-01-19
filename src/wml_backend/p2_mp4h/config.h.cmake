@@ -311,13 +311,13 @@
 #undef HAVE_TSEARCH
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#undef HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H 1
 
 /* Define if you have the unsigned long long type. */
 #undef HAVE_UNSIGNED_LONG_LONG
 
 /* Define to 1 if you have the `vprintf' function. */
-#cmakedefine HAVE_VPRINTF
+#cmakedefine HAVE_VPRINTF 1
 
 /* Define to 1 if you have the `xmalloc' function. */
 #undef HAVE_XMALLOC
