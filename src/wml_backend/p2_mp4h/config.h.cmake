@@ -1,10 +1,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Name of the package */
-#undef PACKAGE
-
 /* Version number */
-#undef VERSION
+#cmakedefine VERSION @VERSION@
 
 /* Define to 1 for better use of the debugging malloc library.  */
 #undef WITH_DMALLOC
@@ -191,7 +188,7 @@
 #undef HAVE_MEMPCPY
 
 /* Define to 1 if you have the `mkstemp' function. */
-#undef HAVE_MKSTEMP
+#cmakedefine HAVE_MKSTEMP 1
 
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
@@ -308,7 +305,7 @@
 #undef HAVE_TIME_H
 
 /* Define to 1 if you have the `tmpfile' function. */
-#undef HAVE_TMPFILE
+#cmakedefine HAVE_TMPFILE 1
 
 /* Define to 1 if you have the `tsearch' function. */
 #undef HAVE_TSEARCH
@@ -366,26 +363,26 @@
 /* Define if dlsym() requires a leading underscore in symbol names. */
 #undef NEED_USCORE
 
-/* Name of package */
-#undef PACKAGE
+/* Name of the package */
+#cmakedefine PACKAGE @PACKAGE@
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
 /* Release date */
-#undef PACKAGE_DATE
+#cmakedefine PACKAGE_DATE @PACKAGE_DATE@
 
 /* Define to the full name of this package. */
-#undef PACKAGE_NAME
+#cmakedefine PACKAGE_NAME @PACKAGE_NAME@
 
 /* Define to the full name and version of this package. */
-#undef PACKAGE_STRING
+#cmakedefine PACKAGE_STRING @PACKAGE_STRING@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
 /* Define to the version of this package. */
-#cmakedefine PACKAGE_VERSION "yes"
+#cmakedefine PACKAGE_VERSION @PACKAGE_VERSION@
 
 /* Define if <inttypes.h> exists and defines unusable PRI* macros. */
 #undef PRI_MACROS_BROKEN
@@ -402,10 +399,7 @@
 #undef STACK_DIRECTION
 
 /* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
-
-/* Version number of package */
-#undef VERSION
+#cmakedefine STDC_HEADERS 1
 
 /* Define if using the dmalloc debugging malloc package */
 #undef WITH_DMALLOC
