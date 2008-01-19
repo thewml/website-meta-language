@@ -261,7 +261,7 @@
 #undef HAVE_STRDUP
 
 /* Define to 1 if you have the `strerror' function. */
-#undef HAVE_STRERROR
+#cmakedefine HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
@@ -317,7 +317,7 @@
 #undef HAVE_UNSIGNED_LONG_LONG
 
 /* Define to 1 if you have the `vprintf' function. */
-#undef HAVE_VPRINTF
+#cmakedefine HAVE_VPRINTF
 
 /* Define to 1 if you have the `xmalloc' function. */
 #undef HAVE_XMALLOC

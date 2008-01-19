@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 
-#if HAVE_VPRINTF || HAVE_DOPRNT || _LIBC
+#if defined(HAVE_VPRINTF) || defined(HAVE_DOPRNT) || defined(_LIBC)
 # ifdef HAVE_STDARG_H
 #  include <stdarg.h>
 #  define VA_START(args, lastarg) va_start(args, lastarg)
@@ -142,7 +142,7 @@ error (status, errnum, message, va_alist)
 
 #ifdef VA_START
   VA_START (args, message);
-# if HAVE_VPRINTF || _LIBC
+# if defined(HAVE_VPRINTF) || defined(_LIBC)
   vfprintf (stderr, message, args);
 # else
   _doprnt (message, args, stderr);
@@ -217,7 +217,7 @@ error_at_line (status, errnum, file_name, line_number, message, va_alist)
 
 #ifdef VA_START
   VA_START (args, message);
-# if HAVE_VPRINTF || _LIBC
+# if defined(HAVE_VPRINTF) || defined(_LIBC)
   vfprintf (stderr, message, args);
 # else
   _doprnt (message, args, stderr);

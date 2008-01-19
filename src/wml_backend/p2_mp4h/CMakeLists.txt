@@ -9,11 +9,9 @@ SET (PACKAGE_DATE "\"19-Jan-2008\"")
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-include(CheckIncludeFile)
-include(CheckIncludeFiles)
-include(CheckFunctionExists)
-
+include("${CMAKE_CURRENT_SOURCE_DIR}/Common.cmake")
 SUBDIRS (
+    lib
     src
 )
 
@@ -24,6 +22,8 @@ CHECK_INCLUDE_FILES("${REQUIRED_STDC_HEADERS}" STDC_HEADERS)
 
 CHECK_FUNCTION_EXISTS(tmpfile HAVE_TMPFILE)
 CHECK_FUNCTION_EXISTS(mkstemp HAVE_MKSTEMP)
+CHECK_FUNCTION_EXISTS(strerror HAVE_STRERROR)
+CHECK_FUNCTION_EXISTS(strerror HAVE_VPRINTF)
 
 SET (VERSION ${PACKAGE_VERSION})
 SET (PACKAGE_NAME ${PACKAGE})
