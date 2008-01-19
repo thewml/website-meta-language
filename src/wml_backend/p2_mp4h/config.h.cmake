@@ -82,7 +82,7 @@
 #cmakedefine HAVE_DLD_H 1
 
 /* Define to 1 if you have the `dlerror' function. */
-#undef HAVE_DLERROR
+#cmakedefine HAVE_DLERROR 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine HAVE_DLFCN_H 1
@@ -103,49 +103,49 @@
 #undef HAVE_ERROR_T
 
 /* Define to 1 if you have the `feof_unlocked' function. */
-#undef HAVE_FEOF_UNLOCKED
+#cmakedefine HAVE_FEOF_UNLOCKED 1
 
 /* Define to 1 if you have the `fgets_unlocked' function. */
-#undef HAVE_FGETS_UNLOCKED
+#cmakedefine HAVE_FGETS_UNLOCKED 1
 
 /* Define to 1 if you have the `getcwd' function. */
-#undef HAVE_GETCWD
+#cmakedefine HAVE_GETCWD 1
 
 /* Define to 1 if you have the `getc_unlocked' function. */
-#undef HAVE_GETC_UNLOCKED
+#cmakedefine HAVE_GETC_UNLOCKED 1
 
 /* Define to 1 if you have the `getegid' function. */
-#undef HAVE_GETEGID
+#cmakedefine HAVE_GETEGID 1
 
 /* Define to 1 if you have the `geteuid' function. */
-#undef HAVE_GETEUID
+#cmakedefine HAVE_GETEUID 1
 
 /* Define to 1 if you have the `getgid' function. */
-#undef HAVE_GETGID
+#cmakedefine HAVE_GETGID 1
 
 /* Define to 1 if you have the `getgrgid' function. */
-#undef HAVE_GETGRGID
+#cmakedefine HAVE_GETGRGID 1
 
 /* Define to 1 if you have the `getpagesize' function. */
-#undef HAVE_GETPAGESIZE
+#cmakedefine HAVE_GETPAGESIZE 1
 
 /* Define to 1 if you have the `getpwuid' function. */
-#undef HAVE_GETPWUID
+#cmakedefine HAVE_GETPWUID 1
 
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #undef HAVE_GETTEXT
 
 /* Define to 1 if you have the `getuid' function. */
-#undef HAVE_GETUID
+#cmakedefine HAVE_GETUID 1
 
 /* Define to 1 if you have the <grp.h> header file. */
 #cmakedefine HAVE_GRP_H 1
 
 /* Define if you have the iconv() function. */
-#undef HAVE_ICONV
+#cmakedefine HAVE_ICONV 1
 
 /* Define to 1 if you have the `index' function. */
-#undef HAVE_INDEX
+#cmakedefine HAVE_INDEX 1
 
 /* Define if <inttypes.h> exists and doesn't clash with <sys/types.h>. */
 #cmakedefine HAVE_INTTYPES_H 1
@@ -176,16 +176,16 @@
 #cmakedefine HAVE_MALLOC_H 1
 
 /* Define to 1 if you have the `memcpy' function. */
-#undef HAVE_MEMCPY
+#cmakedefine HAVE_MEMCPY 1
 
 /* Define to 1 if you have the `memmove' function. */
-#undef HAVE_MEMMOVE
+#cmakedefine HAVE_MEMMOVE 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the `mempcpy' function. */
-#undef HAVE_MEMPCPY
+#cmakedefine HAVE_MEMPCPY 1
 
 /* Define to 1 if you have the `mkstemp' function. */
 #cmakedefine HAVE_MKSTEMP 1
@@ -194,7 +194,7 @@
 #undef HAVE_MMAP
 
 /* Define to 1 if you have the `munmap' function. */
-#undef HAVE_MUNMAP
+#cmakedefine HAVE_MUNMAP 1
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #cmakedefine HAVE_NDIR_H 1
@@ -203,25 +203,25 @@
 #cmakedefine HAVE_NL_TYPES_H 1
 
 /* Define to 1 if you have the `obstack' function. */
-#undef HAVE_OBSTACK
+#cmakedefine HAVE_OBSTACK 1
 
 /* Define if libtool can extract symbol lists from object files. */
 #undef HAVE_PRELOADED_SYMBOLS
 
 /* Define to 1 if you have the `putenv' function. */
-#undef HAVE_PUTENV
+#cmakedefine HAVE_PUTENV 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #cmakedefine HAVE_PWD_H 1
 
 /* Define to 1 if you have the `rindex' function. */
-#undef HAVE_RINDEX
+#cmakedefine HAVE_RINDEX 1
 
 /* Define to 1 if you have the `setenv' function. */
-#undef HAVE_SETENV
+#cmakedefine HAVE_SETENV 1
 
 /* Define to 1 if you have the `setlocale' function. */
-#undef HAVE_SETLOCALE
+#cmakedefine HAVE_SETLOCALE 1
 
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD
@@ -246,19 +246,19 @@
 #cmakedefine HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the `stpcpy' function. */
-#undef HAVE_STPCPY
+#cmakedefine HAVE_STPCPY 1
 
 /* Define to 1 if you have the `strcasecmp' function. */
-#undef HAVE_STRCASECMP
+#cmakedefine HAVE_STRCASECMP 1
 
 /* Define to 1 if you have the `strchr' function. */
-#undef HAVE_STRCHR
+#cmakedefine HAVE_STRCHR 1
 
 /* Define to 1 if you have the `strcmp' function. */
-#undef HAVE_STRCMP
+#cmakedefine HAVE_STRCMP 1
 
 /* Define to 1 if you have the `strdup' function. */
-#undef HAVE_STRDUP
+#cmakedefine HAVE_STRDUP 1
 
 /* Define to 1 if you have the `strerror' function. */
 #cmakedefine HAVE_STRERROR 1
@@ -270,13 +270,13 @@
 #cmakedefine HAVE_STRING_H 1
 
 /* Define to 1 if you have the `strrchr' function. */
-#undef HAVE_STRRCHR
+#cmakedefine HAVE_STRRCHR 1
 
 /* Define to 1 if you have the `strtol' function. */
-#undef HAVE_STRTOL
+#cmakedefine HAVE_STRTOL 1
 
 /* Define to 1 if you have the `strtoul' function. */
-#undef HAVE_STRTOUL
+#cmakedefine HAVE_STRTOUL 1
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -308,7 +308,7 @@
 #cmakedefine HAVE_TMPFILE 1
 
 /* Define to 1 if you have the `tsearch' function. */
-#undef HAVE_TSEARCH
+#cmakedefine HAVE_TSEARCH 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
@@ -320,19 +320,19 @@
 #cmakedefine HAVE_VPRINTF 1
 
 /* Define to 1 if you have the `xmalloc' function. */
-#undef HAVE_XMALLOC
+#cmakedefine HAVE_XMALLOC 1
 
 /* Define to 1 if you have the `xstrdup' function. */
-#undef HAVE_XSTRDUP
+#cmakedefine HAVE_XSTRDUP 1
 
 /* Define to 1 if you have the `__argz_count' function. */
-#undef HAVE___ARGZ_COUNT
+#cmakedefine HAVE___ARGZ_COUNT 1
 
 /* Define to 1 if you have the `__argz_next' function. */
-#undef HAVE___ARGZ_NEXT
+#cmakedefine HAVE___ARGZ_NEXT 1
 
 /* Define to 1 if you have the `__argz_stringify' function. */
-#undef HAVE___ARGZ_STRINGIFY
+#cmakedefine HAVE___ARGZ_STRINGIFY 1
 
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST

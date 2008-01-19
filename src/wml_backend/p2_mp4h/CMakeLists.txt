@@ -62,16 +62,53 @@ SET (REQUIRED_STDC_HEADERS float.h string.h stdlib.h stdarg.h)
 CHECK_INCLUDE_FILES("${REQUIRED_STDC_HEADERS}" STDC_HEADERS)
 
 SET (FUNCTIONS_TO_CHECK 
+    __argz_count
+    __argz_next
+    __argz_stringify
     alloca
     argz_append
     argz_create_sep
     argz_insert
     argz_next
     argz_stringify
-    tmpfile
+    dlerror
+    feof_unlocked
+    fgets_unlocked
+    getc_unlocked
+    getcwd
+    getegid
+    geteuid
+    getgid
+    getgrgid
+    getpagesize
+    getpwuid
+    getuid
+    iconv
+    index
+    memcpy
+    memmove
+    mempcpy
     mkstemp
+    munmap
+    obstack
+    putenv
+    rindex
+    setenv
+    setlocale
+    stpcpy
+    strcasecmp
+    strchr
+    strcmp
+    strdup
     strerror
+    strrchr
+    strtol
+    strtoul
+    tmpfile
+    tsearch
     vprintf
+    xmalloc
+    xstrdup
     )
 CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
