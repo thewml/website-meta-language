@@ -30,9 +30,12 @@ EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
 )
 
 IF(perl_usedl STREQUAL "define")
-    # TODO : Temporary workaround for perl-5.10.0
-    # SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
-    SET (perl_dla "")
+    # Workaround for perl-5.10.0
+    IF (perl_vers LESS 5.010)
+        SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
+    ELSE(perl_vers LESS 5.010)
+        SET (perl_dla "")   
+    ENDIF(perl_vers LESS 5.010)
     SET (HAVE_PERL_DYNALOADER 1)
 ELSE(perl_usedl STREQUAL "define")
     SET (perl_dla "")
@@ -105,7 +108,7 @@ ADD_EXECUTABLE(${EXE}
 )
 
 SET(SCRIPT "eperl_perl5_sm.pl")
-SET(HEADER "ieperl_perl5_sm.h")
+SET(HEADER "eperl_perl5_sm.h")
 ADD_CUSTOM_COMMAND(
     OUTPUT ${HEADER}
     COMMAND ${PATH_PERL} 
