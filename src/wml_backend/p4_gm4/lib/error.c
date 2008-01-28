@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 
-#if HAVE_VPRINTF || HAVE_DOPRNT || _LIBC
+#if defined(HAVE_VPRINTF) || defined(HAVE_DOPRNT) || defined(_LIBC)
 # if __STDC__
 #  include <stdarg.h>
 #  define VA_START(args, lastarg) va_start(args, lastarg)
@@ -40,7 +40,7 @@
 # define va_dcl char *a1, *a2, *a3, *a4, *a5, *a6, *a7, *a8;
 #endif
 
-#if STDC_HEADERS || _LIBC
+#if defined(STDC_HEADERS) || defined(_LIBC)
 # include <stdlib.h>
 # include <string.h>
 #else
@@ -90,7 +90,7 @@ extern char *program_name;
 # ifdef HAVE_STRERROR_R
 #  define __strerror_r strerror_r
 # else
-#  if HAVE_STRERROR
+#  ifdef HAVE_STRERROR
 #   ifndef strerror		/* On some systems, strerror is a macro */
 char *strerror ();
 #   endif
@@ -142,7 +142,7 @@ error (status, errnum, message, va_alist)
 
 #ifdef VA_START
   VA_START (args, message);
-# if HAVE_VPRINTF || _LIBC
+# if defined(HAVE_VPRINTF) || defined(_LIBC)
   vfprintf (stderr, message, args);
 # else
   _doprnt (message, args, stderr);
@@ -217,7 +217,7 @@ error_at_line (status, errnum, file_name, line_number, message, va_alist)
 
 #ifdef VA_START
   VA_START (args, message);
-# if HAVE_VPRINTF || _LIBC
+# if defined(HAVE_VPRINTF) || defined(_LIBC)
   vfprintf (stderr, message, args);
 # else
   _doprnt (message, args, stderr);

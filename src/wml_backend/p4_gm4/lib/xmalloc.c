@@ -27,7 +27,7 @@
 
 #include <sys/types.h>
 
-#if STDC_HEADERS
+#if defined(STDC_HEADERS)
 # include <stdlib.h>
 #else
 VOID *calloc ();
@@ -63,7 +63,7 @@ VOID *xrealloc (VOID *p, size_t n);
    The caller may set it to some other value.  */
 int xmalloc_exit_failure = EXIT_FAILURE;
 
-#if __STDC__ && (HAVE_VPRINTF || HAVE_DOPRNT)
+#if defined(__STDC__) && (defined(HAVE_VPRINTF) || defined(HAVE_DOPRNT))
 void error (int, int, const char *, ...);
 #else
 void error ();

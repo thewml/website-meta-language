@@ -1,0 +1,28 @@
+SET(CMAKE_VERBOSE_MAKEFILE ON)
+ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+
+# TODO - replace ".." by the fully qualified path.
+INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/../lib ${CMAKE_CURRENT_SOURCE_DIR})
+
+########### next target ###############
+
+SET(m4_SRCS
+   m4.c
+   builtin.c
+   debug.c
+   eval.c
+   format.c
+   freeze.c
+   input.c
+   macro.c
+   output.c
+   path.c
+   symtab.c
+   )
+
+ADD_EXECUTABLE(m4 ${m4_SRCS})
+
+TARGET_LINK_LIBRARIES( m4 m m4_lib )
+
+INSTALL( TARGETS m4 DESTINATION bin)
+
