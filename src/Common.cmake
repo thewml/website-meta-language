@@ -53,3 +53,25 @@ MACRO(PREPROCESS_PATH_PERL SOURCE DEST)
         DEPENDS ${DEST}
     )
 ENDMACRO(PREPROCESS_PATH_PERL)
+
+MACRO(RUN_POD2MAN SOURCE DEST SECTION CENTER RELEASE)
+    SET(PATH_PERL ${PERL_EXECUTABLE})
+    ADD_CUSTOM_COMMAND(
+        OUTPUT ${DEST}
+        COMMAND ${PATH_PERL} 
+        ARGS "-e" 
+        "my (\$src, \$dest, \$sect, \$center, \$release) = @ARGV; my \$pod = qq{Hoola.pod}; use File::Copy; copy(\$src, \$pod); system(qq{pod2man --section=\$sect --center=\"\$center\" --release=\"\$release\" \$pod > \$dest}); unlink(\$pod)"
+        ${SOURCE}
+        ${DEST}
+        ${SECTION}
+        "${CENTER}"
+        "${RELEASE}"
+        DEPENDS ${SOURCE}
+        VERBATIM
+    )
+    # The custom command needs to be assigned to a target.
+    ADD_CUSTOM_TARGET(
+        process_pod ALL
+        DEPENDS ${DEST}
+    )
+ENDMACRO(RUN_POD2MAN)
