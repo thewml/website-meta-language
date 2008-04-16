@@ -1,13 +1,15 @@
 dnl  As this file is called configure.ac, Autoconf 2.50 is required
+AC_INIT([mp4h], [1.3.0])
 AC_PREREQ([2.50])
 
-AC_INIT([mp4h], [1.3.0])
 PACKAGE_DATE="06-Jul-2002"
 
 AM_INIT_AUTOMAKE([$PACKAGE_NAME], [$PACKAGE_VERSION])
 AM_MAINTAINER_MODE
 AM_C_PROTOTYPES
+ALL_LINGUAS=""
 AM_GNU_GETTEXT
+IT_PROG_INTLTOOL
 
 dnl AC_CONFIG_SRCDIR([src/mp4h.c])
 dnl AM_CONFIG_HEADER([config.h])
