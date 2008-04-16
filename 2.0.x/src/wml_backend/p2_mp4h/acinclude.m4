@@ -8,7 +8,7 @@
 
 # serial 1
 
-AC_DEFUN(MP4H_LOADABLE_MODULES,
+AC_DEFUN([MP4H_LOADABLE_MODULES],
   [AC_MSG_CHECKING(if support for loadable modules is requested)
   AC_ARG_WITH(modules,
   [  --with-modules=x,y,z    select loadable modules to compile],
