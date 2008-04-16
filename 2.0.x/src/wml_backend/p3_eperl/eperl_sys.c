@@ -211,13 +211,20 @@ char *mytmpfile(char *id)
 {
     char ca[1024];
     char *cp, *tmpdir;
+    char tmpfile[]="eperl_sourceXXXXXX";
     int i;
+    int fd=-1;
 
     tmpdir = getenv ("TMPDIR");
     if (tmpdir == (char *) NULL)
         tmpdir="/tmp";
 
-    snprintf(ca, sizeof(ca), "%s/%s.%d.tmp%d", tmpdir, id, (int)getpid(), mytmpfilecnt++);
+    snprintf(ca, sizeof(ca), "%s/%s", tmpdir, tmpfile);
+    if((fd = mkstemp(ca)) == -1){
+        perror("can not create tmpfile");
+        return NULL;
+    }
+    close(fd);
     ca[sizeof(ca)-1] = NUL;
     cp = strdup(ca);
     for (i = 0; mytmpfiles[i] != NULL; i++)

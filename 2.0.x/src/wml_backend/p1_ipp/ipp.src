@@ -17,6 +17,7 @@ use lib "@INSTALLARCHLIB@";
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
 use IO::File 1.06;
+use File::Temp;
 
 #
 #   help functions
@@ -565,6 +566,8 @@ foreach $str (@opt_D) {
 #   process the pre-loaded include files
 #
 $tmpdir = $ENV{'TMPDIR'} || '/tmp';
+my $tmpldir = ($ENV{'TMPDIR'} || '/tmp') . '/ipp.XXXXXX';
+$tmpdir = mkdtemp($tmpldir) or die "Unable to create temporary directory: $!\n";
 $tmpfile = $tmpdir . "/ipp.$$.tmp";
 unlink($tmpfile);
 $tmp = new IO::File;

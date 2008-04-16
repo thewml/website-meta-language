@@ -367,14 +367,7 @@ if ($level >= 1) {
         ($w, $h, $t) = Image::Size::imgsize(\$contents);
         if ($w*$h == 1) {
             #   read image into GD
-            $tmpfile = "/tmp/pe.tmp.$$";
-            unlink($tmpfile);
-            open(TMP, ">$tmpfile");
-            print TMP $contents;
-            close(TMP);
-            open(TMP, "<$tmpfile");
-            $tmpimg = newFromGif GD::Image(TMP);
-            close(TMP);
+            $tmpimg = newFromGif GD::Image($contents);
             unlink($tmpfile);
             if ($tmpimg->transparent != -1) {
                 my $im = new GD::Image($w, $h);
