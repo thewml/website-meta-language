@@ -1,21 +1,25 @@
 dnl  As this file is called configure.ac, Autoconf 2.50 is required
+AC_INIT([mp4h], [1.3.0])
 AC_PREREQ([2.50])
 
-AC_INIT([mp4h], [1.3.0])
 PACKAGE_DATE="06-Jul-2002"
 
-AC_CONFIG_SRCDIR([src/mp4h.c])
+AM_INIT_AUTOMAKE([$PACKAGE_NAME], [$PACKAGE_VERSION])
 AM_CONFIG_HEADER([config.h])
+AM_C_PROTOTYPES
+ALL_LINGUAS=""
+AM_GNU_GETTEXT([external])
+IT_PROG_INTLTOOL
+
+AC_CONFIG_SRCDIR([src/mp4h.c])
 
 dnl   Now $srcdir is defined and can be used
-shtool=$srcdir/shtool
+shtool="$srcdir/shtool"
 
 AC_SUBST([PACKAGE_DATE])
 AC_DEFINE_UNQUOTED([PACKAGE_DATE], ["$PACKAGE_DATE"], [Release date])
 $shtool echo -e "Configuring for %B$PACKAGE_NAME $PACKAGE_VERSION ($PACKAGE_DATE)%b"
 
-AM_INIT_AUTOMAKE([$PACKAGE_NAME], [$PACKAGE_VERSION])
-AM_MAINTAINER_MODE
 
 if test x$datadir = 'x${prefix}/share'; then
     if test x$prefix = xNONE; then
@@ -46,11 +50,8 @@ AC_PROG_INSTALL
 
 echo ''
 $shtool echo -e "Checking for %Bheaders and libraries%b"
-AC_AIX
-AC_MINIX
 AC_ISC_POSIX
 
-AM_C_PROTOTYPES
 AC_HEADER_STDC
 
 AC_TYPE_SIZE_T
@@ -80,7 +81,6 @@ AC_MSG_RESULT([no])
 AC_SUBST([TIDY])
 
 ALL_LINGUAS=
-AM_GNU_GETTEXT
 
 
 if test ".$USE_INCLUDED_LIBINTL" = .yes; then
@@ -105,12 +105,7 @@ test ".$with_modules" = .yes && with_modules=`echo $module_list | sed -e 's/  */
 if test ".$with_modules" != .no; then
     echo ''
     $shtool echo -e "Checking for %Bloadable modules%b support"
-    AC_LIBTOOL_WIN32_DLL
-    AC_LIBLTDL_CONVENIENCE
     AC_ENABLE_SHARED
-    AC_DISABLE_STATIC
-    AC_LIBTOOL_DLOPEN
-    AC_LIBTOOL_SETUP
     AC_PROG_LIBTOOL
 
     case ,$with_modules, in
@@ -194,4 +189,3 @@ AC_OUTPUT
 echo ''
 $shtool echo -e "Now please type %Bmake%b to compile mp4h"
 echo ''
-

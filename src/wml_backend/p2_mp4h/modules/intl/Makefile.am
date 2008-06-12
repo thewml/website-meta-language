@@ -13,7 +13,7 @@ TESTFILES = gettext.mp4h
 man3ext   = 3
 
 INCLUDES  = -I$(top_srcdir)/lib  -I$(top_srcdir)/src @INTLINCL@
-LDFLAGS   = -no-undefined -module -avoid-version -rpath $(mp4mdir) @DLLDFLAGS@
+AM_LDFLAGS   = -no-undefined -module -avoid-version -rpath $(mp4mdir) @DLLDFLAGS@
 
 if DO_MODULE_INTL_GETTEXT
 mp4m_LTLIBRARIES   = gettext.la

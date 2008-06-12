@@ -1,12 +1,12 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-DIST_SUBDIRS = intl pcre lib src po doc modules tests
+DIST_SUBDIRS = pcre lib src po doc modules tests
 
 if LOADABLE_MODULES
-SUBDIRS = intl pcre lib src po doc modules tests
+SUBDIRS = pcre lib src po doc modules tests
 else
-SUBDIRS = intl pcre lib src po doc tests
+SUBDIRS = pcre lib src po doc tests
 endif
 
 EXTRA_DIST = CREDITS README README.pcre bootstrap.sh shtool
