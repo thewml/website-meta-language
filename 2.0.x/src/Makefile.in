@@ -257,7 +257,7 @@ etc/shtool:
 fixperm:
 	$(FIXPERM) *
 
-EXCLUDE_FILES = CVS .cvsignore \
+EXCLUDE_FILES = CVS .cvsignore .svn \
    autom4te.cache /\\.deps build-stamp \
    ^wml- ^wml_backend/p9_slice/lib ^wml_backend/p9_slice/t
 
