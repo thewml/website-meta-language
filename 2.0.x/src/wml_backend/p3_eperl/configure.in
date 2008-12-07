@@ -159,7 +159,7 @@ case $usedl in
     define )
         rc=yes
         AC_DEFINE(HAVE_PERL_DYNALOADER)
-        if $perlprog -e 'exit(! ($] > 5.009))' ; then
+        if $perlprog -e 'exit(! (($] > 5.009) || ($^V gt v5.8.8)))' ; then
             perl_dla=
         else
             perl_dla="$perl_archlib/auto/DynaLoader/DynaLoader.a"
