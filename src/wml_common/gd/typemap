@@ -1,2 +1,0 @@
-TYPEMAP
-WML::GD::Image	T_PTROBJ
