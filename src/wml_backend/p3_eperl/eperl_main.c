@@ -150,12 +150,12 @@ void give_version(void)
 
 void give_readme(void)
 {
-    fprintf(stdout, ePerl_README);
+    fprintf(stdout, "%s", ePerl_README);
 }
 
 void give_license(void)
 {
-    fprintf(stdout, ePerl_LICENSE);
+    fprintf(stdout, "%s", ePerl_LICENSE);
 }
 
 void give_img_logo(void)
@@ -163,7 +163,11 @@ void give_img_logo(void)
     if (mode == MODE_NPHCGI)
         HTTP_PrintResponseHeaders("");
     printf("Content-Type: image/gif\r\n\r\n");
-    fwrite(ePerl_LOGO_data, ePerl_LOGO_size, 1, stdout);
+    if (fwrite(ePerl_LOGO_data, ePerl_LOGO_size, 1, stdout) != 1)
+    {
+        fprintf (stderr, "%s\n", "Cannot print the logo.");
+        return;
+    }
 }
 
 void give_img_powered(void)

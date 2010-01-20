@@ -212,7 +212,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
             IO_restore_stdout();
             IO_restore_stderr();
             if ((cpBuf = ePerl_ReadErrorFile(perlstderr, perlscript, source)) != NULL) {
-                fprintf(stderr, cpBuf);
+                fprintf(stderr, "%s", cpBuf);
             }
             CU(EX_FAIL);
         }
