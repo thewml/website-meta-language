@@ -8,28 +8,28 @@
 
 
 /* Define to empty if the keyword does not work.  */
-#undef const
+#cmakedefine const
 
 /* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
+#cmakedefine STDC_HEADERS
 
-#undef USE_NCURSES 
-#undef USE_SLCURSES 
-#undef USE_CURSES   
+#cmakedefine USE_NCURSES 
+#cmakedefine USE_SLCURSES 
+#cmakedefine USE_CURSES   
 
 /* Define if you have the <stddef.h> header file.  */
-#undef HAVE_STDDEF_H
+#cmakedefine HAVE_STDDEF_H
 
 /* Define if you have the <stdio.h> header file.  */
-#undef HAVE_STDIO_H
+#cmakedefine HAVE_STDIO_H
 
 /* Define if you have the <stdlib.h> header file.  */
-#undef HAVE_STDLIB_H
+#cmakedefine HAVE_STDLIB_H
 
 /* Define if you have the <string.h> header file.  */
-#undef HAVE_STRING_H
+#cmakedefine HAVE_STRING_H
 
 /* Define if you have the <strings.h> header file.  */
-#undef HAVE_STRINGS_H
+#cmakedefine HAVE_STRINGS_H
 
 #endif /* CONFIG_AC_H */
