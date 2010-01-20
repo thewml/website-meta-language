@@ -103,7 +103,7 @@ ENDMACRO(INSTALL_MAN)
 
 MACRO(DEFINE_WML_AUX_PERL_PROG BASENAME)
     PREPROCESS_PATH_PERL("preproc_${BASENAME}" "${BASENAME}.src" "${BASENAME}.pl")
-    RUN_POD2MAN("pod_${BASENAME}" "${BASENAME}.src" "${BASENAME}}.1" "1" "EN  Tools" "En Tools")
+    RUN_POD2MAN("pod_${BASENAME}" "${BASENAME}.src" "${BASENAME}.1" "1" "EN  Tools" "En Tools")
     INSTALL(
         FILES "${BASENAME}.pl"
         DESTINATION "lib/exec/wml_aux_${BASENAME}"
