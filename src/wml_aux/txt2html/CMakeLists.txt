@@ -1,3 +1,12 @@
 INCLUDE ("../../Common.cmake")
 
-DEFINE_WML_AUX_PERL_PROG("txt2html")
+DEFINE_WML_AUX_PERL_PROG_WITHOUT_MAN ("txt2html")
+
+CONFIGURE_FILE ("txt2html.txt" "txt2html.1" COPYONLY)
+
+INSTALL_MAN( "txt2html.1" "1")
+
+INSTALL(
+    FILES "txt2html.dict"
+    DESTINATION "lib/data/"
+)
