@@ -13,7 +13,6 @@ DEFINE_WML_AUX_C_PROG (
    localize.c
    parser.c
    pprint.c
-   tab2space.c
    tags.c
    tidy.c
 )
