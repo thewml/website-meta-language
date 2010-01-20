@@ -75,3 +75,21 @@ MACRO(RUN_POD2MAN SOURCE DEST SECTION CENTER RELEASE)
         DEPENDS ${DEST}
     )
 ENDMACRO(RUN_POD2MAN)
+
+
+# Finds libm and puts the result in the MATH_LIB_LIST variable.
+# If it cannot find it, it fails with an error.
+MACRO(FIND_LIBM)
+    IF (UNIX)
+        FIND_LIBRARY(LIBM_LIB m)
+        IF(LIBM_LIB STREQUAL "LIBM_LIB-NOTFOUND")
+            MESSAGE(FATAL_ERROR "Cannot find libm")
+        ELSE(LIBM_LIB STREQUAL "LIBM_LIB-NOTFOUND")
+            SET(MATH_LIB_LIST ${LIBM_LIB})
+        ENDIF(LIBM_LIB STREQUAL "LIBM_LIB-NOTFOUND")
+    ELSE(UNIX)
+        SET(MATH_LIB_LIST)
+    ENDIF(UNIX)
+ENDMACRO(FIND_LIBM)
+
+
