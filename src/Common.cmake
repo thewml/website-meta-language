@@ -54,6 +54,29 @@ MACRO(PREPROCESS_PATH_PERL TARGET_NAME SOURCE DEST)
     )
 ENDMACRO(PREPROCESS_PATH_PERL)
 
+# Copies the file from one place to the other.
+# TARGET_NAME is the name of the makefile target to add.
+# SOURCE is the source path.
+# DEST is the destination path.
+MACRO(ADD_COPY_TARGET TARGET_NAME SOURCE DEST)
+    SET(PATH_PERL ${PERL_EXECUTABLE})
+    ADD_CUSTOM_COMMAND(
+        OUTPUT ${DEST}
+        COMMAND ${PATH_PERL}
+        ARGS "-e" 
+        "my (\$src, \$dest) = @ARGV; use File::Copy; copy(\$src, \$dest);"
+        ${SOURCE}
+        ${DEST}
+        DEPENDS ${SOURCE}
+        VERBATIM
+    )
+    # The custom command needs to be assigned to a target.
+    ADD_CUSTOM_TARGET(
+        ${TARGET_NAME} ALL
+        DEPENDS ${DEST}
+    )
+ENDMACRO(ADD_COPY_TARGET)
+
 MACRO(RUN_POD2MAN TARGET_NAME SOURCE DEST SECTION CENTER RELEASE)
     SET(PATH_PERL ${PERL_EXECUTABLE})
     ADD_CUSTOM_COMMAND(
@@ -98,8 +121,17 @@ MACRO(INSTALL_MAN SOURCE SECTION)
             ${SOURCE}
         DESTINATION
             "share/man/man${SECTION}"
-   )
+    )
 ENDMACRO(INSTALL_MAN)
+
+MACRO(INSTALL_CAT_MAN SOURCE SECTION)
+    INSTALL(
+        FILES
+            ${SOURCE}
+        DESTINATION
+            "share/man/cat${SECTION}"
+    )
+ENDMACRO(INSTALL_CAT_MAN)
 
 MACRO(DEFINE_WML_AUX_PERL_PROG_WITHOUT_MAN BASENAME)
     PREPROCESS_PATH_PERL("preproc_${BASENAME}" "${BASENAME}.src" "${BASENAME}.pl")
