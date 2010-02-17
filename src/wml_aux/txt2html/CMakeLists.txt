@@ -8,5 +8,5 @@ INSTALL_MAN( "txt2html.1" "1")
 
 INSTALL(
     FILES "txt2html.dict"
-    DESTINATION "lib/data/"
+    DESTINATION "${WML_DATA_DIR}"
 )

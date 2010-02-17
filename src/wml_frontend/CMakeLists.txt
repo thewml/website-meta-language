@@ -37,7 +37,11 @@ FOREACH (cmd wmk wml wmb wmd wmu)
             "--subst" "PATH_PERL=${PERL_EXECUTABLE}"
         DEPENDS "${src}"
     )
-    INSTALL (FILES "${dest}" DESTINATION "bin")
+    INSTALL (
+        PROGRAMS "${dest}"
+        DESTINATION "bin"
+        RENAME "${cmd}"
+        )
     INST_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1")
     ADD_CUSTOM_TARGET(
         "preprocess_perl_frontend_${cmd}" ALL

@@ -7,6 +7,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 INCLUDE ("Common.cmake")
 
+SET (WML_LIB_DIR "lib/wml")
+SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
+
 SUBDIRS (
     wml_aux 
     wml_backend  

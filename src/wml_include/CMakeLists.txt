@@ -1,4 +1,5 @@
 SET (myfiles
+    all
     des/all
     des/gfont
     des/imgbg
@@ -40,8 +41,15 @@ SET (myfiles
     sup/hextriple
     sup/path
     sys/all
+    sys/bootp3
     sys/bootp4
     sys/compat1
+)
+
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/sys/bootp3.src.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/sys/bootp3.src"
+    COPY_ONLY
 )
 
 FOREACH (base ${myfiles})
@@ -51,6 +59,7 @@ FOREACH (base ${myfiles})
     SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${base}")
 
     STRING (REPLACE "/" "__" target_base "${base}")
+
 
     ADD_CUSTOM_COMMAND(
         OUTPUT "${dest}"
@@ -64,7 +73,11 @@ FOREACH (base ${myfiles})
         "preprocess_perl_include_${target_base}" ALL
         DEPENDS "${dest}"
     )
-    INSTALL (FILES "${dest}" DESTINATION "lib/include/${destbase}")
+    INSTALL (
+        FILES "${dest}" 
+        DESTINATION "${WML_LIB_DIR}/include/" 
+        RENAME "${destbase}"
+    )
     STRING (REPLACE "/" "::" dest_man "wml/${base}")
 
     INST_RENAME_POD2MAN(

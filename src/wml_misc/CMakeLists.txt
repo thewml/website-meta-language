@@ -41,5 +41,5 @@ INSTALL(
     FILES
         ${LOGO_FILES}
     DESTINATION
-        "lib/data/logos"
+        "${WML_DATA_DIR}/logos"
 )
