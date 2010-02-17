@@ -54,7 +54,7 @@ FOREACH (base ${myfiles})
 
     ADD_CUSTOM_COMMAND(
         OUTPUT "${dest}"
-        COMMAND "${PATH_PERL}"
+        COMMAND "${PERL_EXECUTABLE}"
         ARGS "${CMAKE_CURRENT_SOURCE_DIR}/preprocess-perl-source.pl"
             "--input" "${src}"
             "--output" "${dest}"

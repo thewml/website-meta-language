@@ -5,6 +5,8 @@ SET(VERSION "2.1.1")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+INCLUDE ("Common.cmake")
+
 SUBDIRS (
     wml_aux 
     wml_backend  

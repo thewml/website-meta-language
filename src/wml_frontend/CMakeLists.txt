@@ -6,7 +6,7 @@ EXECUTE_PROCESS(COMMAND "whoami"
 
 CHOMP(username)
 
-EXECUTE_PROCESS(COMMAND "${PATH_PERL}"
+EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}"
     "-MPOSIX" "-e" "print strftime('%Y-%m-%d', localtime())"
     OUTPUT_VARIABLE date
 )
@@ -19,14 +19,14 @@ FOREACH (cmd wmk wml wmb wmd wmu)
 
     ADD_CUSTOM_COMMAND(
         OUTPUT "${dest}"
-        COMMAND "${PATH_PERL}"
+        COMMAND "${PERL_EXECUTABLE}"
         ARGS "${CMAKE_CURRENT_SOURCE_DIR}/preprocess-perl-source.pl"
             "--input" "${src}"
             "--output" "${dest}"
             "--subst" "WML_VERSION=${VERSION}"
             "--subst" "WML_CONFIG_ARGS="
-            "--subst" "perlprog=${PATH_PERL}"
-            "--subst" "perlvers=${PATH_PERL}"
+            "--subst" "perlprog=${PERL_EXECUTABLE}"
+            "--subst" "perlvers=${PERL_EXECUTABLE}"
             "--subst" "built_system=${CMAKE_SYSTEM_NAME}"
             "--subst" "built_user=${username}"
             "--subst" "built_date=${date}"
@@ -34,7 +34,7 @@ FOREACH (cmd wmk wml wmb wmd wmu)
             "--subst" "bindir=${CMAKE_INSTALL_PREFIX}/bin"
             "--subst" "libdir=${CMAKE_INSTALL_PREFIX}/lib"
             "--subst" "mandir=${CMAKE_INSTALL_PREFIX}/share/man"
-            "--subst" "PATH_PERL=${PATH_PERL}"
+            "--subst" "PATH_PERL=${PERL_EXECUTABLE}"
         DEPENDS "${src}"
     )
     INSTALL (FILES "${dest}" DESTINATION "bin")
