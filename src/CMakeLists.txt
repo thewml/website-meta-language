@@ -5,8 +5,6 @@ SET(VERSION "2.1.1")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-# TODO:
-# wml_misc , wml_test
 SUBDIRS (
     wml_aux 
     wml_backend  
@@ -15,4 +13,5 @@ SUBDIRS (
     wml_frontend
     wml_test
     wml_include
+    wml_misc
      )
