@@ -15,7 +15,7 @@ FOREACH (cmd wmk wml wmb wmd wmu)
     SET (destbase "${cmd}.pl")
     SET (dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
     SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${cmd}.src")
-    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${cmd}.1")
+    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${cmd}")
 
     ADD_CUSTOM_COMMAND(
         OUTPUT "${dest}"
@@ -38,7 +38,7 @@ FOREACH (cmd wmk wml wmb wmd wmu)
         DEPENDS "${src}"
     )
     INSTALL (FILES "${dest}" DESTINATION "bin")
-    RUN_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1" "EN Tools" "EN Tools")
+    INST_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1")
     ADD_CUSTOM_TARGET(
         "preprocess_perl_frontend_${cmd}" ALL
         DEPENDS "${dest}"

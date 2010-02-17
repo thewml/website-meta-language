@@ -48,12 +48,8 @@ ADD_CUSTOM_TARGET(
 
 FOREACH(MYDOC ${WML_DOCS})
     SET (POD_SRC "${MYDOC}.pod")
-    SET (MAN7_LOCAL "${MYDOC}.7")
+    SET (MAN_LOCAL "${MYDOC}")
 
-    RUN_POD2MAN("wml_doc_${MYDOC}_pod" "${POD_SRC}" "${MAN7_LOCAL}" 
-        "7" "EN Tools" "EN Tools"
-    )
-
-    INSTALL_MAN("${MAN7_LOCAL}" "7")
+    INST_POD2MAN("wml_doc_${MYDOC}_pod" "${POD_SRC}" "${MAN_LOCAL}" "7")
 ENDFOREACH(MYDOC ${WML_DOCS})
 
