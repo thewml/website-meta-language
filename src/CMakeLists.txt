@@ -5,10 +5,11 @@ SET(VERSION "2.1.1")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-INCLUDE ("Common.cmake")
-
 SET (WML_LIB_DIR "lib/wml")
 SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
+SET (WML_LIBEXE_DIR "${WML_LIB_DIR}/exec/")
+
+INCLUDE ("Common.cmake")
 
 SUBDIRS (
     wml_aux 
