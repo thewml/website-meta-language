@@ -130,5 +130,11 @@ SET_TARGET_PROPERTIES(${EXE}
     PROPERTIES LINK_FLAGS "${perl_ccdlflags} ${perl_ldflaags} -L${perl_archlib}/CORE ${perl_dla} -lperl ${perl_libs}"
 )
 
+SET_TARGET_PROPERTIES(${EXE}
+    PROPERTIES OUTPUT_NAME "wml_p3_${EXE}"
+)
+
+INSTALL(TARGETS ${EXE} DESTINATION "${WML_LIBEXE_DIR}")
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config_sc.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config_sc.h)
