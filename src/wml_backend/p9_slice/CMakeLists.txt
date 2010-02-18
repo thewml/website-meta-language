@@ -1,7 +1,22 @@
-PREPROCESS_PATH_PERL("slice_preproc" "slice_main.pl" "slice")
-INST_POD2MAN("slice_pod" "slice.pod" "slice" "1")
+SET(BASENAME "slice")
+SET(src "${CMAKE_CURRENT_SOURCE_DIR}/${BASENAME}_main.pl")
+SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pl")
+ADD_CUSTOM_COMMAND(
+    OUTPUT "${dest}"
+    COMMAND "${PERL_EXECUTABLE}"
+    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/etc/expand.pl"
+         "${src}"
+         "${dest}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    DEPENDS "${src}"
+)
+ADD_CUSTOM_TARGET(
+    "${BASENAME}_preproc" ALL
+    DEPENDS "${dest}"
+)
+INST_POD2MAN("${BASENAME}_pod" "${dest}" "${BASENAME}" "1")
 INSTALL(
-    PROGRAMS "slice"
+    PROGRAMS "${dest}"
     DESTINATION "${WML_LIBEXE_DIR}"
-    RENAME "wml_p9_slice"
+    RENAME "wml_p9_${BASENAME}"
 )
