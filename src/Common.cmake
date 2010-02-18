@@ -196,7 +196,10 @@ MACRO(DEFINE_WML_PERL_BACKEND BASENAME DEST_BASENAME)
     PREPROCESS_PATH_PERL(
         "${BASENAME}_preproc" "${BASENAME}.src" "${BASENAME}.pl"
     )    
-    INST_POD2MAN("${BASENAME}_pod" "${BASENAME}.src" "${BASENAME}" "1")
+    INST_RENAME_POD2MAN(
+        "${BASENAME}_pod" "${BASENAME}.src" "${BASENAME}" "1"
+        "${DEST_BASENAME}"
+    )
     INSTALL(
         PROGRAMS "${BASENAME}.pl"
         DESTINATION "${WML_LIBEXE_DIR}"

@@ -1,6 +1,7 @@
 SET(BASENAME "slice")
 SET(src "${CMAKE_CURRENT_SOURCE_DIR}/${BASENAME}_main.pl")
 SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pl")
+
 ADD_CUSTOM_COMMAND(
     OUTPUT "${dest}"
     COMMAND "${PERL_EXECUTABLE}"
@@ -14,9 +15,14 @@ ADD_CUSTOM_TARGET(
     "${BASENAME}_preproc" ALL
     DEPENDS "${dest}"
 )
-INST_POD2MAN("${BASENAME}_pod" "${dest}" "${BASENAME}" "1")
+
+SET(INST_BASE "wml_p9_${BASENAME}")
+
+INST_RENAME_POD2MAN(
+    "${BASENAME}_pod" "${dest}" "${BASENAME}" "1" "${INST_BASE}"
+)
 INSTALL(
     PROGRAMS "${dest}"
     DESTINATION "${WML_LIBEXE_DIR}"
-    RENAME "wml_p9_${BASENAME}"
+    RENAME "${INST_BASE}"
 )
