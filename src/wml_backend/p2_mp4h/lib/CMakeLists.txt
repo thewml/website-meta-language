@@ -1,9 +1,7 @@
-SET(CMAKE_VERBOSE_MAKEFILE ON)
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
 ########### next target ###############
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../../../Common.cmake")
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/..)
 REPLACE_FUNCTIONS(LIB_SOURCES strtol obstack xmalloc xstrdup)
 SET(mp4h_STAT_SRCS

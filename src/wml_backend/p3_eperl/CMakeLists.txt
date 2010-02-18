@@ -1,7 +1,3 @@
-SET(CMAKE_VERBOSE_MAKEFILE ON)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/../../Common.cmake")
-
 include(FindPerl)
 IF (NOT PERL_FOUND)
     MESSAGE ( FATAL_ERROR "perl must be installed")

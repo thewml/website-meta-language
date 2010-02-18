@@ -6,10 +6,6 @@ SET (PACKAGE_VERSION "\"${VERSION_RAW}\"")
 
 SET (PACKAGE_DATE "\"19-Jan-2008\"")
 
-# see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
-SET(CMAKE_VERBOSE_MAKEFILE ON)
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/../../Common.cmake")
 SUBDIRS (
     lib
     src
