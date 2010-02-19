@@ -57,3 +57,4 @@ FOREACH(cmd wmd_missing)
     INST_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1")
 ENDFOREACH(cmd)
 
+INSTALL_DATA ("wmd.txt")
