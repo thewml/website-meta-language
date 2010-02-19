@@ -2,7 +2,6 @@
 ##  wml_test/Makefile
 ##  Copyright (c) 1998-2001 Ralf S. Engelschall
 ##
-@SET_MAKE@
 
 # ------------------------------------------------
 #   DEFINITIONS
