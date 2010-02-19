@@ -2,9 +2,6 @@
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 
-use strict;
-use warnings;
-
 use vars qw($CFG);
 
 BEGIN { $^W = 0; } # get rid of nasty warnings

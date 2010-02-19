@@ -1,19 +1,25 @@
 SET(BASENAME "slice")
 SET(src "${CMAKE_CURRENT_SOURCE_DIR}/${BASENAME}_main.pl")
+SET(intermediate "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pre.pl")
 SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pl")
 
 ADD_CUSTOM_COMMAND(
-    OUTPUT "${dest}"
+    OUTPUT "${intermediate}"
     COMMAND "${PERL_EXECUTABLE}"
     ARGS "${CMAKE_CURRENT_SOURCE_DIR}/etc/expand.pl"
          "${src}"
-         "${dest}"
+         "${intermediate}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     DEPENDS "${src}"
 )
+
 ADD_CUSTOM_TARGET(
-    "${BASENAME}_preproc" ALL
-    DEPENDS "${dest}"
+    "${BASENAME}_preproc_2" ALL
+    DEPENDS "${intermediate}"
+)
+
+PREPROCESS_PATH_PERL(
+    "${BASENAME}_preproc" "${intermediate}" "${dest}"
 )
 
 SET(INST_BASE "wml_p9_${BASENAME}")
