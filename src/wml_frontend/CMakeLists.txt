@@ -11,12 +11,15 @@ EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}"
     OUTPUT_VARIABLE date
 )
 
-FOREACH (cmd wmk wml wmb wmd wmu)
+MACRO(set_vars)
     SET (destbase "${cmd}.pl")
     SET (dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
     SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${cmd}.src")
-    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${cmd}")
+    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${cmd}")    
+ENDMACRO(set_vars)
 
+FOREACH (cmd wmk wml wmb wmd wmu)
+    set_vars()
     ADD_CUSTOM_COMMAND(
         OUTPUT "${dest}"
         COMMAND "${PERL_EXECUTABLE}"
@@ -48,3 +51,9 @@ FOREACH (cmd wmk wml wmb wmd wmu)
         DEPENDS "${dest}"
     )
 ENDFOREACH(cmd)
+
+FOREACH(cmd wmd_missing)
+    set_vars()
+    INST_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1")
+ENDFOREACH(cmd)
+
