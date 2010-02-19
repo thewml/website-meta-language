@@ -34,18 +34,15 @@ MACRO(CHECK_MULTI_FUNCTIONS_EXISTS)
 ENDMACRO(CHECK_MULTI_FUNCTIONS_EXISTS)
 
 MACRO(PREPROCESS_PATH_PERL TARGET_NAME SOURCE DEST)
-    SET(PATH_PERL ${PERL_EXECUTABLE})
     ADD_CUSTOM_COMMAND(
-        OUTPUT ${DEST}
-        COMMAND ${PATH_PERL} 
-        ARGS "-e" 
-        "open I, qq{<\$ARGV[0]}; open O, qq{>\$ARGV[1]}; while(<I>){s{\\@PATH_PERL\\@}{\$ARGV[2]}g;print O \$_;} close(I); close(O);"
-        ${SOURCE}
-        ${DEST}
-        ${PATH_PERL}
-        COMMAND chmod ARGS "a+x" ${DEST}
-        DEPENDS ${SOURCE}
-        VERBATIM
+        OUTPUT "${DEST}"
+        COMMAND "${PERL_EXECUTABLE}"
+        ARGS "${CMAKE_SOURCE_DIR}/cmake/preprocess-path-perl.pl" 
+            "--input" "${SOURCE}"
+            "--output" "${DEST}"
+            "--subst" "PATH_PERL=${PERL_EXECUTABLE}"
+        COMMAND chmod ARGS "a+x" "${DEST}"
+        DEPENDS "${SOURCE}"
     )
     # The custom command needs to be assigned to a target.
     ADD_CUSTOM_TARGET(

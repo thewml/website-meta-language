@@ -1,5 +1,3 @@
-INCLUDE("../Common.cmake")
-
 SET (STDS
     "wml_barebone"
     "wml_std_css1"

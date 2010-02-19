@@ -80,7 +80,7 @@ sub verify_all_keys
 {
     my ($want, $have) = @_;
 
-    for my $idx (0 .. @$want)
+    for my $idx (0 .. $#$want)
     {
         if ($want->[$idx] ne $have->[$idx])
         {

@@ -5,7 +5,9 @@ use warnings;
 
 use Getopt::Long;
 
-my @params = ();
+my @params = (qw(
+    PATH_PERL
+    ));
 
 my %substitutions;
 
@@ -93,4 +95,5 @@ sub verify_all_keys
 
     return;
 }
+
 
