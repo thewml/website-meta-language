@@ -65,11 +65,12 @@ test:
 	    $(PATH_PERL) -n -e 's/^.*$$/./s; print STDERR $$_; $$i++; print STDERR "\n" if ($$i % 60 == 0);'; \
 	    echo ''; \
 	else :; \
-	fi; \
-	echo "Running WML Test Suite (still incomplete):"; \
+	fi
+	echo "Running WML Test Suite (still incomplete):"
 	WML="$$root/bin/wml -q -W1,-N"; export WML; \
 	LANG=C; LC_ALL=C; export LANG LC_ALL; \
-	$(PATH_PERL) TEST
+	prove t/*.t ; \
+	exit $$?
 
 clean:
 	-rm -rf TEST.root tmp.*.cmd 2>/dev/null
