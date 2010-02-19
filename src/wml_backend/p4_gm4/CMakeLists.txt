@@ -9,6 +9,7 @@ SET (PACKAGE_DATE "\"19-Jan-2008\"")
 SUBDIRS (
     lib
     src
+    doc
 )
 
 # CHECK_INCLUDE_FILE("stdarg.h" HAVE_STDARG_H)
