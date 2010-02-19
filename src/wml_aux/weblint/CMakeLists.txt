@@ -1,3 +1,5 @@
-DEFINE_WML_AUX_PERL_PROG("weblint")
+DEFINE_WML_AUX_PERL_PROG_WITHOUT_MAN("weblint")
+
+INSTALL_RENAME_MAN("weblint.1" 1 "wml_aux_weblint")
 
 INSTALL_DATA("weblintrc")
