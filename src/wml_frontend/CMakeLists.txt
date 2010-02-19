@@ -35,7 +35,7 @@ FOREACH (cmd wmk wml wmb wmd wmu)
             "--subst" "built_date=${date}"
             "--subst" "prefix=${CMAKE_INSTALL_PREFIX}"
             "--subst" "bindir=${CMAKE_INSTALL_PREFIX}/bin"
-            "--subst" "libdir=${CMAKE_INSTALL_PREFIX}/lib"
+            "--subst" "libdir=${CMAKE_INSTALL_PREFIX}/${WML_LIB_DIR}"
             "--subst" "mandir=${CMAKE_INSTALL_PREFIX}/share/man"
             "--subst" "PATH_PERL=${PERL_EXECUTABLE}"
         DEPENDS "${src}"
