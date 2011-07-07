@@ -131,13 +131,13 @@ SET_TARGET_PROPERTIES(${EXE}
 )
 
 ADD_CUSTOM_COMMAND(
-    OUTPUT "eperl.pod"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/eperl.pod"
     COMMAND "${PERL_EXECUTABLE}"
-    ARGS "eperl-pod-preproc.pl"
-        "--input" "eperl.proto.pod"
-        "--output" "eperl.pod"
-        "--versionfrom" "eperl_version.c"
-    DEPENDS "eperl-pod-preproc.pl" "eperl.proto.pod" "eperl_version.c"
+    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl"
+        "--input" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod"
+        "--output" "${CMAKE_CURRENT_BINARY_DIR}/eperl.pod"
+        "--versionfrom" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.c"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.c"
 )
 
 ADD_CUSTOM_TARGET(

@@ -14,8 +14,10 @@ EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}"
 MACRO(set_vars)
     SET (destbase "${cmd}.pl")
     SET (dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
-    SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${cmd}.src")
-    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${cmd}")    
+    SET (srcbase "${cmd}.src")
+    SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${srcbase}")
+    SET (mannamebase "${cmd}")
+    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${mannamebase}")
 ENDMACRO(set_vars)
 
 FOREACH (cmd wmk wml wmb wmd wmu)
@@ -45,7 +47,7 @@ FOREACH (cmd wmk wml wmb wmd wmu)
         DESTINATION "bin"
         RENAME "${cmd}"
         )
-    INST_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1")
+    INST_POD2MAN("${cmd}_pod" "${srcbase}" "${mannamebase}" "1")
     ADD_CUSTOM_TARGET(
         "preprocess_perl_frontend_${cmd}" ALL
         DEPENDS "${dest}"
@@ -54,7 +56,7 @@ ENDFOREACH(cmd)
 
 FOREACH(cmd wmd_missing)
     set_vars()
-    INST_POD2MAN("${cmd}_pod" "${src}" "${manname}" "1")
+    INST_POD2MAN("${cmd}_pod" "${srcbase}" "${mannamebase}" "1")
 ENDFOREACH(cmd)
 
 INSTALL_DATA ("wmd.txt")

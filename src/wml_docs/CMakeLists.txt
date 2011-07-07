@@ -29,12 +29,14 @@ FOREACH(MYSTD ${STDS})
 
 ENDFOREACH(MYSTD ${STDS})
 
-SET (TAGS_POD "wml_tags.pod")
+SET (TAGS_POD "${CMAKE_CURRENT_BINARY_DIR}/wml_tags.pod")
 ADD_CUSTOM_COMMAND(
     OUTPUT "${TAGS_POD}"
     COMMAND ${PERL_EXECUTABLE}
-    ARGS "wml_tags.pod.pl"
-    DEPENDS "wml_tags.pod.in" "wml_tags.L.main" "wml_tags.L.incl" 
+    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.pod.pl"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.pod.in" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.main"
+            "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.incl" 
     VERBATIM
 )
 

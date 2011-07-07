@@ -33,7 +33,7 @@ MACRO(CHECK_MULTI_FUNCTIONS_EXISTS)
   ENDFOREACH(name)
 ENDMACRO(CHECK_MULTI_FUNCTIONS_EXISTS)
 
-MACRO(PREPROCESS_PATH_PERL TARGET_NAME SOURCE DEST)
+MACRO(PREPROCESS_PATH_PERL_WITH_FULL_NAMES TARGET_NAME SOURCE DEST)
     ADD_CUSTOM_COMMAND(
         OUTPUT "${DEST}"
         COMMAND "${PERL_EXECUTABLE}"
@@ -49,6 +49,12 @@ MACRO(PREPROCESS_PATH_PERL TARGET_NAME SOURCE DEST)
         ${TARGET_NAME} ALL
         DEPENDS ${DEST}
     )
+ENDMACRO(PREPROCESS_PATH_PERL_WITH_FULL_NAMES)
+
+MACRO(PREPROCESS_PATH_PERL TARGET_NAME BASE_SOURCE BASE_DEST)
+    SET (DEST "${CMAKE_CURRENT_BINARY_DIR}/${BASE_DEST}")
+    SET (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${BASE_SOURCE}")
+    PREPROCESS_PATH_PERL_WITH_FULL_NAMES ("${TARGET_NAME}" "${SOURCE}" "${DEST}")
 ENDMACRO(PREPROCESS_PATH_PERL)
 
 # Copies the file from one place to the other.
@@ -74,18 +80,19 @@ MACRO(ADD_COPY_TARGET TARGET_NAME SOURCE DEST)
     )
 ENDMACRO(ADD_COPY_TARGET)
 
-MACRO(RUN_POD2MAN TARGET_NAME SOURCE DEST SECTION CENTER RELEASE)
+MACRO(RUN_POD2MAN TARGET_NAME BASE_SOURCE BASE_DEST SECTION CENTER RELEASE)
+    SET (DEST "${CMAKE_CURRENT_BINARY_DIR}/${BASE_DEST}")
+    SET (SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${BASE_SOURCE}")
     SET(PATH_PERL ${PERL_EXECUTABLE})
     ADD_CUSTOM_COMMAND(
-        OUTPUT ${DEST}
-        COMMAND ${PATH_PERL} 
-        ARGS "-e" 
-        "my (\$src, \$dest, \$sect, \$center, \$release) = @ARGV; my \$pod = qq{Hoola.pod}; use File::Copy; copy(\$src, \$pod); system(qq{pod2man --section=\$sect --center=\"\$center\" --release=\"\$release\" \$pod > \$dest}); unlink(\$pod)"
-        ${SOURCE}
-        ${DEST}
-        ${SECTION}
-        "${CENTER}"
-        "${RELEASE}"
+        OUTPUT "${DEST}"
+        COMMAND "${PATH_PERL}"
+        ARGS "${CMAKE_SOURCE_DIR}/cmake/pod2man-wrapper.pl"
+            "--src" "${SOURCE}"
+            "--dest" "${DEST}"
+            "--section" "${SECTION}"
+            "--center" "${CENTER}"
+            "--release" "${RELEASE}"
         DEPENDS ${SOURCE}
         VERBATIM
     )

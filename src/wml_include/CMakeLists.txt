@@ -52,11 +52,24 @@ CONFIGURE_FILE(
     COPY_ONLY
 )
 
+SET (dirs_to_make )
+
 FOREACH (base ${myfiles})
+
+    # Make the directory to which the file belongs.
+    STRING (REGEX REPLACE "/.*" "" basedir "${base}")
+    LIST (FIND dirs_to_make "${basedir}" found)
+    IF ("${found}" STREQUAL "-1")
+        LIST (APPEND dirs_to_make "${basedir}")
+        FILE (MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${basedir}")
+    ENDIF ("${found}" STREQUAL "-1")
+
     SET (destbase "${base}.wml")
     SET (dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
-    SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${base}.src")
-    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${base}")
+    SET (srcbase "${base}.src")
+    SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${srcbase}")
+    SET (mannamebase "${base}")
+    SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${mannamebase}")
 
     STRING (REPLACE "/" "__" target_base "${base}")
 
@@ -82,8 +95,8 @@ FOREACH (base ${myfiles})
 
     INST_RENAME_POD2MAN(
         "include_${target_base}_pod"
-        "${src}"
-        "${manname}"
+        "${srcbase}"
+        "${mannamebase}"
         "3"
         "${dest_man}"
     )

@@ -11,8 +11,8 @@ DEFINE_WML_AUX_C_PROG (
 
 SIMPLE_POD2MAN(
     "wml_aux_iselect"
-    "${CMAKE_CURRENT_SOURCE_DIR}/iselect.pod"
-    "${CMAKE_CURRENT_BINARY_DIR}/iselect"
+    "iselect.pod"
+    "iselect"
     "1"
 )
 

@@ -1,7 +1,9 @@
 SET(BASENAME "slice")
 SET(src "${CMAKE_CURRENT_SOURCE_DIR}/${BASENAME}_main.pl")
-SET(intermediate "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pre.pl")
-SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pl")
+SET(intermediatebase "${BASENAME}.pre.pl")
+SET(intermediate "${CMAKE_CURRENT_BINARY_DIR}/${intermediatebase}")
+SET(destbase "${BASENAME}.pl")
+SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
 
 ADD_CUSTOM_COMMAND(
     OUTPUT "${intermediate}"
@@ -18,14 +20,14 @@ ADD_CUSTOM_TARGET(
     DEPENDS "${intermediate}"
 )
 
-PREPROCESS_PATH_PERL(
+PREPROCESS_PATH_PERL_WITH_FULL_NAMES(
     "${BASENAME}_preproc" "${intermediate}" "${dest}"
 )
 
 SET(INST_BASE "wml_p9_${BASENAME}")
 
 INST_RENAME_POD2MAN(
-    "${BASENAME}_pod" "${dest}" "${BASENAME}" "1" "${INST_BASE}"
+    "${BASENAME}_pod" "${destbase}" "${BASENAME}" "1" "${INST_BASE}"
 )
 INSTALL(
     PROGRAMS "${dest}"
