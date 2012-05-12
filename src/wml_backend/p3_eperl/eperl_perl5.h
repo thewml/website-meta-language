@@ -72,7 +72,7 @@
 #  define PL_curstash curstash
 #endif
 
-#ifndef WITH_THR
+#if !defined(WITH_THR) && (PERL_VERSION < 16)
 #  define PL_defoutgv defoutgv
 #endif
 

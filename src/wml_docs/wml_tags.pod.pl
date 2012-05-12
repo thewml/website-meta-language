@@ -3,52 +3,71 @@
 ##  Copyright (c) 1998,1999 Ralf S. Engelschall, All Rights Reserved. 
 ##
 
-open(OUT, ">wml_tags.pod");
-open(IN, "<wml_tags.pod.in");
-while (<IN>) {
+use strict;
+use warnings;
+
+use Getopt::Long;
+
+my ($src, $dest, $main, $incl);
+GetOptions(
+    'src=s' => \$src,
+    'dest=s' => \$dest,
+    'main=s' => \$main,
+    'incl=s' => \$incl,
+) or "Die! Wrong parameters!";
+
+open my $out_fh, '>', $dest
+    or die "Cannot open output_file '$dest'. $!";
+open my $in_fh, '<', $src
+    or die "Cannot open input_file '$src'. $!";
+
+my (@L);
+while (<$in_fh>) {
     if (m|^%%CORE%%|) {
-        open(TMP, "<wml_tags.L.main");
+        open( my $tmp_fh, '<', $main)
+            or die "Cannot open main file - '$main' - $!";
         @L = ();
-        while (<TMP>) { 
+        while (<$tmp_fh>) { 
             next if (m|^\s*$|);
             push(@L, $_);
         }
-        close(TMP);
+        close($tmp_fh);
         @L = sort(@L);
-        $n = 0;
-        foreach $l (@L) {
-            print OUT " ".$l; 
+        my $n = 0;
+        foreach my $l (@L) {
+            print {$out_fh} " ".$l; 
             $n++;
             if (($n % 10) == 0) {
                 $n = 0;
-                print OUT "\n";
+                print {$out_fh} "\n";
             }
         }
     }
     if (m|^%%INCL%%|) {
-        open(TMP, "<wml_tags.L.incl");
+        open(my $tmp_fh, '<', $incl)
+            or die "Cannot open incl file - '$incl' - $!";
         @L = ();
-        while (<TMP>) { 
+        while (<$tmp_fh>) { 
             next if (m|^\s*$|);
             push(@L, $_);
         }
-        close(TMP);
+        close($tmp_fh);
         @L = sort(@L);
-        $n = 0;
-        foreach $l (@L) {
-            print OUT " ".$l; 
+        my $n = 0;
+        foreach my $l (@L) {
+            print {$out_fh} " ".$l; 
             $n++;
             if (($n % 10) == 0) {
                 $n = 0;
-                print OUT "\n";
+                print {$out_fh} "\n";
             }
         }
     }
     else {
-        print OUT $_;
+        print {$out_fh} $_;
     }
 }
-close(IN);
-close(OUT);
+close($in_fh);
+close($out_fh);
 
 ##EOF##
