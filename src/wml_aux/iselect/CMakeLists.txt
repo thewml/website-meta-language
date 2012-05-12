@@ -9,6 +9,8 @@ DEFINE_WML_AUX_C_PROG (
    iselect_getopt.c iselect_version.c iselect_help.c iselect_readme.c
 )
 
+INCLUDE_DIRECTORIES( BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
+
 SIMPLE_POD2MAN(
     "wml_aux_iselect"
     "iselect.pod"
