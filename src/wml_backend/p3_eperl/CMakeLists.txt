@@ -134,19 +134,20 @@ SET_TARGET_PROPERTIES(${EXE}
     PROPERTIES OUTPUT_NAME "wml_p3_${EXE}"
 )
 
+SET (POD_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/eperl.pod")
 ADD_CUSTOM_COMMAND(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/eperl.pod"
+    OUTPUT "${POD_PATH}"
     COMMAND "${PERL_EXECUTABLE}"
     ARGS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl"
         "--input" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod"
-        "--output" "${CMAKE_CURRENT_BINARY_DIR}/eperl.pod"
+        "--output" "${POD_PATH}"
         "--versionfrom" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.c"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.c"
 )
 
 ADD_CUSTOM_TARGET(
     "eperl_pod_preproc" ALL
-    DEPENDS "eperl.pod"
+    DEPENDS "${POD_PATH}"
 )
 
 INST_RENAME_POD2MAN( "eperl_pod" "eperl.pod" "eperl" "1" "wml_p3_eperl")

@@ -46,7 +46,12 @@ if (!defined($release))
 my $dir = tempdir( CLEANUP => 1);
 
 my $pod = "$dir/Hoola.pod";
-copy($src, $pod); 
+
+if (! -e $src)
+{
+    die "Cannot find '$src'";
+}
+copy($src, $pod);
 
 if(
 system(
