@@ -123,7 +123,11 @@ SET_SOURCE_FILES_PROPERTIES(${SOURCES}
 )
 
 SET_TARGET_PROPERTIES(${EXE}
-    PROPERTIES LINK_FLAGS "${perl_ccdlflags} ${perl_ldflags} -L${perl_archlib}/CORE ${perl_dla} -lperl ${perl_libs}"
+    PROPERTIES LINK_FLAGS "${perl_ccdlflags} ${perl_ldflags} -L${perl_archlib}/CORE"
+)
+
+TARGET_LINK_LIBRARIES(${EXE}
+    ${perl_dla} -lperl ${perl_libs}
 )
 
 SET_TARGET_PROPERTIES(${EXE}
