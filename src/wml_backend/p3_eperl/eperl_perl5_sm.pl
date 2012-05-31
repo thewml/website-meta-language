@@ -4,8 +4,20 @@
 ##
 
 use Config;
+use Getopt::Long;
 
-open O, ">eperl_perl5_sm.h";
+my $output_fn;
+GetOptions(
+    'o|output=s' => \$output_fn,
+) or die "Output not specified. $!";
+
+if (!defined($output_fn))
+{
+    die "Output not specified.";
+}
+
+open O, '>', $output_fn
+    or die "Cannot open '$output_fn' for writing";
 select(O);
 print <<'EOT'
 /*

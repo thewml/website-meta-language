@@ -19,7 +19,7 @@ DEFINE_WML_AUX_C_PROG_WITHOUT_MAN (
 SET (html "Overview.html")
 SET (man "wml_aux_tidy.1")
 ADD_CUSTOM_COMMAND(
-    OUTPUT "${man}"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${man}"
     COMMAND "lynx"
     ARGS "-dump" "-nolist" "-width=72" "${html}" ">" "${man}"
     DEPENDS "${html}"

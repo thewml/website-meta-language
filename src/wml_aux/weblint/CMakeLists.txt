@@ -1,5 +1,5 @@
 DEFINE_WML_AUX_PERL_PROG_WITHOUT_MAN("weblint")
 
-INSTALL_RENAME_MAN("weblint.1" 1 "wml_aux_weblint")
+INSTALL_RENAME_MAN("weblint.1" 1 "wml_aux_weblint" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 INSTALL_DATA("weblintrc")
