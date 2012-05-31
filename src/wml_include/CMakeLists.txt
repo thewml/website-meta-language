@@ -48,7 +48,7 @@ SET (myfiles
 
 CONFIGURE_FILE(
     "${CMAKE_CURRENT_SOURCE_DIR}/sys/bootp3.src.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/sys/bootp3.src"
+    "${CMAKE_CURRENT_BINARY_DIR}/sys/bootp3.src"
     COPY_ONLY
 )
 
@@ -67,7 +67,14 @@ FOREACH (base ${myfiles})
     SET (destbase "${base}.wml")
     SET (dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
     SET (srcbase "${base}.src")
-    SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${srcbase}")
+    IF ("${base}" STREQUAL "sys/bootp3")
+        SET (src "${CMAKE_CURRENT_BINARY_DIR}/${srcbase}")
+        SET (is_binary 1)
+        # MESSAGE (FATAL_ERROR "src = ${src}")
+    ELSE ("${base}" STREQUAL "sys/bootp3")
+        SET (src "${CMAKE_CURRENT_SOURCE_DIR}/${srcbase}")
+        SET (is_binary )
+    ENDIF ("${base}" STREQUAL "sys/bootp3")
     SET (mannamebase "${base}")
     SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${mannamebase}")
 
@@ -93,6 +100,9 @@ FOREACH (base ${myfiles})
     )
     STRING (REPLACE "/" "::" dest_man "wml/${base}")
 
+    IF (is_binary)
+        SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
+    ENDIF (is_binary)
     INST_RENAME_POD2MAN(
         "include_${target_base}_pod"
         "${srcbase}"
