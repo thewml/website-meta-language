@@ -154,5 +154,5 @@ INST_RENAME_POD2MAN( "eperl_pod" "eperl.pod" "eperl" "1" "wml_p3_eperl")
 
 INSTALL(TARGETS ${EXE} DESTINATION "${WML_LIBEXE_DIR}")
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h)
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config_sc.h.cmake ${CMAKE_CURRENT_SOURCE_DIR}/config_sc.h)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config_ac.h")
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config_sc.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config_sc.h")
