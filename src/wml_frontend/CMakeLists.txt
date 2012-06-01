@@ -22,6 +22,7 @@ ENDMACRO(set_vars)
 
 FOREACH (cmd wmk wml wmb wmd wmu)
     set_vars()
+    # MESSAGE( FATAL_ERROR "WML_LIB_DIR = ${WML_LIB_DIR}")
     ADD_CUSTOM_COMMAND(
         OUTPUT "${dest}"
         COMMAND "${PERL_EXECUTABLE}"
