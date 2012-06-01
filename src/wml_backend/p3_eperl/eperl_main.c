@@ -33,6 +33,8 @@
 **  eperl_main.c -- ePerl main procedure 
 */
 
+#include <errno.h>
+
 #include "eperl_config.h"
 #include "eperl_global.h"
 #include "eperl_security.h"
@@ -175,7 +177,9 @@ void give_img_powered(void)
     if (mode == MODE_NPHCGI)
         HTTP_PrintResponseHeaders("");
     printf("Content-Type: image/gif\r\n\r\n");
-    fwrite(ePerl_POWERED_data, ePerl_POWERED_size, 1, stdout);
+    if (fwrite(ePerl_POWERED_data, ePerl_POWERED_size, 1, stdout) != 1) {
+        exit(-1);
+    }
 }
 
 void give_usage(char *name)
@@ -871,7 +875,10 @@ int main(int argc, char **argv, char **env)
                 }
 
                 /* restore original cwd */
-                chdir(cwd2);
+                if (chdir(cwd2) != 0)
+                {
+                    PrintError(mode, source, NULL, NULL, "chdir failed with errno: %li\n", (long)errno);
+                }
         
                 free(cwd2);
             }
@@ -969,13 +976,19 @@ int main(int argc, char **argv, char **env)
     /* optionally run the ePerl preprocessor */
     if (fPP) {
         /* switch to directory where script stays */
-        getcwd(cwd, MAXPATHLEN);
+        if (! getcwd(cwd, MAXPATHLEN) ) {
+            PrintError(mode, source, NULL, NULL, "getcwd failed with errno %ld", (long)errno);
+            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        }
         strncpy(sourcedir, source, sizeof(sourcedir));
         sourcedir[sizeof(sourcedir)-1] = NUL;
         for (cp = sourcedir+strlen(sourcedir); cp > sourcedir && *cp != '/'; cp--)
             ;
         *cp = NUL;
-        chdir(sourcedir);
+        if (chdir(sourcedir) != 0) {
+            PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
+            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        }
         /* run the preprocessor */
         if ((cpBuf3 = ePerl_PP(cpScript, RememberedINC)) == NULL) {
             PrintError(mode, source, NULL, NULL, "Preprocessing failed for `%s': %s", source, ePerl_PP_GetError());
@@ -983,7 +996,10 @@ int main(int argc, char **argv, char **env)
         }
         cpScript = cpBuf3;
         /* switch to previous dir */
-        chdir(cwd);
+        if (chdir(cwd) != 0) {
+            PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
+            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        }
     }
 
     /* convert bristled source to valid Perl code */
@@ -1003,7 +1019,10 @@ int main(int argc, char **argv, char **env)
         PrintError(mode, source, NULL, NULL, "Cannot open Perl script file `%s' for writing", perlscript);
         CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
     }
-    fwrite(cpScript, strlen(cpScript), 1, fp);
+    if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
+        PrintError(mode, source, NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
+        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+    }
     fclose(fp); fp = NULL;
 
     /* in Debug mode output the script to the console */
@@ -1013,7 +1032,11 @@ int main(int argc, char **argv, char **env)
             CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
         }
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
-        fwrite(cpScript, strlen(cpScript)-1, 1, fp);
+        if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
+        {
+            PrintError(mode, source, NULL, NULL, "%s\n", "Cannot write");
+            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        }
         if (cpScript[strlen(cpScript)-1] == '\n') 
             fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
         else 
@@ -1113,18 +1136,30 @@ int main(int argc, char **argv, char **env)
         if (outputfile != NULL && stringNE(outputfile, "-")) {
             /* if we remembered current working dir, restore it now */
             if (mode == MODE_FILTER && cwd[0] != NUL)
-                chdir(cwd);
+            {
+                if (chdir(cwd) != 0)
+                {
+                    PrintError(mode, source, NULL, NULL, "%s\n", "Cannot chdir");
+                    CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
+                }
+            }
             /* open outputfile and write out the data */
             if ((fp = fopen(outputfile, "w")) == NULL) {
                 PrintError(mode, source, NULL, NULL, "Cannot open output file `%s' for writing", outputfile);
                 CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
             }
-            fwrite(cpOut, nOut, 1, fp);
+            if (fwrite(cpOut, nOut, 1, fp) != 1) {
+                PrintError(mode, source, NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
+                CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+            }
             fclose(fp); fp = NULL;
         }
         else {
             /* data just goes to stdout */
-            fwrite(cpOut, nOut, 1, stdout);
+            if (fwrite(cpOut, nOut, 1, stdout) != 1) {
+                PrintError(mode, source, NULL, NULL, "%s\n", "Cannot write to stdout");
+                CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+            }
             /* make sure that the data is out before we exit */
             fflush(stdout);
         }

@@ -8,6 +8,9 @@
   information about every single change.
   ___________________________________________________________________________
 
+  *) Fix some compiler warnings that gcc emitted by default.
+       [Shlomi Fish <shlomif@cpan.org>]
+
   Changes between 2.0.12 to 2.2.0:
 
   *) Convert the build system to CMake.

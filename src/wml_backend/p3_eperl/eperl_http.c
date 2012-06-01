@@ -324,7 +324,16 @@ FILE *HTTP_openURLasFP(char *url)
     sprintf(cmd+strlen(cmd), "\r\n");
 
     /* send the request */
-    write(s, cmd, strlen(cmd));
+    {
+        ssize_t expected_num_written = strlen(cmd);
+        ssize_t got_num_written;
+        
+        got_num_written = write(s, cmd, expected_num_written);
+        if (got_num_written != expected_num_written)
+        {
+            return NULL;
+        }
+    }
     free(cmd);
 
     /* convert the file descriptor to a FILE pointer */
