@@ -14,7 +14,7 @@ GetOptions(
     'dest=s' => \$dest,
     'main=s' => \$main,
     'incl=s' => \$incl,
-) or "Die! Wrong parameters!";
+) or die "Wrong parameters!";
 
 open my $out_fh, '>', $dest
     or die "Cannot open output_file '$dest'. $!";
@@ -22,14 +22,15 @@ open my $in_fh, '<', $src
     or die "Cannot open input_file '$src'. $!";
 
 my (@L);
-while (<$in_fh>) {
-    if (m|^%%CORE%%|) {
+while (my $line = <$in_fh>) {
+    if ($line =~ m|^%%CORE%%|) {
         open( my $tmp_fh, '<', $main)
             or die "Cannot open main file - '$main' - $!";
         @L = ();
-        while (<$tmp_fh>) { 
-            next if (m|^\s*$|);
-            push(@L, $_);
+        TMP_LINES:
+        while ($line = <$tmp_fh>) { 
+            next TMP_LINES if ($line =~ m|^\s*$|);
+            push(@L, $line);
         }
         close($tmp_fh);
         @L = sort(@L);
@@ -43,13 +44,14 @@ while (<$in_fh>) {
             }
         }
     }
-    if (m|^%%INCL%%|) {
+    if (defined($line) && ($line =~ m|^%%INCL%%|)) {
         open(my $tmp_fh, '<', $incl)
             or die "Cannot open incl file - '$incl' - $!";
         @L = ();
-        while (<$tmp_fh>) { 
-            next if (m|^\s*$|);
-            push(@L, $_);
+        TMP2_LINES:
+        while ($line = <$tmp_fh>) { 
+            next TMP2_LINES if ($line =~ m|^\s*$|);
+            push(@L, $line);
         }
         close($tmp_fh);
         @L = sort(@L);
@@ -63,8 +65,8 @@ while (<$in_fh>) {
             }
         }
     }
-    else {
-        print {$out_fh} $_;
+    elsif (defined($line)) {
+        print {$out_fh} $line;
     }
 }
 close($in_fh);
