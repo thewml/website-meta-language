@@ -1,7 +1,7 @@
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(VERSION "2.1.1")
+SET(VERSION "2.1.3")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 

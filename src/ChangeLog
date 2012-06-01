@@ -8,6 +8,10 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.0.12 to 2.2.0:
+
+  *) Convert the build system to CMake.
+
   Changes between 2.0.9 and 2.0.12:
 
     *) Fix compilation under gcc4.

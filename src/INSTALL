@@ -2,15 +2,37 @@
  INSTALLATION
  ============
 
-[Note: Cygwin users see INSTALL.CYGWIN.]
+WML was converted to use CMake ( http://www.cmake.org/ ) 
+starting from version 2.2.0. You'll need to install CMake version 2.6.3
+or later from your distribution's repository or from its source
+distribution. *NOTE*: CMake 2.6.2 (that ships with some releases of Ubuntu)
+won't work due to a regression bug so please don't report any errors with
+it.
 
- 1. Overview for the impatient
-    --------------------------
+Next, run:
 
-    $ ./configure --prefix=/path/to/wml
-    $ make
-    $ make test
-    $ make install
+    mkdir build
+    cd build
+    cmake-gui ..         # For the GUI configuration applet
+
+Or:
+
+    mkdir build
+    cd build
+    ccmake ..            # For the Curses-based configuration applet
+
+With a fallback to:
+
+    mkdir build
+    cd build
+    cmake ..             # Non-interactive application.
+
+Next type:
+
+    make
+    make install
+
+This will build and install WML and its related programs.
 
  2. Requirements
     ------------
@@ -22,10 +44,9 @@
        installation WML occupies approximately 3 MB of disk space.
 
     o  Perl Interpreter: 
-       Make sure you have Perl 5.003 (works, but perhaps problems can occur),
-       Perl 5.005 (works best) or later already installed on your system. You
-       can find the homepage of Perl on <URL:http://www.perl.com/> and the
-       Perl distribution on <URL:http://language.perl.com/info/software.html>.
+       Make sure you have Perl 5.008 or later already installed on your 
+       system. You can find the homepages of Perl on 
+       <URL:http://www.perl.com/> and <URL:http://www.perl.org/> .
 
     o  ANSI-C Compiler: 
        Make sure you have an ANSI-C compiler installed.  The GNU C compiler
@@ -51,6 +72,8 @@
 
  3. Configuring the source tree
     ---------------------------
+
+    [OUT OF DATE - TO UPDATE]
 
     The next step is to configure the WML source tree for your particular
     system/platform. The important information here is to set a location
