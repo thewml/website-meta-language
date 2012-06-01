@@ -1,11 +1,12 @@
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(VERSION "2.1.5")
+SET(VERSION "2.1.7")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SET (WML_LIB_DIR "lib/wml")
+STRING(REGEX REPLACE "^\\Q${CMAKE_PREFIX_PATH}\\E/?" "" WML_LIB_DIR_BASE "${LIB_INSTALL_DIR}")
+SET (WML_LIB_DIR "${WML_LIB_DIR_BASE}/wml")
 SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
 SET (WML_LIBEXE_DIR "${WML_LIB_DIR}/exec/")
 
