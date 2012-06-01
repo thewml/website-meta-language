@@ -355,7 +355,7 @@ main (int argc, char *const *argv)
 
       case 'o':
         if (!debug_set_output (optarg))
-          error (0, errno, optarg);
+          error (0, errno, "%s", optarg);
         break;
 
       case 's':
@@ -469,7 +469,7 @@ main (int argc, char *const *argv)
             fp = path_search (argv[optind], &filename);
             if (fp == NULL)
               {
-                error (0, errno, argv[optind]);
+                error (0, errno, "%s", argv[optind]);
                 MP4HERROR ((warning_status, 0,
                    _("%s: file skipped"), argv[optind]));
                 continue;
