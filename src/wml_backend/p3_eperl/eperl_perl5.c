@@ -239,14 +239,21 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     if (!keepcwd) {
         /* if running as a Unix filter remember the cwd for outputfile */
         if (mode == MODE_FILTER)
-            getcwd(cwd, MAXPATHLEN);
+        {
+            if (! getcwd(cwd, MAXPATHLEN))
+            {
+                CU(-1);
+            }
+        }
         /* determine dir of source file and switch to it */
         strncpy(sourcedir, source, sizeof(sourcedir));
         sourcedir[sizeof(sourcedir)-1] = NUL;
         for (cp = sourcedir+strlen(sourcedir); cp > sourcedir && *cp != '/'; cp--)
             ;
         *cp = NUL;
-        chdir(sourcedir);
+        if (chdir(sourcedir) != 0) {
+            CU(-1);
+        }
     }
 
     /*  Set the previously remembered Perl 5 scalars (option -d) */

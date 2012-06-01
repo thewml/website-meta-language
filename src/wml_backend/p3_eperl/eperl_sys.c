@@ -435,13 +435,21 @@ char *abspath(char *path)
         return path;
     else {
         /* remember current working dir */
-        getcwd(cwd, MAXPATHLEN);
+        if (! getcwd(cwd, MAXPATHLEN)) {
+            return NULL;
+        }
         /* determine dir of path */
         cp = dirname(path);
-        chdir(cp);
-        getcwd(apath, MAXPATHLEN);
+        if (chdir(cp) != 0) {
+            return NULL;
+        }
+        if (! getcwd(apath, MAXPATHLEN)) {
+            return NULL;
+        }
         /* restore cwd */
-        chdir(cwd);
+        if (chdir(cwd) != 0) {
+            return NULL;
+        }
         /* add file part again */
         if (apath[strlen(apath)-1] != '/') {
             strncpy(apath+strlen(apath), "/", sizeof(apath)-strlen(apath));
