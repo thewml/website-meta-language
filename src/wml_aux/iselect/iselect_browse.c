@@ -724,7 +724,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                      else
                          cpp = iSelect_README;
                      for (y = 0; y < wYSize && cpp[y] != NULL; y++) {
-                         sprintf(ca, cpp[y]);
+                         sprintf(ca, "%s", cpp[y]);
                          cp = ca;
                          x = 0;
                          while (1) {
