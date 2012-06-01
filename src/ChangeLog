@@ -11,28 +11,29 @@
   Changes between 2.0.12 to 2.2.0:
 
   *) Convert the build system to CMake.
+  	   [Shlomi Fish <shlomif@cpan.org>]
 
   Changes between 2.0.9 and 2.0.12:
 
     *) Fix compilation under gcc4.
        Applied patch from Mandriva's RPM .spec
-       [Shlomi Fish <shlomif@iglu.org.il>]
+       [Shlomi Fish <shlomif@cpan.org>]
 
 	*) Fixed wml on cygwin.
-       [Shlomi Fish <shlomif@iglu.org.il>]
+       [Shlomi Fish <shlomif@cpan.org>]
 
     *) Updated the README and VERSION.
        [Denis Barbier <barbier@linuxfr.org>]
     
     *) Got the GNU Autotools build to work again.
-       [Shlomi Fish <shlomif@iglu.org.il>]
+       [Shlomi Fish <shlomif@cpan.org>]
 
     *) Added workaround to compile with perl-5.10.0.
-       [Shlomi Fish <shlomif@iglu.org.il>]
+       [Shlomi Fish <shlomif@cpan.org>]
 
     *) Applied the CVE-2008-0665 Patch (Temp files)
        [Nico Golde <nion@debian.org>]
-       [Shlomi Fish <shlomif@iglu.org.il>]
+       [Shlomi Fish <shlomif@cpan.org>]
 
   Changes between 2.0.8 and 2.0.9:
 
