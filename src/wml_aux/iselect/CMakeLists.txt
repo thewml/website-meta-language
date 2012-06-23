@@ -12,11 +12,20 @@ DEFINE_WML_AUX_C_PROG (
 
 INCLUDE_DIRECTORIES( BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
 
+SET (POD2MAN_TARGET_IS_A_LIST 1)
+SET (pod_dests )
 SIMPLE_POD2MAN(
-    "wml_aux_iselect"
+    "pod_dests"
     "iselect.pod"
     "iselect"
     "1"
+)
+
+SET (POD2MAN_TARGET_IS_A_LIST )
+
+ADD_CUSTOM_TARGET(
+    "wml_aux_iselect" ALL
+    DEPENDS ${pod_dests}
 )
 
 TARGET_LINK_LIBRARIES(

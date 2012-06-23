@@ -20,6 +20,9 @@ MACRO(set_vars)
     SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${mannamebase}")
 ENDMACRO(set_vars)
 
+SET (POD2MAN_TARGET_IS_A_LIST 1)
+SET (pod_dests )
+
 FOREACH (cmd wmk wml wmb wmd wmu)
     set_vars()
     # MESSAGE( FATAL_ERROR "WML_LIB_DIR = ${WML_LIB_DIR}")
@@ -48,7 +51,7 @@ FOREACH (cmd wmk wml wmb wmd wmu)
         DESTINATION "bin"
         RENAME "${cmd}"
         )
-    INST_POD2MAN("${cmd}_pod" "${srcbase}" "${mannamebase}" "1")
+    INST_POD2MAN("pod_dests" "${srcbase}" "${mannamebase}" "1")
     ADD_CUSTOM_TARGET(
         "preprocess_perl_frontend_${cmd}" ALL
         DEPENDS "${dest}"
@@ -57,7 +60,14 @@ ENDFOREACH(cmd)
 
 FOREACH(cmd wmd_missing)
     set_vars()
-    INST_POD2MAN("${cmd}_pod" "${srcbase}" "${mannamebase}" "1")
+    INST_POD2MAN("pod_dests" "${srcbase}" "${mannamebase}" "1")
 ENDFOREACH(cmd)
+
+SET (POD2MAN_TARGET_IS_A_LIST )
+
+ADD_CUSTOM_TARGET(
+    "frontend_pods" ALL
+    DEPENDS ${pod_dests}
+)
 
 INSTALL_DATA ("wmd.txt")

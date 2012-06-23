@@ -151,7 +151,15 @@ ADD_CUSTOM_TARGET(
 )
 
 SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
-INST_RENAME_POD2MAN( "eperl_pod" "eperl.pod" "eperl" "1" "wml_p3_eperl")
+SET (POD2MAN_TARGET_IS_A_LIST 1)
+SET (eperl_pods )
+INST_RENAME_POD2MAN( "eperl_pods" "eperl.pod" "eperl" "1" "wml_p3_eperl")
+SET (POD2MAN_TARGET_IS_A_LIST)
+
+ADD_CUSTOM_TARGET(
+    "eperl_pod" ALL
+    DEPENDS "${eperl_pods}"
+)
 
 INSTALL(TARGETS ${EXE} DESTINATION "${WML_LIBEXE_DIR}")
 

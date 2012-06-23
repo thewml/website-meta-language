@@ -52,6 +52,9 @@ ADD_CUSTOM_TARGET(
     DEPENDS ${TAGS_POD}
 )
 
+SET (POD2MAN_TARGET_IS_A_LIST 1)
+SET (pod_dests )
+
 FOREACH(MYDOC ${WML_DOCS})
     SET (POD_SRC "${MYDOC}.pod")
     SET (MAN_LOCAL "${MYDOC}")
@@ -59,6 +62,12 @@ FOREACH(MYDOC ${WML_DOCS})
     IF (${MYDOC} STREQUAL "wml_tags")
         SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
     ENDIF (${MYDOC} STREQUAL "wml_tags")
-    INST_POD2MAN("wml_doc_${MYDOC}_pod" "${POD_SRC}" "${MAN_LOCAL}" "7")
+    INST_POD2MAN("pod_dests" "${POD_SRC}" "${MAN_LOCAL}" "7")
 ENDFOREACH(MYDOC ${WML_DOCS})
 
+SET (POD2MAN_TARGET_IS_A_LIST )
+
+ADD_CUSTOM_TARGET(
+    "docs_pods" ALL
+    DEPENDS ${pod_dests}
+)

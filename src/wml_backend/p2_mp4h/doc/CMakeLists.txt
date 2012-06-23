@@ -28,4 +28,11 @@ PREPARE_MP4H_DOC ("${HTML_TARGET}" "html")
 ADD_CUSTOM_TARGET( "mp4h_doc_html" ALL DEPENDS "${HTML_TARGET}" )
 
 SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
-INST_RENAME_POD2MAN( "mp4h_pod" "mp4h.pod" "mp4h" "1" "mp4h")
+SET (mp4h_pod_dests )
+SET (POD2MAN_TARGET_IS_A_LIST 1)
+INST_RENAME_POD2MAN( "mp4h_pod_dests" "mp4h.pod" "mp4h" "1" "mp4h")
+SET (POD2MAN_TARGET_IS_A_LIST )
+ADD_CUSTOM_TARGET(
+    "mp4h_pod" ALL
+    DEPENDS ${mp4h_pod_dests}
+)
