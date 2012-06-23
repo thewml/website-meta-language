@@ -220,8 +220,15 @@ ENDMACRO(DEFINE_WML_AUX_PERL_PROG_WITHOUT_MAN BASENAME)
 
 MACRO(DEFINE_WML_AUX_PERL_PROG BASENAME)
     DEFINE_WML_AUX_PERL_PROG_WITHOUT_MAN("${BASENAME}")
-    RUN_POD2MAN("pod_${BASENAME}" "${BASENAME}.src" "${BASENAME}.1" "1" "EN  Tools" "En Tools")
+    SET (POD2MAN_TARGET_IS_A_LIST 1)
+    SET (aux_pod_dests )
+    RUN_POD2MAN("aux_pod_dests" "${BASENAME}.src" "${BASENAME}.1" "1" "EN  Tools" "En Tools")
     INSTALL_RENAME_MAN ("${BASENAME}.1" 1 "wml_aux_${BASENAME}" "${CMAKE_CURRENT_BINARY_DIR}")
+    SET (POD2MAN_TARGET_IS_A_LIST )
+    ADD_CUSTOM_TARGET(
+        "pod_${BASENAME}" ALL
+        DEPENDS ${aux_pod_dests}
+    )
 ENDMACRO(DEFINE_WML_AUX_PERL_PROG BASENAME)
 
 MACRO(DEFINE_WML_AUX_C_PROG_WITHOUT_MAN BASENAME)
@@ -244,9 +251,16 @@ MACRO(DEFINE_WML_PERL_BACKEND BASENAME DEST_BASENAME)
     PREPROCESS_PATH_PERL(
         "${BASENAME}_preproc" "${BASENAME}.src" "${BASENAME}.pl"
     )
+    SET (POD2MAN_TARGET_IS_A_LIST 1)
+    SET (perl_backend_pod_tests )
     INST_RENAME_POD2MAN(
-        "${BASENAME}_pod" "${BASENAME}.src" "${BASENAME}" "1"
+        "perl_backend_pod_tests" "${BASENAME}.src" "${BASENAME}" "1"
         "${DEST_BASENAME}"
+    )
+    SET (POD2MAN_TARGET_IS_A_LIST)
+    ADD_CUSTOM_TARGET(
+        "${BASENAME}_pod" ALL
+        DEPENDS ${perl_backend_pod_tests}
     )
     INSTALL(
         PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/${BASENAME}.pl"
