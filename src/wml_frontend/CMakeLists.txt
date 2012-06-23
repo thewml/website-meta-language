@@ -20,7 +20,6 @@ MACRO(set_vars)
     SET (manname "${CMAKE_CURRENT_BINARY_DIR}/${mannamebase}")
 ENDMACRO(set_vars)
 
-SET (POD2MAN_TARGET_IS_A_LIST 1)
 SET (pod_dests )
 
 FOREACH (cmd wmk wml wmb wmd wmu)
@@ -62,8 +61,6 @@ FOREACH(cmd wmd_missing)
     set_vars()
     INST_POD2MAN("pod_dests" "${srcbase}" "${mannamebase}" "1")
 ENDFOREACH(cmd)
-
-SET (POD2MAN_TARGET_IS_A_LIST )
 
 ADD_CUSTOM_TARGET(
     "frontend_pods" ALL

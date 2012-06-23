@@ -55,7 +55,6 @@ CONFIGURE_FILE(
 SET (dirs_to_make )
 SET (preproc_target_dests )
 SET (include_pods_dests )
-SET (POD2MAN_TARGET_IS_A_LIST 1)
 
 FOREACH (base ${myfiles})
 
@@ -111,8 +110,6 @@ FOREACH (base ${myfiles})
         "${dest_man}"
     )
 ENDFOREACH(base)
-
-SET (POD2MAN_TARGET_IS_A_LIST )
 
 ADD_CUSTOM_TARGET(
     "preprocess_perl_includes" ALL
