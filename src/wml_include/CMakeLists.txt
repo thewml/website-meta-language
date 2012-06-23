@@ -53,6 +53,7 @@ CONFIGURE_FILE(
 )
 
 SET (dirs_to_make )
+SET (preproc_target_dests )
 
 FOREACH (base ${myfiles})
 
@@ -89,13 +90,10 @@ FOREACH (base ${myfiles})
             "--output" "${dest}"
         DEPENDS "${src}"
     )
-    ADD_CUSTOM_TARGET(
-        "preprocess_perl_include_${target_base}" ALL
-        DEPENDS "${dest}"
-    )
+    LIST (APPEND preproc_target_dests "${dest}")
     INSTALL (
-        FILES "${dest}" 
-        DESTINATION "${WML_LIB_DIR}/include/" 
+        FILES "${dest}"
+        DESTINATION "${WML_LIB_DIR}/include/"
         RENAME "${destbase}"
     )
     STRING (REPLACE "/" "::" dest_man "wml/${base}")
@@ -112,3 +110,7 @@ FOREACH (base ${myfiles})
     )
 ENDFOREACH(base)
 
+ADD_CUSTOM_TARGET(
+    "preprocess_perl_includes" ALL
+    DEPENDS ${preproc_target_dests}
+)
