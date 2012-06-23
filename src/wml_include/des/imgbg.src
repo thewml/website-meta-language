@@ -13,7 +13,7 @@
 
 <protect pass=2>
 <:
-use WML::GD;
+use GD;
 
 #   general function for creating the image
 sub imgbg {
@@ -48,12 +48,12 @@ sub imgbg {
         $x = 0;
         if ($direction eq 'h') {
             #   horizontal image
-            $im = new WML::GD::Image($size, $pixels);
+            $im = GD::Image->new($size, $pixels);
             $dx = 1;
             $dy = 0;
         } else {
             #   vertical image
-            $im = new WML::GD::Image($pixels, $size);
+            $im = GD::Image->new($pixels, $size);
             $dx = 0;
             $dy = 1;
         }

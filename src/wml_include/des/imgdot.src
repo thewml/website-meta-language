@@ -13,7 +13,7 @@
 
 <protect pass=2>
 <:
-use WML::GD;
+use GD;
 
 #   general function for creating a dot image
 sub imgdot {
@@ -39,7 +39,7 @@ sub imgdot {
 
     #   create image if it does not still exist
     if (not -f $file) {
-        $im = new WML::GD::Image($x, $y);
+        $im = GD::Image->new($x, $y);
         $col = $im->colorAllocate($r, $g, $b);
         $im->transparent($col) if $transp;
         eval "\$data = \$im->$format";
