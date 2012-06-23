@@ -54,6 +54,8 @@ CONFIGURE_FILE(
 
 SET (dirs_to_make )
 SET (preproc_target_dests )
+SET (include_pods_dests )
+SET (POD2MAN_TARGET_IS_A_LIST 1)
 
 FOREACH (base ${myfiles})
 
@@ -102,7 +104,7 @@ FOREACH (base ${myfiles})
         SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
     ENDIF (is_binary)
     INST_RENAME_POD2MAN(
-        "include_${target_base}_pod"
+        "include_pods_dests"
         "${srcbase}"
         "${mannamebase}"
         "3"
@@ -110,7 +112,14 @@ FOREACH (base ${myfiles})
     )
 ENDFOREACH(base)
 
+SET (POD2MAN_TARGET_IS_A_LIST )
+
 ADD_CUSTOM_TARGET(
     "preprocess_perl_includes" ALL
     DEPENDS ${preproc_target_dests}
+)
+
+ADD_CUSTOM_TARGET(
+    "includes_pods" ALL
+    DEPENDS ${include_pods_dests}
 )
