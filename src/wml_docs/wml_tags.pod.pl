@@ -1,6 +1,6 @@
 ##
 ##  wml_tags.pod.pl -- create wml_tags.pod file
-##  Copyright (c) 1998,1999 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1998,1999 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 use strict;
@@ -28,7 +28,7 @@ while (my $line = <$in_fh>) {
             or die "Cannot open main file - '$main' - $!";
         @L = ();
         TMP_LINES:
-        while ($line = <$tmp_fh>) { 
+        while ($line = <$tmp_fh>) {
             next TMP_LINES if ($line =~ m|^\s*$|);
             push(@L, $line);
         }
@@ -36,7 +36,7 @@ while (my $line = <$in_fh>) {
         @L = sort(@L);
         my $n = 0;
         foreach my $l (@L) {
-            print {$out_fh} " ".$l; 
+            print {$out_fh} " ".$l;
             $n++;
             if (($n % 10) == 0) {
                 $n = 0;
@@ -49,7 +49,7 @@ while (my $line = <$in_fh>) {
             or die "Cannot open incl file - '$incl' - $!";
         @L = ();
         TMP2_LINES:
-        while ($line = <$tmp_fh>) { 
+        while ($line = <$tmp_fh>) {
             next TMP2_LINES if ($line =~ m|^\s*$|);
             push(@L, $line);
         }
@@ -57,7 +57,7 @@ while (my $line = <$in_fh>) {
         @L = sort(@L);
         my $n = 0;
         foreach my $l (@L) {
-            print {$out_fh} " ".$l; 
+            print {$out_fh} " ".$l;
             $n++;
             if (($n % 10) == 0) {
                 $n = 0;
