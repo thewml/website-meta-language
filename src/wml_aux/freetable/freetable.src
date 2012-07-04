@@ -1,9 +1,9 @@
-#!@PATH_PERL@
-eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
+#!@PATH_PERL@ -w
+eval 'exec @PATH_PERL@ -w -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 
 # Freetable html tables generator
-# Copyright (c) 1999, 2000 Tomasz Wêgrzanowski <maniek@beer.com>
+# Copyright (c) 1999, 2000, 2001 Tomasz Wegrzanowski <taw@users.sourceforge.net>
 #
 # Freetable is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,32 +15,8 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 # On Debian GNU/Linux systems, the complete text of the GNU General
 # Public License can be found in `/usr/share/common-licenses/GPL'.
 
-$version = '0.11';
-lang_init ();
-init ();
-while (<>)  { if ( /<wwwtable(\s?.*)>/i ) { table_parse(0) } else { print } }
+$version = '2.3';
 
-sub table_parse {
-my ( $level ) = shift;
-my ( $table_open_data, $table_close_data, $table_started ) = ( $1, '', 0 );
-my ( %cell,%entry );
-
-while (<>) {
-if ( /<wwwtable(\s?.*)>/i ) { table_entry_content_append_block (\%entry,table_parse($level+1)); next }
-if ( /<\/wwwtable(.*)>/i ) { $table_close_data = $1; last }
-if ( /^\s*\(\(\s*(.*)\s*,\s*(.*)\s*\)\)(.*)$/ ) { table_entry_new (\%entry,$1,$2,$3,'h'); $table_started = 1; next }
-if ( /^\s*\(\s*(.*)\s*,\s*(.*)\s*\)(.*)$/ )     { table_entry_new (\%entry,$1,$2,$3,'d'); $table_started = 1; next }
-if ( $table_started ) { table_entry_content_append_line (\%entry,$_) } else { print }
-}
-
-seq_entries (\%entry);
-my ($max_row,$max_col) = table_count_max (\%entry);
-entries2table  (\%entry,\%cell,$max_row,$max_col);
-complete_table (\%cell,$max_row,$max_col);
-table_render   ($level,\%cell,$max_row,$max_col,$table_open_data,$table_close_data);
-}
-
-sub lang_init {
 $warning =
 '<!-- WARNING: The following table was produced by freetable.               -->
 <!--          Unless know what you are doing, you should not edit it here,  -->
@@ -48,7 +24,7 @@ $warning =
 
 ';
 
-$help = 
+$help =
 'Usage: freetable [options] filename
 
 Options:
@@ -62,206 +38,295 @@ Options:
   -l, --location         Location tags substitution
   -m, --macro [program]  Use macro processor for cells content (default: m4)
 ';
-}
 
-sub init {
 use Getopt::Long;
 $Getopt::Long::bundling=1;
-my (@opts) = ("b|no-nbsp","c|comment","w|no-warning","h|help","V|version","m|macro:s","l|location");
-$opt_h=$opt_V=$opt_b=$opt_c=$opt_w=$opt_l=0;
-$opt_m='-';
+my (@opts) = ("b|no-nbsp","c|comment","w|warning","h|help","V|version","m|macro:s","l|location");
+$opt_h=$opt_V=$opt_b=$opt_c=$opt_w=$opt_m=$opt_l=0;
 GetOptions(@opts);
-if ($opt_m eq "-") { $opt_m = '' }
-elsif ($opt_m eq "") { $opt_m = 'm4' }
-elsif ($#ARGV == -1 && $ARGV ne '') {
-    push(@ARGV,$opt_m);
-    $opt_m = '';
-}
+if ($opt_m eq "") { $opt_m = 'm4' }
 if ($opt_h) { print $help; exit 0 }
 if ($opt_V) { print "Freetable $version\n"; exit 0 }
 $defaultcell = ($opt_b)?'':'&nbsp;';
 ($min_row,$min_col) = (1,1);
 $tablewarn   = ($opt_w)?$warning:'';
+
+while (<>)  { if ( /<wwwtable(.*)>/i ) { table_parse($1,0) } else { print } }
+
+sub table_parse {
+    my ( $table_open_data, $level ) = @_;
+    my ( $table_close_data, $table_started ) = ( '', 0 );
+    my ( %cell,%entry );
+    my @Seq_data = (1,1,1,1); # max_row, max_col, cur_row, cur_col
+
+    while (<>) {
+	if ( /<wwwtable(.*)>/i )
+	    { table_entry_content_append_block (\%entry,table_parse($1, $level+1)); }
+        elsif ( /<\/wwwtable(.*)>/i )
+	    { $table_close_data = $1; last }
+	elsif ( /^\s*\(\(\s*\{(.*?)\}\s*,\s*\{(.*?)\}\s*\)\)(.*)$/ )
+	    { table_entry_new (\%entry,\@Seq_data, $1,$2,$3,'c',1); $table_started = 1; }
+	elsif ( /^\s*\(\(\s*(.*?)\s*;\s*(.*?)\s*\)\)(.*)$/ )
+	    { table_entry_new (\%entry,\@Seq_data,$1,$2,$3,'r',1); $table_started = 1; }
+	elsif ( /^\s*\(\(\s*(.*?)\s*,\s*(.*?)\s*\)\)(.*)$/ )
+	    { table_entry_new (\%entry,\@Seq_data,$1,$2,$3,'t',1); $table_started = 1; }
+	elsif ( /^\s*\(\s*\{(.*?)\}\s*,\s*\{(.*?)\}\s*\)(.*)$/ )
+	    { table_entry_new (\%entry,\@Seq_data,$1,$2,$3,'c',0); $table_started = 1; }
+	elsif ( /^\s*\(\s*(.*?)\s*;\s*(.*?)\s*\)(.*)$/ )
+	    { table_entry_new (\%entry,\@Seq_data,$1,$2,$3,'r',0); $table_started = 1; }
+	elsif ( /^\s*\(\s*(.*?)\s*,\s*(.*?)\s*\)(.*)$/ )
+	    { table_entry_new (\%entry,\@Seq_data,$1,$2,$3,'t',0); $table_started = 1; }
+	elsif ( $table_started )
+	    { table_entry_content_append_line (\%entry,$_) }
+	else
+	    { print }
+    }
+    expand_rx (\%entry, $Seq_data[0], $Seq_data[1]);
+    entries2table  (\%entry,\%cell,$Seq_data[0],$Seq_data[1]);
+    complete_table (\%cell,$Seq_data[0],$Seq_data[1]);
+    return table_render ($level,\%cell,$Seq_data[0],$Seq_data[1],$table_open_data,$table_close_data);
+}
+
+sub early_seq {
+    my ($str, $addr_type, $max, $cur) = @_;
+    my (@a, %h);
+    if ($str eq '*') {
+	$address = '.*';
+	$addr_type='x';
+    } elsif ($str eq '=' or $str eq '')  {
+	$address = [$cur];
+	$addr_type='a';
+    } elsif ($str =~ /^([\+-])(\d*)$/) {
+	$cur += ((($1 eq '+')?1:-1) * (($2 eq '')?1:$2));
+	$address = [$cur];
+	$addr_type='a';
+    } elsif ($addr_type eq 'c') {
+	eval "\@a=($str)";
+	$cur = $a[-1];
+	@h{@a} = 1;
+	@a = sort {$a <=> $b} keys %h;
+	$address = \@a;
+	$addr_type = 'a'
+    } elsif ($addr_type eq 'r') {
+	foreach my $r(split /\s*,\s*/,$str)
+	{
+	    if ($r =~ /(\d+)-(\d+)/) { push @a, $1..$2 }
+	    else { push @a, $r }
+	}
+	$cur = $a[-1];
+	@h{@a} = 1;
+	@a = sort {$a <=> $b} keys %h;
+	$address = \@a;
+	$addr_type = 'a'
+    } elsif ($str =~ /^\d+$/) {
+	$cur = $str;
+	$address = [$cur];
+	$addr_type = 'a';
+    } else {
+	$address = $str;
+	$addr_type = 'x';
+    }
+    if ($addr_type eq 'a' and $address->[-1] > $max) {
+	$max = $address->[-1]
+    }
+
+#   $addr_type.in  ::= 't', 'r', 'c'
+#   $addr_type.out ::= 'x', 'a'
+    return ($addr_type, $address, $max, $cur);
+}
+
+sub expand_rx {
+    my %entries = %{$_[0]};
+    my ($max_row, $max_col) = ($_[1], $_[2]);
+    my $len = $#{$entries{head}};
+    for $entrynr(0..$len) {
+	if ( ${$entries{at_c}}[$entrynr] eq 'x' ) {
+	    my $rx = '^'.${$entries{col}}[$entrynr].'$';
+	    $rx = qr/$rx/;
+	    my @a = grep { /$rx/ } 1..$max_col;
+	    ${$entries{col}}[$entrynr] = \@a;
+	    ${$entries{at_c}}[$entrynr] = 'a';
+	}
+	if ( ${$entries{at_r}}[$entrynr] eq 'x' ) {
+	    my $rx = '^'.${$entries{row}}[$entrynr].'$';
+	    $rx = qr/$rx/;
+	    my @a = grep { /$rx/ } 1..$max_row;
+	    ${$entries{row}}[$entrynr] = \@a;
+	    ${$entries{at_r}}[$entrynr] = 'a';
+	}
+    }
 }
 
 sub table_entry_new {
-my ( $entry,$row,$col,$data,$type ) = @_;
-push @{$$entry{row }},$row;
-push @{$$entry{col }},$col;
-push @{$$entry{head}},$data;
-push @{$$entry{type}},$type;
-push @{$$entry{cont}},'';
+    my ($entry,$Seq_data,$row,$col,$data,$addr_type,$is_header) = @_;
+    my ($at_r, $ar, $at_c, $ac);
+    ($at_r, $ar, $Seq_data->[0], $Seq_data->[2]) = early_seq($row, $addr_type, $Seq_data->[0], $Seq_data->[2]);
+    ($at_c, $ac, $Seq_data->[1], $Seq_data->[3]) = early_seq($col, $addr_type, $Seq_data->[1], $Seq_data->[3]);
+    push @{$$entry{at_r}},$at_r;
+    push @{$$entry{at_c}},$at_c;
+    push @{$$entry{row}},$ar;
+    push @{$$entry{col}},$ac;
+    push @{$$entry{head}},$data;
+    push @{$$entry{is_h}},$is_header;
+    push @{$$entry{cont}},'';
 }
 
 sub table_entry_content_append_line {
-my ( $entry, $data ) = @_;
-$data =~ /^\s*(.*)$/;
-$$entry{cont}[-1] .= (($$entry{cont}[-1] and $1)?"\n":'').$1;
+    my ( $entry, $data ) = @_;
+    $data =~ /^\s*(.*)$/;
+    $$entry{cont}[-1] .= (($$entry{cont}[-1] and $1)?"\n":'').$1;
 }
 
 sub table_entry_content_append_block {
-my ( $entry, $data ) = @_;
-$$entry{cont}[-1] .= "\n".$data;
-}
-
-sub seq_entries {
-my ($entry) = @_;
-my ($prerow,$precol) = (1,1);
-return if ( $#{$$entry{row}} < 0 );
-foreach my $entrynr( 0..$#{$$entry{row}} ) {
-seq_one( $prerow, \$$entry{row}[$entrynr] );
-$prerow = $$entry{row}[$entrynr];
-$prerow = 1 unless ($prerow =~ /^\d+$/);
-seq_one( $precol, \$$entry{col}[$entrynr] );
-$precol = $$entry{col}[$entrynr];
-$precol = 1 unless ($precol =~ /^\d+$/);
-}
-}
-
-sub seq_one {
-my ( $pre,$act ) = @_;
-   if ( $$act eq '=' or $$act eq '' ) { $$act = $pre }
-elsif ( $$act eq '*' ) { $$act = '.*' }
-elsif ( $$act =~ /^([\+-])(\d*)$/ ) { $$act = $pre + ((($1 eq '+')?1:-1) * (($2 eq '')?1:$2)) }
-}
-
-sub entries2table {
-my ($entry,$cell,$max_row,$max_col) = @_;
-foreach my $entrynr (0..$#{$$entry{row}}) {
-my $def_row = $$entry{row}[$entrynr];
-my $def_col = $$entry{col}[$entrynr];
-foreach my $row ($min_row..$max_row) {
-if ( $row =~ /^$def_row$/ ) {
-foreach my $col ($min_col..$max_col) { complete_cell ($entry,$cell,$row,$col,$entrynr,$def_row) if ( $col =~ /^$def_col$/ ) }
-}
-}
-}
-}
-
-sub complete_cell {
-my ( $entry,$cell,$row,$col,$entrynr,$re ) = @_;
-$$cell{header} [$row][$col] .= $$entry{head}[$entrynr];
-$$cell{content}[$row][$col] .= (($$cell{content}[$row][$col] and $$entry{cont}[$entrynr])?' ':'').$$entry{cont}[$entrynr];
-$$cell{type}   [$row][$col]  = $$entry{type}[$entrynr];
-if ( $$entry{head}[$entrynr] =~ /(col|row)span\s*=\s*(\S+)/i ) {
-my ( $direction, $pan ) = ( $1,$2 );
-if ( $direction eq 'row' ) {
-foreach my $void_row(($row+1)..($row+$pan-1)) { $$cell{void}[$void_row][$col] = 1 }
-} else {
-foreach my $void_col(($col+1)..($col+$pan-1)) { $$cell{void}[$row][$void_col] = 1 }
-}
-}
-}
-
-sub table_count_max {
-my ( $entry,$max_row,$max_col ) = ( $_[0],0,0 );
-foreach my $entrynr(0..$#{$$entry{row}}) {
-my $row = $$entry{row}[$entrynr];
-my $col = $$entry{col}[$entrynr];
-if( $row =~ /^\d+$/ and $row > $max_row ) { $max_row =  $row }
-if( $col =~ /^\d+$/ and $col > $max_col ) { $max_col =  $col }
-}
-( $max_row,$max_col );
-}
-
-sub complete_table {
-my ( $cell,$max_row,$max_col ) = @_;
-foreach my $row ($min_row..$max_row) {
-foreach my $col ($min_col..$max_col) {
-$$cell{type}   [$row][$col] = 'd'          unless ($$cell{type}   [$row][$col]);
-$$cell{header} [$row][$col] = ''           unless ($$cell{header} [$row][$col]);
-$$cell{content}[$row][$col] = $defaultcell unless ($$cell{content}[$row][$col]);
-}
-}
+    my ( $entry, $data ) = @_;
+    $$entry{cont}[-1] .= "\n".$data;
 }
 
 sub table_render {
-my ( $level,$cell,$max_row,$max_col,$table_open_data,$table_close_data ) = @_;
-my ( $table_text,$processed_text );
-$table_text .= $tablewarn;
-$table_text .= "<table$table_open_data>\n";
-foreach my $row ($min_row..$max_row) {
-$table_text .= "  <tr>\n";
-foreach my $col ($min_col..$max_col) {
-$table_text .= "    <!-- cell ($row,$col) -->\n" if ($opt_c);
-location_tags_substitute (\$$cell{content}[$row][$col],$row,$col) if ($opt_l);
-$table_text .= "    <t$$cell{type}[$row][$col]$$cell{header}[$row][$col]>$$cell{content}[$row][$col]</t$$cell{type}[$row][$col]>\n" unless ($$cell{void}[$row][$col])
-}
-$table_text .= "  </tr>\n\n"
-}
-$table_text.= "</table$table_close_data>\n";
-if ( $opt_m ) {
-if ( $level ) {
-use IPC::Open2;
-pipe MACROR,MACROW;
-open2 \*MACROR,\*MACROW,$opt_m;
-print MACROW $table_text;
-close MACROW;
-foreach (<MACROR>) { $processed_text.=$_ }
-close MACROR;
-return $processed_text;
-} else {
-open MACROW,"|$opt_m";
-print MACROW $table_text;
-close MACROW;
-}
-} else {
-if ( $level ) { return $table_text }
-else { print $table_text }
-}
+    my ( $level,$cell,$max_row,$max_col,$table_open_data,$table_close_data ) = @_;
+    my ( $table_text,$processed_text );
+    $table_text .= $tablewarn;
+    $table_text .= "<table$table_open_data>\n";
+    foreach my $row ($min_row..$max_row) {
+	$table_text .= "  <tr>\n";
+	foreach my $col ($min_col..$max_col) {
+	    $table_text .= "    <!-- cell ($row,$col) -->\n" if ($opt_c);
+	    location_tags_substitute (\$$cell{content}[$row][$col],$row,$col) if ($opt_l);
+	    $table_text .= "    <t$$cell{type}[$row][$col]$$cell{header}[$row][$col]>$$cell{content}[$row][$col]</t$$cell{type}[$row][$col]>\n" unless ($$cell{void}[$row][$col])
+	}
+	$table_text .= "  </tr>\n"
+    }
+    $table_text.= "</table$table_close_data>\n";
+    if ( $opt_m ) {
+	if ( $level ) {
+	    use IPC::Open2;
+	    pipe MACROR,MACROW;
+	    open2 \*MACROR,\*MACROW,$opt_m;
+	    print MACROW $table_text;
+	    close MACROW;
+	    foreach (<MACROR>) { $processed_text.=$_ }
+	    close MACROR;
+	    return $processed_text;
+	} else {
+	    open MACROW,"|$opt_m";
+	    print MACROW $table_text;
+	    close MACROW;
+	}
+    } else {
+	if ( $level ) { return $table_text }
+	else { print $table_text }
+    }
 }
 
 sub location_tags_substitute {
-my ( $cell,$row,$col ) = @_;
-$$cell =~ s/<row>/$row/gi;
-$$cell =~ s/<col>/$col/gi;
+    my ( $cell,$row,$col ) = @_;
+    $$cell =~ s/<row>/$row/gi;
+    $$cell =~ s/<col>/$col/gi;
 }
 
-##EOF##
+sub entries2table {
+    my ($entryref,$cellref,$max_row,$max_col) = @_;
+    my %entry = %$entryref;
+    my $len = $#{$entry{head}};; ## row-P ?
+    foreach my $entrynr (0..$len) {
+	my @rowmask = @{${$entry{row}}[$entrynr]};
+	my @colmask = @{${$entry{col}}[$entrynr]};
+	foreach my $row (@rowmask) {
+	    foreach my $col (@colmask) {
+	        complete_cell ($entryref,$cellref,$row,$col,$entrynr)
+	    }
+	}
+    }
+}
+
+sub complete_cell {
+    my ( $entry,$cell,$row,$col,$entrynr ) = @_;
+    my ( $colspan,$rowspan ) = (0,0);
+
+    $$cell{header} [$row][$col] .= $$entry{head}[$entrynr];
+    $$cell{content}[$row][$col] .= (($$cell{content}[$row][$col] and $$entry{cont}[$entrynr])?' ':'').$$entry{cont}[$entrynr];
+    $$cell{type}   [$row][$col]  = $$entry{is_h}[$entrynr];
+    $colspan = $1 if ($$entry{head}[$entrynr] =~ /colspan\s*=\s*(\S+)/i);
+    $rowspan = $1 if ($$entry{head}[$entrynr] =~ /rowspan\s*=\s*(\S+)/i);
+
+    if ($colspan) {
+	if ($rowspan) {
+	        foreach my $void_col(($col+1)..($col+$colspan-1))
+		{$$cell{void}[$row][$void_col] = 1}
+	    foreach my $void_row(($row+1)..($row+$rowspan-1)) {
+	        foreach my $void_col(($col)..($col+$colspan-1))
+		{ $$cell{void}[$void_row][$void_col] = 1 }
+	    }
+	} else {
+	    foreach my $void_col(($col+1)..($col+$colspan-1))
+		{ $$cell{void}[$row][$void_col] = 1 }
+	}
+    } elsif ($rowspan) {
+	    foreach my $void_row(($row+1)..($row+$rowspan-1))
+		{ $$cell{void}[$void_row][$col] = 1 }
+    }
+}
+
+sub complete_table {
+    my ( $cell,$max_row,$max_col ) = @_;
+    foreach my $row ($min_row..$max_row) {
+	foreach my $col ($min_col..$max_col) {
+	    $$cell{type}[$row][$col] = $$cell{type} [$row][$col] ? 'h':'d'; # header-set-once or overwrite ?
+	    $$cell{header}[$row][$col] = ''            unless ($$cell{header}[$row][$col]);
+	    $$cell{content}[$row][$col] = $defaultcell unless ($$cell{content}[$row][$col]);
+	}
+    }
+
+}
 
 =head1 NAME
 
-freetable - tool for making HTML tables generation easier
+B<freetable> - tool for making HTML tables generation easier
 
 =head1 VERSION
 
-This manpage describes version 0.11 of freetable.
+This manpage describes version 2.3 of B<freetable>.
 
-It may be not 100% accurate if you use different version.
+It might be not 100% accurate if you use different version.
 
 =head1 SYNOPSIS
 
-B<freetable> F<[options]> F<filename>
+B<freetable> I<[options]> I<filename>
+
+or
+
+B<freetable> I<[options]>
 
 Possible options are :
 
-I<-h> or I<--help>    Print usage info and exit
+I<-h>, I<--help>     Print usage info and exit
 
-I<-V> or I<--version> Print version information and exit
+I<-V>, I<--version>  Print version information and exit
 
-I<-c> or I<--comment> Do comment before every cell to point its location
+I<-c>, I<--comment>  Insert comment before every cell to point its location
 
-I<-b> or I<--no-nbsp> Do not insert C<&nbsp;> to empty cells to make lowered
-3D apperance
+I<-b>, I<--no-nbsp>  Do not insert I<&nbsp;> to empty cells for lowered-3D apperance
 
-I<-w> or I<--warning> Print a warning before each generated table
+I<-w>, I<--warning>  Print a warning before each generated table
 that you should not change it. You should change its source.
 
-I<-l> or I<--location> Substitute <row> and <col> flags inside table with correct
-cell's location
+I<-l>, I<--location> Substitute I<E<lt>rowE<gt>> and I<E<lt>colE<gt>> flags
+inside table with correct cell's location
 
-I<-m> or I<--macro> I<[program]>  Use macro procesor to proces cells content (default: m4)
+I<-m>, I<--macro> I<[program]>
+               Use macro procesor to proces cells content (default: B<m4>)
 
-=head1 SECURITY WARNING
+=head1 WARNING
 
  DO NOT USE MACRO PROCESSOR OVER UNSURE SOURCE
  M4 MAY BE USED TO COMPROMISE YOUR SECURITY
  FOR MORE INFORMATION ON THIS EXEC :
- (info m4 'UNIX commands' syscmd)
+
+I<info m4 'UNIX commands' syscmd>
 
 =head1 DESCRIPTION
 
-This is free replacement of F<wwwtable>
+This is free replacement of B<wwwtable>
 
 HTML is great language, but have one horrible flaw :
 tables. I spent many hours looking at HTML source I just written
@@ -270,7 +335,7 @@ and trying to guess which cell in source is which in browser.
 If this also describes you, then read this manpage and your
 pain will stop.
 
-Program read HTML source from either stdin or file. Then it
+Program read HTML source from either I<stdin> or file. Then it
 searches for line starting table:
 
     <wwwtable [options]>
@@ -290,23 +355,25 @@ It is very easy:
     ...
     </wwwtable>
 
-wwwtable_options will be passed to C<E<lt>TABLEE<gt>> tags. There is
+wwwtable_options will be passed to I<E<lt>tableE<gt>> tags. There is
 no magic inside preamble. It can be any HTML text. It will be simply
 put in front of table.
 
-cell is either normal_cell (C<E<lt>TDE<gt>> tag) or
-header_cell (C<E<lt>THE<gt>> tag)
+cell is either normal_cell (I<E<lt>tdE<gt>> tag) or
+header_cell (I<E<lt>thE<gt>> tag).
+At least it was this way in freetable 1.x.
+See the next section for alternative cell address syntax.
 
     normal_cell :
     (row,col) cell_options
     cell_content
 
     header_cell :
-    ((row,col)) cell_options  
+    ((row,col)) cell_options
     cell_content
 
 cell_options will be passed to cell tag. There is magic inside
-colspan and rowspan keys are parsed to make correct table.
+I<colspan> and I<rowspan> keys are parsed to make correct table.
 
 cell_content can be anything. It may contain text, tags, and
 even nested wwwtables.
@@ -315,21 +382,22 @@ If you use I<-m> (or I<--macro>) option, it will be passed thru m4(1),
 with <row> and <col> set to adress of curent cell
 
 row and col are either numbers locating cells, expressions relative to previous cell
-or regular expresions to match few of them. Unlike F<wwwtable>, F<freetable> can use regular
-expresions for header cells. Also C<*> can be used, and it mean C<.*> really.
+or regular expresions to match few of them. Unlike B<wwwtable>, B<freetable> can use regular
+expresions for header cells. Also I<*> can be used, and it mean I<.*> really.
 
 Relative expressions are :
 
-I<=> or empty what mean : the same as previous
+I<=> or empty means : the same as previous
 
-I<+> or I<+X> what mean : one and X more than previous
+I<+> or I<+X> means : one and X more than previous
 
-I<-> or I<-X> what mean : one and X less than previous
+I<-> or I<-X> means : one and X less than previous
 
 If many definisions adress the same cell all options and contents are
 concatenated in order of apperance.
 
-If you want use only regular expresions you must tell program about the last cell :
+If you want to use only regular expresions you must tell
+program about the last cell :
 
     <wwwtable>
     (*,1)
@@ -339,11 +407,73 @@ If you want use only regular expresions you must tell program about the last cel
     (4,4)
     </wwwtable>
 
+=head1 ALTERNATIVE CELL ADDRESS SYNTAX
+
+It is inconvenient to specify cell address as regular expression.
+So in B<freetable> 2.0 two new methods were introduced.
+Both can be used to either normal or header cells.
+
+Full bakward compatibility is preserved.
+To preserve it, new syntax had to be introduced.
+Unfortunatelly, you can't specify row
+address using one method, and column address using another.
+To come around this, both new methods are very liberal
+and allow you to use I<=>, I<+>, I<->, I<+X> I<-X> and null
+string with the same meaning as they have in old addressing
+method.
+
+Unlike regular expression method,
+new methods will find out the last cell automatically.
+
+=head2 EXPLICIT RANGES
+
+    (rowrange;colrange) cell_options
+    cell_content
+
+Syntax for both rowrange and colrange is like: 1-2,4-7,9,12.
+Duplicates will be eliminated. For purpose of relative addresses
+last given number is used. So if you write
+
+    (1-100,32;1)
+    foo
+    (+,)
+    bar
+
+Cell (33,1) will contain `foobar' and all others only `foo'.
+
+=head2 ARBITRARY PERL CODE
+
+    ({code for rows},{code for tables}) cell_options
+    cell_content
+
+You can use arbitrary Perl one-liner as long as it matches our
+not very intelligent regular expressions and evaluates to list.
+Unfortunatelly there isn't any regular expression for Perl code,
+but as long as it doesn't contain I<},{> and I<})> it should work.
+Example:
+
+    <wwwtable>
+    ({grep {$_%3 == 1} 1..100},{1..2,4})
+    foo
+    </wwwtable>
+
+Will evaluate to 100 rows x 4 columns table with `foo' in
+every 1st, 2nd and 4th column of every row with number equal 1 modulo 3.
+
+If you want to use "arbitrary code" in one part of address and
+explicit range in the other, change I<-> into I<..> in defenition of
+range, and put in between I<{> and I<}>.
+
+If you want to use "arbitrary code" in one part of address and
+regular expression in the other, you have to write
+I<{grep {/expression/} from..to}>.
+Unfortunatelly, in this case you have to specify size of the table explicitely.
+
 =head1 INCOMPATIBILITIES WITH WWWTABLE
 
-If you was formerly user of F<wwwtable> and want to change your tool, you
+If you was formerly user of B<wwwtable> and want to change your tool, you
 should read this. Most of this is about regexps handling.
-Notice also that F<wwwtable> couldnt do location tags substitution nor macroprocesing.
+Notice also that B<wwwtable> couldnt do location tags substitution nor macroprocesing.
 
 Option I<-w> has completely oposite meaning. We dont print warnings by default,
 and I<-w> or I<--warning> is used to force warnings.
@@ -352,7 +482,7 @@ Table header fields can be specified by regexps ex :
 
     ((1,*))
 
-It was impossible in F<wwwtable>.
+It was impossible in B<wwwtable>.
 
 Axis counters are 100% orthogonal. This mean that code :
 
@@ -362,8 +492,8 @@ Axis counters are 100% orthogonal. This mean that code :
     (=,=)
     Foo
 
-Foo will appear in 3rd column, and if you wanted it to be in 1th
-this should be written :
+Foo will appear in 3rd column. If you wanted it to be in 1st
+you should write :
 
     (*,1) width=30
     (*,2) width=35
@@ -379,12 +509,19 @@ or
     (=,1)
     Foo
 
+In B<freetable> 2.0 two new methods o specifying cell address
+were introduced. They are completely incompatible with B<wwwtable>.
+
+=head1 BUGS
+
+"Arbitrary Perl Code" cell address will fail on very complex Perl code.
+
 =head1 SEE ALSO
 
-    B<m4(1)>
+B<m4(1)>
 
 =head1 AUTHOR
 
-Tomasz Wêgrzanowski <maniek@beer.com>
+Tomasz Wegrzanowski <taw@users.sourceforge.net>
 
 =cut
