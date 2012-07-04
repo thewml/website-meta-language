@@ -104,12 +104,12 @@ SET(CPACK_PACKAGE_EXECUTABLES
 INCLUDE (CPack)
 
 SUBDIRS (
-    wml_aux 
-    wml_backend  
+    wml_aux
+    wml_backend
     wml_common
     wml_docs
     wml_frontend
     wml_test
     wml_include
     wml_misc
-     )
+)
