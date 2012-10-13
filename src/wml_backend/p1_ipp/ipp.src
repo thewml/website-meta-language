@@ -14,7 +14,8 @@ BEGIN { $^W = 0; } # get rid of nasty warnings
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
 use IO::File 1.06;
-use File::Temp;
+use File::Temp qw/tempdir/;
+use File::Spec;
 
 #
 #   help functions
@@ -562,10 +563,10 @@ foreach $str (@opt_D) {
 #
 #   process the pre-loaded include files
 #
-$tmpdir = $ENV{'TMPDIR'} || '/tmp';
-my $tmpldir = ($ENV{'TMPDIR'} || '/tmp') . '/ipp.XXXXXX';
-$tmpdir = mkdtemp($tmpldir) or die "Unable to create temporary directory: $!\n";
-$tmpfile = $tmpdir . "/ipp.$$.tmp";
+my $tmpdir = tempdir('ipp.XXXXXXXX', 'CLEANUP' => 1,)
+    or die "Unable to create temporary directory: $!\n";
+$tmpfile = File::Spec->catfile($tmpdir, "ipp.$$.tmp");
+
 unlink($tmpfile);
 $tmp = new IO::File;
 $tmp->open(">$tmpfile") || error("cannot write into $tmpfile: $!");
