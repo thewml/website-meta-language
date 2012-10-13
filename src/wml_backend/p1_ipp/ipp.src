@@ -87,11 +87,11 @@ if (not Getopt::Long::GetOptions(
     &usage;
 }
 #   Adjust the -M flags
-if ($opt_M !~ m%^(-|[MD]*)$% && $#ARGV == -1) {
+if ($opt_M !~ m%^(-|[MD]*)$% && (! @ARGV)) {
     push(@ARGV,$opt_M);
     $opt_M = '';
 }
-&usage if ($#ARGV == -1);
+&usage if (! @ARGV);
 push(@opt_I, '.');
 
 #
@@ -257,8 +257,8 @@ sub PatternProcess {
             @ls = reverse @ls if ($arg{'IPP_REVERSE'});
 
             #   and truncate it
-            if ($arg{'IPP_MAX'} =~ m/^\d+$/ and $arg{'IPP_MAX'} < $#ls + 1) {
-                splice (@ls, $arg{'IPP_MAX'} - $#ls - 1);
+            if ($arg{'IPP_MAX'} =~ m/^\d+$/ and $arg{'IPP_MAX'} < @ls) {
+                splice (@ls, $arg{'IPP_MAX'} - scalar(@ls));
             }
             push (@ls, "");
 
