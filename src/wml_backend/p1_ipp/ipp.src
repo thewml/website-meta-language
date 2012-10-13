@@ -3,8 +3,8 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  IPP -- Include Pre-Processor
-##  Copyright (c) 1997,1998,1999 Ralf S. Engelschall, All Rights Reserved. 
-##  Copyright (c) 2000 Denis Barbier, All Rights Reserved. 
+##  Copyright (c) 1997,1998,1999 Ralf S. Engelschall, All Rights Reserved.
+##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
 require 5.006;
@@ -37,7 +37,7 @@ sub warning {
 
 
 #
-#   process command line 
+#   process command line
 #
 sub usage {
     print STDERR "Usage: ipp [options] file ...\n";
@@ -64,25 +64,25 @@ $opt_M = '-';
 @opt_S = ();
 @opt_i = ();
 @opt_s = ();
-@opt_P = (); 
-@opt_m = (); 
+@opt_P = ();
+@opt_m = ();
 $opt_N = 0;
 $opt_n = '';
 $opt_o = '-';
 $Getopt::Long::bundling = 1;
 $Getopt::Long::getopt_compat = 0;
 if (not Getopt::Long::GetOptions(
-    "v|verbose", 
-    "S|sysincludedir=s@", 
-    "D|define=s@", 
-    "I|includedir=s@", 
-    "s|sysincludefile=s@", 
-    "i|includefile=s@", 
+    "v|verbose",
+    "S|sysincludedir=s@",
+    "D|define=s@",
+    "I|includedir=s@",
+    "s|sysincludefile=s@",
+    "i|includefile=s@",
     "M|depend:s" ,
     "P|prolog=s@",
-    "m|mapfile=s@", 
-    "N|nosynclines", 
-    "n|inputfile=s", 
+    "m|mapfile=s@",
+    "N|nosynclines",
+    "n|inputfile=s",
     "o|outputfile=s"  )) {
     &usage;
 }
@@ -115,7 +115,7 @@ sub read_mapfile {
             }
             foreach $given (@given) {
                 $MAP->{$given} = {};
-                $MAP->{$given}->{REPLACE}    = $replace; 
+                $MAP->{$given}->{REPLACE}    = $replace;
                 $MAP->{$given}->{ACTIONTYPE} = $actiontype;
                 $MAP->{$given}->{ACTIONTEXT} = $actiontext;
             }
@@ -706,7 +706,7 @@ I<inputfile> ...
 
 =head1 DESCRIPTION
 
-The F<ipp> program reads all I<inputfile>s and recursively expands all 
+The F<ipp> program reads all I<inputfile>s and recursively expands all
 
   #include 'file'
   #include "file"
@@ -777,17 +777,17 @@ of included files using the B<#include 'pattern'> directive:
 
 =back
 
-If you want to include the 5 newest include files of the news directory 
+If you want to include the 5 newest include files of the news directory
 with file names like C<20000131.inc>, you may write:
 
   #include 'news/*.inc' IPP_REVERSE IPP_MAX=5
 
-In the files included with the C<#include 'pattern'> directive, the 
+In the files included with the C<#include 'pattern'> directive, the
 following variables are set and can be read using C<$(name)>:
 
 =over 4
 
-=item C<IPP_THIS>  the full name of the included source file including 
+=item C<IPP_THIS>  the full name of the included source file including
                        path and extension
 
 =item C<IPP_PREV>  the full name of the previous included file, unset
@@ -847,7 +847,7 @@ command.  See also the C<-N> flag.
 
 =head2 B<Include Variables>
 
-You can add 
+You can add
 
    name[=value]
 
@@ -864,9 +864,9 @@ functionality any Bourne Shell provides:
 
 `Use Only Value': The standard interpolation.
 
- if (exists(name)) 
+ if (exists(name))
      expandto(valueof(name))
- else 
+ else
      expandto("")
 
 =item o   B<C<$(name=string)>>
@@ -880,9 +880,9 @@ functionality any Bourne Shell provides:
 `Use Default String': The standard interpolation
 with a default value.
 
- if (exists(name)) 
+ if (exists(name))
      expandto(valueof(name))
- else 
+ else
      expandto(string)
 
 =item o   B<C<$(name:=string)>>
@@ -890,9 +890,9 @@ with a default value.
 `Use Default String and Assign': The standard interpolation with a default
 value and additional assignment for later use.
 
- if (exists(name)) 
+ if (exists(name))
      expandto(valueof(name))
- else 
+ else
      expandto(string)
      name := string
 
@@ -900,9 +900,9 @@ value and additional assignment for later use.
 
 `Use Alternate String'. The replacement interpolation.
 
- if (exists(name)) 
+ if (exists(name))
      expandto(string)
- else 
+ else
      expandto("")
 
 =item o   B<C<$(name:*string)>>
@@ -912,7 +912,7 @@ logic.
 
  if (exists(name))
      expandto("")
- else 
+ else
      expandto(string)
 
 =item o   B<C<$(name:?string)>>
@@ -922,7 +922,7 @@ used in conjunction with the above variants.
 
  if (exists(name))
      expandto(valueof(name))
- else 
+ else
      Error(string)
 
 =back
@@ -985,7 +985,7 @@ It stops processing the current include file when a line containing just
   __END__
 
 occurs. Use this to append POD documents to include files for documentation
-purposes as in Perl. You can use C<__END__> in constructs like 
+purposes as in Perl. You can use C<__END__> in constructs like
 C<$(SHORTENING:+__END__)>, so that the processing is only stopped
 when the variable SHORTENING is set.
 
@@ -995,7 +995,7 @@ It removes all occurences of the pattern
 
   \<whitespace>*<newline><whitespace>*
 
-Use this to let one or more lines to be concatenated. 
+Use this to let one or more lines to be concatenated.
 
 =head1 OPTIONS
 
