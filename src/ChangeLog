@@ -8,7 +8,15 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.2.0 to 2.2.1:
+
   *) Fix some compiler warnings that gcc emitted by default.
+       [Shlomi Fish <shlomif@cpan.org>]
+
+  *) Now removing the $TMPDIR/ipp.* directories.
+       [Shlomi Fish <shlomif@cpan.org>]
+
+  *) Fixes for the CMake building.
        [Shlomi Fish <shlomif@cpan.org>]
 
   Changes between 2.0.12 to 2.2.0:
