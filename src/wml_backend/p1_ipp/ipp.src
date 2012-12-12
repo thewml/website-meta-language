@@ -9,7 +9,8 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 
 require 5.006;
 
-BEGIN { $^W = 0; } # get rid of nasty warnings
+use strict;
+use warnings;
 
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
@@ -20,6 +21,8 @@ use File::Spec;
 #
 #   help functions
 #
+our $opt_v = 0;
+
 sub verbose {
     my ($level, $str) = @_;
     if ($opt_v) {
@@ -58,18 +61,17 @@ sub usage {
     print STDERR "  -v, --verbose                verbosity\n";
     exit(1);
 }
-$opt_v = 0;
-$opt_M = '-';
-@opt_I = ();
-@opt_D = ();
-@opt_S = ();
-@opt_i = ();
-@opt_s = ();
-@opt_P = ();
-@opt_m = ();
-$opt_N = 0;
-$opt_n = '';
-$opt_o = '-';
+our $opt_M = '-';
+our @opt_I = ();
+our @opt_D = ();
+our @opt_S = ();
+our @opt_i = ();
+our @opt_s = ();
+our @opt_P = ();
+our @opt_m = ();
+our $opt_N = 0;
+our $opt_n = '';
+our $opt_o = '-';
 $Getopt::Long::bundling = 1;
 $Getopt::Long::getopt_compat = 0;
 if (not Getopt::Long::GetOptions(
@@ -98,6 +100,7 @@ push(@opt_I, '.');
 #
 #   read mapfiles
 #
+my $MAP = {};
 sub read_mapfile {
     my ($MAP, $mapfile) = @_;
     local (*FP);
@@ -106,36 +109,30 @@ sub read_mapfile {
     while (<FP>) {
         next if (m|^\s*$|);
         next if (m|^\s*#.*$|);
-        if (($given, $replace, $actiontype, $actiontext) =
+        if (my ($given, $replace, $actiontype, $actiontext) =
              m|^(\S+)\s+(\S+)\s+\[\s*([SWE])\s*:\s*(.+?)\s*\].*$|) {
-            if ($given =~ m|,|) {
-                @given = split(/,/, $given);
-            }
-            else {
-                @given = ($given);
-            }
-            foreach $given (@given) {
-                $MAP->{$given} = {};
-                $MAP->{$given}->{REPLACE}    = $replace;
-                $MAP->{$given}->{ACTIONTYPE} = $actiontype;
-                $MAP->{$given}->{ACTIONTEXT} = $actiontext;
+             my @given = split(/,/, $given);
+            foreach my $g (@given) {
+                $MAP->{$g} = {
+                    REPLACE => $replace,
+                    ACTIONTYPE => $actiontype,
+                    ACTIONTEXT => $actiontext,
+                };
             }
         }
     }
     close(FP) || error("cannot close $mapfile");
 }
-$MAP = {};
-foreach $file (@opt_m) {
+foreach my $file (@opt_m) {
     read_mapfile($MAP, $file);
 }
-
 
 #
 #   iterate over the input files
 #
 
-%INCLUDES = ();
-$outbuf   = '';
+my %INCLUDES = ();
+my $outbuf   = '';
 
 sub setargs {
     my ($arg, $str) = @_;
@@ -186,7 +183,7 @@ sub mapfile {
 sub CanonPath {
     my ($path) = @_;
 
-    $pathL = '';
+    my $pathL = '';
     while ($path ne $pathL) {
         $pathL = $path;
         $path =~ s|//|/|g;
@@ -326,7 +323,7 @@ sub ProcessFile {
     $found  = 0;
 
     if ($delimiter eq '<') {
-        foreach $dir (reverse @opt_S) {
+        foreach my $dir (reverse @opt_S) {
             if (-f "$dir/$file") {
                 $file = "$dir/$file";
                 $found = 1;
@@ -335,7 +332,7 @@ sub ProcessFile {
         }
     }
     if ($delimiter eq '<' or $delimiter eq '"') {
-        foreach $dir (reverse @opt_I) {
+        foreach my $dir (reverse @opt_I) {
             if (-f "$dir/$file") {
                 $file = "$dir/$file";
                 $found = 1;
@@ -354,7 +351,7 @@ sub ProcessFile {
     #   stop if file was still included some time before
     #
     if (not $noid) {
-        $id = CanonPath($file);
+        my $id = CanonPath($file);
         if ($mode eq 'use') {
             return '' if (exists $INCLUDES{$id});
         }
@@ -384,7 +381,7 @@ sub ProcessFile {
               "<protect pass=2><:# line $line \"$realname\":></protect>\n"
                         if not $opt_N and not $arg{'IPP_NOSYNCLINES'};
     $store  = '';
-    while ($l = <$in>) {
+    while (my $l = <$in>) {
         $line++;
 
         #   EOL-comments
@@ -485,7 +482,7 @@ sub ProcessFile {
         #   ``#include'', ``#use'' and ``#depends'' directives
         #
 
-        if (($cmd, $incfile, $args) = ($l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/)) {
+        if (my ($cmd, $incfile, $args) = ($l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/)) {
             #   set arguments
             %argO = %arg;
             setargs(\%arg, $args);
@@ -540,8 +537,8 @@ sub ProcessFile {
 #
 #   create initial argument vector
 #
-%arg = ();
-foreach $str (@opt_D) {
+my %arg = ();
+foreach my $str (@opt_D) {
     $str =~ s|^(['"])(.*)\1$|$2|;
     if ($str =~ m|^([a-zA-Z][a-zA-Z0-9_]*)="(.*)"$|) {
         $arg{$1} = $2;
@@ -565,62 +562,65 @@ foreach $str (@opt_D) {
 #
 my $tmpdir = tempdir('ipp.XXXXXXXX', 'CLEANUP' => 1,)
     or die "Unable to create temporary directory: $!\n";
-$tmpfile = File::Spec->catfile($tmpdir, "ipp.$$.tmp");
+my $tmpfile = File::Spec->catfile($tmpdir, "ipp.$$.tmp");
 
 unlink($tmpfile);
-$tmp = new IO::File;
-$tmp->open(">$tmpfile") || error("cannot write into $tmpfile: $!");
-foreach $file (@opt_s) {
-    if ($file =~ m|^(\S+?)::(\S+)(.*)\n$|) {
-        $file = "$2.$1";
-        $file =~ s|::|/|g;
-    }
-    $tmp->print("#include <$file>\n")
+{
+    open my $tmp, '>', $tmpfile
+        or error("cannot write into $tmpfile: $!");
+    foreach my $file (@opt_s) {
+        if ($file =~ m|^(\S+?)::(\S+)(.*)\n$|) {
+            $file = "$2.$1";
+            $file =~ s|::|/|g;
+        }
+        $tmp->print("#include <$file>\n")
         || error("cannot write into $tmpfile: $!");
-}
-foreach $file (@opt_i) {
-    if ($file =~ m|^(\S+?)::(\S+)(.*)$|) {
-        $tmp->print("#use $file\n")
-            || error("cannot write into $tmpfile: $!");
     }
-    else {
-        $tmp->print("#include \"$file\"\n")
+    foreach my $file (@opt_i) {
+        if ($file =~ m|^(\S+?)::(\S+)(.*)$|) {
+            $tmp->print("#use $file\n")
             || error("cannot write into $tmpfile: $!");
+        }
+        else {
+            $tmp->print("#include \"$file\"\n")
+            || error("cannot write into $tmpfile: $!");
+        }
     }
+    $tmp->close() || error("cannot close $tmpfile: $!");
 }
-$tmp->close() || error("cannot close $tmpfile: $!");
 $outbuf .= ProcessFile('include', "'", $tmpfile, "", 0, 1, %arg);
 unlink($tmpfile);
 
 #
 #   process real files
 #
-foreach $file (@ARGV) {
+foreach my $file (@ARGV) {
+    my ($inbuf, $in);
     #   read input file
     if ($file eq '-') {
-        $in = new IO::Handle;
-        $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
+        open $in, '<&STDIN'
+            or error("cannot load STDIN: $!");
         local ($/) = undef;
         $inbuf = <$in>;
         $in->close() || error("cannot close STDIN: $!");
     }
     else {
-        $in = new IO::File;
-        $in->open($file) || error("cannot load $file: $!");
+        open $in, '<', $file
+            or error("cannot load $file: $!");
         local ($/) = undef;
         $inbuf = <$in>;
         $in->close() || error("cannot close $file: $!");
     }
 
     #   create temporary working file
-    $tmp = new IO::File;
-    $tmp->open(">$tmpfile") || error("cannot write into $tmpfile: $!");
+    open my $tmp, '>', $tmpfile
+        or error("cannot write into $tmpfile: $!");
     $tmp->print($inbuf) || error("cannot write into $tmpfile: $!");
     $tmp->close() || error("cannot close $tmpfile: $!");
 
     #   apply prolog filters
-    foreach $p (@opt_P) {
-        $rc = system("$p <$tmpfile >$tmpfile.f && mv $tmpfile.f $tmpfile 2>/dev/null");
+    foreach my $p (@opt_P) {
+        my $rc = system("$p <$tmpfile >$tmpfile.f && mv $tmpfile.f $tmpfile 2>/dev/null");
         error("Prolog Filter `$p' failed") if ($rc != 0);
     }
 
@@ -634,6 +634,7 @@ foreach $file (@ARGV) {
 
 if ($opt_M ne '-' && $opt_o ne '-') {
     #   Write dependencies
+    my ($depout, $depfile);
     if ($opt_M =~ m|D|) {
         if ($opt_o =~ m|(.*?)\.|) {
             $depfile = $1 . '.d';
@@ -641,20 +642,20 @@ if ($opt_M ne '-' && $opt_o ne '-') {
         else {
             $depfile = $opt_o . '.d';
         }
-        $depout = new IO::File;
-        $depout->open(">$depfile") || error("cannot write into $depfile: $!");
+        open $depout, '>', $depfile
+            or error("cannot write into $depfile: $!");
     }
     else {
         $depfile = 'STDOUT';
-        $depout = new IO::Handle;
-        $depout->fdopen(fileno(STDOUT), "w") || error("cannot write into $depfile: $!");
+        open $depout, '>&STODUT'
+            or error("cannot write into $depfile: $!");
     }
 
     #    Write the target
     $depout->print($opt_o . ": \\\n")
         || error("cannot write into $depfile: $!");
 
-    @deps = @ARGV;
+    my @deps = @ARGV;
     foreach (keys(%INCLUDES)) {
         push(@deps,$_) if $INCLUDES{$_} != 1 or $opt_M !~ m|M|;
     }
@@ -667,16 +668,17 @@ else {
     #
     #  create output file
     #
+    my $out;
     if ($opt_o eq '-') {
-        $out = new IO::Handle;
-        $out->fdopen(fileno(STDOUT), "w") || error("cannot write into STDOUT: $!");
+        open $out, '>&STDOUT'
+            or error("cannot write into STDOUT: $!");
     }
     else {
-        $out = new IO::File;
-        $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
+        open $out, '>', $opt_o
+            or error("cannot write into $opt_o: $!");
     }
-    $out->print($outbuf) || error("cannot write into $opt_o: $!");
-    $out->close() || error("cannot close $opt_o: $!");
+    $out->print($outbuf) or error("cannot write into $opt_o: $!");
+    $out->close() or error("cannot close $opt_o: $!");
 }
 
 #   die gracefully
