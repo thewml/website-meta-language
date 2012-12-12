@@ -85,14 +85,14 @@ if (not Getopt::Long::GetOptions(
     "N|nosynclines",
     "n|inputfile=s",
     "o|outputfile=s"  )) {
-    &usage;
+    usage();
 }
 #   Adjust the -M flags
 if ($opt_M !~ m%^(-|[MD]*)$% && (! @ARGV)) {
     push(@ARGV,$opt_M);
     $opt_M = '';
 }
-&usage if (! @ARGV);
+usage() if (! @ARGV);
 push(@opt_I, '.');
 
 #
@@ -126,7 +126,7 @@ sub read_mapfile {
 }
 $MAP = {};
 foreach $file (@opt_m) {
-    &read_mapfile($MAP, $file);
+    read_mapfile($MAP, $file);
 }
 
 
@@ -173,11 +173,11 @@ sub mapfile {
             $file = $replace;
         }
         elsif ($type eq 'W') {
-            &warning("$file: $text");
+            warning("$file: $text");
             $file = $replace;
         }
         else {
-            &error("$file: $text");
+            error("$file: $text");
         }
     }
     return $file;
@@ -217,7 +217,7 @@ sub PatternProcess {
             closedir DIR;
             foreach (@ls) {
                 next if (m|/\.+$| or m|^\.+$|);
-                $out .= &ProcessFile($mode, $delimiter, "$dirname/$_$ext", "", $level, $noid, %arg);
+                $out .= ProcessFile($mode, $delimiter, "$dirname/$_$ext", "", $level, $noid, %arg);
                 $found = 1;
             }
             last if $found;
@@ -231,7 +231,7 @@ sub PatternProcess {
             closedir DIR;
             foreach (@ls) {
                 next if (m|/\.+$| or m|^\.+$|);
-                $out .= &ProcessFile($mode, $delimiter, "$dirname/$_$ext", "", $level, $noid, %arg);
+                $out .= ProcessFile($mode, $delimiter, "$dirname/$_$ext", "", $level, $noid, %arg);
                 $found = 1;
             }
             last if $found;
@@ -274,7 +274,7 @@ sub PatternProcess {
                 $arg{'IPP_NEXT'} = ($_ eq '' ? '' : $dirname . "/$_$ext");
                 next if $arg{'IPP_THIS'} eq '';
 
-                $out .= &ProcessFile($mode, $delimiter, $arg{'IPP_THIS'}, "", $level, $noid, %arg);
+                $out .= ProcessFile($mode, $delimiter, $arg{'IPP_THIS'}, "", $level, $noid, %arg);
             }
             delete $arg{'IPP_NEXT'};
             delete $arg{'IPP_THIS'};
@@ -317,7 +317,7 @@ sub ProcessFile {
         $pattern =~ s/\./\\./g;
         $pattern =~ s/\*/.*/g;
         $pattern =~ s/\?/./g;
-        return &PatternProcess($mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, %arg);
+        return PatternProcess($mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, %arg);
     }
 
     #
@@ -348,13 +348,13 @@ sub ProcessFile {
             $found = 1;
         }
     }
-    &error("file not found: $file") if not $found;
+    error("file not found: $file") if not $found;
 
     #
     #   stop if file was still included some time before
     #
     if (not $noid) {
-        $id = &CanonPath($file);
+        $id = CanonPath($file);
         if ($mode eq 'use') {
             return '' if (exists $INCLUDES{$id});
         }
@@ -375,8 +375,8 @@ sub ProcessFile {
     #
     $realname = $file if $realname eq '';
     $in = new IO::File;
-    &verbose($level, "|");
-    &verbose($level, "+-- $file");
+    verbose($level, "|");
+    verbose($level, "+-- $file");
     $in->open("<$file") || error("cannot load $file: $!");
     $line   = 0;
     $out    = '';
@@ -433,7 +433,7 @@ sub ProcessFile {
                 }
                 elsif ($op eq ':\?') {
                     #   Indicate Error if Unset
-                    $l =~ s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.&error($str)/e;
+                    $l =~ s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.error($str)/e;
                 }
                 elsif ($op eq ':-') {
                     #   Use Default Values
@@ -488,10 +488,10 @@ sub ProcessFile {
         if (($cmd, $incfile, $args) = ($l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/)) {
             #   set arguments
             %argO = %arg;
-            &setargs(\%arg, $args);
+            setargs(\%arg, $args);
 
             #   do possible argument mapping
-            $incfile = &mapfile($incfile);
+            $incfile = mapfile($incfile);
 
             #   determine raw filename and type
             if ($incfile =~ m|^(\S+?)::(\S+)$|) {
@@ -504,11 +504,11 @@ sub ProcessFile {
                 $incfile = $2;
             }
             else {
-                &error("Unknown file-argument syntax: ``$incfile''");
+                error("Unknown file-argument syntax: ``$incfile''");
             }
 
             #   now recurse down
-            $out .= &ProcessFile($cmd, $type, $incfile, "", $level+1, 0, %arg);
+            $out .= ProcessFile($cmd, $type, $incfile, "", $level+1, 0, %arg);
             $out .= "<__file__ $realname /><__line__ $line />" .
                     "<protect pass=2><:# line $line \"$realname\":></protect>\n"
                         if not $opt_N and not $arg{'IPP_NOSYNCLINES'};
@@ -556,7 +556,7 @@ foreach $str (@opt_D) {
         $arg{$1} = 1;
     }
     else {
-        &error("Bad argument to option `D': $str");
+        error("Bad argument to option `D': $str");
     }
 }
 
@@ -589,7 +589,7 @@ foreach $file (@opt_i) {
     }
 }
 $tmp->close() || error("cannot close $tmpfile: $!");
-$outbuf .= &ProcessFile('include', "'", $tmpfile, "", 0, 1, %arg);
+$outbuf .= ProcessFile('include', "'", $tmpfile, "", 0, 1, %arg);
 unlink($tmpfile);
 
 #
@@ -621,11 +621,11 @@ foreach $file (@ARGV) {
     #   apply prolog filters
     foreach $p (@opt_P) {
         $rc = system("$p <$tmpfile >$tmpfile.f && mv $tmpfile.f $tmpfile 2>/dev/null");
-        &error("Prolog Filter `$p' failed") if ($rc != 0);
+        error("Prolog Filter `$p' failed") if ($rc != 0);
     }
 
     #   process file via IPP filter
-    $outbuf .= &ProcessFile('include', "'", $tmpfile,
+    $outbuf .= ProcessFile('include', "'", $tmpfile,
         ($opt_n eq '' ? $file : $opt_n), 0, 1, %arg);
 
     #   cleanup
