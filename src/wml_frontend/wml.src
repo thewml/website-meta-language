@@ -3,34 +3,34 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  WML -- Website META Language
-##  
+##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2001 Denis Barbier.
-##  
+##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software Foundation; either version 2 of the License, or
 ##  (at your option) any later version.
-##  
+##
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##  GNU General Public License for more details.
-##  
+##
 ##  You should have received a copy of the GNU General Public License
 ##  along with this program; if not, write to
-##  
+##
 ##      Free Software Foundation, Inc.
 ##      59 Temple Place - Suite 330
 ##      Boston, MA  02111-1307, USA
-##  
+##
 ##  Notice, that ``free software'' addresses the fact that this program
 ##  is __distributed__ under the term of the GNU General Public License
 ##  and because of this, it can be redistributed and modified under the
 ##  conditions of this license, but the software remains __copyrighted__
-##  by the author. Don't intermix this with the general meaning of 
+##  by the author. Don't intermix this with the general meaning of
 ##  Public Domain software or such a derivated distribution label.
-##  
+##
 ##  The author reserves the right to distribute following releases of
 ##  this program under different conditions or license agreements.
 ##
@@ -56,11 +56,11 @@ sub ctime {
     my ($time) = @_;
     return scalar(localtime($time));
 }
- 
+
 sub isotime {
     my ($time) = @_;
-  
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = 
+
+    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
         localtime($time);
     my ($str) = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
          $year+1900, $mon+1, $mday, $hour, $min, $sec);
@@ -71,11 +71,11 @@ sub gmt_ctime {
     my ($time) = @_;
     return scalar(gmtime($time));
 }
- 
+
 sub gmt_isotime {
     my ($time) = @_;
-  
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = 
+
+    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
         gmtime($time);
     my ($str) = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
          $year+1900, $mon+1, $mday, $hour, $min, $sec);
@@ -120,14 +120,14 @@ sub usage {
 }
 
 sub ProcessOptions {
-    local $SIG{'__WARN__'} = sub { 
+    local $SIG{'__WARN__'} = sub {
         print STDERR "WML:Error: $_[0]";
     };
     $Getopt::Long::bundling = 1;
     $Getopt::Long::getopt_compat = 0;
     my (@list_options) = (
-        "I|include=s@", 
-        "i|includefile=s@", 
+        "I|include=s@",
+        "i|includefile=s@",
         "D|define=s@",
         "n|noshebang",
         "r|norcfile",
@@ -230,7 +230,7 @@ sub split_argv {
 
 sub CanonPath {
     my ($path) = @_;
- 
+
     $pathL = '';
     while ($path ne $pathL) {
         $pathL = $path;
@@ -309,7 +309,7 @@ if (not $opt_r) {
     if (-f "$home/.wmlrc") {
         push(@DIR, $home);
     }
-    
+
 
     #   now parse these RC files
     foreach $dir (reverse(@DIR)) {
@@ -383,7 +383,7 @@ if (not $opt_r) {
 
 }
 
-#   4. process the command line options 
+#   4. process the command line options
 @ARGV = @ARGVLINE;
 @opt_D_OLD = @opt_D; @opt_D = (); # extra remember -D options from command line
 &ProcessOptions();
@@ -487,7 +487,7 @@ foreach $d (@opt_D_ADD) {
         if ($path !~ m|^/|) {
             if ($path eq '.') {
                 $path = &CanonPath("$reldir");
-            }   
+            }
             else {
                 $path = &CanonPath("$reldir/$path");
             }
@@ -683,7 +683,7 @@ sub protect {
     #   Following passes will pass through previous test
     $firstpass = 0 if $firstpass;
 
-    #  This loop must take care of nestable <protect> tags 
+    #  This loop must take care of nestable <protect> tags
     while ($data =~ s|^(.*)<protect(.*?)>(.*?)</protect>||is) {
         $p = '123456789';
         ($prolog, $arg, $body) = ($1, $2, $3);
@@ -773,7 +773,7 @@ sub pass2 {
     local(*TMP, *TO);
 
     ($cwd = Cwd::cwd) =~ s|/$||;
-    $rc = &dosystem("@libdir@/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp"); 
+    $rc = &dosystem("@libdir@/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -916,7 +916,7 @@ $gen_hostname = `hostname`;
 $gen_hostname =~ s|\n$||;
 $gen_hostname ||= 'UNKNOWN-HOSTNAME';
 
-if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and 
+if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and
     -f "/etc/resolv.conf") {
     $domain = '';
     open(TMP, "</etc/resolv.conf")
@@ -1032,8 +1032,8 @@ $p = join('', @opt_p);
 $p =~ s|,||g;
 sub expandrange {
     my ($a, $b) = @_;
-    $x = ''; 
-    for ($i = $a; $i <= $b; $i++) { 
+    $x = '';
+    for ($i = $a; $i <= $b; $i++) {
         $x .= $i;
     }
     return $x;
@@ -1130,7 +1130,7 @@ sub ProcessOutfiles {
 
         #   unquote the filename
         $o =~ s|^(['"])(.*)\1$|$2|;
-    
+
         #   create output file list for epilog filters
         if ($o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$|) {
             push(@outfiles, ($2 ne '-' ? $2 : $tmp[3]));
@@ -1254,7 +1254,7 @@ if ($opt_M ne '-') {
 $firstpass = 1;
 foreach $p (@p) {
     &verbose(2, "PASS $p:\n");
-    print STDERR @prop[$pcnt++ % 4] . "\b" if (not $opt_q); 
+    print STDERR @prop[$pcnt++ % 4] . "\b" if (not $opt_q);
 
     #   run pass
     ($u, $s, $cu, $cs) = times();
@@ -1283,7 +1283,7 @@ foreach $p (@p) {
     $dtime = $etime-$stime;
     $dtime = 0.01 if ($dtime < 0);
     $TIMES[$p] = $dtime;
-    
+
     #   optionally view current result
     if ($opt_v >= 3 && $p < 9) {
         print STDERR "Want to see result after Pass$p [yNq]: ";
@@ -1443,7 +1443,7 @@ B<wml>
 [B<-o> [I<SLICETERM>C<:>]I<PATH>[B<@>I<CHMODOPT>]]
 [B<-P> I<PATH>]
 [B<-E> I<PATH>]
-[B<-t>] 
+[B<-t>]
 [B<-p> I<STR>]
 [B<-W> I<STR>]
 [B<-s>]
@@ -1452,13 +1452,13 @@ B<wml>
 [I<inputfile>]
 
 B<wml>
-[B<-V> [I<NUM>]] 
-[B<-h>] 
+[B<-V> [I<NUM>]]
+[B<-h>]
 
 =head1 DESCRIPTION
 
 This is the control program of the I<Website META Language> (WML), a free HTML
-generation toolkit for Unix, internally consisting of 9 independent languages. 
+generation toolkit for Unix, internally consisting of 9 independent languages.
 
 The main idea of WML is a sequential filtering scheme where each language
 provides one of 9 processing passes.  So F<wml> reads I<inputfile> (or from
@@ -1579,11 +1579,11 @@ Specifies which of the passes described above are actually applied under
 runtime. The argument I<STR> is a comma-separated list of pass numbers with
 one special case: You can write C<X-Y> for all passes C<X...Y>.  When pass 9
 is not part of I<STR> the resulting output is written to F<STDOUT>. Default is
-the string ``C<1-9>''. 
+the string ``C<1-9>''.
 
 =item B<-W>, B<--passoption=>I<NUM>,I<STR>
 
-Set option I<STR> for the pass I<NUM>. 
+Set option I<STR> for the pass I<NUM>.
 
 =item B<-s>, B<--safe>
 
