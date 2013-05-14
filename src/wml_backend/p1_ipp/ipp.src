@@ -18,6 +18,8 @@ use IO::File 1.06;
 use File::Temp qw/tempdir/;
 use File::Spec;
 
+use Carp qw( cluck );
+
 #
 #   help functions
 #
@@ -31,7 +33,7 @@ sub verbose {
 }
 sub error {
     my ($str) = @_;
-    print STDERR "** IPP:Error: $str\n";
+    cluck ("** IPP:Error: $str");
     exit(1);
 }
 sub warning {
