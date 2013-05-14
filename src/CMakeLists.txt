@@ -29,7 +29,7 @@ SET (WML_LIB_DIR "${WML_LIB_DIR_BASE}/wml")
 SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
 SET (WML_LIBEXE_DIR "${WML_LIB_DIR}/exec/")
 
-INCLUDE ("Common.cmake")
+INCLUDE (Shlomif_Common)
 
 # This is the equivalent to perform a "make dist"/"make distdir" etc.
 SET(CPACK_PACKAGE_NAME "wml")

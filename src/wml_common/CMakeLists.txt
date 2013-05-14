@@ -1,10 +1,8 @@
-INCLUDE ("../Common.cmake")
-
 SET (CPAN_MODULES_TO_CHECK
     "Bit::Vector"
     "GD"
     "Getopt::Long"
-    "HTML::Clean" 
+    "HTML::Clean"
     "Image::Size"
     "IO"
     "Term::ReadKey"
