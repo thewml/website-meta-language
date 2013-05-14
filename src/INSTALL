@@ -2,7 +2,7 @@
  INSTALLATION
  ============
 
-WML was converted to use CMake ( http://www.cmake.org/ ) 
+WML was converted to use CMake ( http://www.cmake.org/ )
 starting from version 2.2.0. You'll need to install CMake version 2.6.3
 or later from your distribution's repository or from its source
 distribution. *NOTE*: CMake 2.6.2 (that ships with some releases of Ubuntu)
@@ -39,22 +39,22 @@ This will build and install WML and its related programs.
 
     The following requirements exist for building WML:
 
-    o  Disk Space: 
+    o  Disk Space:
        Make sure you have 8 MB of temporary free disk space.  After
        installation WML occupies approximately 3 MB of disk space.
 
-    o  Perl Interpreter: 
-       Make sure you have Perl 5.008 or later already installed on your 
-       system. You can find the homepages of Perl on 
+    o  Perl Interpreter:
+       Make sure you have Perl 5.008 or later already installed on your
+       system. You can find the homepages of Perl on
        <URL:http://www.perl.com/> and <URL:http://www.perl.org/> .
 
-    o  ANSI-C Compiler: 
+    o  ANSI-C Compiler:
        Make sure you have an ANSI-C compiler installed.  The GNU C compiler
        (GCC) from the Free Software Foundation (FSF) is recommended. You
        can find the homepage of GNU on <URL:http://gcc.gnu.org/> and the
        GCC distribution on <URL:ftp://gcc.gnu.org/pub/gcc/>.
-    
-    o  SVr4 compatible Curses library: 
+
+    o  SVr4 compatible Curses library:
        Make sure you have a SVr4-like Curses library installed. If your
        systems Curses library is not of this time, then you have to install
        one of these free variants:
@@ -110,14 +110,14 @@ This will build and install WML and its related programs.
 
  3. Building the toolkit
     --------------------
-    
+
     Now you can build the programs, manpages and include files which form the
     WML toolkit by running the command
 
-       $ make 
+       $ make
 
     Please be patient, this takes approximately 2 minutes to complete on a
-    Pentium-II/400 platform. 
+    Pentium-II/400 platform.
 
  4. Testing the toolkit
     -------------------
@@ -128,7 +128,7 @@ This will build and install WML and its related programs.
 
  5. Installing the toolkit
     ----------------------
-    
+
     Now its time to install the toolkit's programs in $prefix/bin, the
     manpages in $prefix/man and auxiliary, include and Perl-Module files in
     $prefix/lib/ (or $prefix/lib/wml/ if $prefix does not already contain the
@@ -161,13 +161,13 @@ This will build and install WML and its related programs.
     (see wml::all(3)) which need third-party programs to be able to provide
     their full functionality:
 
-    o wml::fmt::sdf 
+    o wml::fmt::sdf
 
       To use this include file you need the Simple Document Format (SDF)
       package. You can find the package at <URL:http://www.mincom.com/mtr/sdf/>.
 
     o wml::des::gfont
-      
+
       To use this include file you need at least the gFONT program from
       Ralf S. Engelschall which can be found at
       <URL:http://www.engelschall.com/sw/gfont/>.
