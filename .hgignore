@@ -1,1 +1,2 @@
 src/build
+src/cmake/Shlomif_Common.cmake

@@ -1,6 +1,12 @@
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
+SET (private_mod_path "${CMAKE_SOURCE_DIR}/cmake")
+LIST (APPEND CMAKE_MODULE_PATH "${private_mod_path}")
+INCLUDE(Shlomif_Common)
+
+SHLOMIF_COMMON_SETUP("${private_mod_path}")
+
 SET(VERSION "2.2.1")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
@@ -28,8 +34,6 @@ ENDIF ("${LIB_MYPREFIX}" STREQUAL "${MYPREFIX}")
 SET (WML_LIB_DIR "${WML_LIB_DIR_BASE}/wml")
 SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
 SET (WML_LIBEXE_DIR "${WML_LIB_DIR}/exec/")
-
-INCLUDE (Shlomif_Common)
 
 # This is the equivalent to perform a "make dist"/"make distdir" etc.
 SET(CPACK_PACKAGE_NAME "wml")
