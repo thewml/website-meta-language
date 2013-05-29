@@ -1,7 +1,9 @@
 ##
 ##  WML Macros
-##  Copyright (c) 2000-2001 Denis Barbier, All Rights Reserved. 
+##  Copyright (c) 2000-2001 Denis Barbier, All Rights Reserved.
 ##
+
+=encoding utf8
 
 =head1 NAME
 
@@ -53,7 +55,7 @@ start tags:
 =item *
 
 An I<end> tag is a tag which ends an I<element> (see below).  It
-consists of a left angle bracket, a slash, the element name, and a 
+consists of a left angle bracket, a slash, the element name, and a
 right angle bracket, like in
 
      </table>
@@ -188,7 +190,7 @@ Input:
 
   1| <define-tag foo endtag=required>bar</define-tag>
   2| <foo>baz</foo>
- 
+
 Output:
 
   1|
@@ -244,18 +246,18 @@ Input:
 
 Output:
 
-  1| 
-  2| 
+  1|
+  2|
   3| Macro name:          foo
   4| Number of arguments: 3
   5| First argument:      Here
   6| Second argument:     are
   7| All arguments:       Here are attributes
-  8| Body macro:          
+  8| Body macro:
   9| And the body
  10| goes here.
- 11| 
- 12| 
+ 11|
+ 12|
 
 These special strings may also be altered by modifiers, which are a set
 of letters (one or more) put after the percent sign.  These modifiers,
@@ -287,17 +289,17 @@ Input:
 
 Output:
 
-  1| 
-  2| 
+  1|
+  2|
   3| First argument:      Here
   4| All arguments:       Here
   5| are
   6| attributes
-  7| Body macro:          
+  7| Body macro:
   8| And the body
   9| goes here.
- 10| 
- 11| 
+ 10|
+ 11|
 
 =back
 
@@ -384,7 +386,7 @@ Input:
 
 Output:
 
-  1| 
+  1|
   2| <a href="http://www.w3.org/"><tt>http://www.w3.org/</tt></a>
 
 The C<E<lt>preserveE<gt>> tag pushes the variable passed in argument in
@@ -559,7 +561,7 @@ Input:
 Output:
 
   1| ePerl:Error: Perl parsing error (interpreter rc=255)
-  2| 
+  2|
   3| ---- Contents of STDERR channel: ---------
   4| Backslash found where operator expected at /tmp/wml.1183.tmp1.wml line
   5| 10, near ""attrs:<: print attrs:0; print "\"
@@ -641,7 +643,7 @@ Input:
 Output:
 
   1| ePerl:Error: Perl parsing error (interpreter rc=255)
-  2| 
+  2|
   3| ---- Contents of STDERR channel: ---------
   4| Bareword found where operator expected at /tmp/wml.1198.tmp1.wml
   5| line 10, near "q|$string = q|Hello"
@@ -676,7 +678,7 @@ ePerl commands.  Previous example may be written like this
 Input:
 
   1| #use wml::std::tags
-  2| 
+  2|
   3| <define-tag remove-letter endtag=required whitespace=delete>
   4| <perl>
   5| <perl:assign $string>%body</perl:assign>
@@ -684,7 +686,7 @@ Input:
   7| $string =~ s|$letter||g;
   8| <perl:print: $string />
   9| </perl>
- 10| </define-tag>\ 
+ 10| </define-tag>\
  11| <remove-letter s><remove-letter e>\
  12| Hello this is a test\
  13| </remove-letter></remove-letter>
@@ -772,7 +774,7 @@ by
   <perl:assign $var1>%body</perl:assign>
   <perl:assign:sq $var2>%body</perl:assign:sq>
 
-and second rule 
+and second rule
 
   print $string;
   print "<img src=\"$src\" alt=\"$alt\">";

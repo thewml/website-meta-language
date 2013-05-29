@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 NAME
 
@@ -5,7 +6,7 @@ Linklint - fast link checker and website maintenance tool
 
 =head1 SYNOPSIS
 
-B<linklint> 
+B<linklint>
 [B<-cache I<directory>>]
 [B<-case>]
 [B<-checksum>]

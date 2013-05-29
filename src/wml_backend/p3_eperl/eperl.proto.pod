@@ -1,10 +1,10 @@
 ##
-##        ____           _ 
+##        ____           _
 ##    ___|  _ \ ___ _ __| |
 ##   / _ \ |_) / _ \ '__| |
 ##  |  __/  __/  __/ |  | |
 ##   \___|_|   \___|_|  |_|
-## 
+##
 ##  ePerl -- Embedded Perl 5 Language
 ##
 ##  ePerl interprets an ASCII file bristled with Perl 5 program
@@ -33,6 +33,8 @@
 ##
 ##  eperl.pod -- ePerl Documentation in Plain Old Document (POD) Format
 ##
+
+=encoding utf8
 
 =head1 NAME
 
@@ -119,7 +121,7 @@ I<entirely> evaluated by only one internal instance of the Perl 5 interpreter.
 To achieve this, ePerl translates all plain code into (escaped) Perl 5 strings
 placed into F<print> constructs while passing through all embedded native Perl
 5 code. As you can see, ePerl itself does exactly the same internally, a silly
-programmer had to do when writing a plain Perl generation script. 
+programmer had to do when writing a plain Perl generation script.
 
 Due to the nature of such bristled code, ePerl is really the better attempt
 when the generated ASCII data contains really more static as dynamic data. Or
@@ -177,7 +179,7 @@ semicolon of the last command.
    <: cmd; ...; cmd; :>
 
 But when the last semicolon is missing it is automatically added
-by ePerl, i.e. 
+by ePerl, i.e.
 
    <: cmd; ...; cmd :>
 
@@ -189,7 +191,7 @@ semicolon. Use this for constructs like the following
    <: if (...) { _:>
    foo
    <: } else { _:>
-   bar 
+   bar
    <: } :>
 
 where you want to spread a Perl directive over more ePerl blocks.
@@ -223,7 +225,7 @@ followed an end block delimiter. Usually when you write
 the result is
 
   foo
-  
+
   quux
 
 because ePerl always preserves code around ePerl blocks, even
@@ -233,7 +235,7 @@ just newlines. But when you write
   <: $x = 1; :>//
   quux
 
-the result is 
+the result is
 
   foo
   quux
@@ -250,7 +252,7 @@ Think about it. The implication of this is that ePerl never tries to parse the
 ePerl blocks itself. It entirely relies on the Perl interpreter library,
 because it is the only instance which can do this without errors.  But the
 problem is that ePerl at least has to recognize the begin and end positions of
-those ePerl blocks. 
+those ePerl blocks.
 
 There are two ways: It can either look for the end delimiter while parsing but
 at least recognize quoted strings (where the end delimiter gets treated as
@@ -267,7 +269,7 @@ backslashes in quoted strings) than rewrite complex Perl constructs to use
 even number of quotes.
 
 So, whenever your end delimiter also occurs inside Perl constructs you have to
-escape it in any way. 
+escape it in any way.
 
 =item I<8. HTML entity conversion.>
 
@@ -439,7 +441,7 @@ no buffering of the resulting data, i.e. the CGI program actually has to
 provide a complete HTTP response itself. The advantage is that the program can
 generate arbitrary HTTP headers or MIME-encoded multi-block messages.
 
-So, 
+So,
 above we have renamed the file to F<file.cgi> which restricted us a little
 bit. When we alternatively rename F<file.html> to F<nph-file.cgi> and force
 the NPH-CGI/1.1 interface mode via option B<-mn> then this file becomes a
@@ -455,7 +457,7 @@ ePerl provides a default one for it).
   ...
 
 As you expect this can be also used with the implicit Server-Side Scripting
-Language technique. Put  
+Language technique. Put
 
   AddType      application/x-httpd-eperl  .phtml .eperl .epl
   Action       application/x-httpd-eperl  /internal/cgi/nph-eperl
@@ -503,7 +505,7 @@ order):
      .html, .phtml, .ephtml, .epl, .pl, .cgi
   2. The UID of the calling process has to be a valid UID,
      i.e. it has to be found in the systems password file
-  3. The UID of the calling process has to match the 
+  3. The UID of the calling process has to match the
      following users: root, nobody
   4. The UID of the script owner has to be a valid UID,
      i.e. it has to be found in the systems password file
@@ -532,7 +534,7 @@ enabled manually via option B<-P> or automatically when ePerl runs in
 
 =over 4
 
-=item C<#include path> 
+=item C<#include path>
 
 This directive is an include directive which can be used to include really any
 stuff, but was actually designed to be used to include other ePerl source
@@ -542,7 +544,7 @@ filesystem or a fully qualified HTTP URL.
 In case of the absolute path the file is directly accessed on the filesystem,
 while the relative path is first searched in the current working directory and
 then in all directories specified via option B<-I>. In the third case
-(HTTP URL) the file is retrieves via a HTTP/1.0 request on the network. 
+(HTTP URL) the file is retrieves via a HTTP/1.0 request on the network.
 Here HTTP redirects (response codes 301 and 302) are supported, too.
 
 Notice: While ePerl strictly preserves the line numbers when translating the
@@ -562,7 +564,7 @@ recognizes that you include his page and are using ePerl and just put a simple
 I<NEVER USE #INCLUDE FOR ANY DATA WHICH IS NOT UNDER YOUR OWN CONTROL>.
 Instead always use C<#sinclude> for such situations.
 
-=item C<#sinclude path> 
+=item C<#sinclude path>
 
 This is the secure variant of C<#include> where after reading the data from
 I<path> all ePerl begin and end delimiters are removed. So risky ePerl blocks
@@ -617,7 +619,7 @@ support). So, browse to the Comprehensive Perl Archive Network (CPAN) via
 http://www.perl.com/perl/CPAN and grab your favorite packages which can make
 your life easier (both from within plain Perl scripts I<and> ePerl scripts)
 and just use the construct ``C<use name;>'' in any ePerl block to use them
-from within ePerl. 
+from within ePerl.
 
 When using ePerl as a Server-Side-Scripting-Language I really recommend you to
 install at least the packages F<CGI.pm> (currently vers.  2.36),
@@ -638,7 +640,7 @@ Sets a Perl variable in the package C<main> which can be referenced
 via C<$name> or more explicitly via C<$main::name>. The command
 
   eperl -d name=value ..
-  
+
 is actually equivalent to having
 
   <? $name = value; !>
@@ -651,8 +653,8 @@ Sets a environment variable which can be referenced via C<$ENV{'variable'}>
 inside the Perl blocks. The command
 
   eperl -D name=value ..
-  
-is actually equivalent to 
+
+is actually equivalent to
 
   export name=value; eperl ...
 
@@ -732,7 +734,7 @@ enabled for all CGI modes automatically.
 =item B<-C>
 
 This enables the HTML entity conversion for ePerl blocks. This option is
-automatically forced in CGI modes. 
+automatically forced in CGI modes.
 
 The solved problem here is the following: When you use ePerl as a
 Server-Side-Scripting-Language for HTML pages and you edit your ePerl source
@@ -833,7 +835,7 @@ the Web, for instance to reference images, etc.
 
 The filename part of C<SCRIPT_SRC_URL>. Use this one when you need the name of
 the script, for instance for relative self-references through URLs.  Actually
-the same as C<SCRIPT_SRC_PATH_FILE>, but provided for consistency. 
+the same as C<SCRIPT_SRC_PATH_FILE>, but provided for consistency.
 
 =item C<SCRIPT_SRC_SIZE>
 

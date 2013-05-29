@@ -265,6 +265,8 @@ exit(0);
 ##EOF##
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 asubst - Area Substitution

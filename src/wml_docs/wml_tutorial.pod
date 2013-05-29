@@ -1,7 +1,9 @@
 ##
 ##  WML Tutorial
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
+
+=encoding utf8
 
 =head1 NAME
 
@@ -42,7 +44,7 @@ in any case.
 
 Sometimes situations can occur where some of your markup code or page contents
 conflicts with WML due to overlapping tagnames, etc. Here WML interprets some
-stuff you actually don't want to be interpreted. 
+stuff you actually don't want to be interpreted.
 
 Input:
 
@@ -77,11 +79,11 @@ Webpage displays the same in a Webbrowser as the original.
 Input:
 
  1| <body>
- 2| 
+ 2|
  3| <img src = "file.gif"    alt="  test  " >
  4| <pre>
  5|
- 6|     Preformatted          Text  
+ 6|     Preformatted          Text
  7| </pre>
  8|     Not    Preformatted   Text
  9| </body>
@@ -92,7 +94,7 @@ Output:
  2| <img src="file.gif" alt=" test ">
  4| <pre>
  5|
- 6|     Preformatted          Text  
+ 6|     Preformatted          Text
  7| </pre>
  8|     Not Preformatted Text
  9| </body>
@@ -133,7 +135,7 @@ C<width>/C<height> attributes.
 
 =head1 STRUCTURING THE MARKUP CODE
 
-=head2 LESSON: Using Include Files 
+=head2 LESSON: Using Include Files
 
 One of the most useful features of WML is the ability to move commonly used
 stuff into include files which can be selectively read in at later steps.
@@ -143,7 +145,7 @@ Assume we have an include file F<bar.wml>...
  1| bar
  2| The value of bar is: $(bar:-unknown)
 
-...and the following input file: 
+...and the following input file:
 
  1| foo
  3| #include 'bar.wml' bar="FooBar"
@@ -340,25 +342,25 @@ Input:
   3| <html>
   4| <pod notypo>
   5| =head1 Headline1
-  6| 
+  6|
   7| Foo
-  8| 
+  8|
   9| =head2 Headline1.1
- 10| 
+ 10|
  11| Bar
  12| </pod>
- 13| 
+ 13|
  14| <sdf notypo>
  15| H1: Headline1
- 16| 
+ 16|
  17| Foo
- 18| 
+ 18|
  19| H2: Headline 1.1
- 20| 
+ 20|
  21| Bar
  22|   * Baz
  23|     - Foobar
- 24|     - Quux 
+ 24|     - Quux
  25|   * Foo
  26| </sdf>
  27| </html>
@@ -442,17 +444,17 @@ Input:
   4|   (*, 2) align=right
   5|   (1, *) valign=top
   6|   (2|3, *) valign=bottom
-  7|   (1,1) 
-  8|   Header 1 
+  7|   (1,1)
+  8|   Header 1
   9|   (1,2)
  10|   Header 2
- 11|   (2,1) 
- 12|   Cell-A   
+ 11|   (2,1)
+ 12|   Cell-A
  13|   (2,2)
  14|   Cell-B
- 15|   (3,1) 
- 16|   Cell-C   
- 17|   (3,2) 
+ 15|   (3,1)
+ 16|   Cell-C
+ 17|   (3,2)
  18|   Cell-D
  19| </xtable>
 
@@ -511,7 +513,7 @@ Input:
   1| <define-tag red endtag=required whitespace=delete>
   2| <font color="#cc3333">%body</font>
   3| </define-tag>
-  4| 
+  4|
   5| This is <red>very important</red>.
 
 Output:
@@ -535,7 +537,7 @@ Input:
   6| <ifeq "%0" "freebsd"     "rse@freebsd.org">
   7| <ifeq "%0" "sdm"         "rse@sdm.de">
   8| </define-tag>
-  9| 
+  9|
  10| This is <me> and <me apache>.
 
 Output:
@@ -557,7 +559,7 @@ Input:
  10| <ifeq "<get-var at>" "sdm"         "rse@sdm.de">
  11| <restore at>
  12| </define-tag>
- 13| 
+ 13|
  14| This is <me> and <me at=apache>.
 
 Output:
@@ -578,7 +580,7 @@ Input:
    5|
    6| Some Text<br>
    7| Some more Text
-    
+
 Output:
 
    1| Some Text<br><br>
@@ -596,7 +598,7 @@ Input:
   2| <define-tag me whitespace=delete>
   3| <preserve at>
   4| <set-var %attributes>
-  5| <:{ 
+  5| <:{
   6|     my $at = qq/<get-var at>/;
   7|     my $addr;
   8|     $addr = "rse\@engelschall.com" if $at eq '';
@@ -609,7 +611,7 @@ Input:
  15| }:>
  16| <restore at>
  17| </define-tag>
- 18| 
+ 18|
  19| This is <me> and <me at=apache>.
 
 Output:
@@ -625,7 +627,7 @@ automatically closes still opened diversions at EndOfFile, we can use this
 feature to create templates.  Assume we have the following template defined in
 the file F<template.wml>.
 
-  1| #   the template itself 
+  1| #   the template itself
   2| <html>
   3| <head>
   4| <title>{#SUBJECT_LOC#}</title>
@@ -637,19 +639,19 @@ the file F<template.wml>.
  10| </blockquote>
  11| </body>
  12| </html>
- 13| 
+ 13|
  14| #   way to insert the subject
  15| <define-tag subject>
  16| {#SUBJECT_LOC#:%0:##}
  17| </define-tag>
- 18| 
+ 18|
  19| #   per default we are in body
  20| {#BODY#:
 
 Input:
 
   1| #include 'template.wml'
-  2| 
+  2|
   3| <subject "Foo, Bar and Quux">
   4|
   5| This is about Foo, Bar and Quux...
@@ -687,19 +689,19 @@ Let take an example:
 
   1| #!wml -o (ALL-LANG_*)+LANG_EN:index.en.html \
   2|       -o (ALL-LANG_*)+LANG_DE:index.de.html
-  3| 
+  3|
   4| #use wml::std::page
   5| #use wml::std::lang
-  6| 
+  6|
   7| <lang:new id=en short>
   8| <lang:new id=de short>
-  9| 
+  9|
  10| <page>
- 11| 
+ 11|
  12| <h1><en: Welcome><de: Willkommen>!</h1>
- 13| 
+ 13|
  14| <a href="<lang:star: index2.*.html>">Index 2</a>
- 15| 
+ 15|
  16| <lang:area>
  17| (en)This is a test page
  18| (de)Dies ist eine Testseite
@@ -731,7 +733,7 @@ index.en.html:
   5| <h1>Welcome!</h1>
   6| <a href="index2.en.html">Index 2</a>
   7| This is a test page
-  8| 
+  8|
   9| </body>
  10| </html>
 

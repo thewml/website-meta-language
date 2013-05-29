@@ -1,8 +1,10 @@
 ##
 ##  WML FAQ
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 1999 Denis Barbier
 ##
+
+=encoding utf8
 
 =head1 NAME
 
@@ -27,7 +29,7 @@ divided into question/answer parts, each answering one particular topic.
 
 =item B<G04:> Which tools are included in the WML distribution?
 
-=item B<G05:> WML is as powerful as it can, but are there 
+=item B<G05:> WML is as powerful as it can, but are there
               even any restrictions?
 
 =item B<G06:> Where do I find documentation?
@@ -149,7 +151,7 @@ options as those of your current installation.
 
 =back
 
-=item B<G05: WML is as powerful as it can, but are there 
+=item B<G05: WML is as powerful as it can, but are there
              even any restrictions?>
 
 Sure, WML has some restrictions which cannot be eliminated easily.
@@ -192,7 +194,7 @@ The webpages are the same as the ones viewed with F<wmd>.
 
 =item B<G07: Is there any official support for WML?>
 
-Yes, there is. First there is an official support mailing list for WML users: 
+Yes, there is. First there is an official support mailing list for WML users:
 
   sw-wml@engelschall.com
 
@@ -257,7 +259,7 @@ to the maintainer via barbier@engelschall.com
 =item B<G09: I really want to use WML for textprocessing because it's such
              powerful, isn't it?>
 
-Yes, WML is, but only for HTML generation. 
+Yes, WML is, but only for HTML generation.
 
 Although WML provides a lot of hot features (like Slicing or Diversion) one
 often also wants for textprocessing, WML is not a general textprocessing
@@ -286,7 +288,7 @@ using WML as a text-processor.
 =item B<P01: How can I avoid conflicts with a particular WML pass?>
 
 When you are sure you don't need this particular pass, you can use WML option
-B<-p> and just leave out the number of the pass. 
+B<-p> and just leave out the number of the pass.
 
 =item B<P02: How can I avoid conflicts with a particular WML pass
              for only some areas of the input file?>
@@ -357,7 +359,7 @@ help it here.
 Just put the C<E<lt>gfontE<gt>> tag directly into the C<name> attribute
 of C<E<lt>hrefE<gt>>:
 
-  <href name="<gfont>The Hyperlink Text</gfont>" 
+  <href name="<gfont>The Hyperlink Text</gfont>"
         url="http://...">
 
 =item B<I04: How can I combine the gfont- with the rollover-tag?>

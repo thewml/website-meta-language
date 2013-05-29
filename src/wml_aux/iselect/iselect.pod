@@ -28,6 +28,8 @@
 ##  iselect.pod -- manual page 
 ##
 
+=encoding utf8
+
 =head1 NAME
 
 iSelect -- Interactive Selection Tool

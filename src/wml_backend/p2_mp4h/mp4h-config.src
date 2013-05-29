@@ -110,6 +110,8 @@ exit 0
 ##EOF##
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 mp4h-config - Displays configuration suitable to build mp4h modules
