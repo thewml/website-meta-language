@@ -8,6 +8,17 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.2.1 to 2.2.2:
+
+  *) Fix building on perl-5.18.0 and recent Pod-* Perl modules.
+	  [Shlomi Fish <shlomif@cpan.org>]
+
+  *) Convert to Shlomif_Common.cmake.
+  	  [Shlomi Fish <shlomif@cpan.org>]
+
+  *) Some cleanups for the Perl code - still a lot to be done.
+      [Shlomi Fish <shlomif@cpan.org>]
+
   Changes between 2.2.0 to 2.2.1:
 
   *) Fix some compiler warnings that gcc emitted by default.
