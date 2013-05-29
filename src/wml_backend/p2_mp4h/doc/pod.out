@@ -84,6 +84,8 @@
 <define-tag header>
 =pod
 
+=encoding utf8
+
 =head1 NAME
 
 <get-var title />
