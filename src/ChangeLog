@@ -8,6 +8,12 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.2.2 to 2.2.3:
+
+  *) Get rid of a warning with version 3.0.0-rc3 of CMake.
+     (It's still compatible with older versions of CMake).
+	 [Shlomi Fish <shlomif@cpan.org>]
+
   Changes between 2.2.1 to 2.2.2:
 
   *) Fix building on perl-5.18.0 and recent Pod-* Perl modules.
