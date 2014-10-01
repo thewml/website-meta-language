@@ -89,7 +89,8 @@ WmlTest::generic($pass, $in1 , $out1, '', );
 <subst-in-string "abc" "([a-z])" "\1 ">
 EOT_IN
 
-    my $out1 = <<'EOT_OUT';
+    my $WS = ' ';
+    my $out1 = <<"EOT_OUT";
 This Is A List
 true
 true
@@ -100,7 +101,7 @@ far
 3
 
 true
-a b c 
+a b c$WS
 EOT_OUT
 
     #    String operators
