@@ -1,6 +1,6 @@
 ##
 ##  wml::fmt::sdf - Simple Document Format (SDF)
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -77,8 +77,8 @@ sub wml_fmt_sdf {
     print SDF $buf;
     close(SDF);
     <perl:print:
-         "&wml_fmt_sdf({ FILE       => $tmpfile, 
-                         KEEPHR     => $keephr, 
+         "&wml_fmt_sdf({ FILE       => $tmpfile,
+                         KEEPHR     => $keephr,
                          NOTYPO     => $notypo     })" />
 
     unlink($tmpfile);
