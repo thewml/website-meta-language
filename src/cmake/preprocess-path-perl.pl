@@ -6,8 +6,21 @@ use warnings;
 use Getopt::Long;
 
 my @params = (qw(
+    INSTALLARCHLIB
+    INSTALLPRIVLIB
     PATH_PERL
-    ));
+    WML_CONFIG_ARGS
+    WML_VERSION
+    bindir
+    built_date
+    built_system
+    built_user
+    libdir
+    mandir
+    perlprog
+    perlvers
+    prefix
+));
 
 my %substitutions;
 
@@ -84,7 +97,7 @@ sub verify_all_keys
         if ($want->[$idx] ne $have->[$idx])
         {
             die "Substitution $want->[$idx] is missing!";
-        }       
+        }
     }
 
     if (@$have != @$want)

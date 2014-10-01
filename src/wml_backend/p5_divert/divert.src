@@ -7,7 +7,8 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  Copyright (c) 1999-2001 Denis Barbier, All Rights Reserved.
 ##
 
-require 5.003;
+use strict;
+use warnings;
 
 BEGIN { $^W = 0; } # get rid of nasty warnings
 
@@ -30,28 +31,34 @@ sub usage {
     print STDERR "  -v, --verbose            verbose mode\n";
     exit(1);
 }
-$opt_v = 0;
-$opt_q = 0;
-$opt_o = '-';
+my $opt_v = 0;
+my $opt_q = 0;
+my $opt_o = '-';
 $Getopt::Long::bundling = 1;
 $Getopt::Long::getopt_compat = 0;
 if (not Getopt::Long::GetOptions(
-    "v|verbose",
-    "q|quiet",
-    "o|outputfile=s")) {
+    "v|verbose" => \$opt_v,
+    "q|quiet" => $opt_q,
+    "o|outputfile=s" => \$opt_o,
+)
+)
+{
     usage();
 }
+
 sub verbose {
     my ($str) = @_;
     if ($opt_v) {
         print STDERR "** Divert:Verbose: $str\n";
     }
 }
+
 sub error {
     my ($str) = @_;
     print STDERR "** Divert:Error: $str\n";
     exit(1);
 }
+
 sub warning {
     my ($file, $line, $str) = @_;
     if (not $opt_q) {
@@ -65,12 +72,12 @@ sub warning {
 my $file;
 my $in;
 
-if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
+if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
     $in = new IO::Handle;
     $file = 'STDIN';
     $in->fdopen(fileno(STDIN), "r") || error("cannot load STDIN: $!");
 }
-elsif ($#ARGV == 0) {
+elsif (@ARGV == 1) {
     $in = new IO::File;
     $file = $ARGV[0];
     $in->open($file) || error("cannot load $file: $!");
@@ -102,10 +109,10 @@ while (<$in>) {
             ##
             ##  Tag: dump location
             ##
-    
+
             #   initialize new location buffer
             $BUFFER{$1} = [] if (not exists($BUFFER{$1}));
-    
+
             #   insert location pointer into current location
             if ($BUFFER{$location} == $BUFFER{$1}) {
                 warning($file, $line, "self-reference of location ``$location'' - ignoring");
@@ -119,10 +126,10 @@ while (<$in>) {
             ##
             ##  Tag: enter location
             ##
-    
+
             #   remember old location on stack
             push(@LOCSTACK, $location);
-    
+
             #   determine location and optional
             #   qualifies, then enter this location
             $location = $1;
@@ -138,19 +145,19 @@ while (<$in>) {
                 $location = $1;
                 $rewind_next = 1;
             }
-    
+
             #   initialize location buffer
             $BUFFER{$location} = [] if (not exists($BUFFER{$location}));
-    
+
             #   is a "rewind now" forced by a "rewind next" from last time?
             if ($OVRWRITE{$location}) {
                 $rewind_now = 1;
                 $OVRWRITE{$location} = 0;
             }
-    
+
             #   remember a "rewind next" for next time
             $OVRWRITE{$location} = 1 if ($rewind_next);
-    
+
             #   execute a "rewind now" by clearing the location buffer
             if ($rewind_now == 1) {
                 while ($#{$BUFFER{$location}} > -1) {
@@ -163,12 +170,12 @@ while (<$in>) {
             ##
             ##  Tag: leave location
             ##
-    
-            if ($#LOCSTACK == -1) {
+
+            if (! @LOCSTACK ) {
                 warning($file, $line, "already in ``null'' location -- ignoring leave");
             }
             else {
-                my $loc = $1;
+                my $loc = ($1 // '');
                 if ($loc eq 'null') {
                     warning($file, $line, "cannot leave ``null'' location -- ignoring named leave");
                 }
@@ -200,7 +207,7 @@ while (<$in>) {
             ##
             ##  Plain text
             ##
-    
+
             #   calculate the minimum amount of plain characters we can skip
             my $l = length($remain);
             my $i1 = index($remain, '<<');  $i1 = $l if $i1 == -1;
@@ -210,19 +217,19 @@ while (<$in>) {
                 $i2 = index($remain, '..', $i2+1);
             } while ($i2 > -1 and $i2+2 < $l and substr($remain, $i2+2, 1) eq '/');
             $i2 = $l if $i2 == -1;
-    
+
             my $i3 = index($remain, '{#');  $i3 = $l if $i3 == -1; #}
             my $i4 = index($remain, ':#');  $i4 = $l if $i4 == -1;
-    
+
             my $i = $i1;
             $i = $i2 if $i > $i2;
             $i = $i3 if $i > $i3;
             $i = $i4 if $i > $i4;
-    
+
             #   skip at least 2 characters if we are sitting
             #   on just a "<<", "..", "{#" or ":#"
             $i = 1 if ($i == 0);
-    
+
             #   append plain text to remembered data and adjust $remain
             #   variable
             if ($i == $l) {
