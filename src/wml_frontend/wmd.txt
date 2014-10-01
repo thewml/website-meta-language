@@ -11,9 +11,9 @@ Keyword search the WML documentation <s:search=%[Keyword]S>
 
 Basics:
 wml_intro(7) .............<s> An introduction to WML's basic concepts
-wml_tutorial(7) ..........<s> Understanding WML step-by-step 
+wml_tutorial(7) ..........<s> Understanding WML step-by-step
 wml_macros(7) ............<s> Writing WML powerful macros
-wml_faq(7) ...............<s> Frequently Asked Questions on WML 
+wml_faq(7) ...............<s> Frequently Asked Questions on WML
 wml_tags(7) ..............<s> Permuted index of defined WML tags
 wml_barebone(7) ..........<s> Bare Bones Guide to HTML 4.0
 

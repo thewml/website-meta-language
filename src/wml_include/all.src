@@ -1,6 +1,6 @@
 ##
 ##  wml::all - WML Include Files Of All Categories
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #use wml::des::all
@@ -31,12 +31,12 @@ include files.
 
 The following categories currently exists:
 
-=over 4 
+=over 4
 
 =item B<Standard> (std)
 
 Here you can find all standard tagsets which everybody usually uses all the
-time. 
+time.
 
 =item B<Webdesign> (des)
 
@@ -51,7 +51,7 @@ do special formatting.
 =item B<Import> (imp)
 
 Here you can find import tags, i.e. usually tags which import external data
-and converts them to HTML. 
+and converts them to HTML.
 
 =item B<Support> (sup)
 
