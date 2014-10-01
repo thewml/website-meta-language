@@ -40,13 +40,13 @@ else
     MP4HLIBDIR="$libdir/mp4h"
 fi
 AC_DEFINE_UNQUOTED([MP4HLIBDIR], ["$MP4HLIBDIR/$PACKAGE_VERSION:$MP4HDATADIR"],
-        [Default location for mp4h modules]) 
+        [Default location for mp4h modules])
 
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
-AC_PROG_INSTALL 
+AC_PROG_INSTALL
 
 echo ''
 $shtool echo -e "Checking for %Bheaders and libraries%b"

@@ -727,7 +727,7 @@ enum _mathrel_type
   MATHREL_GT,
   MATHREL_LT,
   MATHREL_EQ,
-  MATHREL_NEQ 
+  MATHREL_NEQ
 };
 
 typedef enum _mathop_type mathop_type;

@@ -1,7 +1,7 @@
 ;;;
 ;;;  system:sh - Executing Shell commands
-;;; 
-;;;  Copyright (c) 2001 Denis Barbier, All Rights Reserved. 
+;;;
+;;;  Copyright (c) 2001 Denis Barbier, All Rights Reserved.
 ;;;
 
 <load module="system:sh">

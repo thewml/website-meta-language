@@ -193,7 +193,7 @@
        [Denis Barbier]
 
     *) Experimental UTF-8 support (21-Jul-2001):
-       Compile PCRE 3.4 with UTF-8 support, 
+       Compile PCRE 3.4 with UTF-8 support,
        A new --encoding option accepts 2 values, either `8bit' or
        `utf8'.  When `utf8' is selected, regular expressions are
        compiled with PCRE_UTF8 flag.
@@ -280,7 +280,7 @@
        [Denis Barbier, Debian webmasters]
 
     *) Upgraded to GNU shtool 1.5.1 (08-Aug-2000):
-       Upgraded to GNU shtool 1.5.1. This especially fixed problems 
+       Upgraded to GNU shtool 1.5.1. This especially fixed problems
        with "shtool version" under Solaris.
        [Ralf S. Engelschall]
 

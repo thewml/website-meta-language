@@ -369,9 +369,9 @@ echo )
     ##  Copyright (c) 1998-2002 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for WML as buildinfo
     ##
-    
+
     text="$*"
-    
+
     #   check for broken escape sequence expansion
     seo=''
     bytes=`echo '\1' | wc -c | awk '{ printf("%s", $1); }'`
@@ -381,14 +381,14 @@ echo )
             seo='-E'
         fi
     fi
-    
+
     #   check for existing -n option (to suppress newline)
     minusn=''
     bytes=`echo -n 123 2>/dev/null | wc -c | awk '{ printf("%s", $1); }'`
     if [ ".$bytes" = .3 ]; then
         minusn='-n'
     fi
-    
+
     #   determine terminal bold sequence
     term_bold=''
     term_norm=''
@@ -438,7 +438,7 @@ echo )
             echo "$msgprefix:Warning: unable to determine terminal sequence for bold mode" 1>&2
         fi
     fi
-    
+
     #   determine user name
     username=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%[uUgG]'`" != . ]; then
@@ -458,7 +458,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine user id
     userid=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%U'`" != . ]; then
@@ -482,7 +482,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine (primary) group id
     groupid=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%[gG]'`" != . ]; then
@@ -496,7 +496,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine (primary) group name
     groupname=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%g'`" != . ]; then
@@ -511,7 +511,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine host and domain name
     hostname=''
     domainname=''
@@ -551,7 +551,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine current time
     time_day=''
     time_month=''
@@ -583,7 +583,7 @@ echo )
               12) time_monthname='Dec' ;;
         esac
     fi
-    
+
     #   expand special ``%x'' constructs
     if [ ".$opt_e" = .yes ]; then
         text=`echo $seo "$text" |\
@@ -600,7 +600,7 @@ echo )
                   -e "s/%Y/${time_year}/g" \
                   -e "s/%m/${time_monthname}/g" 2>/dev/null`
     fi
-    
+
     #   create output
     if [ .$opt_n = .no ]; then
         echo $seo "$text"
@@ -621,13 +621,13 @@ version )
     ##  Copyright (c) 1994-2002 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for ePerl, rewritten from scratch for shtool
     ##
-    
+
     file="$1"
-    
+
     #   determine prefix and name
     name="$opt_n"
     prefix="$opt_p"
-    
+
     #   determine current version
     triple="$opt_s"
     if [ ".$triple" != . ]; then
@@ -653,7 +653,7 @@ version )
         lev=0
         tim=calc
     fi
-    
+
     #   determine new version in batch
     if [ ".$opt_i" != . ]; then
         case $opt_i in
@@ -672,7 +672,7 @@ version )
         esac
         tim=calc
     fi
-    
+
     #   determine new version interactively
     if [ ".$opt_e" = .yes ]; then
         echo "old version: ${ver}.${rev}${typ}${lev}"
@@ -693,7 +693,7 @@ version )
               ver="\1";rev="\2";typ="\3";lev="\4"%'`
         tim=calc
     fi
-    
+
     #   determine hexadecimal and libtool value of version
     case $typ in
         a     ) typnum=0;  levnum=$lev ;;
@@ -706,7 +706,7 @@ version )
          tr 'abcdef' 'ABCDEF'`
     ltv=`echo "$ver:$rev:$typnum:$levnum" |\
          awk -F: '{ printf("%d:%d", $1*10 + $2, $3*10 + $4); }'`
-    
+
     #   determine date
     if [ ".$tim" = .calc ]; then
         day=`date '+%d'`
@@ -735,7 +735,7 @@ version )
         esac
         tim="${day}-${month}-${year}"
     fi
-    
+
     #   perform result actions
     mode=show
     if [ ".$opt_i" != . ]; then
@@ -766,7 +766,7 @@ version )
         esac
     else
         #   update the version file
-    
+
         #   pre-generate various strings
         triple="${ver}.${rev}${typ}${lev}"
         vHex="$hex"
@@ -777,20 +777,20 @@ version )
         vWeb="${name}/${triple}"
         vSCCS="@(#)${name} ${triple} (${tim})"
         vRCS="\$Id: ${name} ${triple} (${tim}) \$"
-    
+
         #   determine string out of filename
         #   (do NOT try to optimize this in any way because of portability)
         filestr=`echo $file |\
                  tr 'abcdefghijklmnopqrstuvwxyz./%+' \
                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ____' | sed -e 's/-/_/g'`
-    
+
         #   generate uppercase prefix
         prefixupper=`echo $prefix |\
                      tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-    
+
         #   create the version file according the the selected language
         echo "new version: ${vLong}"
-    
+
         cp /dev/null $file
         case $opt_l in
             txt )

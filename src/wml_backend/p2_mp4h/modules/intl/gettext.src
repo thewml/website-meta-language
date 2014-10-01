@@ -1,7 +1,7 @@
 ;;;
 ;;;  intl:gettext - Executing Shell commands
-;;; 
-;;;  Copyright (c) 2002 Denis Barbier, All Rights Reserved. 
+;;;
+;;;  Copyright (c) 2002 Denis Barbier, All Rights Reserved.
 ;;;
 
 <load module="intl:gettext">

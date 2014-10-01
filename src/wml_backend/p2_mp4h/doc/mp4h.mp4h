@@ -1909,7 +1909,7 @@ file=<var filename /> | command=<var command-line />
 <para>
 Insert the contents of a file in the file system - if the <attribute file />
 attribute is given -, or the output from executing a system command - if the
-<attribute command /> attribute is given - into the input stream. 
+<attribute command /> attribute is given - into the input stream.
 For backwards compatibility, if neither the <attribute file /> nor the
 <attribute command /> attributes are given, the first argument is taken
 as a file to include.
@@ -1992,7 +1992,7 @@ Change comment characters.
 
 <para>
 By default, all characters between <texttt><begin-quote/></texttt> and
-<texttt><end-quote/></texttt> pairs are read without 
+<texttt><end-quote/></texttt> pairs are read without
 parsing.  When called without argument, this macro inhibates this
 feature.  When called with two arguments, it redefines begin and end
 delimiters.  Begin delimiter must begin with a left-angle bracket, and
@@ -2014,7 +2014,7 @@ Delimiters are also written into output.
 <para>
 Diversions are a way of temporarily saving output.
 The output of &mp4h; can at any time be diverted to a temporary file,
-and be reinserted into the output stream, undiverted, again at a later time. 
+and be reinserted into the output stream, undiverted, again at a later time.
 </para>
 
 <para>
@@ -2044,7 +2044,7 @@ This can be used to suppress unwanted output. See the example below.
 
 <para>
 When all &mp4h; input will have been processed, all existing diversions
-are automatically undiverted, in numerical order. 
+are automatically undiverted, in numerical order.
 </para>
 
 <para>
@@ -2639,7 +2639,7 @@ Previous example may be written
 
 <para>
 because quotes prevent inner right-angle bracket from closing the
-<command a /> tag. 
+<command a /> tag.
 </para>
 
 <para>
