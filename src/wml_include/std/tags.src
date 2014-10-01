@@ -1,6 +1,6 @@
 ##
-##  wml::std::tags - Standard Support Tags 
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  wml::std::tags - Standard Support Tags
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -257,7 +257,7 @@ m4_noquotes()m4_dnl
 <define-tag leave>\
 :#%0#}\
 </define-tag>
-#   diversion container 
+#   diversion container
 <define-tag divert endtag=required>\
 <enter %0 />%body<leave <match "%0" "!" action=delete /> />\
 </define-tag>
@@ -327,7 +327,7 @@ __END__
 
 =head1 NAME
 
-wml::std::tags - Standard Support Tags 
+wml::std::tags - Standard Support Tags
 
 =head1 SYNOPSIS
 
@@ -358,7 +358,7 @@ wml::std::tags - Standard Support Tags
  #   Client-Side JavaScript: support tag
  <javascript [version=..] [language=..]
              [type=..] [src=...] [defer] [nohead] [nolang]>
- ... 
+ ...
  </javascript>
 
  #   Resynchronize line numbers for more accurate pass 3 warnings

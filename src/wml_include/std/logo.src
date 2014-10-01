@@ -1,6 +1,6 @@
 ##
 ##  wml::std::logo - Logo Insertion
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -130,7 +130,7 @@ the name of the logo.  When you use a C<base=foo> attribute, then the
 resulting files are named F<foo.logo-xxxxxx.png>.  Actually you can even
 use a complete filename including a directory prefix, i.e. when you use
 C<base=../../common/foo> attribute, then the images are created as
-F<../../common/foo.logo-xxxxxx.png>. 
+F<../../common/foo.logo-xxxxxx.png>.
 
 And for most flexibility when no base is specified and the variable
 C<LOGO_BASE> is defined (usually from within a F<.wmlrc> file via
@@ -191,8 +191,8 @@ any output:
 =head1 HISTORY
 
  For backward compatibility a logo named "php3" is also available.
- Inluding the version number was not a really good idea, use the 
- logo "php" instead. Expect that the logo "php3" will be removed in 
+ Inluding the version number was not a really good idea, use the
+ logo "php" instead. Expect that the logo "php3" will be removed in
  future releases.
 
 =head1 SEEALSO

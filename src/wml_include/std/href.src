@@ -1,6 +1,6 @@
 ##
 ##  wml::std::href - Enhanced Hyperlink
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 1999-2001 Denis Barbier
 ##
 
@@ -67,7 +67,7 @@ wml::std::href - Enhanced Hyperlink
 
  #use wml::std::href
 
- <href url="..." [name="..."] [image="..."] [hint="..."] [target="..."]> 
+ <href url="..." [name="..."] [image="..."] [hint="..."] [target="..."]>
 
 =head1 DESCRIPTION
 
@@ -76,24 +76,24 @@ href="..."E<gt>...E<lt>/aE<gt>>).  The intended use of C<E<lt>hrefE<gt>> is to
 simplify the creation of hyperlinks. The following
 
   <href url="THE://URL">
-  
+
   <href url="THE://URL" name="THE_NAME">
   <href url="THE://URL" image="THE_IMG.EXT">
-  
+
   <href url="THE://URL" name="THE_NAME" image="THE_IMG.EXT">
-  
+
   <href url="THE://URL" hint="THE_HINT">
   <href url="THE://URL" name="THE_NAME" image="THE_IMG.EXT" hint="THE_HINT">
 
 gets expanded to
 
   <a href="THE://URL"><tt>THE://URL</tt></a>
-  
+
   <a href="THE://URL">THE_NAME</a>
   <a href="THE://URL"><img src="THE_IMG.EXT" alt="THE://URL" border="0"></a>
-  
+
   <a href="THE://URL"><img src="THE_IMG.EXT" alt="THE_NAME" border="0"></a>
-  
+
   <a href="THE://URL" onmouseover="self.status='THE_HINT';return true" onmouseout="self.status='';return true" onfocus="self.status='THE_HINT';return true" onblur="self.status='';return true"><tt>THE://URL</tt></a>
   <a href="THE://URL" onmouseover="self.status='THE_HINT';return true" onmouseout="self.status='';return true" onfocus="self.status='THE_HINT';return true" onblur="self.status='';return true"><img src="THE_IMG.EXT" alt="THE_NAME" border="0"></a>
 
