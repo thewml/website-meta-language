@@ -34,13 +34,7 @@ ADD_CUSTOM_COMMAND(
          "${intermediate}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     DEPENDS "${src}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_pass1.pl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_pass2.pl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_pass3.pl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_setup.pl"
     "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.pl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_util.pl"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_vers.pl"
 )
 
 ADD_CUSTOM_TARGET(
