@@ -68,7 +68,7 @@ Print the version of the program.
 
 =item C<-v>
 
-Verbose mode. Print out the original and final file sizes, plus the 
+Verbose mode. Print out the original and final file sizes, plus the
 compression percent.  For example:
 
   5261   4065 22% /tmp/development-es.html
@@ -112,7 +112,7 @@ foreach my $i (1, 2, 3, 4, 5, 6, 7, 8, 9) {
   $level = $i if ($opts{$i});
 }
 
-&main($level, \@ARGV);
+main($level, \@ARGV);
 exit 0;
 
 sub main {
@@ -123,7 +123,7 @@ sub main {
   $h->level($level);
 
   foreach my $f (@$files) {
-    my $result = $h->initialize($f); 
+    my $result = $h->initialize($f);
     print_error($f) if ($result == 0);
 
     my $d = $h->data();
@@ -132,14 +132,14 @@ sub main {
     # add options to control these...
     $h->compat();
     $h->strip();
-    
+
     my $newlen = length($$d);
     my $pct = 0;
     if ($origlen > 0) {
       $pct = (100 * ($origlen - $newlen)) / $origlen;
     }
     printf "%6d %6d %2d%% %s\n", $origlen, $newlen, $pct, $f if ($verbose);
-    
+
     # Okay, now move the files around..
     rename($f, "$f.bak") || die "Cannot rename '$f': $!\n";
     open(output, ">$f") || die "Cannot overwrite '$f': $!\n";
@@ -148,7 +148,7 @@ sub main {
   }
 }
 
-  
+
 sub print_error {
   my($msg) = @_;
   print STDERR <<END;
