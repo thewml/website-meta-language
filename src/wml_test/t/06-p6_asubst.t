@@ -1,16 +1,20 @@
 
-require "TEST.pl";
-&TEST::init;
+use strict;
+use warnings;
 
-print "1..2\n";
+use Test::More tests => 2;
+
+use WmlTest;
+
+WmlTest::init();
 
 #
 #   TEST 1-2: throughput
 #
 
-$pass = 6;
+my $pass = 6;
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 {:[[s/ä/&auml;/]][[s/ü/&uuml;/]][[tr/[a-z]/[A-Z]/]]
 Foo Bar Baz Quux with Umlauts ä and ü
 :}
@@ -20,5 +24,5 @@ FOO BAR BAZ QUUX WITH UMLAUTS &AUML; AND &UUML;
 
 EOT_OUT
 
-&TEST::cleanup;
+WmlTest::cleanup();
 
