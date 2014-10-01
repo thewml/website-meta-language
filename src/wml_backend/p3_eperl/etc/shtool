@@ -67,7 +67,7 @@ if [ ".$1" = ".-h" -o ".$1" = ".--help" ]; then
     echo "Copyright (c) 1994-2000 Ralf S. Engelschall <rse@engelschall.com>"
     echo "Report bugs to <bug-shtool@gnu.org>"
     echo ''
-    echo "Usage: shtool [<options>] [<cmd-name> [<cmd-options>] [<cmd-args>]]" 
+    echo "Usage: shtool [<options>] [<cmd-name> [<cmd-options>] [<cmd-args>]]"
     echo ''
     echo 'Available global <options>:'
     echo '  -v, --version   display shtool version information'
@@ -469,9 +469,9 @@ echo )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for WML as buildinfo
     ##
-    
+
     text="$*"
-    
+
     #   check for broken escape sequence expansion
     seo=''
     bytes=`echo '\1' | wc -c | awk '{ printf("%s", $1); }'`
@@ -481,16 +481,16 @@ echo )
             seo='-E'
         fi
     fi
-    
+
     #   check for existing -n option (to suppress newline)
     minusn=''
     bytes=`echo -n 123 2>/dev/null | wc -c | awk '{ printf("%s", $1); }'`
     if [ ".$bytes" = .3 ]; then
         minusn='-n'
     fi
-    
+
     #   determine terminal bold sequence
-    term_bold='' 
+    term_bold=''
     term_norm=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%[Bb]'`" != . ]; then
         case $TERM in
@@ -538,7 +538,7 @@ echo )
             echo "$msgprefix:Warning: unable to determine terminal sequence for bold mode" 1>&2
         fi
     fi
-    
+
     #   determine user name
     username=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%[uU]'`" != . ]; then
@@ -558,7 +558,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine user id
     userid=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%U'`" != . ]; then
@@ -582,7 +582,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine host name
     hostname=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%h'`" != . ]; then
@@ -602,7 +602,7 @@ echo )
                 ;;
         esac
     fi
-    
+
     #   determine domain name
     domainname=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%d'`" != . ]; then
@@ -624,7 +624,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine current time
     time_day=''
     time_month=''
@@ -656,7 +656,7 @@ echo )
               12) time_monthname='Dec' ;;
         esac
     fi
-    
+
     #   expand special ``%x'' constructs
     if [ ".$opt_e" = .yes ]; then
         text=`echo $seo "$text" |\
@@ -671,7 +671,7 @@ echo )
                   -e "s/%Y/${time_year}/g" \
                   -e "s/%m/${time_monthname}/g" 2>/dev/null`
     fi
-    
+
     #   create output
     if [ .$opt_n = .no ]; then
         echo $seo "$text"
@@ -693,7 +693,7 @@ mdate )
     ##  Originally idea and basis code by Ulrich Drepper
     ##  Enhanced by Ralf S. Engelschall for shtool
     ##
-    
+
     fod="$1"
     case "$opt_o" in
         [dmy][dmy][dmy] )
@@ -706,23 +706,23 @@ mdate )
         echo "$msgprefix:Error: file or directory not found: $fod" 1>&2
         exit 1
     fi
-    
+
     #   prevent "date" giving response in another language
     LANG=C;    export LANG
     LC_ALL=C;  export LC_ALL
     LC_TIME=C; export LC_TIME
-    
+
     #   get the extended ls output of the file or directory.
     if ls -L /dev/null >/dev/null 2>&1; then
         set - x`ls -L -l -d $fod`
     else
         set - x`ls -l -d $fod`
     fi
-    
+
     #   The month is at least the fourth argument
     #   (3 shifts here, the next inside the loop).
     shift; shift; shift
-    
+
     #   Find the month. Next argument is day, followed by the year or time.
     month=""
     while [ ".$month" = . ]; do
@@ -744,7 +744,7 @@ mdate )
     done
     day="$2"
     year="$3"
-    
+
     #   We finally have to deal with the problem that the "ls" output
     #   gives either the time of the day or the year.
     case $year in
@@ -766,7 +766,7 @@ mdate )
             year="$this_year"
             ;;
     esac
-    
+
     #   Optionally fill day and month with leeding zeros
     if [ ".$opt_z" = .yes ]; then
         case $day in
@@ -778,17 +778,17 @@ mdate )
                  [0-9] ) nummonth="0$nummonth" ;;
         esac
     fi
-    
+
     #   Optionally use digits for month
     if [ ".$opt_d" = .yes ]; then
         month="$nummonth"
     fi
-    
+
     #   Optionally shorten the month name to three characters
     if [ ".$opt_s" = .yes ]; then
         month=`echo $month | cut -c1-3`
     fi
-    
+
     #   Output the resulting date string
     echo dummy | awk '{
         for (i = 0; i < 3; i++) {
@@ -817,7 +817,7 @@ table )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for Apache
     ##
-    
+
     if [ $opt_c -gt 4 ]; then
         echo "$msgprefix:Error: Invalid number of colums (1..4 allowed only)" 1>&2
         exit 1
@@ -826,7 +826,7 @@ table )
         x? ) ;;
         *  ) echo "$msgprefix:Error: Invalid separator (one char allowed only)" 1>&2; exit 1 ;;
     esac
-    
+
     #   split the list into a table
     list=`
         IFS="$opt_F"
@@ -851,7 +851,7 @@ table )
             END { print list; }
          "
     `
-    
+
     #   format table cells and make sure table
     #   doesn't exceed maximum width
     OIFS="$IFS"
@@ -881,7 +881,7 @@ prop )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for mod_ssl
     ##
-    
+
     perl=''
     for dir in `echo $PATH | sed -e 's/:/ /g'` .; do
         if [ -f "$dir/perl" ]; then
@@ -926,10 +926,10 @@ move )
     ##  Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for shtool
     ##
-    
+
     src="$1"
     dst="$2"
-    
+
     #   consistency checks
     if [ ".$src" = . -o ".$dst" = . ]; then
         echo "$msgprefix:Error: Invalid arguments" 1>&2
@@ -962,13 +962,13 @@ move )
             exit 1
         fi
     fi
-    
+
     #   determine substitution patterns
     if [ ".$opt_e" = .yes ]; then
         srcpat=`echo "$src" | sed -e 's/\\./\\\\./g' -e 's/;/\\;/g' -e 's;\\*;\\\\(.*\\\\);g'`
         dstpat=`echo "$dst" | sed -e 's;%\([1-9]\);\\\\\1;g'`
     fi
-    
+
     #   iterate over source(s)
     for onesrc in $expsrc; do
         if [ .$opt_e = .yes ]; then
@@ -1018,8 +1018,8 @@ install )
     ##  Copyright (c) 1997-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for shtool
     ##
-    
-    #   determine source(s) and destination 
+
+    #   determine source(s) and destination
     argc=$#
     srcs=""
     while [ $# -gt 1 ]; do
@@ -1027,36 +1027,36 @@ install )
         shift
     done
     dstpath="$1"
-    
+
     #   type check for destination
     dstisdir=0
     if [ -d $dstpath ]; then
         dstpath=`echo "$dstpath" | sed -e 's:/$::'`
         dstisdir=1
     fi
-    
+
     #   consistency check for destination
     if [ $argc -gt 2 -a $dstisdir = 0 ]; then
         echo "$msgprefix:Error: multiple sources require destination to be directory" 1>&2
         exit 1
     fi
-    
+
     #   iterate over all source(s)
     for src in $srcs; do
         dst=$dstpath
-    
+
         #  If destination is a directory, append the input filename
         if [ $dstisdir = 1 ]; then
             dstfile=`echo "$src" | sed -e 's;.*/\([^/]*\)$;\1;'`
             dst="$dst/$dstfile"
         fi
-    
+
         #  Add a possible extension to src and dst
         if [ ".$opt_e" != . ]; then
             src="$src$opt_e"
             dst="$dst$opt_e"
         fi
-    
+
         #  Check for correct arguments
         if [ ".$src" = ".$dst" ]; then
             echo "$msgprefix:Warning: source and destination are the same - skipped" 1>&2
@@ -1066,17 +1066,17 @@ install )
             echo "$msgprefix:Warning: source \`$src' is a directory - skipped" 1>&2
             continue
         fi
-    
+
         #  Make a temp file name in the destination directory
         dsttmp=`echo $dst |\
                 sed -e 's;[^/]*$;;' -e 's;\(.\)/$;\1;' -e 's;^$;.;' \
                     -e "s;\$;/#INST@$$#;"`
-    
+
         #  Verbosity
         if [ ".$opt_v" = .yes ]; then
             echo "$src -> $dst" 1>&2
         fi
-    
+
         #  Copy or move the file name to the temp name
         #  (because we might be not allowed to change the source)
         if [ ".$opt_C" = .yes ]; then
@@ -1093,7 +1093,7 @@ install )
             fi
             mv $src $dsttmp || exit $?
         fi
-    
+
         #  Adjust the target file
         #  (we do chmod last to preserve setuid bits)
         if [ ".$opt_s" = .yes ]; then
@@ -1120,7 +1120,7 @@ install )
             fi
             chmod $opt_m $dsttmp || exit $?
         fi
-    
+
         #   Determine whether to do a quick install
         #   (has to be done _after_ the strip was already done)
         quick=no
@@ -1131,7 +1131,7 @@ install )
                 fi
             fi
         fi
-    
+
         #   Finally install the file to the real destination
         if [ $quick = yes ]; then
             if [ ".$opt_t" = .yes ]; then
@@ -1154,7 +1154,7 @@ mkdir )
     ##  Originally written for public domain by Noah Friedman <friedman@prep.ai.mit.edu>
     ##  Cleaned up and enhanced for shtool
     ##
-    
+
     errstatus=0
     for p in ${1+"$@"}; do
         #   if the directory already exists...
@@ -1212,7 +1212,7 @@ mkln )
     ##  Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for shtool
     ##
-    
+
     args=$?
     srcs=""
     while [ $# -gt 1 ]; do
@@ -1226,7 +1226,7 @@ mkln )
             exit 1
         fi
     fi
-    
+
     #   determine link options
     lnopt=""
     if [ ".$opt_f" = .yes ]; then
@@ -1235,7 +1235,7 @@ mkln )
     if [ ".$opt_s" = .yes ]; then
         lnopt="$lnopt -s"
     fi
-    
+
     #   iterate over sources
     for src in $srcs; do
         #   determine if one of the paths is an absolute path,
@@ -1249,7 +1249,7 @@ mkln )
         case $dst in
             /* ) oneisabs=1; dstisabs=1 ;;
         esac
-    
+
         #   split source and destination into dir and base name
         if [ -d $src ]; then
             srcdir=`echo $src | sed -e 's;/*$;;'`
@@ -1265,7 +1265,7 @@ mkln )
             dstdir=`echo  $dst | sed -e 's;^[^/]*$;;' -e 's;^\(.*/\)[^/]*$;\1;' -e 's;\(.\)/$;\1;'`
             dstbase=`echo $dst | sed -e 's;.*/\([^/]*\)$;\1;'`
         fi
-    
+
         #   consistency check
         if [ ".$dstdir" != . ]; then
             if [ ! -d $dstdir ]; then
@@ -1273,7 +1273,7 @@ mkln )
                 exit 1
             fi
         fi
-    
+
         #   make sure the source is reachable from the destination
         if [ $dstisabs = 1 ]; then
             if [ $srcisabs = 0 ]; then
@@ -1284,7 +1284,7 @@ mkln )
                 fi
             fi
         fi
-    
+
         #   split away a common prefix
         prefix=""
         if [ ".$srcdir" = ".$dstdir" ] && [ ".$srcdir" != . ]; then
@@ -1303,10 +1303,10 @@ mkln )
                 dstdir=`echo $dstdir | sed -e 's;^[^/]*/*;;'`
             done
         fi
-    
+
         #   destination prefix is just the common prefix
         dstpre="$prefix"
-    
+
         #   determine source prefix which is the reverse directory
         #   step-up corresponding to the destination directory
         srcpre=""
@@ -1323,7 +1323,7 @@ mkln )
                 srcpre="$prefix"
             fi
         fi
-    
+
         #   determine destination symlink name
         if [ ".$dstbase" = . ]; then
             if [ ".$srcbase" != . ]; then
@@ -1332,11 +1332,11 @@ mkln )
                 dstbase=`echo "$prefix$srcdir" | sed -e 's;/*$;;' -e 's;.*/\([^/]*\)$;\1;'`
             fi
         fi
-    
+
         #   now finalize source and destination directory paths
         srcdir=`echo $srcdir | sed -e 's;\([^/]\)$;\1/;'`
         dstdir=`echo $dstdir | sed -e 's;\([^/]\)$;\1/;'`
-    
+
         #   run the final link command
         if [ ".$opt_t" = .yes ]; then
             echo "ln$lnopt $srcpre$srcdir$srcbase $dstpre$dstdir$dstbase"
@@ -1351,17 +1351,17 @@ mkshadow )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for Apache
     ##
-    
+
     #   source and destination directory
     src=`echo "$1" | sed -e 's:/$::' -e 's:^\./\(.\):\1:'`
     dst=`echo "$2" | sed -e 's:/$::' -e 's:^\./\(.\):\1:'`
-    
+
     #   check whether source exists
     if [ ! -d $src ]; then
         echo "$msgprefix:Error: source directory not found: \`$src'" 1>&2
         exit 1
     fi
-    
+
     #   determine if one of the paths is an absolute path,
     #   because then we have to use an absolute symlink
     oneisabs=0
@@ -1371,7 +1371,7 @@ mkshadow )
     case $dst in
         /* ) oneisabs=1 ;;
     esac
-    
+
     #   determine reverse directory for destination directory
     dstrevdir=''
     if [ $oneisabs = 0 ]; then
@@ -1395,7 +1395,7 @@ mkshadow )
     else
         src="`cd $src; pwd`";
     fi
-    
+
     #   create directory tree at destination
     if [ ! -d $dst ]; then
         if [ ".$opt_t" = .yes ]; then
@@ -1416,7 +1416,7 @@ mkshadow )
         fi
         mkdir $dst/$dir
     done
-    
+
     #   fill directory tree with symlinks to files
     if [ ".$opt_a" = .yes ]; then
         FILES="`cd $src; find . -depth -print |\
@@ -1468,16 +1468,16 @@ fixperm )
     ##  Copyright (c) 1996-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for ePerl
     ##
-    
+
     paths="$*"
-    
+
     #   check whether the test command supports the -x option
     if [ -x /bin/sh ] 2>/dev/null; then
         minusx="-x"
     else
         minusx="-r"
     fi
-    
+
     #   iterate over paths
     for p in $paths; do
         for file in `find $p -depth -print`; do
@@ -1524,16 +1524,16 @@ tarball )
     ##  Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for shtool
     ##
-    
+
     srcs="$*"
-    
+
     #   check whether the test command supports the -x option
     if [ -x /bin/sh ] 2>/dev/null; then
         minusx="-x"
     else
         minusx="-r"
     fi
-    
+
     #   find the tools
     paths="`echo $PATH |\
             sed -e 's%/*:%:%g' -e 's%/*$%%' \
@@ -1558,7 +1558,7 @@ tarball )
             fi
         done
     done
-    
+
     #   expand source paths
     exclude=''
     for pat in `echo $opt_e | sed 's/,/ /g'`; do
@@ -1587,7 +1587,7 @@ tarball )
     if [ ".$opt_v" = .yes ]; then
         cat $tmpfile.lst | sed -e 's/^/  /' 1>&2
     fi
-    
+
     #   determine tarball file and directory name
     if [ ".$opt_o" != . ]; then
         tarfile="$opt_o"
@@ -1606,7 +1606,7 @@ tarball )
         fi
         tarfile="$tarname.tar"
     fi
-    
+
     #   roll the tarball
     compress=''
     if [ ".$opt_c" != . ]; then
@@ -1673,7 +1673,7 @@ tarball )
         fi
         rm -rf $tmpdir/$tarname
     fi
-    
+
     #   cleanup
     if [ ".$opt_t" = .yes ]; then
         echo "rm -f $tmpfile.lst $tmpfile.out" 1>&2
@@ -1688,12 +1688,12 @@ guessos )
     ##  The Apache license applies (see http://www.apache.org/docs/LICENSE)
     ##  Originally written for Apache
     ##
-    
+
     MACHINE=`(uname -m) 2>/dev/null` || MACHINE=`(uname -p) 2>/dev/null` || MACHINE="unknown"
     RELEASE=`(uname -r) 2>/dev/null` || RELEASE="unknown"
      SYSTEM=`(uname -s) 2>/dev/null` ||  SYSTEM="unknown"
     VERSION=`(uname -v) 2>/dev/null` || VERSION="unknown"
-    
+
     XREL=`(uname -X) 2>/dev/null | grep "^Release" | awk '{print $3}'`
     if [ "x$XREL" != "x" ]; then
         if [ -f /etc/kconfig ]; then
@@ -1905,7 +1905,7 @@ guessos )
            echo "${MACHINE}-whatever-${SYSTEM}${RELEASE}"; exit 0
            ;;
     esac
-    
+
     # Now NeXT
     ISNEXT=`(hostinfo) 2>/dev/null`
     case "$ISNEXT" in
@@ -1922,7 +1922,7 @@ guessos )
              echo "${NEXTARCH}-next-${NEXTOS}${NEXTREL}" ; exit 0
              ;;
     esac
-    
+
     # Fallback
     echo "${MACHINE}-unknown-${SYSTEM}/${RELEASE}/${VERSION}"
     ;;
@@ -1933,12 +1933,12 @@ arx )
     ##  Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for shtool
     ##
-    
+
     ar_prg="$opt_C"
     ar_cmd="$1"; shift
     archive="$1"; shift
     files="$*"
-    
+
     #   walk through the file list and expand archives members
     tmpdir=`echo $archive | sed -e 's;[^/]*$;.arx;'`
     nfiles=''
@@ -1985,7 +1985,7 @@ arx )
             esac
         done
     fi
-    
+
     #   run the final archive command
     if [ ".$opt_t" = .yes ]; then
         echo "$ar_prg $ar_cmd $archive $nfiles" 1>&2
@@ -1995,7 +1995,7 @@ arx )
         echo "$msgprefix:Error: archive command failed" 1>&2
         exit $?
     fi
-    
+
     #   cleanup and die gracefully
     if [ -d $tmpdir ]; then
         if [ ".$opt_t" = .yes ]; then
@@ -2011,9 +2011,9 @@ slo )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for Apache
     ##
-    
+
     DIFS="$IFS"
-    
+
     #   parse out -L and -l options from command line
     DIRS=''
     LIBS=''
@@ -2041,13 +2041,13 @@ slo )
              *) ARGV="$ARGV $opt" ;;
         esac
     done
-    
+
     #   set linker default directories
     DIRS_DEFAULT='/lib:/usr/lib'
     if [ ".$LD_LIBRARY_PATH" != . ]; then
         DIRS_DEFAULT="$DIRS_DEFAULT:$LD_LIBRARY_PATH"
     fi
-    
+
     #   sort options by class
     DIRS_OBJ=''
     LIBS_OBJ=''
@@ -2055,24 +2055,24 @@ slo )
     LIBS_PIC=''
     DIRS_DSO=''
     LIBS_DSO=''
-    
+
     #    for each library...
     OIFS="$IFS" IFS=':'
     for lib in $LIBS; do
         [ ".$lib" = . ] && continue
-    
+
         found='no'
         found_indefdir='no'
         found_type=''
         found_dir=''
-    
+
         #    for each directory...
         OIFS2="$IFS" IFS=":$DIFS"
         for dir in ${DIRS} switch-to-defdirs ${DIRS_DEFAULT}; do
             [ ".$dir" = . ] && continue
             [ ".$dir" = .switch-to-defdirs ] && found_indefdir=yes
             [ ! -d $dir ] && continue
-    
+
             #    search the file
             OIFS3="$IFS" IFS="$DIFS"
             for file in '' `cd $dir && ls lib${lib}.* 2>/dev/null`; do
@@ -2102,7 +2102,7 @@ slo )
             fi
         done
         IFS="$OIFS2"
-    
+
         if [ ".$found" = .yes ]; then
             if [ ".$found_indefdir" != .yes ]; then
                 eval "dirlist=\"\${DIRS_${found_type}}:\""
@@ -2121,7 +2121,7 @@ slo )
         fi
     done
     IFS="$OIFS"
-    
+
     #   also pass-through unused dirs even if it's useless
     OIFS="$IFS" IFS=':'
     for dir in $DIRS; do
@@ -2131,7 +2131,7 @@ slo )
         fi
     done
     IFS="$OIFS"
-    
+
     #   reassemble the options but separated by type
     for type in OBJ PIC DSO; do
         OIFS="$IFS" IFS=':'
@@ -2142,7 +2142,7 @@ slo )
             opts="$opts -l$lib"
         done
         eval "LIBS_${type}=\"$opts\""
-    
+
         eval "dirs=\"\$DIRS_${type}\""
         opts=''
         for dir in $dirs; do
@@ -2152,7 +2152,7 @@ slo )
         eval "DIRS_${type}=\"$opts\""
         IFS="$OIFS"
     done
-    
+
     #   give back results
     for var in ARGV DIRS_OBJ LIBS_OBJ DIRS_PIC LIBS_PIC DIRS_DSO LIBS_DSO; do
         eval "val=\"\$${var}\""
@@ -2167,10 +2167,10 @@ scpp )
     ##  Copyright (c) 1999-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for GNU Pth
     ##
-    
+
     srcs="$*"
     output="${opt_o}.n"
-    
+
     #   find a reasonable Awk
     awk=''
     paths=`echo $PATH |\
@@ -2192,7 +2192,7 @@ scpp )
         echo "$msgprefix:Error: cannot find a reasonable Awk" 1>&2
         exit 1
     fi
-    
+
     #   parse source file(s)
     if [ ".$opt_v" = .yes ]; then
         echo "Parsing:" | $awk '{ printf("%s", $0); }' 1>&2
@@ -2280,23 +2280,23 @@ scpp )
     if [ ".$opt_v" = .yes ]; then
         echo "" 1>&2
     fi
-    
+
     #   start generating output header
     echo "/* $opt_o -- autogenerated from $opt_t, DO NOT EDIT! */" >$output
     echo "#line 1 \"$opt_t\"" >>$output
     sed <$opt_t -e "1,/^${opt_M} *\$/p" -e 'd' |\
     sed -e "/^${opt_M} *\$/d" >>$output
-    
+
     #   merge in the define blocks
     grep '^D:' $tmpfile | sed -e 's/^D://' >>$output
-    
+
     #   generate standard prolog
     echo "#line 1 \"_ON_THE_FLY_\"" >>$output
     echo "" >>$output
     echo "/* make sure the scpp source extensions are skipped */" >>$output
     echo "#define $opt_D 0" >>$output
     echo "#define $opt_C /**/" >>$output
-    
+
     #   generate namespace hiding for variables
     echo "" >>$output
     echo "/* move intern variables to hidden namespace */" >>$output
@@ -2307,7 +2307,7 @@ scpp )
         -e 's/^[^=;]*[ *]\([a-zA-Z0-9_]*\)\[\] =.*$/#define \1 __\1/' \
         -e 's/^[^=;]*[ *]\([a-zA-Z0-9_]*\);.*$/#define \1 __\1/' \
         -e 's/^[^=;]*[ *]\([a-zA-Z0-9_]*\) =.*$/#define \1 __\1/'
-    
+
     #   generate namespace hiding for functions
     echo "" >>$output
     echo "/* move intern functions to hidden namespace */" >>$output
@@ -2316,7 +2316,7 @@ scpp )
         -e 's/\([ (]\) */\1/g' \
         -e 's/ *\([),]\)/\1/g' \
         -e 's/^[^(]*[ *]\([a-zA-Z0-9_]*\)(.*$/#define \1 __\1/'
-    
+
     #   generate prototypes for variables
     echo "" >>$output
     echo "/* prototypes for intern variables */" >>$output
@@ -2329,7 +2329,7 @@ scpp )
         -e 's/^\([^=;]*[ *][a-zA-Z0-9_]*\) =.*$/\1;/' \
         -e 's/ ;/;/g' \
         -e "s/^$opt_C /extern /"
-    
+
     #   generate prototypes for functions
     echo "" >>$output
     echo "/* prototypes for intern functions */" >>$output
@@ -2343,14 +2343,14 @@ scpp )
         -e 's/\([ (]\) */\1/g' \
         -e 's/ *\([),]\)/\1/g' \
         -e "s/^$opt_C /extern /"
-    
+
     #   finish generating output header
     n=`(echo ''; sed <$opt_t -e "1,/^${opt_M} *\$/p" -e 'd') |\
        wc -l | sed -e 's;^ *\([0-9]*\) *$;\1;'`
     echo "#line $n \"$opt_t\"" >>$output
     sed <$opt_t -e "/^${opt_M} *\$/,\$p" -e 'd' |\
     sed -e "/^${opt_M} *\$/d" >>$output
-    
+
     #   create final output file
     if [ -f $opt_o ]; then
         if [ ".$opt_p" = .yes ]; then
@@ -2380,13 +2380,13 @@ version )
     ##  Copyright (c) 1994-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for ePerl, rewritten from scratch for shtool
     ##
-    
+
     file="$1"
-    
+
     #   determine prefix and name
     name="$opt_n"
     prefix="$opt_p"
-    
+
     #   determine current version
     triple="$opt_s"
     if [ ".$triple" != . ]; then
@@ -2412,7 +2412,7 @@ version )
         lev=0
         tim=calc
     fi
-    
+
     #   determine new version in batch
     if [ ".$opt_i" != . ]; then
         case $opt_i in
@@ -2431,7 +2431,7 @@ version )
         esac
         tim=calc
     fi
-    
+
     #   determine new version interactively
     if [ ".$opt_e" = .yes ]; then
         echo "old version: ${ver}.${rev}${typ}${lev}"
@@ -2439,7 +2439,7 @@ version )
             echo dummy | awk '{ printf("new version: "); }'
             read triple
             case $triple in
-                [0-9]*.[0-9]*[sabp.][0-9]* ) 
+                [0-9]*.[0-9]*[sabp.][0-9]* )
                     ;;
                 * ) echo "$msgprefix:Error: invalid version string entered: \`$triple'" 1>&2
                     continue
@@ -2452,7 +2452,7 @@ version )
               ver="\1";rev="\2";typ="\3";lev="\4"%'`
         tim=calc
     fi
-    
+
     #   determine hexadecimal and libtool value of version
     case $typ in
         a     ) typnum=0;  levnum=$lev ;;
@@ -2464,7 +2464,7 @@ version )
          awk -F: '{ printf("0x%X%02X%1X%02X", $1, $2, $3, $4); }'`
     ltv=`echo "$ver:$rev:$typnum:$levnum" |\
          awk -F: '{ printf("%d:%d", $1*10 + $2, $3*10 + $4); }'`
-    
+
     #   determine date
     if [ ".$tim" = .calc ]; then
         day=`date '+%d'`
@@ -2493,7 +2493,7 @@ version )
         esac
         tim="${day}-${month}-${year}"
     fi
-    
+
     #   perform result actions
     mode=show
     if [ ".$opt_i" != . ]; then
@@ -2522,9 +2522,9 @@ version )
                 exit 1
                 ;;
         esac
-    else 
+    else
         #   update the version file
-    
+
         #   pre-generate various strings
         triple="${ver}.${rev}${typ}${lev}"
         vHex="$hex"
@@ -2535,20 +2535,20 @@ version )
         vWeb="${name}/${triple}"
         vSCCS="@(#)${name} ${triple} (${tim})"
         vRCS="\$Id: shtool,v 1.4 2000/07/03 08:34:55 rse Exp ${name} ${triple} (${tim}) \$"
-    
+
         #   determine string out of filename
         #   (do NOT try to optimize this in any way because of portability)
         filestr=`echo $file |\
                  tr 'abcdefghijklmnopqrstuvwxyz./%+' \
                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ____' | sed -e 's/-/_/g'`
-    
+
         #   generate uppercase prefix
         prefixupper=`echo $prefix |\
                      tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-        
+
         #   create the version file according the the selected language
         echo "new version: ${vLong}"
-    
+
         cp /dev/null $file
         case $opt_l in
             txt )
@@ -2640,23 +2640,23 @@ path )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for Apache
     ##
-    
+
     namelist="$*"
-    
+
     #   check whether the test command supports the -x option
     if [ -x /bin/sh ] 2>/dev/null; then
         minusx="-x"
     else
         minusx="-r"
     fi
-    
+
     #   split path string
     paths="`echo $opt_p |\
             sed -e 's/^:/.:/' \
                 -e 's/::/:.:/g' \
                 -e 's/:$/:./' \
                 -e 's/:/ /g'`"
-    
+
     #   SPECIAL REQUEST
     #   translate forward to reverse path
     if [ ".$opt_r" = .yes ]; then
@@ -2671,7 +2671,7 @@ path )
         echo $rp | sed -e 's:/$::'
         exit 0
     fi
-    
+
     #   SPECIAL REQUEST
     #   strip out directory or base name
     if [ ".$opt_d" = .yes ]; then
@@ -2684,7 +2684,7 @@ path )
         sed -e 's;.*/\([^/]*\)$;\1;'
         exit 0
     fi
-    
+
     #   MAGIC SITUATION
     #   Perl Interpreter (perl)
     if [ ".$opt_m" = .yes ] && [ ".$namelist" = .perl ]; then
@@ -2714,7 +2714,7 @@ path )
         fi
         exit 1
     fi
-    
+
     #   MAGIC SITUATION
     #   C pre-processor (cpp)
     if [ ".$opt_m" = .yes ] && [ ".$namelist" = .cpp ]; then
@@ -2755,7 +2755,7 @@ path )
         fi
         exit 1
     fi
-    
+
     #   STANDARD SITUATION
     #   iterate over names
     for name in $namelist; do

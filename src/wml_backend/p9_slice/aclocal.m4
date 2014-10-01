@@ -18,7 +18,7 @@ AC_MSG_CHECKING([for Perl module $1 ($2)])
 if test ".$have_$3" = .0; then
     AC_MSG_RESULT([forced: closed world])
 else
-    rc=`$PATH_PERL -e 'eval "use $1 ifelse($2, ANY, , $2)"; print "ok" unless [$]@'`; 
+    rc=`$PATH_PERL -e 'eval "use $1 ifelse($2, ANY, , $2)"; print "ok" unless [$]@'`;
     if test ".$rc" = .ok; then
         have_$3=1
         AC_MSG_RESULT([found])

@@ -1,7 +1,7 @@
 %{
 ##
 ##  slice_term.y -- YACC parser for slice terms
-##  Copyright (c) 1997-2002 Ralf S. Engelschall. 
+##  Copyright (c) 1997-2002 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2002 Denis Barbier.
 ##
 
@@ -10,12 +10,12 @@ package SliceTermParser;
 
 %token SLICE
 
-%left '\\' '-' 
+%left '\\' '-'
 %left 'u' '+'
-%left 'x' '^' 
+%left 'x' '^'
 %left 'n' '%'
 
-%right '!' '~' 
+%right '!' '~'
 
 %%
 expr:   SLICE           { $$ = newvar($1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }

@@ -12,7 +12,7 @@ MACRO(GET_PERL_CONFIG cfg)
     EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
         "-e" "use Config; print \$Config{${cfg}}"
         OUTPUT_VARIABLE "perl_${cfg}"
-    )    
+    )
 ENDMACRO(GET_PERL_CONFIG)
 
 SET (PERL_CONFIGS archlib libs usedl ccflags optimize ccdlflags ldflags)
@@ -30,7 +30,7 @@ IF(perl_usedl STREQUAL "define")
     IF (perl_vers LESS 5.010)
         SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
     ELSE(perl_vers LESS 5.010)
-        SET (perl_dla "")   
+        SET (perl_dla "")
     ENDIF(perl_vers LESS 5.010)
     SET (HAVE_PERL_DYNALOADER 1)
 ELSE(perl_usedl STREQUAL "define")
@@ -72,7 +72,7 @@ SET (INCLUDE_FILES_TO_CHECK
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})
 
-SET (FUNCTIONS_TO_CHECK 
+SET (FUNCTIONS_TO_CHECK
     memmove
     setegid
     seteuid
@@ -81,7 +81,7 @@ SET (FUNCTIONS_TO_CHECK
 CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
 
-SET (SOURCES 
+SET (SOURCES
     eperl_config.c
     eperl_debug.c
     eperl_getopt.c

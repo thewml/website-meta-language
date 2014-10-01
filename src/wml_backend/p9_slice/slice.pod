@@ -61,7 +61,7 @@ The slice NAME itself. This name has to match against the regex
 ``C<[_A-Z0-9*{}]+>''. Here two cases are possible: C<NAME> is either a plain
 slice name consisting only of uppercase letters, digits or an underscore
 character. Or it is a wildcarded slice name indicated by an asterisk
-character. 
+character.
 
 The first variant just expands to the union of all slices named exactly
 C<NAME>.  The second variant expands to the union of all slices which match
@@ -73,7 +73,7 @@ of characters.
 
 =item SLICE_TERM ::= C<!NAME> | C<~NAME>
 
-The B<complement> of slice NAME (i.e. ALL\NAME). 
+The B<complement> of slice NAME (i.e. ALL\NAME).
 
 In formula: {x in ALL: x B<not> in NAME}
 
@@ -81,7 +81,7 @@ In formula: {x in ALL: x B<not> in NAME}
 
 The B<exclusive-or> relation between slice NAME1 and slice NAME2. In set theory
 also called B<symmetric difference>: (NAME1uNAME2)\(NAME1nNAME2) or alternatively
-(NAME1n!NAME2)u(!NAME1nNAME2). 
+(NAME1n!NAME2)u(!NAME1nNAME2).
 
 In formula: {x in ALL: (x in NAME1 or x in NAME2) and not (x in NAME1 and x in
 NAME2)}.
@@ -122,16 +122,16 @@ to each slice while the input is parsed. These levels range from 1 to the
 maximum encountered (the level 0 is the whole file, i.e. C<ALL>).  When a
 slice begins, it is assigned the lowest free level, beginning with level 1. As
 long as one level is in use, it cannot be assigned again until the end
-delimiter of the corresponding slice is seen. 
+delimiter of the corresponding slice is seen.
 
 An example:
 
      [A:[B::B]:A][C:[D:[E::C]:D][F::E]:F]
 
   3                     E-----------E
-  2      B--B        D--------D 
+  2      B--B        D--------D
   1   A--------A  C--------C     F-----F
-  0 
+  0
 
 Here slice A is assigned level 1. Then B is assigned level 2 because level 1
 is still in use by A. Then the end of B is reached, level 2 is freed.  Then
@@ -141,7 +141,7 @@ assigned level 3. Then the end of C is seen and level 1 freed. Then the end of
 D is seen and level 2 is freed. Now F begins and because only level 3 is in
 use, it gets level 1 assigned. Then the end of E frees level 3 and the end of
 F frees level 1. Finally no levels are still in use. This indicates that the
-slicing is correct. 
+slicing is correct.
 
 If there are any used levels left at the end of this process this indicates an
 input error and F<slice> responds with an error message displaying the still
@@ -210,7 +210,7 @@ C<u0w0s0z0>.
 This redirects the output to a file. Usually the whole file will be send to
 C<STDOUT> (same as C<ALL:->). You can use this option I<more than once> to
 output to more than one file while the corresponding I<sliceterm> determines
-which output data will be included into each output file. 
+which output data will be included into each output file.
 
 The optional I<chmodcmd> string is intended for specifying options for the
 F<chmod> command, which is applied to I<outputfile> after writing. For
@@ -284,7 +284,7 @@ written in HTML:
   </body>
   </html>
 
-The command 
+The command
 
   slice -o ENuUNDEF:article.html.en -o DEuUNDEF:article.html.de
 
