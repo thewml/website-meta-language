@@ -28,6 +28,6 @@
 /* Define to the version of the distribution.  */
 #undef VERSION
 
-/* Define to 1 for better use of the debugging malloc library.  See 
+/* Define to 1 for better use of the debugging malloc library.  See
    site ftp.antaire.com in antaire/src, file dmalloc/dmalloc.tar.gz.  */
 #undef WITH_DMALLOC

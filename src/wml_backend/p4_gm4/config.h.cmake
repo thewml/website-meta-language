@@ -73,7 +73,7 @@
 /* Define to the version of the distribution.  */
 #cmakedefine VERSION @VERSION@
 
-/* Define to 1 for better use of the debugging malloc library.  See 
+/* Define to 1 for better use of the debugging malloc library.  See
    site ftp.antaire.com in antaire/src, file dmalloc/dmalloc.tar.gz.  */
 #cmakedefine WITH_DMALLOC
 
