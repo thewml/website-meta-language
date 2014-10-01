@@ -12,16 +12,16 @@ $pass = "1-9";
 
 <pi>
 This paragraph has an indented first line.
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 
 <p>
 <subheadline>This is a Sub-Headline</subheadline>
 
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 EOT_IN
 <font face="Arial,Helvetica" size="+4"><b>This is a Headline</b></font>
 <br>
@@ -60,11 +60,11 @@ EOT_OUT
 <p>
 <spaced interline=1>
 This is spaced text, including interline spacing.
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 This is spaced text, including interline spacing.
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 This is spaced text, including interline spacing.
-Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 This is spaced text, including interline spacing.
 </spaced>
 EOT_IN
@@ -96,18 +96,18 @@ EOT_OUT
 <p>
 This is a typographically more strong list environment
 <tul>
-   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-   <tli pcolor="#ff3333">Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-        Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+   <tli pcolor="#ff3333">Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+        Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 	<tul>
-	   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-	   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-			Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-	   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-			Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+	   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+	   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+			Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+	   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+			Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 	</tul>
-   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
-        Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux 
+   <tli>Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
+        Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 </tul>
 EOT_IN
 <p>
