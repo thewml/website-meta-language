@@ -28,11 +28,12 @@ if (system("mkdir $build_dir && cd $build_dir && cmake -DCMAKE_INSTALL_PREFIX=$m
 $ENV{PERL5LIB} = "$myprefix/lib/perl5:$ENV{PERL5LIB}";
 $ENV{QUAD_PRES_NO_HOME_LIB} = 1;
 $ENV{PATH} = "$myprefix/bin:$ENV{PATH}";
-
-# system("bash");
+$ENV{WML} = "$myprefix/bin/wml -q -W1-N";
+$ENV{LANG} = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
-exec {'prove' } ('prove', glob('t/*.t'));
+system("bash");
+exec {'prove' } ('prove', glob('t/01*.t'));
 
 =head1 COPYRIGHT & LICENSE
 

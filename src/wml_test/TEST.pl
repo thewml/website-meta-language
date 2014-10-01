@@ -1,6 +1,6 @@
 ##
 ##  TEST.pl -- WML Test Suite utility functions
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 package TEST;
