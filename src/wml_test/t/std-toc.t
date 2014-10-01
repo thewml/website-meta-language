@@ -1,12 +1,16 @@
 
-require "TEST.pl";
-&TEST::init;
+use strict;
+use warnings;
 
-print "1..4\n";
 
-$pass = "1-9";
+use WmlTest;
+WmlTest::init();
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+use Test::More tests => 4;
+
+my $pass = "1-9";
+
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::std::toc style=pre
 <h1>Chapter 1</h1>
 <h2>Section 1</h2>
@@ -32,7 +36,7 @@ EOT_IN
 </pre>
 EOT_OUT
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::std::toc style=ol type=A1a
 <h1>Chapter 1</h1>
 <h2>Section 1</h2>
@@ -54,5 +58,5 @@ EOT_IN
 </ol></ol>
 EOT_OUT
 
-&TEST::cleanup;
+WmlTest::cleanup();
 
