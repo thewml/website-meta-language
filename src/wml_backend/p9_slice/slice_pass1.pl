@@ -6,6 +6,10 @@
 
 package main;
 
+{
+use strict;
+use warnings;
+
 ##
 ##
 ##  Pass 1: Determine delimiters
@@ -25,7 +29,7 @@ sub pass1 {
     $CURRENT_LEVEL_SET   = new Bit::Vector(512);
 
     #   allocate the next free level starting from 1
-    sub alloclevel {
+    my $alloclevel  = sub {
         my ($i);
 
         for ($i = 0; $i <= $CURRENT_LEVEL_SET->Max(); $i++) {
@@ -33,14 +37,14 @@ sub pass1 {
         }
         $CURRENT_LEVEL_SET->Bit_On($i);
         return $i + 1;
-    }
+    };
 
     #   clear the given level
-    sub clearlevel {
+    my $clearlevel = sub {
         my ($i) = @_;
 
         $CURRENT_LEVEL_SET->Bit_Off($i - 1);
-    }
+    };
 
     $INPUT = $CFG->{INPUT}->{SRC};
     $open  = 0;
@@ -68,10 +72,11 @@ sub pass1 {
             $pos  += length($prolog);
             $prev  = $inputpos;
 
-            $L = alloclevel();                 # allocate next free level
+            $L = $alloclevel->();                 # allocate next free level
 
             push(@CURRENT_SLICE_NAMES, $name);  # remember name  for end delimiter
             $CURRENT_LEVEL_BRAIN{"$name"} .= ":$L";# remember level for end delimiter
+            $CFG->{SLICE}->{MINLEVELS}->{"$name"} //= '';
             if ($CFG->{SLICE}->{MINLEVELS}->{"$name"} eq '' or
                 $CFG->{SLICE}->{MINLEVELS}->{"$name"} > $L) {
                 $CFG->{SLICE}->{MINLEVELS}->{"$name"} = $L;
@@ -93,7 +98,7 @@ sub pass1 {
             #
             #   end delimiter found
             #
-            $name     = $2;
+            $name     = ($2 // '');
             $inputpos = pos($INPUT);
             $prolog   = substr ($INPUT, $prev, $inputpos - $prev - length ($name) - 2);
 
@@ -109,7 +114,7 @@ sub pass1 {
             $CURRENT_LEVEL_BRAIN{"$name"} =~ s|:(\d+)$||; # take remembered level
             $L = $1;
 
-            clearlevel($L);                         # de-allocate level
+            $clearlevel->($L);                         # de-allocate level
 
             # now end entry with :END
             $CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} .= ":$pos";
@@ -139,6 +144,8 @@ sub pass1 {
         }
         error("Some slices were not closed:$err\n");
     }
+}
+
 }
 
 1;
