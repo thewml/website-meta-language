@@ -9,6 +9,8 @@ use warnings;
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
+use SliceTermParser;
+
 ##         _ _
 ##     ___| (_) ___ ___
 ##    / __| | |/ __/ _ \
@@ -102,8 +104,6 @@ sub printwarning {
 
     return;
 }
-
-require "slice_term.pl";
 
 sub usage {
     print STDERR "Usage: slice [options] [file]\n";

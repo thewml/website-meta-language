@@ -5,8 +5,10 @@ SET(intermediate "${CMAKE_CURRENT_BINARY_DIR}/${intermediatebase}")
 SET(destbase "${BASENAME}.pl")
 SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
 
+SET (yytab_base "SliceTermParser.pm")
+
 SET (yyperl "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.pl")
-SET (yytab "${CMAKE_CURRENT_SOURCE_DIR}/SliceTermParser.pm")
+SET (yytab "${CMAKE_CURRENT_SOURCE_DIR}/${yytab_base}")
 
 ADD_CUSTOM_COMMAND(
     OUTPUT "${yyperl}"
@@ -26,6 +28,11 @@ ADD_CUSTOM_COMMAND(
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.y"
 )
 
+INSTALL (
+    FILES "${yytab_base}"
+    DESTINATION "${WML_LIB_DIR}"
+)
+
 ADD_CUSTOM_COMMAND(
     OUTPUT "${intermediate}"
     COMMAND "${PERL_EXECUTABLE}"
@@ -34,7 +41,6 @@ ADD_CUSTOM_COMMAND(
          "${intermediate}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     DEPENDS "${src}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.pl"
 )
 
 ADD_CUSTOM_TARGET(
