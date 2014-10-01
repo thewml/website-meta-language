@@ -257,20 +257,9 @@ if ($rc) {
     exit(1);
 }
 
-#
-#   write to output file
-#
-my $out;
-if ($opt_o eq '-') {
-    $out = IO::Handle->new;
-    $out->fdopen(fileno(STDOUT), 'w') || error("cannot write into STDOUT: $!");
-}
-else {
-    open $out, '>', $opt_o
-        or error("cannot write into $opt_o: $!");
-}
-$out->print($foo_buffer) || error("cannot write into $opt_o: $!");
-$out->close() || error("cannot close $opt_o: $!");
+use WML_Backends;
+
+WML_Backends->out($opt_o, \&error, [$foo_buffer]);
 
 exit(0);
 

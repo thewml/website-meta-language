@@ -111,6 +111,11 @@ FOREACH (base ${myfiles})
     )
 ENDFOREACH(base)
 
+INSTALL (
+    FILES "WML_Backends.pm"
+    DESTINATION "${WML_LIB_DIR}"
+)
+
 ADD_CUSTOM_TARGET(
     "preprocess_perl_includes" ALL
     DEPENDS ${preproc_target_dests}

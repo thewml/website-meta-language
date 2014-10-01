@@ -7,6 +7,9 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
 require 5.006;
 
 use strict;
@@ -670,17 +673,9 @@ else {
     #
     #  create output file
     #
-    my $out;
-    if ($opt_o eq '-') {
-        open $out, '>&STDOUT'
-            or error("cannot write into STDOUT: $!");
-    }
-    else {
-        open $out, '>', $opt_o
-            or error("cannot write into $opt_o: $!");
-    }
-    $out->print($outbuf) or error("cannot write into $opt_o: $!");
-    $out->close() or error("cannot close $opt_o: $!");
+    use WML_Backends;
+
+    WML_Backends->out($opt_o, \&error, [$outbuf]);
 }
 
 #   die gracefully

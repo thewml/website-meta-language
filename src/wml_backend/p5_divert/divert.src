@@ -306,18 +306,9 @@ sub ExpandDiversion {
 #
 #   create output file
 #
-my $out;
-if ($opt_o eq '-') {
-    $out = new IO::Handle;
-    $out->fdopen(fileno(STDOUT), "w") || error("cannot write into STDOUT: $!");
-}
-else {
-    $out = new IO::File;
-    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
-}
-$out->print(ExpandDiversion($BUFFER{'main'}))
-    || error("cannot write into $opt_o: $!");
-$out->close() || error("cannot close $opt_o: $!");
+use WML_Backends;
+
+WML_Backends->out($opt_o, \&error, [ExpandDiversion($BUFFER{'main'})]);
 
 #
 #   die gracefully
