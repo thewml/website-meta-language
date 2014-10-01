@@ -6,6 +6,10 @@
 
 package main;
 
+{
+use strict;
+use warnings;
+
 ##
 ##
 ##  Pass 3: Output generation
@@ -22,7 +26,7 @@ sub pass3 {
 
     verbose("\nPass 3: Output generation\n\n");
 
-    foreach $entry (@{$CFG->{OPT}->{O}}) {
+    foreach my $entry (@{$CFG->{OPT}->{O}}) {
 
         #   determine skip options:
         #     u: a set is undefined
@@ -56,6 +60,7 @@ sub pass3 {
         #   parse the sliceterm and create corresponding
         #   Perl 5 statement containing Bit::Vector calls
         ($cmds, $var) = SliceTerm::Parse($slice, $status);
+        $var //= '';
 
         #   skip file if requested by options
         if ($status->{u} > 0 and !defined($cmds)) {
@@ -78,15 +83,17 @@ sub pass3 {
         #   and move result to $set
         eval "$cmds; \$set = $var";
 
-        #   now scan the set and write out characters
-        #   which have a corresponding bit set.
         $start = 0;
         $out = '';
-        while (($start < $set->Size()) &&
-               (($min, $max) = $set->Interval_Scan_inc($start))) {
-            $out .= substr($CFG->{INPUT}->{PLAIN},
-                               $min, ($max-$min+1));
-            $start = $max + 2;
+        if (defined ($set)) {
+            #   now scan the set and write out characters
+            #   which have a corresponding bit set.
+            while (($start < $set->Size()) &&
+                (($min, $max) = $set->Interval_Scan_inc($start))) {
+                $out .= substr($CFG->{INPUT}->{PLAIN},
+                    $min, ($max-$min+1));
+                $start = $max + 2;
+            }
         }
 
         #   skip file if requested by options
@@ -121,4 +128,5 @@ sub pass3 {
     }
 }
 
+}
 1;
