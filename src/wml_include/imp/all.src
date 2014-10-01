@@ -1,6 +1,6 @@
 ##
 ##  wml::imp:all -- All of Import (IMP) category
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #use wml::imp::csmap
