@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+use Getopt::Long qw/ GetOptions /;
+
 use File::Glob;
 
 use File::Basename qw(dirname);
@@ -12,6 +14,12 @@ use Cwd ();
 use IO::All qw / io /;
 
 use File::Path qw / rmtree /;
+
+my $is_interactive;
+
+GetOptions(
+    'interactive!' => \$is_interactive,
+);
 
 my $script_dir = File::Spec->rel2abs(dirname(__FILE__));
 
@@ -32,8 +40,15 @@ $ENV{WML} = "$myprefix/bin/wml -q -W1-N";
 $ENV{LANG} = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
-system("bash");
-exec {'prove' } ('prove', glob('t/01*.t'));
+
+if ($is_interactive)
+{
+    system("bash");
+}
+else
+{
+    exec {'prove' } ('prove', glob('t/01*.t'));
+}
 
 =head1 COPYRIGHT & LICENSE
 
