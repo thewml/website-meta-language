@@ -1,6 +1,6 @@
 ##
 ##  wml::imp::generic - Generic Import Of External Resources
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -42,7 +42,7 @@ elsif (&existsprg("fetch")) {
     eval 'sub remote_fetch { my($url) = @_; return `fetch $url`; }'
 }
 else {
-    eval 'sub remote_fetch { my($url) = @_; 
+    eval 'sub remote_fetch { my($url) = @_;
                       return "Failed to retrieve $url" .
                              "None of {LWP::Simple::get,Lynx,Wget,Fetch} were found"; }'
 }
@@ -95,7 +95,7 @@ sub local_fetch {
         $buf = &wml_fmt_verbatim({ FILE => $tmpfile });
     }
     elsif ($format eq 'pod') {
-        $buf = &wml_fmt_pod({ FILE        => $tmpfile, 
+        $buf = &wml_fmt_pod({ FILE        => $tmpfile,
                               KEEPINDEX   => 1,
                               EPERLFILTER => $eperlfilter });
     }
