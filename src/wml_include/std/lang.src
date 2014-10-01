@@ -1,6 +1,6 @@
 ##
 ##  wml::std::lang - Multi-Lingual Support
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 1999-2001 Denis Barbier
 ##
 
@@ -10,12 +10,12 @@
 
 #use wml::std::tags
 
-#   
+#
 #  The list of defined languages
 #
 <set-var __languages= />
 
-#   
+#
 #  The stack of language slices
 #
 <set-var __lang:stack= />
@@ -85,8 +85,8 @@
 <set-var __lang:wildcard=<or "%0" <@[\*]@> /> />
 </define-tag>
 
-#   
-#   Sets the default wildcard 
+#
+#   Sets the default wildcard
 #
 <lang:set-wildcard />
 
@@ -229,7 +229,7 @@ wml::std::lang - Multi-Lingual Support
 
 This include file provides high-level multi-lingual support via Slices.  Its
 purpose is to define the slices ``C<LANG_XX>'' according to the multi-lingual
-selection tags. 
+selection tags.
 
 The general intend of this slice-based approach is to use the defined slices
 in Pass 9 (Slice) via WMLs B<-o> option.  A typical shebang-line example for
@@ -258,7 +258,7 @@ Then the following tags are defined:
 i.e. for both languages a container tag and a simple tag is defined. The
 container tag is more readable while the simple tag is nicer for short
 variants. When the names C<lang:xx> are still to large for you, you
-can use the C<short> attribute to C<E<lt>lang:newE<gt>> 
+can use the C<short> attribute to C<E<lt>lang:newE<gt>>
 
  <lang:new id=en short>
  <lang:new id=de short>
@@ -346,13 +346,13 @@ header and hyperlink:
  <lang:new id=en short>
  <lang:new id=de short>
  <lang:star:slice: index.html.*>
- 
+
  <h1><en: Welcome><de: Willkommen></h1>
- 
+
  <href name="The Hyperlink" url="<lang:star: index.*.html>">
  <href name="The Hyperlink" url="<lang:star:href: index2.*.html|index2.html>">
 
-When processed via 
+When processed via
 
   $ wml index.wml
 

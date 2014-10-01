@@ -1,6 +1,6 @@
 ##
 ##  wml::fmt::xtable - HTML tables through Advanced Syntax
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #use wml::std::tags
@@ -51,7 +51,7 @@ wml::fmt::xtable - HTML tables through Advanced Syntax
 =head1 SYNOPSIS
 
  #use wml::fmt::xtable
- 
+
  <xtable table-options>
    initial text (e.g. <caption> ... </caption>).
    (X, Y) options for cell (X, Y)

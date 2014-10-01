@@ -1,6 +1,6 @@
 ##
 ##  wml::fmt::text - Plain ASCII with Special Formatting Semantic
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #use wml::std::tags
@@ -93,7 +93,7 @@ code is created via F<wml_aux_txt2html>(1), a filter which gives the ASCII
 text nice formatting semantic which control the HTML result.
 
 The core conversion function is wml_fmt_text() which also can be used by other
-include files. 
+include files.
 
 =head1 AUTHOR
 

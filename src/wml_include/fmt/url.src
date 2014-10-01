@@ -1,6 +1,6 @@
 ##
 ##  wml::fmt::url - Recognize Uniform Resource Locator
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 <define-tag url endtag=required>
