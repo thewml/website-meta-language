@@ -1,14 +1,10 @@
-#!@PATH_PERL@
+#!/usr/bin/perl
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 
-require 5.003;
-
-BEGIN { $^W = 0; } # get rid of nasty warnings
-
 #   bootstrapping private installed modules
-use lib "@INSTALLPRIVLIB@";
-use lib "@INSTALLARCHLIB@";
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
 
 ##         _ _
 ##     ___| (_) ___ ___
@@ -56,7 +52,10 @@ require "slice_pass1.pl";
 require "slice_pass2.pl";
 require "slice_pass3.pl";
 
+use vars ( qw( $CFG ) );
+
 $CFG = {};
+
 setup($CFG);
 pass1($CFG);
 pass2($CFG);
