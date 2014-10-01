@@ -1,6 +1,6 @@
 ##
 ##  wml::sup::hextriple - Convert #rrggbb String to RGB Value and vice versa
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 <protect pass=2>

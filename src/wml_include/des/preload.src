@@ -1,6 +1,6 @@
 ##
 ##  wml::des::preload - Preload Page Contents
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000-2001 Denis Barbier
 ##
 
@@ -55,7 +55,7 @@ wml::des::preload - Preload Images
 This include file provides the C<E<lt>preloadE<gt>> tag which can be used to
 preload images. Such preloading is usually done to speedup access for following
 pages. Currently there are only a few tricks how this can be done.
-    
+
 The following combinations are currently supported:
 
 =over 4
@@ -71,12 +71,12 @@ Advantage: Works for all browsers.
 Disadvantage: This approach has the nasty side-effect of an occuring 1 pixel
 in display because C<width=0 height=0> does not work as expected in most
 browsers (especially in Netscape 4.x). So, position your C<E<lt>preloadE<gt>>
-tag somewhere it does not destroy the look and feel of your page. 
+tag somewhere it does not destroy the look and feel of your page.
 
 =item C<src=>I<anyimage> C<via=js>
 
 Preloads the image I<anyimage> by using a JavaScript snippet which loads
-the image by declaring an unused C<Image> object. 
+the image by declaring an unused C<Image> object.
 
 Advantage: Silently preloads the image without displaying anything.
 
