@@ -13,7 +13,8 @@ SET (_test_cmd_cmd_line "${PERL_EXECUTABLE}"
 
 ADD_TEST(
     NAME wml_tests
-    COMMAND ${_test_cmd_cmd_line})
+    COMMAND ${_test_cmd_cmd_line}
+)
 
 ADD_CUSTOM_TARGET(
     "check"
