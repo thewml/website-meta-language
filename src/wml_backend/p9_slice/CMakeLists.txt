@@ -20,6 +20,8 @@ ADD_CUSTOM_COMMAND(
     OUTPUT "${yytab}"
     COMMAND "pbyacc"
     ARGS "-l" "-P" "SliceTermParser" "slice_term.y"
+    COMMAND "${PERL_EXECUTABLE}"
+    ARGS "-i" "-lap" "-e" "s/ +\\z//ms" "./SliceTermParser.pm"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.y"
 )
