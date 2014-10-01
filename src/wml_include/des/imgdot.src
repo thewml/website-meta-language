@@ -1,6 +1,6 @@
 ##
 ##  wml::des::imgdot - 1pt Dot-Images for Webdesign
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000-2001 Denis Barbier
 ##
 
@@ -64,7 +64,7 @@ sub imgdot {
 <defvar base <or <get-var IMGDOT_BASE /> <get-var IMAGE_BASE /> /> />
 <defvar format <or <get-var IMAGE_FORMAT /> gif /> />
 <perl>
-    #   import attributes to ePerl 
+    #   import attributes to ePerl
     $base    = qq|<get-var base />|;
     $format  = qq|<downcase <get-var format /> />|;
     $width   = qq|<get-var width />|;
@@ -153,7 +153,7 @@ C<base=foo> attribute, then the resulting files are named
 F<foo.imgdot-XxY-rrggbb.gif>.  Actually you can even use a complete filename
 including a directory prefix, i.e. when you use C<base=../../common/foo>
 attribute, then the PNG images are created as
-F<../../common/foo.imgdot-XxY-rrggbb.png>. 
+F<../../common/foo.imgdot-XxY-rrggbb.png>.
 
 And for most flexibility when no base is specified and the variable
 C<IMGDOT_BASE> is defined (usually from within a F<.wmlrc> file via
