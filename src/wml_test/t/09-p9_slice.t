@@ -1,16 +1,19 @@
 
-require "TEST.pl";
-&TEST::init;
+use strict;
+use warnings;
 
-print "1..2\n";
+use WmlTest;
+WmlTest::init();
+
+use Test::More tests => 2;
 
 #
 #   TEST 1-2: throughput
 #
 
-$pass = 9;
+my $pass = 9;
 
-$tmpfile1 = &TEST::tmpfile(<<'EOT_IN');
+my $tmpfile1 = WmlTest::tmpfile(<<'EOT_IN');
 %!slice -o(ALL-LANG_*)+LANG_EN:b
 [LANG_EN:en:]
 [LANG_DE:de:]
@@ -18,19 +21,20 @@ $tmpfile1 = &TEST::tmpfile(<<'EOT_IN');
 [LANG_DE:[LANG_EN:en:][LANG_DE:de:]:]
 EOT_IN
 
-$tmpfile2 = &TEST::tmpfile(<<'EOT_IN');
+my $tmpfile2 = WmlTest::tmpfile(<<'EOT_IN');
 en
 
 ende
 en
 EOT_IN
 
-$rc = &TEST::system("$ENV{WML} -p$pass $tmpfile1 >a");
-print ($rc == 0 ? "ok\n" : "not ok\n");
-$rc = &TEST::system("cmp $tmpfile2 b");
-print ($rc == 0 ? "ok\n" : "not ok\n");
+# TEST
+ok (!system("$ENV{WML} -p$pass $tmpfile1 >a"), "wml");
+# TEST
+ok (!system("cmp $tmpfile2 b"), "cmp");
 
-push(@TEST::TMPFILES, "b");
-push(@TEST::TMPFILES, "a");
-&TEST::cleanup;
+WmlTest::add_files( "b");
+WmlTest::add_files( "a");
+
+WmlTest::cleanup();
 
