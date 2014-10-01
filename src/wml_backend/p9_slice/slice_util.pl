@@ -6,6 +6,9 @@
 
 package main;
 
+use strict;
+use warnings;
+
 sub verbose {
     my ($str) = @_;
 
@@ -13,6 +16,8 @@ sub verbose {
         $str =~ s|^|** Slice:Verbose: |mg;
         print STDERR $str;
     }
+
+    return;
 }
 
 sub printerror {
@@ -20,6 +25,8 @@ sub printerror {
 
     $str =~ s|^|** Slice:Error: |mg;
     print STDERR $str;
+
+    return;
 }
 
 sub error {
@@ -43,6 +50,8 @@ sub printwarning {
 
     $str =~ s|^|** Slice:Warning: |mg;
     print STDERR $str;
+
+    return;
 }
 
 1;
