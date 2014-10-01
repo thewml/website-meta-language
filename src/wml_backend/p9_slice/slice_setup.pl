@@ -6,6 +6,10 @@
 
 package main;
 
+{
+    use strict;
+    use warnings;
+
 sub usage {
     print STDERR "Usage: slice [options] [file]\n";
     print STDERR "\n";
@@ -41,6 +45,8 @@ EOT
     exit(0);
 }
 
+use vars qw( $opt_h $opt_y $opt_V $opt_v @opt_o );
+
 sub setup {
     my ($CFG) = @_;
 
@@ -73,27 +79,8 @@ sub setup {
 
     #   process command line arguments and
     #   read input file
-    if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
-        $fp = new IO::Handle;
-        $fp->fdopen(fileno(STDIN), "r")
-            || error("Unable to load STDIN: $!\n");
-        local ($/) = undef;
-        $INPUT = <$fp>;
-        $fp->close()
-            || error("Unable to close STDIN: $!\n");
-    }
-    elsif ($#ARGV == 0) {
-        $fp = new IO::File;
-        $fp->open($ARGV[0])
-            || error("Unable to load $ARGV[0]: $!\n");
-        local ($/) = undef;
-        $INPUT = <$fp>;
-        $fp->close()
-            || error("Unable to close $ARGV[0]: $!\n");
-    }
-    else {
-        usage();
-    }
+    use WML_Backends;
+    my $INPUT = WML_Backends->input(\@ARGV, \&error, \&usage);
 
     #   add additional options
     $INPUT =~ s|^%!slice\s+(.*?)\n|push(@ARGV, split(' ', $1)), ''|egim;
@@ -115,7 +102,7 @@ sub setup {
         'u' => 0, 'w' => 0,
         'z' => 0, 's' => 0,
     };
-    $modifier = $opt_y;
+    my $modifier = $opt_y;
     foreach (qw(u w z s)) {
         ($modifier =~ m/$_(\d+)/) and $CFG->{OPT}->{Y}->{$_} = $1;
     }
@@ -125,6 +112,8 @@ sub setup {
     $CFG->{SLICE}->{SET}->{OBJ} = {}; # slice set, represented as Bit::Vector object
     $CFG->{SLICE}->{MINLEVELS}  = {}; # slice min levels
     $CFG->{SLICE}->{MAXLEVEL}   = 0;  # maximum slice level
+}
+
 }
 
 1;
