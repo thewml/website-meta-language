@@ -10,16 +10,18 @@ use warnings;
 use autodie;
 
 use Test::More ();
-use File::Temp qw/ tempfile /;
+use File::Temp qw/ tempdir tempfile /;
 
 my @files_to_del;
+
+my $dir = tempdir ( CLEANUP => 1);
 
 sub init {
     return;
 }
 
 sub tmpfile {
-    my ($fh, $filename) = tempfile("wml-test-temp-XXXXXXXXX");
+    my ($fh, $filename) = tempfile(DIR => $dir);
 
     print {$fh} @_;
 
