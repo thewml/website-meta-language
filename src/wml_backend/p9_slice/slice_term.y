@@ -6,6 +6,9 @@
 ##
 
 package SliceTermParser;
+{
+    no strict;
+    no warnings;
 %}
 
 %token SLICE
@@ -81,13 +84,13 @@ sub yylex {
             $pat =~ s|\*|\.\*|g;
 
             #   treat special *{...} sequence
-            $excl = '';
+            my $excl = '';
             while ($pat =~ s|^(.*?)\.\*\{([_A-Z0-9]+)\}(.*)$|$1\.\*$3|) {
                 my $temp = $1 . $2 . $3;
                 $temp =~ s|\.\*\{[_A-Z0-9]+\}|\.\*|g;
                 $excl .= "return 1 if m/^$temp\$/;";
             }
-            $sub_excl = eval "sub { \$_ = shift; $excl; return 0}";
+            my $sub_excl = eval "sub { \$_ = shift; $excl; return 0}";
 
             my $slice;
             my @slices = ();
@@ -104,13 +107,13 @@ sub yylex {
                 return ord('(');
             }
             else {
-                main::printwarning("no existing slice matches `$val'\n") if $wildcard;
+                main::printwarning("no existing slice matches `$val'\n") if $SliceTermParser::wildcard;
                 #    The $wildcard string is caught by caller, it is used
                 #    to trap warnings depending on the -y command line flag.
-                die $wildcard."\n" if $wildcard > 1;
+                die $SliceTermParser::wildcard."\n" if $SliceTermParser::wildcard > 1;
             }
         }
-        return ($SLICE, $val);
+        return ($SliceTermParser::SLICE, $val);
     }
 
     #   else give back one plain character
@@ -149,6 +152,8 @@ sub Parse {
     $cmds = join("\n", @SliceTermParser::OUT) . "\n";
 
     return ($cmds, $var);
+}
+
 }
 
 package main;

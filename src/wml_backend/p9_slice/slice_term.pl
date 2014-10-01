@@ -7,6 +7,9 @@ package SliceTermParser;
 ;##
 
 package SliceTermParser;
+{
+    no strict;
+    no warnings;
 $SLICE=257;
 $YYERRCODE=256;
 @yylhs = (                                               -1,
@@ -151,17 +154,17 @@ sub yy_err_recover {
     $p->{yyerrflag} = 3;
     while (1)
     {
-      if (($p->{yyn} = $yysindex[$p->{yyss}->[$p->{yyssp}]]) &&
-          ($p->{yyn} += $YYERRCODE) >= 0 &&
+      if (($p->{yyn} = $yysindex[$p->{yyss}->[$p->{yyssp}]]) && 
+          ($p->{yyn} += $YYERRCODE) >= 0 && 
           $p->{yyn} <= $#yycheck &&
           $yycheck[$p->{yyn}] == $YYERRCODE)
       {
-        warn("yydebug: state " .
-                     $p->{yyss}->[$p->{yyssp}] .
-                     ", error recovery shifting to state" .
-                     $yytable[$p->{yyn}] . "\n")
+        warn("yydebug: state " . 
+                     $p->{yyss}->[$p->{yyssp}] . 
+                     ", error recovery shifting to state" . 
+                     $yytable[$p->{yyn}] . "\n") 
                        if $p->{yydebug};
-        $p->{yyss}->[++$p->{yyssp}] =
+        $p->{yyss}->[++$p->{yyssp}] = 
           $p->{yystate} = $yytable[$p->{yyn}];
         $p->{yyvs}->[++$p->{yyvsp}] = $p->{yylval};
         next yyloop;
@@ -169,7 +172,7 @@ sub yy_err_recover {
       else
       {
         warn("yydebug: error recovery discarding state ".
-              $p->{yyss}->[$p->{yyssp}]. "\n")
+              $p->{yyss}->[$p->{yyssp}]. "\n") 
                 if $p->{yydebug};
         return(undef) if $p->{yyssp} <= 0;
         --$p->{yyssp};
@@ -183,12 +186,12 @@ sub yy_err_recover {
     if ($p->{yydebug})
     {
       $p->{yys} = '';
-      if ($p->{yychar} <= $YYMAXTOKEN) { $p->{yys} =
+      if ($p->{yychar} <= $YYMAXTOKEN) { $p->{yys} = 
         $yyname[$p->{yychar}]; }
       if (!$p->{yys}) { $p->{yys} = 'illegal-symbol'; }
-      warn("yydebug: state " . $p->{yystate} .
-                   ", error recovery discards " .
-                   "token " . $p->{yychar} . "(" .
+      warn("yydebug: state " . $p->{yystate} . 
+                   ", error recovery discards " . 
+                   "token " . $p->{yychar} . "(" . 
                    $p->{yys} . ")\n");
     }
     $p->{yychar} = -1;
@@ -220,35 +223,35 @@ yyloop: while(1)
       last yyreduce if ($p->{yyn} = $yydefred[$p->{yystate}]);
       if ($p->{yychar} < 0)
       {
-        if ((($p->{yychar}, $p->{yylval}) =
+        if ((($p->{yychar}, $p->{yylval}) = 
             &{$p->{yylex}}($s)) < 0) { $p->{yychar} = 0; }
         if ($p->{yydebug})
         {
           $p->{yys} = '';
-          if ($p->{yychar} <= $#yyname)
+          if ($p->{yychar} <= $#yyname) 
              { $p->{yys} = $yyname[$p->{yychar}]; }
           if (!$p->{yys}) { $p->{yys} = 'illegal-symbol'; };
-          warn("yydebug: state " . $p->{yystate} .
-                       ", reading " . $p->{yychar} . " (" .
+          warn("yydebug: state " . $p->{yystate} . 
+                       ", reading " . $p->{yychar} . " (" . 
                        $p->{yys} . ")\n");
         }
       }
-      if (($p->{yyn} = $yysindex[$p->{yystate}]) &&
-          ($p->{yyn} += $p->{yychar}) >= 0 &&
+      if (($p->{yyn} = $yysindex[$p->{yystate}]) && 
+          ($p->{yyn} += $p->{yychar}) >= 0 && 
           $p->{yyn} <= $#yycheck &&
           $yycheck[$p->{yyn}] == $p->{yychar})
       {
-        warn("yydebug: state " . $p->{yystate} .
+        warn("yydebug: state " . $p->{yystate} . 
                      ", shifting to state " .
               $yytable[$p->{yyn}] . "\n") if $p->{yydebug};
-        $p->{yyss}->[++$p->{yyssp}] = $p->{yystate} =
+        $p->{yyss}->[++$p->{yyssp}] = $p->{yystate} = 
           $yytable[$p->{yyn}];
         $p->{yyvs}->[++$p->{yyvsp}] = $p->{yylval};
         $p->{yychar} = (-1);
         --$p->{yyerrflag} if $p->{yyerrflag} > 0;
         next yyloop;
       }
-      if (($p->{yyn} = $yyrindex[$p->{yystate}]) &&
+      if (($p->{yyn} = $yyrindex[$p->{yystate}]) && 
           ($p->{yyn} += $p->{'yychar'}) >= 0 &&
           $p->{yyn} <= $#yycheck &&
           $yycheck[$p->{yyn}] == $p->{yychar})
@@ -262,9 +265,9 @@ yyloop: while(1)
       }
       return(undef) if $p->yy_err_recover;
     } # yyreduce
-    warn("yydebug: state " . $p->{yystate} .
-                 ", reducing by rule " .
-                 $p->{yyn} . " (" . $yyrule[$p->{yyn}] .
+    warn("yydebug: state " . $p->{yystate} . 
+                 ", reducing by rule " . 
+                 $p->{yyn} . " (" . $yyrule[$p->{yyn}] . 
                  ")\n") if $p->{yydebug};
     $p->{yym} = $yylen[$p->{yyn}];
     $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}+1-$p->{yym}];
@@ -320,32 +323,32 @@ if ($p->{yyn} == 13) {
       $p->{yyvs}->[++$p->{yyvsp}] = $p->{yyval};
       if ($p->{yychar} < 0)
       {
-        if ((($p->{yychar}, $p->{yylval}) =
+        if ((($p->{yychar}, $p->{yylval}) = 
             &{$p->{yylex}}($s)) < 0) { $p->{yychar} = 0; }
         if ($p->{yydebug})
         {
           $p->{yys} = '';
-          if ($p->{yychar} <= $#yyname)
+          if ($p->{yychar} <= $#yyname) 
             { $p->{yys} = $yyname[$p->{yychar}]; }
           if (!$p->{yys}) { $p->{yys} = 'illegal-symbol'; }
-          warn("yydebug: state $YYFINAL, reading " .
+          warn("yydebug: state $YYFINAL, reading " . 
                $p->{yychar} . " (" . $p->{yys} . ")\n");
         }
       }
       return ($p->{yyvs}->[1]) if $p->{yychar} == 0;
       next yyloop;
     }
-    if (($p->{yyn} = $yygindex[$p->{yym}]) &&
-        ($p->{yyn} += $p->{yystate}) >= 0 &&
-        $p->{yyn} <= $#yycheck &&
+    if (($p->{yyn} = $yygindex[$p->{yym}]) && 
+        ($p->{yyn} += $p->{yystate}) >= 0 && 
+        $p->{yyn} <= $#yycheck && 
         $yycheck[$p->{yyn}] == $p->{yystate})
     {
         $p->{yystate} = $yytable[$p->{yyn}];
     } else {
         $p->{yystate} = $yydgoto[$p->{yym}];
     }
-    warn("yydebug: after reduction, shifting from state " .
-        $p->{yyss}->[$p->{yyssp}] . " to state " .
+    warn("yydebug: after reduction, shifting from state " . 
+        $p->{yyss}->[$p->{yyssp}] . " to state " . 
         $p->{yystate} . "\n") if $p->{yydebug};
     $p->{yyss}[++$p->{yyssp}] = $p->{yystate};
     $p->{yyvs}[++$p->{yyvsp}] = $p->{yyval};
@@ -392,13 +395,13 @@ sub yylex {
             $pat =~ s|\*|\.\*|g;
 
             #   treat special *{...} sequence
-            $excl = '';
+            my $excl = '';
             while ($pat =~ s|^(.*?)\.\*\{([_A-Z0-9]+)\}(.*)$|$1\.\*$3|) {
                 my $temp = $1 . $2 . $3;
                 $temp =~ s|\.\*\{[_A-Z0-9]+\}|\.\*|g;
                 $excl .= "return 1 if m/^$temp\$/;";
             }
-            $sub_excl = eval "sub { \$_ = shift; $excl; return 0}";
+            my $sub_excl = eval "sub { \$_ = shift; $excl; return 0}";
 
             my $slice;
             my @slices = ();
@@ -415,13 +418,13 @@ sub yylex {
                 return ord('(');
             }
             else {
-                main::printwarning("no existing slice matches `$val'\n") if $wildcard;
+                main::printwarning("no existing slice matches `$val'\n") if $SliceTermParser::wildcard;
                 #    The $wildcard string is caught by caller, it is used
                 #    to trap warnings depending on the -y command line flag.
-                die $wildcard."\n" if $wildcard > 1;
+                die $SliceTermParser::wildcard."\n" if $SliceTermParser::wildcard > 1;
             }
         }
-        return ($SLICE, $val);
+        return ($SliceTermParser::SLICE, $val);
     }
 
     #   else give back one plain character
@@ -460,6 +463,8 @@ sub Parse {
     $cmds = join("\n", @SliceTermParser::OUT) . "\n";
 
     return ($cmds, $var);
+}
+
 }
 
 package main;
