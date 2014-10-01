@@ -35,11 +35,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  this program under different conditions or license agreements.
 ##
 
-require 5.003;
-
-BEGIN { $^W = 0; } # get rid of nasty warnings
-
-$VERSION = "@WML_VERSION@";
+our $VERSION = "@WML_VERSION@";
 
 if ($ENV{'PATH'} !~ m|@bindir@|) {
     $ENV{'PATH'} = '@bindir@:'.$ENV{'PATH'};
@@ -150,7 +146,7 @@ sub ProcessOptions {
         warn "Try `$0 --help' for more information.\n";
         exit(0);
     }
-    &usage($0) if ($opt_h);
+    usage($0) if ($opt_h);
     foreach (@list_options) {
         if (m|=s|) {
             s/^(.)\|.*$/opt_$1/;
@@ -169,7 +165,7 @@ $opt_r = 0;
 $opt_v = -1;
 $opt_c = 0;
 @ARGVLINE = @ARGV;
-&ProcessOptions();
+ProcessOptions();
 $src  = $ARGV[0];
 @ARGV = @ARGVLINE;
 
@@ -263,15 +259,15 @@ sub unquotearg {
 
 #   1. process options in WMLOPTS variable
 if ($var = $ENV{'WMLOPTS'}) {
-    &verbose(2, "Reading WMLOPTS variable");
+    verbose(2, "Reading WMLOPTS variable");
     $var =~ s|^\s+||;
     $var =~ s|\s+$||;
     #   arguments are not quoted because shell metacharacters
     #   have already been expanded, but dollar sign must be
     #   escaped
     $var =~ s|\$|\\\$|g;
-    @ARGV = &split_argv($var);
-    &ProcessOptions();
+    @ARGV = split_argv($var);
+    ProcessOptions();
 }
 
 ##
@@ -314,7 +310,7 @@ if (not $opt_r) {
     #   now parse these RC files
     foreach $dir (reverse(@DIR)) {
         if (-f "$dir/.wmlrc") {
-            &verbose(2, "Reading RC file: $dir/.wmlrc\n");
+            verbose(2, "Reading RC file: $dir/.wmlrc\n");
             open(FP, "<$dir/.wmlrc") || error("Unable to load $dir/.wmlrc: $!");
             @ARGV = ();
             while (<FP>) {
@@ -323,7 +319,7 @@ if (not $opt_r) {
                 s|^\s+||;
                 s|\s+$||;
                 s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-                @X = &split_argv($_);
+                @X = split_argv($_);
                 push(@ARGV, @X);
             }
             close(FP) || error("Unable to close $dir/.wmlrc: $!");
@@ -331,7 +327,7 @@ if (not $opt_r) {
             @opt_I_OLD = @opt_I;
             @opt_D = ();
             @opt_I = ();
-            &ProcessOptions();
+            ProcessOptions();
             @opt_D_NEW = @opt_D_OLD;
             @opt_I_NEW = @opt_I_OLD;
 
@@ -343,10 +339,10 @@ if (not $opt_r) {
                     ($var, $path) = ($1, $2);
                     if ($path !~ m|^/|) {
                         if ($path eq '.') {
-                            $path = &CanonPath("$reldir");
+                            $path = CanonPath("$reldir");
                         }
                         else {
-                            $path = &CanonPath("$reldir/$path");
+                            $path = CanonPath("$reldir/$path");
                         }
                     }
                     $path = '""' if ($path eq '');
@@ -366,10 +362,10 @@ if (not $opt_r) {
             foreach $path (@opt_I) {
                 if ($path !~ m|^/|) {
                     if ($path eq '.') {
-                        $path = &CanonPath("$reldir");
+                        $path = CanonPath("$reldir");
                     }
                     else {
-                        $path = &CanonPath("$reldir/$path");
+                        $path = CanonPath("$reldir/$path");
                     }
                     $path = '.' if ($path eq '');
                 }
@@ -386,11 +382,11 @@ if (not $opt_r) {
 #   4. process the command line options
 @ARGV = @ARGVLINE;
 @opt_D_OLD = @opt_D; @opt_D = (); # extra remember -D options from command line
-&ProcessOptions();
+ProcessOptions();
 
 #   quote the characters the shell have escaped
 foreach $d (@opt_D) {
-    push(@opt_D_ADD, &quotearg($d));
+    push(@opt_D_ADD, quotearg($d));
 }
 @opt_D = @opt_D_OLD;
 
@@ -486,10 +482,10 @@ foreach $d (@opt_D_ADD) {
         ($var, $path) = ($1, $2);
         if ($path !~ m|^/|) {
             if ($path eq '.') {
-                $path = &CanonPath("$reldir");
+                $path = CanonPath("$reldir");
             }
             else {
-                $path = &CanonPath("$reldir/$path");
+                $path = CanonPath("$reldir/$path");
             }
         }
         $path = '""' if ($path eq '');
@@ -517,8 +513,8 @@ if (not $opt_n) {
     close(TMP) || error("Unable to close $src: $!");
     if ($shebang =~ m|^#!wml\s+(.+\S)\s*$|is) {
         #   split opts into arguments and process them
-        @ARGV = &split_argv($1);
-        &ProcessOptions();
+        @ARGV = split_argv($1);
+        ProcessOptions();
     }
 }
 
@@ -576,7 +572,7 @@ sub dosystem {
     my ($cmd) = @_;
     my ($rc);
 
-    &verbose(2, "system: $cmd\n");
+    verbose(2, "system: $cmd\n");
     $rc = system($cmd);
     return $rc;
 }
@@ -610,8 +606,8 @@ sub dosource {
     my ($rc, $fp, $src, @argv, $pkgname);
     my ($error, $func);
 
-    &verbose(2, "source: $prog $args\n");
-    &verbose(9, "loading: $prog\n");
+    verbose(2, "source: $prog $args\n");
+    verbose(9, "loading: $prog\n");
     $pkgname = $prog;
     $pkgname =~ s|^.*/([^/]+)$|$1|;
     if ($prog !~ m|^/|) {
@@ -629,32 +625,32 @@ sub dosource {
         $src .= $_;
     }
     $fp->close() || error("Unable to close $prog: $!");
-    &verbose(9, "loading: succeeded with $prog (".length($src)." bytes)\n");
+    verbose(9, "loading: succeeded with $prog (".length($src)." bytes)\n");
 
-    &verbose(9, "precompiling script: pkgname=$pkgname\n");
-    ($func, $error) = &precompile($pkgname, $src);
+    verbose(9, "precompiling script: pkgname=$pkgname\n");
+    ($func, $error) = precompile($pkgname, $src);
     if ($error ne '') {
-        &verbose(9, "precompiling script: error: $error\n");
+        verbose(9, "precompiling script: error: $error\n");
     }
     else {
-        &verbose(9, "precompiling script: succeeded\n");
+        verbose(9, "precompiling script: succeeded\n");
     }
 
-    &verbose(9, "splitting from args: $args\n");
+    verbose(9, "splitting from args: $args\n");
     @argv = ();
     while ($args) {
-        redo if $args =~ s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, &unquotearg($1)), ''|iges;
-        redo if $args =~ s|^\s*(-[a-zA-Z0-9])|push(@argv, &unquotearg($1)), ''|iges;
-        redo if $args =~ s|^\s*"(.*?(?!\\).)"|push(@argv, &unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s*(-[a-zA-Z0-9])|push(@argv, unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|iges;
         redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|iges;
-        redo if $args =~ s|^\s*(\S+)|push(@argv, &unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|iges;
         redo if $args =~ s|^\s+$|''|iges;
     }
-    &verbose(9, "splitting to argv: ".join("|", @argv)."\n");
+    verbose(9, "splitting to argv: ".join("|", @argv)."\n");
 
-    &verbose(9, "running script\n");
+    verbose(9, "running script\n");
     eval "\$rc = \&{\$func}(\@argv);";
-    &verbose(9, "running script: rc=$rc\n");
+    verbose(9, "running script: rc=$rc\n");
     $rc = 256 if not defined $rc;
 
     return $rc;
@@ -694,7 +690,7 @@ sub protect {
             $p =~ s|,||g;
             $p = "1$p" if $p =~ m|^-|;
             $p = "${p}9" if $p =~ m|-$|;
-            $p =~ s|(\d)-(\d)|&expandrange($1, $2)|sge;
+            $p =~ s|(\d)-(\d)|expandrange($1, $2)|sge;
         }
         $pe = join ('', sort {$a <=> $b} (split('', $p)));
         $pe =~ s/^.*(\d)$/$1/;
@@ -759,10 +755,10 @@ sub pass1 {
     my ($rc);
 
     if ($opt_s) {
-        $rc = &dosystem("@libdir@/exec/wml_p1_ipp $opt -o $to $from");
+        $rc = dosystem("@libdir@/exec/wml_p1_ipp $opt -o $to $from");
     }
     else {
-        $rc = &dosource("@libdir@/exec/wml_p1_ipp", "$opt -o $to $from");
+        $rc = dosource("@libdir@/exec/wml_p1_ipp", "$opt -o $to $from");
     }
     return $rc;
 }
@@ -773,7 +769,7 @@ sub pass2 {
     local(*TMP, *TO);
 
     ($cwd = Cwd::cwd) =~ s|/$||;
-    $rc = &dosystem("@libdir@/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
+    $rc = dosystem("@libdir@/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -798,7 +794,7 @@ sub pass3 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($rc);
 
-    $rc = &dosystem("@libdir@/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
+    $rc = dosystem("@libdir@/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
 
     return $rc;
 }
@@ -807,7 +803,7 @@ sub pass4 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($rc);
 
-    $rc = &dosystem("@libdir@/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
+    $rc = dosystem("@libdir@/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
 
     return $rc;
 }
@@ -817,10 +813,10 @@ sub pass5 {
     my ($rc) = 0;
 
     if ($opt_s) {
-        $rc = &dosystem("@libdir@/exec/wml_p5_divert $opt -o$to $from");
+        $rc = dosystem("@libdir@/exec/wml_p5_divert $opt -o$to $from");
     }
     else {
-        $rc = &dosource("@libdir@/exec/wml_p5_divert", "$opt -o$to $from");
+        $rc = dosource("@libdir@/exec/wml_p5_divert", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -830,10 +826,10 @@ sub pass6 {
     my ($rc) = 0;
 
     if ($opt_s) {
-        $rc = &dosystem("@libdir@/exec/wml_p6_asubst $opt -o$to $from");
+        $rc = dosystem("@libdir@/exec/wml_p6_asubst $opt -o$to $from");
     }
     else {
-        $rc = &dosource("@libdir@/exec/wml_p6_asubst", "$opt -o$to $from");
+        $rc = dosource("@libdir@/exec/wml_p6_asubst", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -843,10 +839,10 @@ sub pass7 {
     my ($rc);
 
     if ($opt_s) {
-        $rc = &dosystem("@libdir@/exec/wml_p7_htmlfix $opt -o$to $from");
+        $rc = dosystem("@libdir@/exec/wml_p7_htmlfix $opt -o$to $from");
     }
     else {
-        $rc = &dosource("@libdir@/exec/wml_p7_htmlfix", "$opt -o$to $from");
+        $rc = dosource("@libdir@/exec/wml_p7_htmlfix", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -856,10 +852,10 @@ sub pass8 {
     my ($rc);
 
     if ($opt_s) {
-        $rc = &dosystem("@libdir@/exec/wml_p8_htmlstrip $opt -o $to $from");
+        $rc = dosystem("@libdir@/exec/wml_p8_htmlstrip $opt -o $to $from");
     }
     else {
-        $rc = &dosource("@libdir@/exec/wml_p8_htmlstrip", "$opt -o$to $from");
+        $rc = dosource("@libdir@/exec/wml_p8_htmlstrip", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -877,22 +873,22 @@ sub pass9 {
         open(SLICE,"<$from") || error("Unable to load $from: $!");
         while ($_ = <SLICE>) {
             if ($_ =~ m|%!slice\s+(.*)$|) {
-                @X = &split_argv($1);
+                @X = split_argv($1);
                 push(@ARGV, @X);
             }
         }
         close(SLICE) || error("Unable to close $from: $!");
         if ($#ARGV > -1) {
             $out_istmp = 0;
-            &ProcessOptions();
-            &ProcessOutfiles();
+            ProcessOptions();
+            ProcessOutfiles();
             $opt = "$verbose $out";
         }
         @ARGV = @ARGVLINE;
     }
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
-    $rc = &dosystem("@libdir@/exec/wml_p9_slice $opt $from");
+    $rc = dosystem("@libdir@/exec/wml_p9_slice $opt $from");
 
     return $rc;
 }
@@ -933,10 +929,10 @@ if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and
     }
 }
 $gen_time = time();
-$gen_ctime = &ctime(time());
-$gen_isotime = &isotime(time());
-$gen_gmt_ctime = &gmt_ctime(time());
-$gen_gmt_isotime = &gmt_isotime(time());
+$gen_ctime = ctime(time());
+$gen_isotime = isotime(time());
+$gen_gmt_ctime = gmt_ctime(time());
+$gen_gmt_isotime = gmt_isotime(time());
 
 ($cwd = Cwd::cwd) =~ s|/+$||;
 if ($src_istmp) {
@@ -969,10 +965,10 @@ else {
     ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
      $atime,$mtime,$ctime,$blksize,$blocks) = stat($src);
     $src_time  = $mtime;
-    $src_ctime = &ctime($mtime);
-    $src_isotime = &isotime($mtime);
-    $src_gmt_ctime = &gmt_ctime($mtime);
-    $src_gmt_isotime = &gmt_isotime($mtime);
+    $src_ctime = ctime($mtime);
+    $src_isotime = isotime($mtime);
+    $src_gmt_ctime = gmt_ctime($mtime);
+    $src_gmt_isotime = gmt_isotime($mtime);
     @pwinfo = getpwuid($uid);
     $src_username = $pwinfo[0] || 'UNKNOWN-USERNAME';
     $src_username =~ s|[\'\$\`\"]||g; # make safe for shell interpolation
@@ -1030,15 +1026,19 @@ if (not -s $src) {
 }
 $p = join('', @opt_p);
 $p =~ s|,||g;
-sub expandrange {
-    my ($a, $b) = @_;
-    $x = '';
-    for ($i = $a; $i <= $b; $i++) {
+
+sub expandrange
+{
+    my ($s, $e) = @_;
+    my $x = '';
+    for my $i ($s .. $e)
+    {
         $x .= $i;
     }
     return $x;
 }
-$p =~ s|(\d)-(\d)|&expandrange($1, $2)|sge;
+
+$p =~ s|(\d)-(\d)|expandrange($1, $2)|sge;
 if ($p =~ m/!$/) {
     $p =~ s/!$//;
     @p = split('', $p);
@@ -1052,7 +1052,7 @@ else {
 
 #   determine includes
 $inc = '';
-foreach $i (@opt_I) {
+foreach my $i (@opt_I) {
     $inc .= " -I $i";
 }
 
@@ -1062,7 +1062,7 @@ foreach $p (@p) {
     $preload .= " -s 'sys/bootp${p}.wml'"
       if -f "@libdir@/include/sys/bootp${p}.wml" and $p =~ m/^[34]$/;
 }
-foreach $i (@opt_i) {
+foreach my $i (@opt_i) {
     if ($i =~ m|^<(.+)>$|) {
         $preload .= " -s '$1'";
     }
@@ -1074,7 +1074,7 @@ foreach $i (@opt_i) {
 #   determine prologs
 $prolog = '';
 foreach $p (@opt_P) {
-    $prolog .= ' -P "'.&quotearg($p).'"';
+    $prolog .= ' -P "'.quotearg($p).'"';
 }
 
 $defipp = '';
@@ -1119,13 +1119,13 @@ sub ProcessOutfiles {
 
         #   create option
         if ($o eq '-') {
-            $out .= " -o '".&quotearg($tmp[3])."'";
+            $out .= " -o '".quotearg($tmp[3])."'";
             $out_istmp = 1;
         } elsif ($o =~ m/(.*):-$/) {
-            $out .= " -o '".&quotearg($1.':'.$tmp[3])."'";
+            $out .= " -o '".quotearg($1.':'.$tmp[3])."'";
             $out_istmp = 1;
         } else {
-            $out .= " -o '".&quotearg($o)."'";
+            $out .= " -o '".quotearg($o)."'";
         }
 
         #   unquote the filename
@@ -1146,7 +1146,7 @@ sub ProcessOutfiles {
         }
     }
 }
-&ProcessOutfiles();
+ProcessOutfiles();
 
 $verbose = '';
 if ($opt_v >= 3) {
@@ -1231,7 +1231,9 @@ if ($opt_M ne '-') {
                 $opt_pass .= " $2 " if $1 == 1;
             }
         }
-        eval "\$rc = \&pass1(\$opt_pass1 . \$opt_pass, \$src, \$o, \$tmp[2]);";
+        eval {
+            $rc = pass1($opt_pass1 . $opt_pass, $src, $o, $tmp[2]);
+        };
         if ($rc != 0) {
             if ($rc % 256 != 0) {
                 printf(STDERR "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n", 1, $rc % 256, $rc / 256);
@@ -1239,11 +1241,11 @@ if ($opt_M ne '-') {
             else {
                 printf(STDERR "** WML:Break: Error in Pass %d (rc=%d).\n", 1, $rc / 256);
             }
-            &unlink_tmp();
+            unlink_tmp();
             exit(1);
         }
     }
-    &unlink_tmp();
+    unlink_tmp();
     exit(0);
 }
 
@@ -1253,20 +1255,20 @@ if ($opt_M ne '-') {
 @TIMES = ();
 $firstpass = 1;
 foreach $p (@p) {
-    &verbose(2, "PASS $p:\n");
+    verbose(2, "PASS $p:\n");
     print STDERR @prop[$pcnt++ % 4] . "\b" if (not $opt_q);
 
     #   run pass
     ($u, $s, $cu, $cs) = times();
     $stime = $u + $s + $cu + $cs;
-    &protect($from, $p);
+    protect($from, $p);
     $opt_pass = '';
     foreach $a (@opt_W) {
         if ($a =~ m|^(\d),(.*)$|) {
             $opt_pass .= " $2 " if $1 == $p;
         }
     }
-    eval "\$rc = \&pass$p(\$opt_pass$p . \$opt_pass, \$from, \$to, \$tmp[2]);";
+    eval "\$rc = pass$p(\$opt_pass$p . \$opt_pass, \$from, \$to, \$tmp[2]);";
     if ($rc != 0) {
         if ($rc % 256 != 0) {
             printf(STDERR "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n", $p, $rc % 256, $rc / 256);
@@ -1274,10 +1276,10 @@ foreach $p (@p) {
         else {
             printf(STDERR "** WML:Break: Error in Pass %d (rc=%d).\n", $p, $rc / 256);
         }
-        &unlink_tmp();
+        unlink_tmp();
         exit(1);
     }
-    &unprotect($to, $p) if ($p < 9); # pass 9 is a special case
+    unprotect($to, $p) if ($p < 9); # pass 9 is a special case
     ($u, $s, $cu, $cs) = times();
     $etime = $u + $s + $cu + $cs;
     $dtime = $etime-$stime;
@@ -1296,7 +1298,7 @@ foreach $p (@p) {
         }
         elsif ($key =~ m|[qQ]|) {
             printf(STDERR "** WML:Break: Manual Stop.\n");
-            &unlink_tmp();
+            unlink_tmp();
             exit(1);
         }
     }
@@ -1312,12 +1314,12 @@ foreach $p (@p) {
 }
 
 if ($last ne '' and $final and $out_istmp) {
-    &unprotect($tmp[3], 9);
+    unprotect($tmp[3], 9);
 } elsif ($last ne '' and not $final) {
     my $i = 0;
     my @fh = ();
     my $fp;
-    &unprotect($last, 9);
+    unprotect($last, 9);
     if ($#outfiles > -1) {
         foreach $o (@outfiles) {
             $fh[$i] = new IO::File "> $o";
@@ -1344,7 +1346,7 @@ if ($last ne '' and $final and $out_istmp) {
 if ($#outfiles > -1) {
     #   unprotect all outputfiles
     foreach $o (@outfiles) {
-        &unprotect($o, 9);
+        unprotect($o, 9);
     }
 
     #   optionally set mtime of outputfiles
@@ -1375,7 +1377,7 @@ if ($#outfiles > -1) {
                 $e = "@libdir@/exec/wml_aux_tidy$1";
                 $e .= " -m" if ($1 eq '');
             }
-            &verbose(2, "EPILOG: $e $o\n");
+            verbose(2, "EPILOG: $e $o\n");
             $rc = system("$e $o");
             #   Tidy returns 1 on warnings and 2 on errors :(
             $rc = 0 if ($rc == 256 and $e =~ m|@libdir@/exec/wml_aux_tidy|);
@@ -1392,29 +1394,33 @@ if ($out_istmp) {
     }
 }
 
-&unlink_tmp();
+unlink_tmp();
 
 ($u, $s, $cu, $cs) = times();
 $at = $u + $s + $cu + $cs;
-$i  = 1;
 $pt = 0;
 $timestr = '';
-foreach $t (@TIMES[1..9]) {
-    $pt += $t;
-    if ($i == 2 or $i == 3) {
-        $timestr .= sprintf($t ne '' ? "%5.2f " : "   -- ", $t);
+
+{
+    my $i  = 1;
+    foreach my $t (@TIMES[1..9]) {
+        $pt += $t;
+        if ($i == 2 or $i == 3) {
+            $timestr .= sprintf($t ne '' ? "%5.2f " : "   -- ", $t);
+        }
+        else {
+            $timestr .= sprintf($t ne '' ? "%4.2f " : "  -- ", $t);
+        }
+        $i++;
     }
-    else {
-        $timestr .= sprintf($t ne '' ? "%4.2f " : "  -- ", $t);
-    }
-    $i++;
 }
+
 $timestr = sprintf("%4.2f | ", $at-$pt) . $timestr;
 $timestr .= sprintf("| %6.2f", $at);
-&verbose(1, "Processing time (seconds):\n");
-&verbose(1, "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n");
-&verbose(1, "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n");
-&verbose(1, "$timestr\n");
+verbose(1, "Processing time (seconds):\n");
+verbose(1, "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n");
+verbose(1, "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n");
+verbose(1, "$timestr\n");
 
 #   exit gracefully
 exit(0);
