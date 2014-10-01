@@ -7,9 +7,9 @@
 
 @TOP@
 
-#undef USE_NCURSES 
-#undef USE_SLCURSES 
-#undef USE_CURSES   
+#undef USE_NCURSES
+#undef USE_SLCURSES
+#undef USE_CURSES
 
 @BOTTOM@
 

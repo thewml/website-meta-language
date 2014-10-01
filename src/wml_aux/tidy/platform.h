@@ -45,7 +45,7 @@
 #define PRESERVEFILETIMES 0
 
 #if PRESERVEFILETIMES
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/utime.h>
 

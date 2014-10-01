@@ -28,10 +28,10 @@ typedef struct
 
 void outc(uint c, Out *out);
 
-/* states for ISO 2022 
+/* states for ISO 2022
 
- A document in ISO-2022 based encoding uses some ESC sequences called 
- "designator" to switch character sets. The designators defined and 
+ A document in ISO-2022 based encoding uses some ESC sequences called
+ "designator" to switch character sets. The designators defined and
  used in ISO-2022-JP are:
 
     "ESC" + "(" + ?     for ISO646 variants
@@ -304,7 +304,7 @@ struct _lexer
     uint state;     /* state of lexer's finite state machine */
     struct _node *token;
 
-    /* 
+    /*
       lexer character buffer
 
       parse tree nodes span onto this buffer
@@ -561,9 +561,9 @@ void wstrncpy(char *s1, char *s2, int size);
 void wstrcat(char *s1, char *s2);
 void wstrcpy(char *s1, char *s2);
 int wstrcmp(char *s1, char *s2);
-int wstrcasecmp(char *s1, char *s2);    
+int wstrcasecmp(char *s1, char *s2);
 int wstrncmp(char *s1, char *s2, int n);
-int wstrncasecmp(char *s1, char *s2, int n);   
+int wstrncasecmp(char *s1, char *s2, int n);
 int wstrlen(char *str);
 Bool wsubstr(char *s1, char *s2);
 void ClearMemory(void *, uint size);

@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -36,7 +36,7 @@
 #define EPERL_CONFIG_H 1
 
 
-/* 
+/*
 **
 **  Headers from GNU autoconf
 **
@@ -45,16 +45,16 @@
 #include "config_sc.h"
 
 
-/* 
+/*
 **
-**  Headers from the Unix system 
+**  Headers from the Unix system
 **
 */
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
 #ifdef HAVE_STDARG_H
-#include <stdarg.h> 
+#include <stdarg.h>
 #else
 #include <varargs.h>
 #endif
@@ -104,7 +104,7 @@
 #endif
 
 
-/* 
+/*
 **
 **  Missing Prototypes.
 **  They are needed to get a clean compile with gcc -Wall.
@@ -121,12 +121,12 @@ int getopt (int, char **, char *);
 int strcasecmp (char *, char *);
 int strncasecmp (char *, char *, int);
 int toupper(int);
-int tolower(int);     
-int printf (char *, ...);     
+int tolower(int);
+int printf (char *, ...);
 int fprintf (FILE *, char *, ...);
 int fputs (char *, FILE *);
-int fread (char *, int, int, FILE *);     
-int fwrite (char *, int, int, FILE *);     
+int fread (char *, int, int, FILE *);
+int fwrite (char *, int, int, FILE *);
 int fflush (FILE *);
 int fclose (FILE *);
 int ungetc (int, FILE *);
@@ -137,24 +137,24 @@ void setbuf (FILE *, char *);
 void perror (char *);
 time_t time (time_t *);
 int strftime (char *, int, char *, struct tm *);
-int initgroups (char *, int);     
+int initgroups (char *, int);
 int wait3 (int *, int, void*);  /* Close enough for us... */
 int lstat (const char *, struct stat *);
-int stat (const char *, struct stat *);     
+int stat (const char *, struct stat *);
 int flock (int, int);
 #ifndef NO_KILLPG
 int killpg(int, int);
 #endif
-int socket (int, int, int);     
+int socket (int, int, int);
 int setsockopt (int, int, int, const char*, int);
-int listen (int, int);     
-int bind (int, struct sockaddr *, int);     
+int listen (int, int);
+int bind (int, struct sockaddr *, int);
 int connect (int, struct sockaddr *, int);
 int accept (int, struct sockaddr *, int *);
-int shutdown (int, int);     
+int shutdown (int, int);
 int getsockname (int s, struct sockaddr *name, int *namelen);
 int getpeername (int s, struct sockaddr *name, int *namelen);
-int gethostname (char *name, int namelen);     
+int gethostname (char *name, int namelen);
 void syslog (int, char *, ...);
 char *mktemp (char *);
 long vfprintf (FILE *, char *, va_list);

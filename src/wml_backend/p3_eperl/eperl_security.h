@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -42,9 +42,9 @@
 #define CGI_NEEDS_ALLOWED_FILE_EXT       TRUE
 #define LIST_OF_ALLOWED_FILE_EXT         { ".html", ".phtml", ".eperl", ".ephtml", ".epl", ".pl", ".cgi", NULL }
 
-/* 
- * Perl security 
- * (BE CAREFUL HERE, THIS CAN MAKE YOUR LIVE HARD!) 
+/*
+ * Perl security
+ * (BE CAREFUL HERE, THIS CAN MAKE YOUR LIVE HARD!)
  */
 #define CGI_MODES_FORCE_TAINTING         FALSE
 #define CGI_MODES_FORCE_WARNINGS         FALSE
@@ -60,7 +60,7 @@
 #define SETUID_NEEDS_BELOW_OWNER_HOME    TRUE
 #define LIST_OF_ALLOWED_CALLER_UID       { "nobody", "root", "www-data", NULL }
 
-/* 
+/*
  * Action when a SetUID security check failed.
  *
  * Define ``DO_FOR_FAILED_STEP'' to one of the following:

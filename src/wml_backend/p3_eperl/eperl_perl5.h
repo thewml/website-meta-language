@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -36,11 +36,11 @@
 #define EPERL_PERL5_H 1
 
 
-/*  first include the standard Perl 
+/*  first include the standard Perl
     includes designed for embedding   */
 #define PERL_NO_GET_CONTEXT     /* for efficiency reasons, see perlguts(3) */
 #include <EXTERN.h>
-#include <perl.h>                 
+#include <perl.h>
 
 #ifndef dTHR
 #  ifdef WIN32
@@ -76,7 +76,7 @@
 #  define PL_defoutgv defoutgv
 #endif
 
-/*  
+/*
   Initialization of locales when building a new Perl interpreter.
      Perl 5.003 calls perl_init_i18nl14n
      Perl 5.004 and 5.005 call perl_init_i18nl10n
