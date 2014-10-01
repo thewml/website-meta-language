@@ -1,17 +1,21 @@
 
-require "TEST.pl";
-&TEST::init;
+use strict;
+use warnings;
 
-print "1..6\n";
+use Test::More tests => 6;
+
+use WmlTest;
+WmlTest::init();
 
 #
 #   TEST 1-2: throughput
 #
 
-$pass = 2;
+my $pass = 2;
 
-#    Arrays
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+{
+
+my $in1 = <<'EOT_IN';
 <set-var array = "value-zero
 value-one
 value-two">
@@ -32,6 +36,8 @@ value-two">
 <sort array numeric=true><foreach x array> <get-var x></foreach>
 EOT_IN
 
+my $out1 = <<'EOT_OUT';
+
 
 The value of array[0] is `value-zero'.
 The value of array[1] is `value-one'.
@@ -44,19 +50,32 @@ The value of array[2] is `value-two'.
   1 2 3 4 20
 EOT_OUT
 
+#    Arrays
+    # TEST*2
+WmlTest::generic($pass, $in1, $out1, '');
+
+}
+
+{
+
 #    Arithmetic operators
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+my $in1 = <<'EOT_IN';
 <set-var i=10><decrement i by=4><get-var i>
 <multiply 2.3 8 3>
 <divide -4.0 10>
 EOT_IN
+my $out1 = <<'EOT_OUT';
 6
 55.200000
 -0.400000
 EOT_OUT
 
-#    String operators
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+    # TEST*2
+WmlTest::generic($pass, $in1 , $out1, '', );
+}
+
+{
+    my $in1 = <<'EOT_IN';
 <capitalize "This is a list">
 <match "foobar" ".*">
 <match "foobar" "foo">
@@ -69,6 +88,8 @@ EOT_OUT
 <string-eq "foo" "FOO" caseless=true>
 <subst-in-string "abc" "([a-z])" "\1 ">
 EOT_IN
+
+    my $out1 = <<'EOT_OUT';
 This Is A List
 true
 true
@@ -82,5 +103,9 @@ true
 a b c 
 EOT_OUT
 
-&TEST::cleanup;
+    #    String operators
+    # TEST*2
+    WmlTest::generic($pass, $in1 , $out1, '', );
+}
+WmlTest::cleanup();
 
