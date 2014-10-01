@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -30,7 +30,7 @@
 **
 **  ======================================================================
 **
-**  eperl_main.c -- ePerl main procedure 
+**  eperl_main.c -- ePerl main procedure
 */
 
 #include <errno.h>
@@ -132,7 +132,7 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     }
     fflush(stderr);
     fflush(stdout);
-    
+
     va_end(ap);
     return;
 }
@@ -217,7 +217,7 @@ void give_usage(char *name)
 
 char *RememberedINC[1024] = { NULL };
 
-void RememberINC(char *str) 
+void RememberINC(char *str)
 {
     int i;
 
@@ -363,7 +363,7 @@ int main(int argc, char **argv, char **env)
     /*  parse the option arguments */
     opterr = 0;
     while ((c = getopt_long(argc, argv, ":d:D:I:B:E:nkPCLTwxm:o:crlvVh", options, NULL)) != -1) {
-        if (optarg == NULL) 
+        if (optarg == NULL)
             optarg = "(null)";
         switch (c) {
             case 'd':
@@ -463,8 +463,8 @@ int main(int argc, char **argv, char **env)
         }
     }
 
-    /* 
-     *  determine source filename and runtime mode 
+    /*
+     *  determine source filename and runtime mode
      */
 
     if ((cpCGIgi = getenv("GATEWAY_INTERFACE")) == NULL)
@@ -479,7 +479,7 @@ int main(int argc, char **argv, char **env)
 
     /*
      *  Server-Side-Scripting-Language:
-     * 
+     *
      *  Request:
      *      /url/to/nph-eperl/url/to/script.phtml[?query-string]
      *  Environment:
@@ -491,38 +491,38 @@ int main(int argc, char **argv, char **env)
      *      a) QUERY_STRING=""
      *         optind=argc
      *      b) QUERY_STRING=query-string (containing "=" char)
-     *         optind=argc 
+     *         optind=argc
      *      c) QUERY_STRING=query-string (containing NO "=" char)
      *         optind=argc-1
      *         argv[optind]=query-string
      */
-    if (   cpCGIgi[0] != NUL 
+    if (   cpCGIgi[0] != NUL
         && cpCGIpt[0] != NUL
         && (   (   optind == argc
-                && (   cpCGIqs[0] == NUL 
-                    || fCGIqsEqualChar      ) ) 
-            || (   optind == argc-1 
-                && !fCGIqsEqualChar 
+                && (   cpCGIqs[0] == NUL
+                    || fCGIqsEqualChar      ) )
+            || (   optind == argc-1
+                && !fCGIqsEqualChar
                 && stringEQ(argv[optind], cpCGIqs) )      ) ) {
-        
+
         if (strncasecmp(cpCGIgi, "CGI/1", 5) != 0) {
             fprintf(stderr, "ePerl:Error: Unknown gateway interface: NOT CGI/1.x\n");
             CU(EX_IOERR);
         }
 
-        /*  CGI/1.1 or NPH-CGI/1.1 script, 
+        /*  CGI/1.1 or NPH-CGI/1.1 script,
             source in PATH_TRANSLATED. */
         source = cpCGIpt;
 
-        /*  determine whether pure CGI or NPH-CGI mode */ 
-        if ((cp = getenv("SCRIPT_FILENAME")) != NULL) { 
+        /*  determine whether pure CGI or NPH-CGI mode */
+        if ((cp = getenv("SCRIPT_FILENAME")) != NULL) {
             strncpy(ca, cp, sizeof(ca));
             ca[sizeof(ca)-1] = NUL;
-            if ((cp = strrchr(ca, '/')) != NULL) 
+            if ((cp = strrchr(ca, '/')) != NULL)
                 *cp++ = NUL;
-            else 
+            else
                 cp = ca;
-            if (strncasecmp(cp, "nph-", 4) == 0) 
+            if (strncasecmp(cp, "nph-", 4) == 0)
                 mode = (mode == MODE_UNKNOWN ? MODE_NPHCGI : mode);
             else
                 mode = (mode == MODE_UNKNOWN ? MODE_CGI : mode);
@@ -560,11 +560,11 @@ int main(int argc, char **argv, char **env)
      *         argv[optind+1]=query-string
      */
     else if (   cpCGIgi[0] != NUL
-             && ( (   optind == argc-1 
-                   && (   cpCGIqs[0] == NUL 
+             && ( (   optind == argc-1
+                   && (   cpCGIqs[0] == NUL
                        || fCGIqsEqualChar      ) ) ||
-                  (   optind == argc-2 
-                   && !fCGIqsEqualChar 
+                  (   optind == argc-2
+                   && !fCGIqsEqualChar
                    && stringEQ(argv[optind+1], cpCGIqs)) ) ) {
 
         if (strncasecmp(cpCGIgi, "CGI/1", 5) != 0) {
@@ -572,19 +572,19 @@ int main(int argc, char **argv, char **env)
             CU(EX_IOERR);
         }
 
-        /*  CGI/1.1 or NPH-CGI/1.1 script, 
+        /*  CGI/1.1 or NPH-CGI/1.1 script,
             source in ARGV */
         source = argv[optind];
 
-        /*  determine whether pure CGI or NPH-CGI mode */ 
-        if ((cp = getenv("SCRIPT_FILENAME")) != NULL) { 
+        /*  determine whether pure CGI or NPH-CGI mode */
+        if ((cp = getenv("SCRIPT_FILENAME")) != NULL) {
             strncpy(ca, cp, sizeof(ca));
             ca[sizeof(ca)-1] = NUL;
-            if ((cp = strrchr(ca, '/')) != NULL) 
+            if ((cp = strrchr(ca, '/')) != NULL)
                 *cp++ = NUL;
-            else 
+            else
                 cp = ca;
-            if (strncasecmp(cp, "nph-", 4) == 0) 
+            if (strncasecmp(cp, "nph-", 4) == 0)
                 mode = (mode == MODE_UNKNOWN ? MODE_NPHCGI : mode);
             else
                 mode = (mode == MODE_UNKNOWN ? MODE_CGI : mode);
@@ -613,9 +613,9 @@ int main(int argc, char **argv, char **env)
      *      optind=argc-1
      *      argv[optind]=script
      */
-    else if (   cpCGIgi[0] == NUL 
+    else if (   cpCGIgi[0] == NUL
              && cpCGIpt[0] == NUL
-             && cpCGIqs[0] == NUL 
+             && cpCGIqs[0] == NUL
              && optind == argc-1  ) {
 
         /*  stand-alone filter, source as argument:
@@ -640,7 +640,7 @@ int main(int argc, char **argv, char **env)
             keepcwd = TRUE;
         }
     }
-    /* 
+    /*
      *   Any other calling environment is an error...
      */
     else {
@@ -669,7 +669,7 @@ int main(int argc, char **argv, char **env)
         ePerl_case_sensitive_delimiters = TRUE;
 
     /* the built-in GIF images */
-    if ((mode == MODE_CGI || mode == MODE_NPHCGI) && (cp = getenv("PATH_INFO")) != NULL) { 
+    if ((mode == MODE_CGI || mode == MODE_NPHCGI) && (cp = getenv("PATH_INFO")) != NULL) {
         if (stringEQ(cp, "/logo.gif")) {
             give_img_logo();
             myexit(0);
@@ -680,8 +680,8 @@ int main(int argc, char **argv, char **env)
         }
     }
 
-    /* CGI modes imply 
-       - Preprocessor usage 
+    /* CGI modes imply
+       - Preprocessor usage
        - HTML entity conversions
        - adding of DOCUMENT_ROOT to include paths */
     if (mode == MODE_CGI || mode == MODE_NPHCGI) {
@@ -720,7 +720,7 @@ int main(int argc, char **argv, char **env)
             n = strlen(source);
             for (i = 0; allowed_file_ext[i] != NULL; i++) {
                 k = strlen(allowed_file_ext[i]);
-                if (stringEQ(source+n-k, allowed_file_ext[i])) 
+                if (stringEQ(source+n-k, allowed_file_ext[i]))
                     allow = TRUE;
             }
             if (!allow) {
@@ -756,7 +756,7 @@ int main(int argc, char **argv, char **env)
 
             /* get our real user id (= caller uid) */
             uid = getuid();
-    
+
             /* security check: valid caller uid */
             pw = getpwuid(uid);
             if (SETUID_NEEDS_VALID_CALLER_UID && pw == NULL) {
@@ -791,31 +791,31 @@ int main(int argc, char **argv, char **env)
                     }
                 }
             }
-    
+
             /* security check: valid owner UID */
             pw = getpwuid(st.st_uid);
-            if (SETUID_NEEDS_VALID_OWNER_UID && pw == NULL) 
+            if (SETUID_NEEDS_VALID_OWNER_UID && pw == NULL)
                 if (DO_FOR_FAILED_STEP == STOP_AND_ERROR) {
                     PrintError(mode, source, NULL, NULL, "Invalid UID %d of owner", st.st_uid);
                     CU(EX_OK);
                 }
                 else
                     fOkSwitch = FALSE;
-            else 
+            else
                 uid = pw->pw_uid;
-    
+
             /* security check: valid owner GID */
             gr = getgrgid(st.st_gid);
-            if (SETUID_NEEDS_VALID_OWNER_GID && gr == NULL) 
+            if (SETUID_NEEDS_VALID_OWNER_GID && gr == NULL)
                 if (DO_FOR_FAILED_STEP == STOP_AND_ERROR) {
                     PrintError(mode, source, NULL, NULL, "Invalid GID %d of owner", st.st_gid);
                     CU(EX_OK);
                 }
                 else
                     fOkSwitch = FALSE;
-            else 
+            else
                 gid = gr->gr_gid;
-    
+
             /* security check: file has to stay below owner homedir */
             if (fOkSwitch && SETUID_NEEDS_BELOW_OWNER_HOME) {
                 /* preserve current working directory */
@@ -828,7 +828,7 @@ int main(int argc, char **argv, char **env)
                         PrintError(mode, source, NULL, NULL, "Invalid homedir ``%s'' of file owner", pw->pw_dir);
                         CU(EX_OK);
                     }
-                    else 
+                    else
                         fOkSwitch = FALSE;
                 }
                 else {
@@ -842,7 +842,7 @@ int main(int argc, char **argv, char **env)
                             PrintError(mode, source, NULL, NULL, "Invalid script ``%s'': no absolute path", source);
                             CU(EX_OK);
                         }
-                        else 
+                        else
                             fOkSwitch = FALSE;
                     }
                     else {
@@ -852,22 +852,22 @@ int main(int argc, char **argv, char **env)
                                 PrintError(mode, source, NULL, NULL, "Invalid script ``%s'': cannot chdir to its location", source);
                                 CU(EX_OK);
                             }
-                            else 
+                            else
                                 fOkSwitch = FALSE;
                         }
                         else {
                             dir_script = getcwd(NULL, 1024);
-        
+
                             /* dir_home has to be a prefix of dir_script */
                             if (strncmp(dir_script, dir_home, strlen(dir_home)) < 0) {
                                 if (DO_FOR_FAILED_STEP == STOP_AND_ERROR) {
                                     PrintError(mode, source, NULL, NULL, "Invalid script ``%s'': does not stay below homedir of owner", source);
                                     CU(EX_OK);
                                 }
-                                else 
+                                else
                                     fOkSwitch = FALSE;
                             }
-            
+
                             free(dir_script);
                         }
                     }
@@ -879,10 +879,10 @@ int main(int argc, char **argv, char **env)
                 {
                     PrintError(mode, source, NULL, NULL, "chdir failed with errno: %li\n", (long)errno);
                 }
-        
+
                 free(cwd2);
             }
-    
+
             if (fOkSwitch && uid != 0 && gid != 0) {
                 /* switch to new uid/gid */
                 if (((setgid(gid)) != 0) || (initgroups(pw->pw_name,gid) != 0)) {
@@ -946,7 +946,7 @@ int main(int argc, char **argv, char **env)
         cpPort = getenv("SERVER_PORT");
         if (stringEQ(cpPort, "80"))
             cpPort = NULL;
-        snprintf(ca, sizeof(ca), "http://%s%s%s%s", 
+        snprintf(ca, sizeof(ca), "http://%s%s%s%s",
                 cpHost, cpPort != NULL ? ":" : "", cpPort != NULL ? cpPort : "", cpPath);
         ca[sizeof(ca)-1] = NUL;
         env = mysetenv(env, "SCRIPT_SRC_URL", "%s", ca);
@@ -1037,9 +1037,9 @@ int main(int argc, char **argv, char **env)
             PrintError(mode, source, NULL, NULL, "%s\n", "Cannot write");
             CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
         }
-        if (cpScript[strlen(cpScript)-1] == '\n') 
+        if (cpScript[strlen(cpScript)-1] == '\n')
             fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
-        else 
+        else
             fprintf(fp, "%c\n", cpScript[strlen(cpScript)-1]);
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
         fclose(fp); fp = NULL;
@@ -1063,9 +1063,9 @@ int main(int argc, char **argv, char **env)
     myargc = 0;
     /*  - program name and possible -T -w options */
     myargv[myargc++] = progname;
-    if (fTaint) 
+    if (fTaint)
         myargv[myargc++] = "-T";
-    if (fWarn) 
+    if (fWarn)
         myargv[myargc++] = "-w";
     /*  - previously remembered Perl 5 INC entries (option -I) */
     for (i = 0; RememberedINC[i] != NULL; i++) {
@@ -1073,7 +1073,7 @@ int main(int argc, char **argv, char **env)
         myargv[myargc++] = RememberedINC[i];
     }
     /*  - and the script itself  */
-    myargv[myargc++] = perlscript;   
+    myargv[myargc++] = perlscript;
 
     rc = Perl5_Run(myargc, myargv, mode, fCheck, keepcwd, source, env, perlscript, perlstderr, perlstdout);
     /*  Return code:

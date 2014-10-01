@@ -1,16 +1,16 @@
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1989, 90, 91, 92, 93, 94 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -145,7 +145,7 @@ predefined_tab[] =
 
   { NULL,	NULL,		NULL },
 };
-
+
 /*----------------------------------------.
 | Find the builtin, which lives on ADDR.  |
 `----------------------------------------*/
@@ -175,7 +175,7 @@ find_builtin_by_name (const char *name)
       return bp;
   return NULL;
 }
-
+
 /*-------------------------------------------------------------------------.
 | Install a builtin macro with name NAME, bound to the C function given in |
 | BP.  MODE is SYMBOL_INSERT or SYMBOL_PUSHDEF.  TRACED defines whether	   |
@@ -382,12 +382,12 @@ dump_args (struct obstack *obs, int argc, token_data **argv,
 	obstack_grow (obs, rquote.string, rquote.length);
     }
 }
-
+
 /* The rest of this file is code for builtins and expansion of user
    defined macros.  All the functions for builtins have a prototype as:
-   
+
 	void m4_MACRONAME (struct obstack *obs, int argc, char *argv[]);
-   
+
    The function are expected to leave their expansion on the obstack OBS,
    as an unfinished object.  ARGV is a table of ARGC pointers to the
    individual arguments to the macro.  Please note that in general
@@ -469,7 +469,7 @@ m4_popdef (struct obstack *obs, int argc, token_data **argv)
     return;
   lookup_symbol (ARG (1), SYMBOL_POPDEF);
 }
-
+
 /*---------------------.
 | Conditionals of m4.  |
 `---------------------*/
@@ -538,7 +538,7 @@ m4_ifelse (struct obstack *obs, int argc, token_data **argv)
 
   obstack_grow (obs, result, strlen (result));
 }
-
+
 /*---------------------------------------------------------------------.
 | The function dump_symbol () is for use by "dumpdef".  It builds up a |
 | table of all defined, un-shadowed, symbols.			       |
@@ -737,7 +737,7 @@ m4_defn (struct obstack *obs, int argc, token_data **argv)
       abort ();
     }
 }
-
+
 /*------------------------------------------------------------------------.
 | This section contains macros to handle the builtins "syscmd", "esyscmd" |
 | and "sysval".  "esyscmd" is GNU specific.				  |
@@ -786,7 +786,7 @@ m4_sysval (struct obstack *obs, int argc, token_data **argv)
 {
   shipout_int (obs, (sysval >> 8) & 0xff);
 }
-
+
 /*-------------------------------------------------------------------------.
 | This section contains the top level code for the "eval" builtin.  The	   |
 | actual work is done in the function evaluate (), which lives in eval.c.  |
@@ -866,7 +866,7 @@ m4_decr (struct obstack *obs, int argc, token_data **argv)
 
   shipout_int (obs, value - 1);
 }
-
+
 /* This section contains the macros "divert", "undivert" and "divnum" for
    handling diversion.  The utility functions used lives in output.c.  */
 
@@ -938,7 +938,7 @@ m4_undivert (struct obstack *obs, int argc, token_data **argv)
 	  }
       }
 }
-
+
 /* This section contains various macros, which does not fall into any
    specific group.  These are "dnl", "shift", "changequote", "changecom"
    and "changeword".  */
@@ -1017,7 +1017,7 @@ m4_changeword (struct obstack *obs, int argc, token_data **argv)
 }
 
 #endif /* ENABLE_CHANGEWORD */
-
+
 /* This section contains macros for inclusion of other files -- "include"
    and "sinclude".  This differs from bringing back diversions, in that
    the input is scanned before being copied to the output.  */
@@ -1066,7 +1066,7 @@ m4_sinclude (struct obstack *obs, int argc, token_data **argv)
 {
   include (argc, argv, TRUE);
 }
-
+
 /* More miscellaneous builtins -- "maketemp", "errprint", "__file__" and
    "__line__".  The last two are GNU specific.  */
 
@@ -1113,7 +1113,7 @@ m4___line__ (struct obstack *obs, int argc, token_data **argv)
     return;
   shipout_int (obs, current_line);
 }
-
+
 /* This section contains various macros for exiting, saving input until
    EOF is seen, and tracing macro calls.  That is: "m4exit", "m4wrap",
    "traceon" and "traceoff".  */
@@ -1152,7 +1152,7 @@ m4_m4wrap (struct obstack *obs, int argc, token_data **argv)
   obstack_1grow (obs, '\0');
   push_wrapup (obstack_finish (obs));
 }
-
+
 /* Enable tracing of all specified macros, or all, if none is specified.
    Tracing is disabled by default, when a macro is defined.  This can be
    overridden by the "t" debug flag.  */
@@ -1283,7 +1283,7 @@ m4_debugfile (struct obstack *obs, int argc, token_data **argv)
     M4ERROR ((warning_status, errno,
 	      "Cannot set error file: %s", ARG (1)));
 }
-
+
 /* This section contains text processing macros: "len", "index",
    "substr", "translit", "format", "regexp" and "patsubst".  The last
    three are GNU specific.  */
@@ -1510,7 +1510,7 @@ WARNING: \\0 will disappear, use \\& instead in replacements"));
 	  break;
 
 	case '1': case '2': case '3': case '4': case '5': case '6':
-	case '7': case '8': case '9': 
+	case '7': case '8': case '9':
 	  ch -= '0';
 	  if (regs->end[ch] > 0)
 	    obstack_grow (obs, victim + regs->start[ch],
@@ -1671,7 +1671,7 @@ m4_patsubst (struct obstack *obs, int argc, token_data **argv)
   xfree (buf.buffer);
   return;
 }
-
+
 /*-------------------------------------------------------------------------.
 | This function handles all expansion of user defined and predefined	   |
 | macros.  It is called with an obstack OBS, where the macros expansion	   |

@@ -1,26 +1,26 @@
-/*      _ ____       _           _   
-**     (_) ___|  ___| | ___  ___| |_ 
+/*      _ ____       _           _
+**     (_) ___|  ___| | ___  ___| |_
 **    / /\___ \ / _ \ |/ _ \/ __| __|
-**   / /  ___) |  __/ |  __/ (__| |_ 
+**   / /  ___) |  __/ |  __/ (__| |_
 **  (_(  |____/ \___|_|\___|\___|\__|
 **
 **  iSelect -- Interactive Selection Tool
 **
-**  iSelect is a Curses-based tool for interactive line selection 
+**  iSelect is a Curses-based tool for interactive line selection
 **  in an ASCII file via a full-screen terminal session.
-**  
+**
 **  ======================================================================
 **
 **  Copyright (c) 1996-1999 Ralf S. Engelschall.
 **
 **  This program is free software; it may be redistributed and/or
-**  modified only under the terms of the GNU General Public License, 
-**  which may be found in the iSelect source distribution.  
-**  Look at the file COPYING for details. 
-**  
-**  This program is distributed in the hope that it will be useful, 
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+**  modified only under the terms of the GNU General Public License,
+**  which may be found in the iSelect source distribution.
+**  Look at the file COPYING for details.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 **  See the the GNU General Public License for more details.
 **
 **  ======================================================================
@@ -70,10 +70,10 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                     int mYSize, int mXSize, int mYPos, int mXPos,
                     char **keystr, char *tagbegin, char *tagend);
 int iSelect(char *caBuf, int pos, char *title, char *name,
-            char *tagbegin, char *tagend, int stripco, int stripws, 
+            char *tagbegin, char *tagend, int stripco, int stripws,
             int browsealways, int allselectable,
             int multiselect, int exitnoselect,
-            char **keystr); 
+            char **keystr);
 
 /*
  *  GLOBALS
@@ -82,8 +82,8 @@ struct Line *spaLines[MAXLINES];  /* filled by iSelect() */
 int          nLines;
 
 
-/*   
- *  Strip leading and trailing blanks 
+/*
+ *  Strip leading and trailing blanks
  *  from a string buffer
  */
 void strip(char *string)
@@ -104,7 +104,7 @@ void strip(char *string)
         }
         /* strip trailing blanks */
         cp = string+strlen(string);
-        for (; cp > string && (*(cp-1) == ' ' || *(cp-1) == '\t'); ) 
+        for (; cp > string && (*(cp-1) == ' ' || *(cp-1) == '\t'); )
             *(--cp) = NUL;
     }
     return;
@@ -132,7 +132,7 @@ void diesoft(void)
     endwin();                      /* make terminal the way it was */
 }
 
-/*  
+/*
  *  Startup with trapping of interrupt signal
  */
 void setup(void)
@@ -177,12 +177,12 @@ char *iSelect_InputField(int wYSize, int wXSize, int wYPos, int wXPos, int bAllo
         }
         else {
             c = c & 0xff; /* strip down to 8bit */
-            if (c < 32 || c > 126) { 
+            if (c < 32 || c > 126) {
                 /*
                  *  a control code
                  */
                 if (c == '\n') {      /* RETURN */
-                    if (nBufEnd == 0 && !bAllowEmpty) 
+                    if (nBufEnd == 0 && !bAllowEmpty)
                         continue;
                     cpBuf[nBufEnd] = '\0';
                     bEOI = TRUE;
@@ -220,7 +220,7 @@ char *iSelect_InputField(int wYSize, int wXSize, int wYPos, int wXPos, int bAllo
                     }
                 }
             }
-            if (c >= 32 && c <= 126) { 
+            if (c >= 32 && c <= 126) {
                 /*
                  *  a printable character
                  */
@@ -275,7 +275,7 @@ void iSelect_Draw(WINDOW *wField,
     nboldend = strlen(boldend);
 
     /*
-     *  draw browser window 
+     *  draw browser window
      */
     for (i = nRelFirstDraw; i <= nRelLastDraw; i++) {
         wmove(wField, i, 0);
@@ -317,8 +317,8 @@ void iSelect_Draw(WINDOW *wField,
     }
     wmove(wField, nRelMarked, (wXSize-1)-1);
 
-    /* 
-     *  draw status bar 
+    /*
+     *  draw status bar
      */
     werase(sField);
     wattrset(sField, A_REVERSE);
@@ -344,7 +344,7 @@ void iSelect_Draw(WINDOW *wField,
     wattrset(sField, A_NORMAL);
     wrefresh(sField);
 
-    /* 
+    /*
      *  draw message field
      */
     werase(mField);
@@ -397,14 +397,14 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     keypad(wField, TRUE);
     scrollok(wField, FALSE);
 
-    /* 
+    /*
      *  Status field
      */
     sField = newwin(sYSize, sXSize, sYPos, sXPos);
     werase(sField);
     strcpy(msg, "");
 
-    /* 
+    /*
      *  Message field
      */
     mField = newwin(mYSize, mXSize, mYPos, mXPos);
@@ -442,8 +442,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     }
     else {
         /* browser window is smaller then file */
-        
-        /* find top view position, so adjust the 
+
+        /* find top view position, so adjust the
            cursor into the middle of the browser window */
         y = selectpos - (int)((wYSize-1)/2);
         if (y <= 0)
@@ -494,7 +494,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
             /*
              *  a curses special function key
              */
-            if (c == KEY_DOWN) { 
+            if (c == KEY_DOWN) {
                 if (nAbsFirstLine+nRelMarked < nAbsLastLine) {
                     nRelMarked++;
                     /* nRelFirstDraw=nRelMarked-1; !!OPTIMIZE!! */
@@ -512,8 +512,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                         strcpy(msg, "Already at End.");
                     }
                 }
-            }   
-            else if (c == KEY_UP) { 
+            }
+            else if (c == KEY_UP) {
                 if (nRelMarked > 0) {
                     nRelMarked--;
                     /* nRelLastDraw=nRelMarked;    !!OPTIMIZE!! */
@@ -531,8 +531,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                         strcpy(msg, "Already at Begin.");
                     }
                 }
-            }   
-            else if (c == KEY_NPAGE) { 
+            }
+            else if (c == KEY_NPAGE) {
                 if (nAbsFirstLine+nRelMarked == nLastLine) {
                     strcpy(msg, "Already at End.");
                 }
@@ -550,7 +550,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                     }
                 }
             }
-            else if (c == KEY_PPAGE) { 
+            else if (c == KEY_PPAGE) {
                 if (nAbsFirstLine+nRelMarked == nFirstLine) {
                     strcpy(msg, "Already at Begin.");
                 }
@@ -574,7 +574,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
         }
         else {
             c = c & 0xff; /* strip down to 8bit */
-            if (c < 32 || c > 126) { 
+            if (c < 32 || c > 126) {
                 /*
                  *  a control code
                  */
@@ -616,7 +616,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                                 else
                                     bAllowEmpty = FALSE;
                                 cp++;
-    
+
                                 sprintf(msg, "%s: ", ca3);
                                 iSelect_Draw(wField, wYSize, wXSize, wYPos, wXPos, nAbsFirstLine, nAbsLastLine, -1, nRelFirstDraw, nRelLastDraw, nLines, sField, title, name, mField, msg, tagbegin, tagend);
                                 wrefresh(wField);
@@ -643,7 +643,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                     }
                 }
             }
-            if (c >= 32 && c <= 126) { 
+            if (c >= 32 && c <= 126) {
                 /*
                  *  a printable character
                  */
@@ -667,7 +667,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                      bEOI = TRUE;
                      bQuit = TRUE;
                  }
-                 else if (c == 'g') { 
+                 else if (c == 'g') {
                      if (nAbsFirstLine+nRelMarked == nFirstLine) {
                          strcpy(msg, "Already at Begin.");
                      }
@@ -688,7 +688,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                          }
                      }
                  }
-                 else if (c == 'G') { 
+                 else if (c == 'G') {
                      if (nAbsFirstLine+nRelMarked == nLastLine) {
                          strcpy(msg, "Already at End.");
                      }
@@ -710,16 +710,16 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                      }
                  }
                  else if (c == 'h' || c == 'v') {
-                     if (c == 'h') 
+                     if (c == 'h')
                          strcpy(msg, "Help Page: Press 'q' to exit");
-                     else 
+                     else
                          strcpy(msg, "Version Page: Press 'q' to exit");
                      iSelect_Draw(wField, wYSize, wXSize, wYPos, wXPos, nAbsFirstLine, nAbsLastLine, nRelMarked, nRelFirstDraw, nRelLastDraw, nLines, sField, title, name, mField, msg, tagbegin, tagend);
                      wrefresh(wField);
 
                      hField = newwin(wYSize, wXSize, wYPos, wXPos);
                      werase(hField);
-                     if (c == 'h') 
+                     if (c == 'h')
                          cpp = iSelect_Help;
                      else
                          cpp = iSelect_README;
@@ -777,7 +777,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
 #endif
     delwin(wField);
 
-    if (bQuit) 
+    if (bQuit)
         return(-1);
     else
         return(nAbsFirstLine+nRelMarked);
@@ -787,10 +787,10 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
  *  The iSelect function...
  */
 int iSelect(char *caBuf, int pos, char *title, char *name,
-            char *tagbegin, char *tagend, int stripco, int stripws, 
+            char *tagbegin, char *tagend, int stripco, int stripws,
             int browsealways, int allselectable,
             int multiselect, int exitnoselect,
-            char **keystr) 
+            char **keystr)
 {
     WINDOW *wMain;
     int i, j, k;
@@ -802,7 +802,7 @@ int iSelect(char *caBuf, int pos, char *title, char *name,
     int ok;
 
     /*
-     *  convert input buffer caBuf into 
+     *  convert input buffer caBuf into
      *  spaLines array of browsable strings
      */
     j = 0;
@@ -919,7 +919,7 @@ int iSelect(char *caBuf, int pos, char *title, char *name,
                          /* Result:  */ keystr,
                          /* Tags:    */ tagbegin, tagend);
 
-    /*  
+    /*
      *  delete the main window and
      *  close Curses package
      */

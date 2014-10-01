@@ -1,6 +1,6 @@
 /*
   lexer.c - Lexer for html parser
-  
+
   (c) 1998-2000 (W3C) MIT, INRIA, Keio University
   See tidy.c for the copyright notice.
 */
@@ -571,7 +571,7 @@ void FreeNode(Node *node)
 
 #if 0
         if (_msize(node) != sizeof (Node)) /* debug */
-            fprintf(stderr, 
+            fprintf(stderr,
             "Error in FreeNode() - trying to free corrupted node size %d vs %d\n",
                 _msize(node), sizeof(Node));
 #endif
@@ -724,7 +724,7 @@ Node *FindDocType(Node *root)
 {
     Node *node;
 
-    for (node = root->content; 
+    for (node = root->content;
             node && node->type != DocTypeTag; node = node->next);
 
     return node;
@@ -735,7 +735,7 @@ Node *FindHTML(Node *root)
 {
     Node *node;
 
-    for (node = root->content; 
+    for (node = root->content;
             node && node->tag != tag_html; node = node->next);
 
     return node;
@@ -930,7 +930,7 @@ static void FixHTMLNameSpace(Lexer *lexer, Node *root, char *profile)
     Node *node;
     AttVal *prev, *attr;
 
-    for (node = root->content; 
+    for (node = root->content;
             node && node->tag != tag_html; node = node->next);
 
     if (node)
@@ -1280,7 +1280,7 @@ Bool FixXMLPI(Lexer *lexer, Node *root)
         root->content->prev = xml;
         xml->next = root->content;
     }
-    
+
     root->content = xml;
 
     lexer->txtstart = lexer->txtend = lexer->lexsize;
@@ -1439,7 +1439,7 @@ Node *GetToken(Lexer *lexer, uint mode)
 
     /* at start of block elements, unclosed inline
        elements are inserted into the token stream */
-     
+
     if (lexer->insert || lexer->inode)
         return InsertedToken(lexer);
 
@@ -1482,7 +1482,7 @@ Node *GetToken(Lexer *lexer, uint mode)
                  to do this here rather than in parser methods
                  for elements that don't have mixed content.
                 */
-                if ((map & white) && (mode == IgnoreWhitespace) 
+                if ((map & white) && (mode == IgnoreWhitespace)
                       && lexer->lexsize == lexer->txtstart + 1)
                 {
                     --(lexer->lexsize);
@@ -1849,7 +1849,7 @@ Node *GetToken(Lexer *lexer, uint mode)
                 else if (!XmlTags)
                 {
                     lexer->versions &= lexer->token->tag->versions;
-                    
+
                     if (lexer->token->tag->versions & VERS_PROPRIETARY)
                     {
                         if (!MakeClean && (lexer->token->tag == tag_nobr ||
@@ -1933,7 +1933,7 @@ Node *GetToken(Lexer *lexer, uint mode)
 
                 /* otherwise continue to look for --> */
                 lexer->lexbuf[lexer->lexsize - 2] = '=';
-                continue; 
+                continue;
 
             case LEX_DOCTYPE:  /* seen <!d so look for '>' munging whitespace */
                 map = MAP(c);
@@ -2227,8 +2227,8 @@ static Node *ParseAsp(Lexer *lexer)
 
     lexer->txtstart = lexer->txtend;
     return asp;
-}   
- 
+}
+
 
 /*
  PHP is like ASP but is based upon XML
@@ -2265,7 +2265,7 @@ static Node *ParsePhp(Lexer *lexer)
 
     lexer->txtstart = lexer->txtend;
     return php;
-}   
+}
 
 /* consumes the '>' terminating start tags */
 static char  *ParseAttribute(Lexer *lexer, Bool *isempty,
@@ -2682,7 +2682,7 @@ static char *ParseValue(Lexer *lexer, char *name,
         */
         if (!IsScript(name) &&
             !(IsUrl(name) && wstrncmp(lexer->lexbuf+start, "javascript:", 11) == 0))
-                ReportError(lexer, null, null, SUSPECTED_MISSING_QUOTE); 
+                ReportError(lexer, null, null, SUSPECTED_MISSING_QUOTE);
     }
 
     len = lexer->lexsize - start;
@@ -2735,7 +2735,7 @@ AttVal *NewAttribute()
     AttVal *av;
 
     av = (AttVal *)MemAlloc(sizeof(AttVal));
-    av->next = null; 
+    av->next = null;
     av->delim = '\0';
     av->asp = null;
     av->php = null;
@@ -2767,7 +2767,7 @@ AttVal *ParseAttrs(Lexer *lexer, Bool *isempty)
             if (asp)
             {
                 av = NewAttribute();
-                av->next = list; 
+                av->next = list;
                 av->asp = asp;
                 list = av;
                 continue;
@@ -2777,7 +2777,7 @@ AttVal *ParseAttrs(Lexer *lexer, Bool *isempty)
             if (php)
             {
                 av = NewAttribute();
-                av->next = list; 
+                av->next = list;
                 av->php = php;
                 list = av;
                 continue;
@@ -2791,7 +2791,7 @@ AttVal *ParseAttrs(Lexer *lexer, Bool *isempty)
         if (attribute && IsValidAttrName(attribute))
         {
             av = NewAttribute();
-            av->next = list; 
+            av->next = list;
             av->delim = delim;
             av->attribute = attribute;
             av->value = value;

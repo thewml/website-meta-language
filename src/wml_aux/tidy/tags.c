@@ -260,7 +260,7 @@ static Dict *lookup(char *s)
     return null;
 }
 
-static Dict *install(char *name, uint versions, uint model, 
+static Dict *install(char *name, uint versions, uint model,
                      Parser *parser, CheckAttribs *chkattrs)
 {
     Dict *np;
@@ -339,7 +339,7 @@ void DefinePreTag(char *name)
 void InitTags(void)
 {
     struct tag *tp;
-    
+
     for(tp = tags; tp->name != null; ++tp)
         install(tp->name, tp->versions, tp->model, tp->parser, tp->chkattrs);
 

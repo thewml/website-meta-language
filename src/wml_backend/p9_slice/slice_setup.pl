@@ -1,6 +1,6 @@
 ##
 ##  slice_setup.pl -- Command line parsing and CFG setup
-##  Copyright (c) 1997-2002 Ralf S. Engelschall. 
+##  Copyright (c) 1997-2002 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2002 Denis Barbier.
 ##
 
@@ -30,7 +30,7 @@ sub usage {
 sub hello {
     print STDERR "$slice_version->{v_tex}\n";
     print STDERR <<'EOT';
-Copyright (c) 1997-2002 Ralf S. Engelschall. 
+Copyright (c) 1997-2002 Ralf S. Engelschall.
 Copyright (c) 1999-2002 Denis Barbier.
 
 This program is distributed in the hope that it will be useful,
@@ -57,7 +57,7 @@ sub setup {
         "o|outputfile=s@",
         "y|output-policy=s",
     );
-    $SIG{'__WARN__'} = sub { 
+    $SIG{'__WARN__'} = sub {
         print STDERR "Slice:Error: $_[0]";
     };
 
@@ -108,7 +108,7 @@ sub setup {
     $CFG->{INPUT} = {};
     $CFG->{INPUT}->{SRC}   = $INPUT;  # original source
     $CFG->{INPUT}->{PLAIN} = '';      # source without slice delimiters
-    $CFG->{OPT} = {};    
+    $CFG->{OPT} = {};
     $CFG->{OPT}->{X} = $opt_v;        # option -v
     $CFG->{OPT}->{O} = [ @opt_o ];    # options -o
     $CFG->{OPT}->{Y} = {
@@ -120,7 +120,7 @@ sub setup {
         ($modifier =~ m/$_(\d+)/) and $CFG->{OPT}->{Y}->{$_} = $1;
     }
     $CFG->{SLICE} = {};
-    $CFG->{SLICE}->{SET} = {};       
+    $CFG->{SLICE}->{SET} = {};
     $CFG->{SLICE}->{SET}->{ASC} = {}; # slice set, represented in ASCII
     $CFG->{SLICE}->{SET}->{OBJ} = {}; # slice set, represented as Bit::Vector object
     $CFG->{SLICE}->{MINLEVELS}  = {}; # slice min levels

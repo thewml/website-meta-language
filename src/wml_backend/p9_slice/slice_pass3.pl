@@ -1,6 +1,6 @@
 ##
 ##  slice_pass3.pl -- Pass 3
-##  Copyright (c) 1997-2002 Ralf S. Engelschall. 
+##  Copyright (c) 1997-2002 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2002 Denis Barbier.
 ##
 
@@ -49,14 +49,14 @@ sub pass3 {
             ($slice, $outfile, $chmod) = ('ALL', $1, $2);
         }
         else {
-            # only file 
+            # only file
             ($slice, $outfile, $chmod) = ('ALL', $entry, '');
         }
         verbose("    file `$outfile': sliceterm='$slice', chmodopts='$chmod'\n");
         #   parse the sliceterm and create corresponding
         #   Perl 5 statement containing Bit::Vector calls
         ($cmds, $var) = SliceTerm::Parse($slice, $status);
-    
+
         #   skip file if requested by options
         if ($status->{u} > 0 and !defined($cmds)) {
                 printwarning("Undefined set: skip generation of $outfile\n");
@@ -67,7 +67,7 @@ sub pass3 {
         if ($CFG->{OPT}->{X}) {
             verbose("        calculated Perl 5 set term:\n");
             verbose("        ----\n");
-            my $x = $cmds; 
+            my $x = $cmds;
             $x =~ s|\n+$||;
             $x =~ s|\n|\n        |g;
             verbose("        $x\n");
@@ -77,7 +77,7 @@ sub pass3 {
         #   now evaluate the Bit::Vector statements
         #   and move result to $set
         eval "$cmds; \$set = $var";
- 
+
         #   now scan the set and write out characters
         #   which have a corresponding bit set.
         $start = 0;

@@ -1,16 +1,16 @@
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1991, 1992, 1993, 1994 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -46,7 +46,7 @@ debug_init (void)
   debug_set_file (stderr);
   obstack_init (&trace);
 }
-
+
 /*-----------------------------------------------------------------.
 | Function to decode the debugging flags OPTS.  Used by main while |
 | processing option -d, and by the builtin debugmode ().	   |
@@ -207,7 +207,7 @@ debug_message_prefix (void)
   if (debug_level & DEBUG_TRACE_LINE)
     fprintf (debug, "%d: ", current_line);
 }
-
+
 /* The rest of this file contains the functions for macro tracing output.
    All tracing output for a macro call is collected on an obstack TRACE,
    and printed whenever the line is complete.  This prevents tracing

@@ -511,7 +511,7 @@ void ErrorSummary(Lexer *lexer)
         tidy_out(lexer->errout, "placed before a table, the </form> cannot be placed inside the\n");
         tidy_out(lexer->errout, "table! Note that one form can't be nested inside another!\n\n");
     }
-    
+
     if (lexer->badAccess)
     {
         if (lexer->badAccess & MISSING_SUMMARY)

@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -90,7 +90,7 @@ void Perl5_ForceUnbufferedStdout(pTHX)
 **  set a Perl environment variable
 **
 */
-char **Perl5_SetEnvVar(char **env, char *str) 
+char **Perl5_SetEnvVar(char **env, char *str)
 {
     char ca[1024];
     char *cp;
@@ -114,7 +114,7 @@ void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
 {
     dTHR;
     ENTER;
-    save_hptr(&PL_curstash); 
+    save_hptr(&PL_curstash);
     PL_curstash = gv_stashpv(pname, TRUE);
     sv_setpv(perl_get_sv(vname, TRUE), vvalue);
     LEAVE;
@@ -127,7 +127,7 @@ void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
 **  and set it later
 **
 **  (this is needed because we have to
-**   remember the scalars when parsing 
+**   remember the scalars when parsing
 **   the command line, but actually setting
 **   them can only be done later when the
 **   Perl 5 interpreter is allocated !!)
@@ -136,7 +136,7 @@ void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
 
 char *Perl5_RememberedScalars[1024] = { NULL };
 
-void Perl5_RememberScalar(char *str) 
+void Perl5_RememberScalar(char *str)
 {
     int i;
 
@@ -147,7 +147,7 @@ void Perl5_RememberScalar(char *str)
     return;
 }
 
-void Perl5_SetRememberedScalars(pTHX) 
+void Perl5_SetRememberedScalars(pTHX)
 {
     char ca[1024];
     char *cp;
@@ -173,7 +173,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     char *cpBuf = NULL;
     char sourcedir[2048];
     char *cp;
-    static PerlInterpreter *my_perl = NULL; 
+    static PerlInterpreter *my_perl = NULL;
     struct stat st;
     int size;
     char cwd[MAXPATHLEN];
@@ -186,7 +186,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     }
     IO_redirect_stdout(out);
 
-    /* open a file for Perl's STDERR channel 
+    /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
     if ((er = fopen(perlstderr, "w")) == NULL) {
         PrintError(mode, source, NULL, NULL, "Cannot open STDERR file `%s' for writing", perlstderr);
@@ -194,19 +194,19 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     }
     IO_redirect_stderr(er);
 
-    my_perl = perl_alloc();   
-    perl_construct(my_perl); 
+    my_perl = perl_alloc();
+    perl_construct(my_perl);
     perl_init_i18nl10n(1);
 
-    /*  now parse the script! 
-        NOTICE: At this point, the script gets 
+    /*  now parse the script!
+        NOTICE: At this point, the script gets
         only _parsed_, not evaluated/executed!  */
 #ifdef HAVE_PERL_DYNALOADER
     rc = perl_parse(my_perl, Perl5_XSInit, myargc, myargv, env);
 #else
     rc = perl_parse(my_perl, NULL, myargc, myargv, env);
 #endif
-    if (rc != 0) { 
+    if (rc != 0) {
         if (fCheck && mode == MODE_FILTER) {
             fclose(er); er = NULL;
             IO_restore_stdout();
@@ -233,7 +233,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     }
 
     /* change to directory of script:
-       this actually is not important to us, but really useful 
+       this actually is not important to us, but really useful
        for the ePerl source file programmer!! */
     cwd[0] = NUL;
     if (!keepcwd) {
@@ -287,10 +287,10 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
 
     CUS: /* the Clean Up Sequence */
 
-    /* Ok, the script got evaluated. Now we can destroy 
+    /* Ok, the script got evaluated. Now we can destroy
        and de-allocate the Perl interpreter */
     if (my_perl) {
-       perl_destruct(my_perl);                                                    
+       perl_destruct(my_perl);
        perl_free(my_perl);
     }
     return rc;

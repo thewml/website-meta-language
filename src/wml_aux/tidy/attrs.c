@@ -139,7 +139,7 @@ static struct _attrlist
     {"colspan",          VERS_FROM32,            NUMBER},
     {"compact",          VERS_ALL,               BOOL},     /* lists */
     {"content",          VERS_ALL,               TEXT},     /* META */
-    {"coords",           VERS_FROM32,            COORDS},   /* AREA, A */    
+    {"coords",           VERS_FROM32,            COORDS},   /* AREA, A */
     {"data",             VERS_HTML40,            URL},      /* OBJECT */
     {"datafld",          VERS_MICROSOFT,         TEXT},     /* used on DIV, IMG */
     {"dataformatas",    VERS_MICROSOFT,         TEXT},     /* used on DIV, IMG */
@@ -254,7 +254,7 @@ static struct _attrlist
     {"wrap",             VERS_NETSCAPE,          TEXT},     /* textarea */
     {"xml:lang",         VERS_XML,               TEXT},     /* XML language */
     {"xmlns",            VERS_ALL,               TEXT},     /* name space */
-   
+
    /* this must be the final entry */
     {null,               0,                      0}
 };
@@ -378,7 +378,7 @@ Bool IsLiteralAttribute(char *attrname)
 void InitAttrs(void)
 {
     struct _attrlist *ap;
-    
+
     for(ap = attrlist; ap->name != null; ++ap)
         install(ap->name, ap->versions, ap->attrchk);
 
@@ -496,7 +496,7 @@ Attribute *CheckAttribute(Lexer *lexer, Node *node, AttVal *attval)
         }
         else
             lexer->versions &= attribute->versions;
-        
+
         if (attribute->attrchk)
             attribute->attrchk(lexer, node, attval);
     }

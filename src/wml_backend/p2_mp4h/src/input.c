@@ -12,17 +12,17 @@
 */
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1989, 90, 91, 92, 93, 94 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -37,7 +37,7 @@ static int print_token __P ((const char *, token_type, token_data *));
 static void lex_debug __P ((void));
 #endif
 
-/* 
+/*
    Unread input can be either files, that should be read (eg. included
    files), strings, which should be rescanned (eg. macro expansion
    text), single characters or quoted macro definitions (as returned by
@@ -52,7 +52,7 @@ static void lex_debug __P ((void));
    input_block.  When a input_block is exhausted, its reader returns
    CHAR_RETRY which causes the input_block to be popped from the
    input_stack.
-   
+
    Pushing new input on the input stack is done by push_file (),
    push_string (), push_single () or push_macro () (for macro definitions).
    Because macro expansion needs direct access to the current input
@@ -61,7 +61,7 @@ static void lex_debug __P ((void));
    and push_string_finish (), which return a pointer to the final text.
    The input_block *next is used to manage the coordination between the
    different push routines.
-   
+
    The current file and line number are stored in two global variables,
    for use by the error handling functions in mp4h.c.  Whenever a file
    input_block is pushed, the current file name and line number is saved
@@ -96,7 +96,7 @@ static void lex_debug __P ((void));
    SYNTAX_ALPHA         Reads macro name
 
    SYNTAX_OTHER and SYNTAX_NUM
-                        Reads all SYNTAX_OTHER and SYNTAX_NUM 
+                        Reads all SYNTAX_OTHER and SYNTAX_NUM
    SYNTAX_SPACE         Reads all SYNTAX_SPACE
    the rest             Returned as a single char
 
@@ -155,7 +155,7 @@ struct input_block
 
 typedef struct input_block input_block;
 
-
+
 /* Current input file name.  */
 char *current_file;
 char **array_current_file;
@@ -207,7 +207,7 @@ STRING lquote, rquote;
 
 boolean visible_quotes;
 
-
+
 
 /*---------------------------------------------------------------------.
 | push_file () pushes an input file on the input stack, saving the     |
@@ -538,7 +538,7 @@ push_wrapup (const char *s)
   wsp = i;
 }
 
-
+
 
 /*-------------------------------------------------------------------------.
 | The function pop_input () pops one level of input sources.  If the       |
@@ -608,7 +608,7 @@ init_macro_token (token_data *td)
 
 }
 
-
+
 /*---------------------------------------------------------------.
 | Low level input is done a character at a time.  The function   |
 | next_char () is used to read and advance the input to the next |
@@ -746,7 +746,7 @@ skip_buffer (void)
 
   pop_input ();
 }
-
+
 
 /*---------------------------------------------------------------------.
 |   This function is for matching a string against a prefix of the     |
@@ -804,7 +804,7 @@ match_comment (const unsigned char *s)
    && ((s)[1] == '\0' \
        || (match_comment ((unsigned char *) (s) + 1))))
 
-
+
 
 /*----------------------------------------------------------.
 | Inititialise input stacks, and quote/comment characters.  |
@@ -898,7 +898,7 @@ input_deallocate (void)
   obstack_free (&wrapup_stack, 0);
 }
 
-
+
 /*-------------------------------------------.
 | Functions to manipulate the syntax table.  |
 `-------------------------------------------*/
@@ -912,7 +912,7 @@ set_syntax_internal (int code, int ch)
     syntax_table[ch] = code;
 
 #ifdef DEBUG_SYNTAX
-  fprintf(stderr, "Set syntax %o %c = %04X\n", 
+  fprintf(stderr, "Set syntax %o %c = %04X\n",
           ch, isprint(ch) ? ch : '-',
           syntax_table[ch]);
 #endif
@@ -925,7 +925,7 @@ unset_syntax_attribute (int code, int ch)
     syntax_table[ch] &= ~code;
 
 #ifdef DEBUG_SYNTAX
-  fprintf(stderr, "Unset syntax %o %c = %04X\n", 
+  fprintf(stderr, "Unset syntax %o %c = %04X\n",
           ch, isprint(ch) ? ch : '-',
           syntax_table[ch]);
 #endif
@@ -948,7 +948,7 @@ set_syntax (int code, const char *chars)
     }
 }
 
-
+
 
 /*-------------------------------------------------------------------------.
 | Parse and return a single token from the input stream.  A token can      |
@@ -1296,7 +1296,7 @@ next_token (token_data *td, read_type expansion, boolean in_string)
   return type;
 }
 
-
+
 
 /*-----------------------.
 | Read a file verbatim.  |
@@ -1329,7 +1329,7 @@ read_file_verbatim (struct obstack *obs)
   push_string_finish (READ_BODY);
 }
 
-
+
 
 #ifdef DEBUG_INPUT
 

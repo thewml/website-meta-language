@@ -352,7 +352,7 @@ uint EntityCode(char *name)
 void InitEntities(void)
 {
     struct entity *ep;
-    
+
     for(ep = entities; ep->name != null; ++ep)
         install(ep->name, ep->code);
 }
@@ -383,7 +383,7 @@ void FreeEntities(void)
 char *EntityName(uint n)
 {
     struct entity *ep;
-    
+
     for(ep = entities; ep->name != null; ++ep)
     {
         if (ep->code == n)

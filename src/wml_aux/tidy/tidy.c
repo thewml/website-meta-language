@@ -15,14 +15,14 @@
   have been possible without all of you.
 
   COPYRIGHT NOTICE:
- 
+
   This software and documentation is provided "as is," and
   the copyright holders and contributing author(s) make no
   representations or warranties, express or implied, including
   but not limited to, warranties of merchantability or fitness
   for any particular purpose or that the use of the software or
   documentation will not infringe any third party patents,
-  copyrights, trademarks or other rights. 
+  copyrights, trademarks or other rights.
 
   The copyright holders and contributing author(s) will not be
   liable for any direct, indirect, special or consequential damages
@@ -38,7 +38,7 @@
      not be misrepresented as being the original source.
   3. This Copyright notice may not be removed or altered from any
      source or altered source distribution.
- 
+
   The copyright holders and contributing author(s) specifically
   permit, without fee, and encourage the use of this source code
   as a component for supporting the Hypertext Markup Language in
@@ -77,7 +77,7 @@ John Love-Jensen contributed this table for mapping MacRoman
 character set to Unicode
 */
 
-int Mac2Unicode[256] = 
+int Mac2Unicode[256] =
 {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E, 0x000F,
@@ -342,7 +342,7 @@ int ReadChar(StreamIn *in)
         in->tabs--;
         return ' ';
     }
-    
+
     for (;;)
     {
         c = ReadCharFromStream(in);
@@ -477,7 +477,7 @@ void wstrcat(char *s1, char *s2)
 }
 
 /* exactly same as strcmp */
-int wstrcmp(char *s1, char *s2)    
+int wstrcmp(char *s1, char *s2)
 {
     int c;
 
@@ -509,7 +509,7 @@ int wstrlen(char *str)
  Note that tolower and toupper won't
  work on chars > 127
 */
-int wstrcasecmp(char *s1, char *s2)    
+int wstrcasecmp(char *s1, char *s2)
 {
     uint c;
 
@@ -525,7 +525,7 @@ int wstrcasecmp(char *s1, char *s2)
     return (*s1 > *s2 ? 1 : -1);
 }
 
-int wstrncmp(char *s1, char *s2, int n)    
+int wstrncmp(char *s1, char *s2, int n)
 {
     int c;
 
@@ -548,7 +548,7 @@ int wstrncmp(char *s1, char *s2, int n)
     return (*s1 > *s2 ? 1 : -1);
 }
 
-int wstrncasecmp(char *s1, char *s2, int n)    
+int wstrncasecmp(char *s1, char *s2, int n)
 {
     int c;
 

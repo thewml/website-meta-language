@@ -1,16 +1,16 @@
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1989, 90, 91, 92, 93, 94 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -26,7 +26,7 @@
    Unread input are organised in a stack, implemented with an obstack.
    Each input source is described by a "struct input_block".  The obstack
    is "input_stack".  The top of the input stack is "isp".
-   
+
    The macro "m4wrap" places the text to be saved on another input stack,
    on the obstack "wrapup_stack", whose top is "wsp".  When EOF is seen
    on normal input (eg, when "input_stack" is empty), input is switched
@@ -34,7 +34,7 @@
    current input stack, whether it be "input_stack" or "wrapup_stack",
    are done through a pointer "current_input", which points to either
    "input_stack" or "wrapup_stack".
-   
+
    Pushing new input on the input stack is done by push_file (),
    push_string (), push_wrapup () (for wrapup text), and push_macro ()
    (for macro definitions).  Because macro expansion needs direct access
@@ -43,13 +43,13 @@
    to the current input stack, and push_string_finish (), which return a
    pointer to the final text.  The input_block *next is used to manage
    the coordination between the different push routines.
-   
+
    The current file and line number are stored in two global variables,
    for use by the error handling functions in m4.c.  Whenever a file
    input_block is pushed, the current file name and line number is saved
    in the input_block, and the two variables are reset to match the new
    input file.  */
- 
+
 #ifdef ENABLE_CHANGEWORD
 #include "regex.h"
 #endif
@@ -96,7 +96,7 @@ struct input_block
 
 typedef struct input_block input_block;
 
-
+
 /* Current input file name.  */
 const char *current_file;
 
@@ -140,7 +140,7 @@ STRING lquote;
 /* Comment chars.  */
 STRING bcomm;
 STRING ecomm;
- 
+
 #ifdef ENABLE_CHANGEWORD
 
 #define DEFAULT_WORD_REGEXP "[_a-zA-Z][_a-zA-Z0-9]*"
@@ -151,7 +151,7 @@ static int default_word_regexp;
 static struct re_registers regs;
 
 #endif /* ENABLE_CHANGEWORD */
-
+
 
 /*-------------------------------------------------------------------------.
 | push_file () pushes an input file on the input stack, saving the current |
@@ -287,7 +287,7 @@ push_wrapup (const char *s)
   i->u.u_s.string = obstack_copy0 (&wrapup_stack, s, strlen (s));
   wsp = i;
 }
-
+
 
 /*-------------------------------------------------------------------------.
 | The function pop_input () pops one level of input sources.  If the	   |
@@ -369,7 +369,7 @@ init_macro_token (token_data *td)
   TOKEN_DATA_FUNC (td) = isp->u.u_m.func;
   TOKEN_DATA_FUNC_TRACED (td) = isp->u.u_m.traced;
 }
-
+
 
 /*------------------------------------------------------------------------.
 | Low level input is done a character at a time.  The function peek_input |
@@ -489,7 +489,7 @@ skip_line (void)
   while ((ch = next_char ()) != CHAR_EOF && ch != '\n')
     ;
 }
-
+
 
 /*----------------------------------------------------------------------.
 | This function is for matching a string against a prefix of the input  |
@@ -538,7 +538,7 @@ match_input (const char *s)
    && (ch) != '\0' \
    && ((s)[1] == '\0' \
        || (match_input ((s) + 1) ? (ch) = peek_input (), 1 : 0)))
-
+
 
 /*----------------------------------------------------------.
 | Inititialise input stacks, and quote/comment characters.  |
@@ -581,7 +581,7 @@ input_init (void)
     set_word_regexp (DEFAULT_WORD_REGEXP);
 #endif
 }
-
+
 
 /*--------------------------------------------------------------.
 | Functions for setting quotes and comment delimiters.  Used by |
@@ -652,7 +652,7 @@ set_word_regexp (const char *regexp)
 }
 
 #endif /* ENABLE_CHANGEWORD */
-
+
 
 /*-------------------------------------------------------------------------.
 | Parse and return a single token from the input stream.  A token can	   |
@@ -807,7 +807,7 @@ next_token (token_data *td)
 #endif
   return type;
 }
-
+
 
 #ifdef DEBUG_INPUT
 

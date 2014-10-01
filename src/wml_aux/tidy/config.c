@@ -1,6 +1,6 @@
 /*
   config.c - read config file and manage config properties
-  
+
   (c) 1998-2000 (W3C) MIT, INRIA, Keio University
   See tidy.c for the copyright notice.
 */
@@ -240,7 +240,7 @@ void InitConfig(void)
     if (!initialized)
     {
         initialized = yes;
-    
+
         for(p = flags; p->name != null; ++p)
             install(p->name, p->location, p->parser);
     }
@@ -286,7 +286,7 @@ static unsigned GetC(FILE *fp)
 
     if (!config_text)
         return EOF;
- 
+
     if (*config_text)
         return *config_text++;
 
@@ -470,14 +470,14 @@ Bool ParseConfig(char *option, char *parameter)
     if (option && parameter)
     {
         ffp = fin;
-    
+
         fin = null;
-    
+
         c = *parameter;
         parameter++;
-    
+
         entry = lookup(option);
-    
+
         if (!entry)
         {
             fin = ffp;
@@ -487,7 +487,7 @@ Bool ParseConfig(char *option, char *parameter)
 
         config_text = parameter;
         entry->parser(entry->location, option);
-    
+
         fin = ffp;
     }
 
@@ -555,7 +555,7 @@ void ParseInt(Location location, char *option)
 
     if (!digits)
         ReportBadArgument(option);
-    
+
     *location.number = number;
     NextProperty();
 }

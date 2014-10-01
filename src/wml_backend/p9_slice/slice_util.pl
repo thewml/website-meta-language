@@ -1,6 +1,6 @@
 ##
 ##  slice_util.pl -- Utility functions
-##  Copyright (c) 1997-2002 Ralf S. Engelschall. 
+##  Copyright (c) 1997-2002 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2002 Denis Barbier.
 ##
 

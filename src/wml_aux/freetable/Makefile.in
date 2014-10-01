@@ -31,7 +31,7 @@ EXE_FILES       = $(SRC_FILES:.src=.pl)
 
 all: $(EXE_FILES) $(MAN_FILES)
 
-clean: 
+clean:
 	-rm -f $(EXE_FILES) $(MAN_FILES)
 
 distclean: clean

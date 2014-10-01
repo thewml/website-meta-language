@@ -45,7 +45,7 @@ MAN_FILES       = $(SRC_FILES:.src=.1)
 
 all: $(EXE_FILES) $(MAN_FILES)
 
-clean: 
+clean:
 	-rm -f $(EXE_FILES) $(MAN_FILES)
 
 distclean: clean

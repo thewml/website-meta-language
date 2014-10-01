@@ -46,7 +46,7 @@ clean:
 	    echo "<=== wml_backend/$$dir"; \
 	done
 
-distclean: 
+distclean:
 	-@for dir in $(SUBDIRS); do \
 	    echo "===> wml_backend/$$dir ($@)"; \
 	    (cd $$dir && $(MAKE) SDP="wml_backend/$$dir/" distclean); \

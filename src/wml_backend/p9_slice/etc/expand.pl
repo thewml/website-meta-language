@@ -23,7 +23,7 @@ sub ProcessFile {
     LINES:
     while(my $l = <$fh>) {
         #   include a file
-        if (my ($pre, $new_fn, $suf) = 
+        if (my ($pre, $new_fn, $suf) =
             $l =~ m|^(.*)require[ \"\(]+([^ \"\(]+)[ \"\)];(.*)$|) {
             $out_buf .= $pre;
             ProcessFile($new_fn);

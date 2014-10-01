@@ -112,7 +112,7 @@ install:
 
 clean: clean-recursive
 	-rm -f slice
-	-rm -f slice.1 
+	-rm -f slice.1
 	-rm -f etc/expand
 	-rm -f .build-ok
 

@@ -1,6 +1,6 @@
 /*
-  pprint.c -- pretty print parse tree  
-  
+  pprint.c -- pretty print parse tree
+
  (c) 1998-2000 (W3C) MIT, INRIA, Keio University
   See tidy.c for the copyright notice.
 */
@@ -353,7 +353,7 @@ static void PPrintChar(uint c, uint mode)
             AddC(';', linelen++);
             return;
         }
-            
+
         if (c == '>')
         {
             AddC('&', linelen++);
@@ -549,7 +549,7 @@ static void PPrintChar(uint c, uint mode)
     AddC(c, linelen++);
 }
 
-/* 
+/*
   The line buffer is uint not char so we can
   hold Unicode values unencoded. The translation
   to UTF-8 is deferred to the outc routine called
@@ -754,7 +754,7 @@ static void PPrintAttribute(Out *fout, uint indent,
 
     if (indent + linelen >= wraplen)
         WrapLine(fout, indent);
- 
+
     if (attr->value == null)
     {
         if (XmlTags || XmlOut)
@@ -871,7 +871,7 @@ static void PPrintTag(Lexer *lexer, Out *fout,
                 if (!(mode & NOWRAP) &&
                     (!(node->tag->model & CM_INLINE) ||
                       (node->tag == tag_br) ||
-                      ((node->tag->model & CM_EMPTY) && 
+                      ((node->tag->model & CM_EMPTY) &&
                       node->next == null &&
                       node->parent->tag == tag_a)))
                 {
@@ -890,7 +890,7 @@ static void PPrintEndTag(Out *fout, uint mode, uint indent, Node *node)
 
    /*
      Netscape ignores SGML standard by not ignoring a
-     line break before </A> or </U> etc. To avoid rendering 
+     line break before </A> or </U> etc. To avoid rendering
      this as an underlined space, I disable line wrapping
      before inline end tags by the #if 0 ... #endif
    */
@@ -1474,7 +1474,7 @@ void PPrintXMLTree(Out *fout, uint mode, uint indent,
 
         if (!mixed)
             PFlushLine(fout, indent);
- 
+
         for (content = node->content;
                 content != null;
                 content = content->next)
@@ -1553,7 +1553,7 @@ int CountSlides(Node *node)
 static void PrintVertSpacer(Out *fout, uint indent)
 {
     PCondFlushLine(fout, indent);
-    PPrintString(fout, indent , 
+    PPrintString(fout, indent ,
     "<img width=\"0\" height=\"0\" hspace=\"1\" src=\"dot.gif\" vspace=\"%d\" align=\"left\">");
     PCondFlushLine(fout, indent);
 }
@@ -1639,7 +1639,7 @@ void PPrintSlide(Out *fout, uint mode, uint indent, Lexer *lexer)
 
         slidecontent = slidecontent->next;
     }
-    
+
     /* now continue until we reach the next h2 */
 
     last = null;
@@ -1748,7 +1748,7 @@ void CreateSlides(Lexer *lexer, Node *root)
     /*
      delete superfluous slides by deleting slideN.html
      for N = count+1, count+2, etc. until no such file
-     is found.     
+     is found.
     */
 
     for (;;)

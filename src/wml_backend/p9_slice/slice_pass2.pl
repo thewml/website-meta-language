@@ -1,6 +1,6 @@
 ##
 ##  slice_pass2.pl -- Pass 2
-##  Copyright (c) 1997-2002 Ralf S. Engelschall. 
+##  Copyright (c) 1997-2002 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2002 Denis Barbier.
 ##
 
@@ -27,7 +27,7 @@ sub pass2 {
         $set->Empty() if (($notcleared eq '') or (not $notcleared));
         return $set if ($asc =~ m|^\d+:0:-1$|); # string represents the empty set
 
-        #   split out the interval substrings 
+        #   split out the interval substrings
         @I = ($asc);
         @I = split(',', $asc) if (index($asc, ',') > 0);
 
@@ -35,7 +35,7 @@ sub pass2 {
         #   set the corresponding elements in the set
         foreach $interval (@I) {
             ($level, $from, $to) = ($interval =~ m|^(\d+):(\d+):(\d+)$|);
-            next if (($onlylevel ne '') and ($level != $onlylevel)); 
+            next if (($onlylevel ne '') and ($level != $onlylevel));
             next if ($from > $to);
             $set->Interval_Fill($from, $to);
         }

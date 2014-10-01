@@ -30,7 +30,7 @@ mandir          = $(prefix)/man
 #   TARGETS
 # ------------------------------------------------
 
-all: 
+all:
 
 install:
 	$(MKDIR) $(libdir)/data/logos

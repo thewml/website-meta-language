@@ -36,10 +36,10 @@ MANPAGES = wml_intro.7 wml_tutorial.7 wml_faq.7 wml_tags.7 wml_macros.7
 
 all: $(MANPAGES)
 
-wml_tags.pod: wml_tags.pod.in wml_tags.L.main wml_tags.L.incl 
+wml_tags.pod: wml_tags.pod.in wml_tags.L.main wml_tags.L.incl
 	$(PATH_PERL) ./wml_tags.pod.pl
 
-clean: 
+clean:
 	-rm -f $(MANPAGES) wml_tags.pod
 
 distclean: clean

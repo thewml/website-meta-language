@@ -1,6 +1,6 @@
 ##
 ##  eperl_perl5_sm.pl -- Determine newXS() calls for XS-Init function
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 use Config;
@@ -21,19 +21,19 @@ open O, '>', $output_fn
 select(O);
 print <<'EOT'
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -52,7 +52,7 @@ print <<'EOT'
 **
 **  ======================================================================
 **
-**  eperl_perl5_sm.h -- Perl 5 Static Module definition 
+**  eperl_perl5_sm.h -- Perl 5 Static Module definition
 */
 #ifndef EPERL_PERL5_SM_H
 #define EPERL_PERL5_SM_H 1

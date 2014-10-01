@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -86,7 +86,7 @@ char **mysetenv(char **env, char *var, char *str, ...)
     envN[i] = NULL;
 
     /*  set the libc/exec variable which Perl uses */
-    if (stillcalled) 
+    if (stillcalled)
         free(environ);
     stillcalled = TRUE;
     environ = envN;
@@ -176,7 +176,7 @@ int IO_is_stderr_redirected(void)
 void IO_restore_stdin(void)
 {
     if (IO_redirected_stdin) {
-        dup2(HANDLE_STORE_STDIN, HANDLE_STDIN); 
+        dup2(HANDLE_STORE_STDIN, HANDLE_STDIN);
         IO_redirected_stdin = FALSE;
     }
 }
@@ -184,7 +184,7 @@ void IO_restore_stdin(void)
 void IO_restore_stdout(void)
 {
     if (IO_redirected_stdout) {
-        dup2(HANDLE_STORE_STDOUT, HANDLE_STDOUT); 
+        dup2(HANDLE_STORE_STDOUT, HANDLE_STDOUT);
         IO_redirected_stdout = FALSE;
     }
 }
@@ -192,7 +192,7 @@ void IO_restore_stdout(void)
 void IO_restore_stderr(void)
 {
     if (IO_redirected_stderr) {
-        dup2(HANDLE_STORE_STDERR, HANDLE_STDERR); 
+        dup2(HANDLE_STORE_STDERR, HANDLE_STDERR);
         IO_redirected_stderr = FALSE;
     }
 }
@@ -200,7 +200,7 @@ void IO_restore_stderr(void)
 
 /*
 **
-**  Temporary filename support  
+**  Temporary filename support
 **
 */
 
@@ -265,7 +265,7 @@ char *isotime(time_t *t)
 
 /*
 **
-**  read source file into internal buffer 
+**  read source file into internal buffer
 **
 */
 char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC)
@@ -390,7 +390,7 @@ char *ePerl_ReadErrorFile(char *filename, char *scriptfile, char *scripturl)
 **
 */
 
-char *filename(char *path) 
+char *filename(char *path)
 {
     static char file[MAXPATHLEN];
     char *cp;
@@ -408,7 +408,7 @@ char *filename(char *path)
     }
 }
 
-char *dirname(char *path) 
+char *dirname(char *path)
 {
     static char dir[MAXPATHLEN];
     char *cp;
@@ -425,7 +425,7 @@ char *dirname(char *path)
     }
 }
 
-char *abspath(char *path) 
+char *abspath(char *path)
 {
     static char apath[MAXPATHLEN];
     static char cwd[MAXPATHLEN];

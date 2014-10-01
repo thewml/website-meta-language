@@ -1,16 +1,16 @@
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1989, 90, 91, 92, 93, 94 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -30,14 +30,14 @@
 
 /* Size of buffer size to use while copying files.  */
 #define COPY_BUFFER_SIZE (32 * 512)
- 
+
 #ifdef HAVE_TMPFILE
 extern FILE *tmpfile ();
 #endif
 
 /* Output functions.  Most of the complexity is for handling cpp like
    sync lines.
-  
+
    This code is fairly entangled with the code in input.c, and maybe it
    belongs there?  */
 
@@ -77,7 +77,7 @@ static int output_unused;	/* current value of (size - used) */
 
 /* Number of input line we are generating output for.  */
 int output_current_line;
-
+
 /*------------------------.
 | Output initialisation.  |
 `------------------------*/
@@ -394,7 +394,7 @@ shipout_text (struct obstack *obs, const char *text, int length)
 	  start_of_output_line = TRUE;
       }
 }
-
+
 /* Functions for use by diversions.  */
 
 /*--------------------------------------------------------------------------.
@@ -554,7 +554,7 @@ freeze_diversions (FILE *file)
   int divnum;
   struct diversion *diversion;
   struct stat file_stat;
-  
+
   saved_number = current_diversion;
   last_inserted = 0;
   make_diversion (0);

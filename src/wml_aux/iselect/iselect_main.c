@@ -1,26 +1,26 @@
-/*      _ ____       _           _   
-**     (_) ___|  ___| | ___  ___| |_ 
+/*      _ ____       _           _
+**     (_) ___|  ___| | ___  ___| |_
 **    / /\___ \ / _ \ |/ _ \/ __| __|
-**   / /  ___) |  __/ |  __/ (__| |_ 
+**   / /  ___) |  __/ |  __/ (__| |_
 **  (_(  |____/ \___|_|\___|\___|\__|
 **
 **  iSelect -- Interactive Selection Tool
 **
-**  iSelect is a Curses-based tool for interactive line selection 
+**  iSelect is a Curses-based tool for interactive line selection
 **  in an ASCII file via a full-screen terminal session.
-**  
+**
 **  ======================================================================
 **
 **  Copyright (c) 1996-1999 Ralf S. Engelschall.
 **
 **  This program is free software; it may be redistributed and/or
-**  modified only under the terms of the GNU General Public License, 
-**  which may be found in the iSelect source distribution.  
-**  Look at the file COPYING for details. 
+**  modified only under the terms of the GNU General Public License,
+**  which may be found in the iSelect source distribution.
+**  Look at the file COPYING for details.
 **
-**  This program is distributed in the hope that it will be useful, 
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 **  See the the GNU General Public License for more details.
 **
 **  ======================================================================
@@ -150,7 +150,7 @@ int main(int argc, char **argv)
     /*  parse the option arguments */
     opterr = 0;
     while ((c = getopt_long(argc, argv, "d:cfaep:k:mn:t:SPKQ:Vh", options, NULL)) != (char)(-1)) {
-        if (optarg == NULL) 
+        if (optarg == NULL)
             optarg = "(null)";
         switch (c) {
             case 'd':
@@ -176,19 +176,19 @@ int main(int argc, char **argv)
                 exitnoselect = TRUE;
                 break;
             case 'p':
-                pos = atoi(optarg); 
+                pos = atoi(optarg);
                 break;
             case 'k':
-                configure_custom_key(optarg); 
+                configure_custom_key(optarg);
                 break;
             case 'm':
                 multiselect = TRUE;
                 break;
             case 'n':
-                name = strdup(optarg); 
+                name = strdup(optarg);
                 break;
             case 't':
-                title = strdup(optarg); 
+                title = strdup(optarg);
                 break;
             case 'S':
                 stripws = TRUE;
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
                 keyresultline = TRUE;
                 break;
             case 'Q':
-                abortstr = strdup(optarg); 
+                abortstr = strdup(optarg);
                 break;
             case 'V':
                 give_version(progname);
@@ -262,11 +262,11 @@ int main(int argc, char **argv)
     pos = (pos < 1 ? 1 : pos);
 
     p = iSelect(caBuf, pos-1, title, name,
-                tagbegin, tagend, stripco, stripws, 
+                tagbegin, tagend, stripco, stripws,
                 browsealways, allselectable, multiselect, exitnoselect, &keystr);
 
     /*
-     *  give back the result string to the user via 
+     *  give back the result string to the user via
      *  the stdout file handle
      */
     if (p != -1) {

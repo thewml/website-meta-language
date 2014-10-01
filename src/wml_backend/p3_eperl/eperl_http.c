@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -42,7 +42,7 @@
 #undef  _EPERL_VERSION_C_AS_HEADER_
 
 /*
-**  
+**
 **  print a standard HTTP reponse of header lines
 **
 */
@@ -87,7 +87,7 @@ char *HTTP_PrintResponseHeaders(char *cpBuf)
 }
 
 /*
-**  
+**
 **  strip standard HTTP reponse header lines
 **
 */
@@ -97,7 +97,7 @@ void HTTP_StripResponseHeaders(char **cpBuf, int *nBuf)
 }
 
 /*
-**  
+**
 **  check if the line is a valid HTTP header line
 **
 */
@@ -107,9 +107,9 @@ int HTTP_IsHeaderLine(char *cp1, char *cp2)
     char *cp4;
     char ca[1024];
 
-    while (cp1 < cp2 && (*cp1 == '\n' || *cp1 == '\r')) 
+    while (cp1 < cp2 && (*cp1 == '\n' || *cp1 == '\r'))
         cp1++;
-    while (cp2 > cp1 && (*(cp2-1) == '\n' || *(cp2-1) == '\r')) 
+    while (cp2 > cp1 && (*(cp2-1) == '\n' || *(cp2-1) == '\r'))
         cp2--;
     strncpy(ca, cp1, cp2-cp1);
     ca[cp2-cp1] = NUL;
@@ -126,7 +126,7 @@ int HTTP_IsHeaderLine(char *cp1, char *cp2)
 }
 
 /*
-**  
+**
 **  check if there is a valid HTTP header
 **
 */
@@ -155,7 +155,7 @@ int HTTP_HeadersExists(char *cpBuf)
 }
 
 /*
-**  
+**
 **  check if there a particular HTTP headerline exists
 **
 */
@@ -205,8 +205,8 @@ char *WebTime(void)
 }
 
 
-/* 
-**  extracts the host name from an url 
+/*
+**  extracts the host name from an url
 */
 static char *HTTP_HostOfURL(char *url)
 {
@@ -217,14 +217,14 @@ static char *HTTP_HostOfURL(char *url)
     cps = strstr(url, "//");
     cps += 2;
     for (cpe = cps; *cpe != '/' && *cpe != ':' && *cpe != NUL; cpe++)
-        ;  
+        ;
     strncpy(host, cps, cpe-cps);
     host[cpe-cps] = NUL;
     return host;
 }
 
-/* 
-**  extracts the port from an url 
+/*
+**  extracts the port from an url
 */
 static char *HTTP_PortOfURL(char *url)
 {
@@ -243,7 +243,7 @@ static char *HTTP_PortOfURL(char *url)
         strncpy(port, cps, cpe-cps);
         port[cpe-cps] = NUL;
     }
-    else 
+    else
         strcpy(port, "80");
     return port;
 }
@@ -259,16 +259,16 @@ static char *HTTP_FileOfURL(char *url)
 
     cps = strstr(url, "//");
     cps = strstr(cps+2, "/");
-    if (cps == NUL) 
+    if (cps == NUL)
         strcpy(file, "/");
-    else 
+    else
         strncpy(file, cps, sizeof(file));
     file[sizeof(file)-1] = NUL;
     return file;
 }
 
-/* 
-**  open an URL as a file descriptor 
+/*
+**  open an URL as a file descriptor
 */
 FILE *HTTP_openURLasFP(char *url)
 {
@@ -284,7 +284,7 @@ FILE *HTTP_openURLasFP(char *url)
     FILE *fp;
     char *cp;
     char *cp2;
-    int s;  
+    int s;
 
     /* parse URL */
     host = HTTP_HostOfURL(url);
@@ -302,7 +302,7 @@ FILE *HTTP_openURLasFP(char *url)
     /* open the socket */
     if ((s = socket(AF_INET, SOCK_STREAM, pe->p_proto)) == -1)
         return NULL;
-    
+
     /* fill in the socket information */
     sar.sin_family      = AF_INET;
     sar.sin_addr.s_addr = *((u_long *)(he->h_addr_list[0]));
@@ -327,7 +327,7 @@ FILE *HTTP_openURLasFP(char *url)
     {
         ssize_t expected_num_written = strlen(cmd);
         ssize_t got_num_written;
-        
+
         got_num_written = write(s, cmd, expected_num_written);
         if (got_num_written != expected_num_written)
         {
@@ -379,7 +379,7 @@ FILE *HTTP_openURLasFP(char *url)
         return NULL;
     }
 
-    /* now read until a blank line, i.e. skip HTTP headers */ 
+    /* now read until a blank line, i.e. skip HTTP headers */
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         if ((*buf == '\n' && *(buf+1) == NUL) ||
             (*buf == '\n' && *(buf+1) == '\r' && *(buf+2) == NUL) ||

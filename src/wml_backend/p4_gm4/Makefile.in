@@ -47,7 +47,7 @@ MDEFINES = CC='$(CC)' CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' LIBS='$(LIBS)' \
 prefix='$(prefix)' exec_prefix='$(exec_prefix)' \
 bindir='$(bindir)' infodir='$(infodir)'
 
-SUBDIRS = lib src 
+SUBDIRS = lib src
 
 .SUFFIXES:
 

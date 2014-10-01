@@ -12,17 +12,17 @@
 */
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1989, 90, 91, 92, 93, 94, 98 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -314,7 +314,7 @@ builtin_tab[] =
   { "string-compare",   FALSE,    TRUE,   mp4h_bp_string_compare },
   { "char-offsets",     FALSE,    TRUE,   mp4h_bp_char_offsets },
   { "printf",           FALSE,    TRUE,   mp4h_bp_printf },
-  
+
       /*  regexp functions  */
   { "subst-in-string",  FALSE,    TRUE,   mp4h_bp_subst_in_string },
   { "subst-in-var",     FALSE,    TRUE,   mp4h_bp_subst_in_var },
@@ -412,7 +412,7 @@ static const char *decimal_point;
 /*  Output radix  */
 static int output_radix = 6;
 
-
+
 /*------------------------------------------------------------------.
 | If dynamic modules are enabled, more builtin tables can be active |
 | at a time.  This implements a list of tables of builtins.         |
@@ -477,7 +477,7 @@ find_builtin_by_name (const char *name)
   return NULL;
 }
 
-
+
 /*-----------------------.
 | Initialize a symbol.   |
 `-----------------------*/
@@ -930,18 +930,18 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
   xfree ((voidstar) match_ptr);
 }
 
-
+
 /*
    The rest of this file is the code for builtins and expansion of user
    defined macros.  All the functions for builtins have a prototype as:
-   
+
      void mp4h_bp_MACRONAME (
         struct obstack *obs,
         int argc,
         char *argv[],
         read_type expansion
      );
-   
+
    The function are expected to leave their expansion on the obstack OBS,
    as an unfinished object.  ARGV is a table of ARGC pointers to the
    individual arguments to the macro.  Please note that in general
@@ -952,13 +952,13 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
 /* Notes for hackers :
     o  Execution must not depend on argv[0]. Indeed, user may define
        synonyms with <let myfunc primitive>
-       
+
     o  Last argument is removed by collect_arguments () if it is empty.
        For this reason, it does not make sense to define a mimimal
        number of arguments.
 */
 
-
+
 /* Miscellaneous builtins -- "__file__" and "__line__".  */
 
 static void
@@ -1134,7 +1134,7 @@ mp4h_bp_bs (MP4H_BUILTIN_ARGS)
   add_1char_protected (obs, '\\');
 }
 
-
+
 /* Enable tracing of all specified macros, or all, if none is specified.
    Tracing is disabled by default, when a macro is defined.  This can be
    overridden by the "t" debug flag.  */
@@ -1306,7 +1306,7 @@ mp4h_bp_function_def (MP4H_BUILTIN_ARGS)
     }
 }
 
-
+
 /*  file functions  */
 
 #ifdef HAVE_FILE_FUNCS
@@ -1333,7 +1333,7 @@ mp4h_bp_get_file_properties (MP4H_BUILTIN_ARGS)
 
   if (bad_argc (argv[0], argc, 2, 2))
     return;
-  
+
   if (stat (ARG (1), &buf))
     {
       MP4HERROR ((warning_status, errno,
@@ -1502,7 +1502,7 @@ mp4h_bp_date (MP4H_BUILTIN_ARGS)
 
   format = predefined_attribute ("format", &argc, argv, FALSE);
   timespec = predefined_attribute ("time", &argc, argv, FALSE);
-  
+
   if (!format && !timespec)
     /* backwards compatible... */
     if (argc > 1)
@@ -1523,7 +1523,7 @@ mp4h_bp_date (MP4H_BUILTIN_ARGS)
     epoch_time = time ((time_t *)NULL);
 
   timeptr = (struct tm *) localtime (&epoch_time);
-  if (format) 
+  if (format)
     {
       ascii_time = (char *)xmalloc(1000);
       strftime(ascii_time, 1000, format, timeptr);
@@ -1539,7 +1539,7 @@ mp4h_bp_date (MP4H_BUILTIN_ARGS)
     }
 }
 
-
+
 /*  Flow functions: these functions allow complex structures
     There are 2 different kinds of conditions : numerical and
     string tests.  A numerical test is false if result is null
@@ -1610,7 +1610,7 @@ mp4h_bp_expand (MP4H_BUILTIN_ARGS)
 {
   int i, offset;
   register char *cp;
-  
+
   for (i=1; i<argc; i++)
     {
       offset = 0;
@@ -2020,7 +2020,7 @@ mp4h_bp_at_end_of_file (MP4H_BUILTIN_ARGS)
 }
 
 
-
+
 /*  Macro functions: defining, undefining, examining or changing
     user defined macros.  */
 
@@ -2191,7 +2191,7 @@ generic_set_hook (MP4H_BUILTIN_ARGS, boolean before, int action)
     hook = SYMBOL_HOOK_BEGIN (sym);
   else
     hook = SYMBOL_HOOK_END (sym);
-  
+
   if (!hook)
     action = 0;
 
@@ -2385,7 +2385,7 @@ mp4h_bp_define_entity (MP4H_BUILTIN_ARGS)
 }
 
 
-
+
 /*  Math functions  */
 
 /*--------------------------------------------------.
@@ -2402,7 +2402,7 @@ math_relation (MP4H_BUILTIN_ARGS, mathrel_type mathrel)
 
   if (bad_argc (argv[0], argc, 2, 3))
     return;
-  
+
   if (isdigit ((int) ARG (1)[0]) || *(ARG (1)) == '-' || *(ARG (1)) == '+' ||
           strncmp (ARG (1), decimal_point, strlen (decimal_point)))
     {
@@ -2422,7 +2422,7 @@ math_relation (MP4H_BUILTIN_ARGS, mathrel_type mathrel)
       if (!safe_strtod (ARG (0), SYMBOL_TEXT (var), &val1))
         return;
     }
-  
+
   if (argc == 2)
     val2 = 0.;
   else if (isdigit ((int) ARG (2)[0]) ||
@@ -2463,7 +2463,7 @@ math_relation (MP4H_BUILTIN_ARGS, mathrel_type mathrel)
       case MATHREL_LT:
         result = (val1 < val2 ? TRUE : FALSE);
         break;
-        
+
       default:
         MP4HERROR ((warning_status, 0,
           "INTERNAL ERROR: Illegal operator in math_relation ()"));
@@ -2521,7 +2521,7 @@ mathop_functions (MP4H_BUILTIN_ARGS, mathop_type mathop)
 
   if (bad_argc (argv[0], argc, 3, 0))
     return;
-  
+
   /*  If all operands are integers, an integer must be returned.  */
   for (i=1; i<argc; i++)
     if (strstr (ARG (i), decimal_point) != NULL)
@@ -2637,7 +2637,7 @@ mp4h_bp_max (MP4H_BUILTIN_ARGS)
   mathop_functions (MP4H_BUILTIN_RECUR, MATHOP_MAX);
 }
 
-
+
 /*  Page functions  */
 /*------------------------------------------------------.
 | Read and parse a file.  This file is searched in the  |
@@ -2943,7 +2943,7 @@ mp4h_bp_frozen_dump (MP4H_BUILTIN_ARGS)
     input_close ();
 }
 
-
+
 /*  Relational operators : arguments are strings.  */
 
 /*----------------------------------------------------------------.
@@ -2993,7 +2993,7 @@ mp4h_bp_and (MP4H_BUILTIN_ARGS)
       if (*cp == '\0')
         break;
     }
-  
+
   if (i == argc)
     obstack_grow (obs, ARG (argc-1), strlen (ARG (argc-1)));
 }
@@ -3020,7 +3020,7 @@ mp4h_bp_or (MP4H_BUILTIN_ARGS)
     }
 }
 
-
+
 /*  String functions  */
 
 /*-----------------------------------.
@@ -3374,7 +3374,7 @@ mp4h_bp_printf (MP4H_BUILTIN_ARGS)
     }
 }
 
-
+
 /*
      Regular expression support is provided by the PCRE library package,
      which is open source software, copyright by the University of
@@ -3483,7 +3483,7 @@ Warning:%s:%d: \\0 will disappear, use \\& instead in replacements"),
           break;
 
         case '1': case '2': case '3': case '4': case '5': case '6':
-        case '7': case '8': case '9': 
+        case '7': case '8': case '9':
           ch -= '0';
           if (regs[ch*2+1] > 0)
             obstack_grow (obs, victim + regs[ch*2],
@@ -3818,7 +3818,7 @@ mp4h_bp_match (MP4H_BUILTIN_ARGS)
   string_regexp (obs, argc, argv, extra_re_flags, action);
 }
 
-
+
 /* Operation on variables: define, undefine, search, insert,...
    Variables are either strings or array of strings.  */
 
@@ -3982,7 +3982,7 @@ mp4h_bp_set_var (MP4H_BUILTIN_ARGS)
           *value = '\0';
           value++;
         }
-      
+
       /*  Remove special quote characters. */
       remove_special_chars (value, FALSE);
 
@@ -4375,7 +4375,7 @@ mp4h_bp_defvar (MP4H_BUILTIN_ARGS)
     }
 }
 
-
+
 /*  Array functions: */
 /*------------------------------------------------------------.
 | An array is a representation of variables, it is a newline  |
@@ -4493,7 +4493,7 @@ array_member (const char *text, symbol *var, boolean caseless)
       cp = next_item + 1;
     }
   xfree ((voidstar) value);
-  
+
   if (found)
     return result;
   else
@@ -4757,7 +4757,7 @@ mp4h_bp_array_concat (MP4H_BUILTIN_ARGS)
         continue;
       if (SYMBOL_TYPE (varadd) != TOKEN_TEXT)
         continue;
-      
+
       value = (char *) xmalloc (strlen (SYMBOL_TEXT (var)) +
                        strlen (SYMBOL_TEXT (varadd)) + 2);
       sprintf (value, "%s\n%s", SYMBOL_TEXT (var), SYMBOL_TEXT (varadd));
@@ -4777,7 +4777,7 @@ sort_function (const void *item1, const void *item2)
   char *string1, *string2;
   int result;
   double val1, val2;
-  
+
   string1 = *(char **)item1;
   string2 = *(char **)item2;
 
@@ -4836,12 +4836,12 @@ mp4h_bp_sort (MP4H_BUILTIN_ARGS)
 
   length = strlen (SYMBOL_TEXT (var));
   size   = array_size (var);
-  
+
   /*  Build a pointer to array values.  All newlines are replaced by
       NULL chars to use standard string comparison functions.  */
   array = (char **) xmalloc ((size+1) * sizeof (char *));
   i = 0;
-  
+
   value = xstrdup (SYMBOL_TEXT (var));
   array[i] = value;
 
@@ -4867,7 +4867,7 @@ mp4h_bp_sort (MP4H_BUILTIN_ARGS)
   xfree ((voidstar) value);
 }
 
-
+
 /* This section contains the macros "divert", "undivert" and "divnum" for
    handling diversion.  The utility functions used lives in output.c.  */
 
@@ -4917,7 +4917,7 @@ mp4h_bp_undivert (MP4H_BUILTIN_ARGS)
     if (numeric_arg (argv[0], divnum, TRUE, &i))
       insert_diversion (i);
 }
-
+
 
 /*-------------------------------------------------------------------------.
 | This function handles all expansion of user defined and predefined       |
@@ -4953,7 +4953,7 @@ expand_user_macro (struct obstack *obs, symbol *sym, int argc,
       text++;
       unexpanded = FALSE;
       sep[0] = ' ';
-      
+
       save = text;
       if (*text == '#')
         {

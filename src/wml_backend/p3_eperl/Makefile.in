@@ -1,6 +1,6 @@
 ##
 ##  Makefile -- ePerl Makefile
-##  Copyright (c) 1996,1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1996,1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 @SET_MAKE@
 
@@ -27,7 +27,7 @@ perl_archlib    = @perl_archlib@
 CC       = $(perl_cc)
 CFLAGS   = @CFLAGS@ $(perl_optimize) $(perl_ccflags) -I$(perl_archlib)/CORE -I.
 DLCFLAGS = @CFLAGS@ $(perl_optimize) $(perl_cccdlflags) $(perl_ccflags) -I$(perl_archlib)/CORE -I.
-LDFLAGS  = @LDFLAGS@ $(perl_ccdlflags) $(perl_ldflags) -L$(perl_archlib)/CORE 
+LDFLAGS  = @LDFLAGS@ $(perl_ccdlflags) $(perl_ldflags) -L$(perl_archlib)/CORE
 LDLIBS   = $(perl_dla) -lperl $(perl_libs)
 EXEEXT   = @EXEEXT@
 AR       = @AR@
@@ -311,7 +311,7 @@ SOBJS = \
  eperl_parse.so \
  eperl_pp.so \
  eperl_http.so \
- eperl_version.so 
+ eperl_version.so
 
 libeperl.a: $(SOBJS)
 	$(AR) r libeperl.a $(SOBJS)

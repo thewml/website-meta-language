@@ -65,7 +65,7 @@ EXEEXT   = @EXEEXT@
 
 HEADERS = m4.h
 SOURCES = m4.c builtin.c debug.c eval.c format.c freeze.c input.c \
-macro.c output.c path.c symtab.c 
+macro.c output.c path.c symtab.c
 OBJECTS = m4$O builtin$O debug$O eval$O format$O freeze$O input$O \
 macro$O output$O path$O symtab$O
 

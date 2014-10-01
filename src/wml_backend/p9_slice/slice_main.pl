@@ -10,12 +10,12 @@ BEGIN { $^W = 0; } # get rid of nasty warnings
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-##         _ _          
-##     ___| (_) ___ ___ 
+##         _ _
+##     ___| (_) ___ ___
 ##    / __| | |/ __/ _ \
 ##    \__ \ | | (_|  __/
 ##    |___/_|_|\___\___|
-##                    
+##
 ##    Slice -- Extract out pre-defined slices of an ASCII file
 ##
 ##    The slice program reads an inputfile and divide its prepaired ASCII contents
@@ -23,13 +23,13 @@ use lib "@INSTALLARCHLIB@";
 ##    blocks which are defined by begin and end delimiters which have to be
 ##    already in the file.   The final output gets calculated by a slice term
 ##    consisting of slice names, set theory operators and optional round brackets.
-##  
+##
 ##    The latest release can be found on
 ##    http://www.engelschall.com/sw/slice/
-##  
+##
 ##    Copyright (c) 1997-2002 Ralf S. Engelschall.
 ##    Copyright (c) 1999-2002 Denis Barbier.
-##  
+##
 ##    This program is free software; it may be redistributed and/or modified only
 ##    under the terms of the GNU General Public License, which may be found in the
 ##    SLICE source distribution.  Look at the file COPYING.   This program is
@@ -37,7 +37,7 @@ use lib "@INSTALLARCHLIB@";
 ##    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 ##    PARTICULAR PURPOSE.  See either the GNU General Public License for more
 ##    details.
-##  
+##
 ##                                Ralf S. Engelschall
 ##                                rse@engelschall.com
 ##                                www.engelschall.com

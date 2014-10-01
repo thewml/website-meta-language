@@ -18,13 +18,13 @@
   Such rules are applied to the element's content and then
   to the element itself until none of the rules more apply.
   Having applied all the rules to an element, it will have
-  a style attribute with one or more properties. 
+  a style attribute with one or more properties.
 
   Other rules strip the element they apply to, replacing
   it by style properties on the contents, e.g.
-  
+
   <dir><li><p>...</li></dir> -> <p style="margin-left 1em">...
-      
+
   These rules are applied to an element before processing
   its content and replace the current element by the first
   element in the exposed content.
@@ -247,7 +247,7 @@ void FreeStyles(Lexer *lexer)
     for (style = lexer->styles; style; style = next)
     {
         next = style->next;
-        
+
         MemFree(style->tag);
         MemFree(style->tag_class);
         MemFree(style->properties);
@@ -384,7 +384,7 @@ static void CleanBodyAttrs(Lexer *lexer, Node *body)
     char *bgurl = null;
     char *bgcolor = null;
     char *color = null;
-    
+
     attr = GetAttrByName(body, "background");
 
     if (attr)
@@ -547,7 +547,7 @@ static void CreateStyleElement(Lexer *lexer, Node *doc)
     */
 
     head = FindHead(doc);
-    
+
     if (head)
         InsertNodeAtEnd(head, node);
 }
@@ -1566,7 +1566,7 @@ static Node *PruneSection(Lexer *lexer, Node *node)
 
         if (node == null)
             return null;
-        
+
         if (node->type == SectionTag)
         {
             if (wstrncmp(lexer->lexbuf + node->start, "if", 2) == 0)

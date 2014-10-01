@@ -12,17 +12,17 @@
 */
 /* GNU m4 -- A simple macro processor
    Copyright (C) 1989, 90, 91, 92, 93, 94, 98 Free Software Foundation, Inc.
-  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -37,10 +37,10 @@
 
 #include "ltdl.h"
 
-/* 
+/*
  * This file implements dynamic modules in GNU m4.  A module is a
  * compiled shared object, that can be linked into GNU m4 at run
- * time. Information about creating modules is in ../modules/README. 
+ * time. Information about creating modules is in ../modules/README.
  *
  * The current implementation uses either dlopen(3) (exists on
  * GNU/Linux, OSF, Solaris, SunOS) or shl_load(3) (exists on HPUX).  To
@@ -95,7 +95,7 @@ static module_list *modules;
 
 static char *add_suffix_searchdir __P ((const char *, const char *));
 
-/* 
+/*
  * Initialisation.  Currently the module search path in path.c is
  * initialised from MP4HLIB.  Only absolute path names are accepted to
  * prevent the path search of the dlopen library from finding wrong
@@ -124,7 +124,7 @@ module_init (void)
       if (path != NULL)
 	errors = lt_dladdsearchdir(path);
     }
-    
+
   if (errors == 0)
     errors = lt_dladdsearchdir(MP4HLIBDIR);
 
@@ -140,7 +140,7 @@ module_init (void)
     DEBUG_MESSAGE("Module system initialised.");
 }
 
-/* 
+/*
  * By default, when `foo/bar' is searched by libltdl (or in fact lt_dlopenext)
  * it is only searched into ./foo and not other paths defined elsewhere.
  * This is very sad, and instead of patching libtool, which may cause
@@ -207,7 +207,7 @@ add_suffix_searchdir (const char *oldpath, const char *dir)
   return new_search_path;
 }
 
-/* 
+/*
  * Load a dynamic library.
  */
 

@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -179,7 +179,7 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
         if (((cpT = ep_strnstr(cps, "\n#c",        cpEND-cps)) != NULL) && ((cpT < cp) || (cp == NULL))) cp = cpT+1;
 
         if (cp != NULL && (cp == cpBuf || (cp > cpBuf && *(cp-1) == '\n'))) {
-            /* 
+            /*
              *  Ok, one more directive found...
              */
 
@@ -196,15 +196,15 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
             *(cpOutBuf+nOutBuf-1) = NUL;
             nOut += i;
 
-            /* 
+            /*
              *  now process the specific directives...
              */
             if (strncmp(cp, "#include", 8) == 0) {
-                /* 
+                /*
                  *  found a #include directive
                  */
                 cps = cp+8;
-            
+
                 /* skip whitespaces */
                 for ( ; cps < cpEND && (*cps == ' ' || *cps == '\t'); cps++)
                     ;
@@ -220,8 +220,8 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 }
 
                 /* copy the filename and skip to end of line */
-                for (i = 0; cps < cpEND && 
-                            (*cps != ' ' && *cps != '\t' && 
+                for (i = 0; cps < cpEND &&
+                            (*cps != ' ' && *cps != '\t' &&
                              *cps != '>' && *cps != '"'  &&
                              *cps != '\n'                  );  )
                     caName[i++] = *cps++;
@@ -230,17 +230,17 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                     ;
                 if (*cps == '\n')
                     cps++;
-    
+
                 /* recursive usage */
                 if ((cp = ePerl_PP_Process(caName, cppINC, 0 /*mode=file*/)) == NULL)
                     return NULL;
             }
             else if (strncmp(cp, "#sinclude", 9) == 0) {
-                /* 
+                /*
                  *  found a #sinclude directive
                  */
                 cps = cp+9;
-            
+
                 /* skip whitespaces */
                 for ( ; cps < cpEND && (*cps == ' ' || *cps == '\t'); cps++)
                     ;
@@ -256,8 +256,8 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 }
 
                 /* copy the filename and skip to end of line */
-                for (i = 0; i < sizeof(caName) && cps < cpEND && 
-                            (*cps != ' ' && *cps != '\t' && 
+                for (i = 0; i < sizeof(caName) && cps < cpEND &&
+                            (*cps != ' ' && *cps != '\t' &&
                              *cps != '>' && *cps != '"'  &&
                              *cps != '\n'                  );  )
                     caName[i++] = *cps++;
@@ -266,7 +266,7 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                     ;
                 if (*cps == '\n')
                     cps++;
-    
+
                 /* recursive usage */
                 if ((cp = ePerl_PP_Process(caName, cppINC, 0 /*mode=file*/)) == NULL)
                     return NULL;
@@ -294,7 +294,7 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 cp = cp2;
             }
             else if (strncmp(cp, "#if", 3) == 0) {
-                /* 
+                /*
                  *  found a #if directive
                  */
                 cps = cp+3;
@@ -314,13 +314,13 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 caArg[i++] = NUL;
                 if (*cps == '\n')
                     cps++;
-                snprintf(caStr, sizeof(caStr), "%s if (%s) { _%s//\n", 
+                snprintf(caStr, sizeof(caStr), "%s if (%s) { _%s//\n",
                         ePerl_begin_delimiter, caArg, ePerl_end_delimiter);
                 caStr[sizeof(caStr)-1] = NUL;
                 cp = caStr;
             }
             else if (strncmp(cp, "#elsif", 6) == 0) {
-                /* 
+                /*
                  *  found a #elsif directive
                  */
                 cps = cp+6;
@@ -340,13 +340,13 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 caArg[i++] = NUL;
                 if (*cps == '\n')
                     cps++;
-                snprintf(caStr, sizeof(caStr), "%s } elsif (%s) { _%s//\n", 
+                snprintf(caStr, sizeof(caStr), "%s } elsif (%s) { _%s//\n",
                         ePerl_begin_delimiter, caArg, ePerl_end_delimiter);
                 caStr[sizeof(caStr)-1] = NUL;
                 cp = caStr;
             }
             else if (strncmp(cp, "#else", 5) == 0) {
-                /* 
+                /*
                  *  found a #else directive
                  */
                 cps = cp+5;
@@ -358,13 +358,13 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                     cps++;
 
                 /* create replacement string */
-                snprintf(caStr, sizeof(caStr), "%s } else { _%s//\n", 
+                snprintf(caStr, sizeof(caStr), "%s } else { _%s//\n",
                         ePerl_begin_delimiter, ePerl_end_delimiter);
                 caStr[sizeof(caStr)-1] = NUL;
                 cp = caStr;
             }
             else if (strncmp(cp, "#endif", 6) == 0) {
-                /* 
+                /*
                  *  found a #endif directive
                  */
                 cps = cp+6;
@@ -376,13 +376,13 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                     cps++;
 
                 /* create replacement string */
-                snprintf(caStr, sizeof(caStr), "%s } _%s//\n", 
+                snprintf(caStr, sizeof(caStr), "%s } _%s//\n",
                         ePerl_begin_delimiter, ePerl_end_delimiter);
                 caStr[sizeof(caStr)-1] = NUL;
                 cp = caStr;
             }
             else if (strncmp(cp, "#c", 2) == 0) {
-                /* 
+                /*
                  *  found a #c directive
                  */
                 cps = cp+2;
@@ -393,7 +393,7 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 if (*cps == '\n')
                     cps++;
 
-                /* create replacement string: just a newline 
+                /* create replacement string: just a newline
                  * to preserve line numbers */
                 sprintf(caStr, "\n");
                 cp = caStr;

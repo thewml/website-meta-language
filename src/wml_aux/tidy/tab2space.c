@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 
 typedef unsigned int uint;
@@ -146,7 +146,7 @@ int ReadChar(Stream *in)
         in->tabs--;
         return ' ';
     }
-    
+
     /* Else go on with normal buffer: */
     for (;;)
     {

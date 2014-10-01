@@ -106,7 +106,7 @@ snap: distclean fixperm
     _tarball="$(tmpdir)/$${_distname}.tar.gz"; \
     echo "Snap of whole source tree: iSelect Version $$_version as of $$_date"; \
     $(_BUILDDIST); \
-    mv $(tmpdir)/$${_distname}.tar.gz $${_distname}.tar.gz 
+    mv $(tmpdir)/$${_distname}.tar.gz $${_distname}.tar.gz
 
 new-version:
 	OPT=-iv; $(_NEWVERS)
@@ -192,7 +192,7 @@ install: all
 #   CLEANUP
 # ------------------------------------------------
 
-clean: 
+clean:
 	-rm -f *.o
 	-rm -f iselect iselect.1
 	-rm -f core *.core

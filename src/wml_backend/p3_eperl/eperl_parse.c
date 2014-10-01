@@ -1,17 +1,17 @@
 /*
-**        ____           _ 
+**        ____           _
 **    ___|  _ \ ___ _ __| |
 **   / _ \ |_) / _ \ '__| |
 **  |  __/  __/  __/ |  | |
 **   \___|_|   \___|_|  |_|
-** 
+**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
 **  by evaluating the Perl 5 code while passing through the plain ASCII
 **  data. It can operate both as a standard Unix filter for general file
 **  generation tasks and as a powerful Webserver scripting language for
-**  dynamic HTML page programming. 
+**  dynamic HTML page programming.
 **
 **  ======================================================================
 **
@@ -82,7 +82,7 @@ char *ePerl_GetError(void)
 
 #if 0 /* unsafe ? */
 /*
-**  fprintf for internal buffer 
+**  fprintf for internal buffer
 */
 char *ePerl_fprintf(char *cpOut, char *str, ...)
 {
@@ -110,7 +110,7 @@ char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
 #endif
 
 /*
-**  fwrite for internal buffer 
+**  fwrite for internal buffer
 */
 #if 0 /* unsafe */
 char *ePerl_fwrite(char *cpBuf, int nBuf, int cNum, char *cpOut)
@@ -377,7 +377,7 @@ char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen
 
 /*
 **
-**  Own string functions with maximum length (n) support 
+**  Own string functions with maximum length (n) support
 **
 */
 
@@ -398,7 +398,7 @@ char *ep_strnstr(char *buf, char *str, int n)
     char *cp;
     char *cpe;
     int len;
-    
+
     len = strlen(str);
     for (cp = buf, cpe = buf+n-len; cp <= cpe; cp++) {
         if (strncmp(cp, str, len) == 0)
@@ -412,7 +412,7 @@ char *ep_strncasestr(char *buf, char *str, int n)
     char *cp;
     char *cpe;
     int len;
-    
+
     len = strlen(str);
     for (cp = buf, cpe = buf+n-len; cp <= cpe; cp++) {
         if (strncasecmp(cp, str, len) == 0)
@@ -538,7 +538,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
 
             /* just output a leading space to make
                the -x display more readable. */
-            if (cpOut > cpOutBuf && *(cpOut-1) != '\n') 
+            if (cpOut > cpOutBuf && *(cpOut-1) != '\n')
                 cpOut = ePerl_fnprintf(cpOut, &cpOutLen, " ");
 
             /* skip the start delimiter */
@@ -573,13 +573,13 @@ char *ePerl_Bristled2Plain(char *cpBuf)
             }
 
             /* step again backward over whitespaces */
-            for (cpe2 = cpe; 
+            for (cpe2 = cpe;
                  cpe2 > cps && (*(cpe2-1) == ' ' || *(cpe2-1) == '\t' || *(cpe2-1) == '\n');
                  cpe2--)
                 ;
-            
+
             /* pass through the ePerl block without changes! */
-            if (cpe2 > cps) { 
+            if (cpe2 > cps) {
                 if (ePerl_convert_entities == TRUE)
                     cpOut = ePerl_Cfnwrite(cps, cpe2-cps, 1, cpOut, &cpOutLen);
                 else
@@ -591,7 +591,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
                 if ((*(cpe2-1) != ';') &&
                     (*(cpe2-1) != '_')   )
                     cpOut = ePerl_fnprintf(cpOut, &cpOutLen, ";");
-                if (*(cpe2-1) == '_') 
+                if (*(cpe2-1) == '_')
                     cpOut = cpOut - 1;
             }
 
@@ -603,7 +603,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
             /* output a trailing space to make
                the -x display more readable when
                no newlines have finished the block. */
-            if (cpOut > cpOutBuf && *(cpOut-1) != '\n') 
+            if (cpOut > cpOutBuf && *(cpOut-1) != '\n')
                 cpOut = ePerl_fnprintf(cpOut, &cpOutLen, " ");
 
             /* and adjust the current position to the first character
@@ -628,7 +628,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
     RETURN_WVAL(cpOutBuf);
 
     CUS:
-    if (cpOutBuf) 
+    if (cpOutBuf)
         free(cpOutBuf);
     RETURN_EXRC;
 }

@@ -82,7 +82,7 @@ sub verify_all_keys
         if ($want->[$idx] ne $have->[$idx])
         {
             die "Substitution $want->[$idx] is missing!";
-        }       
+        }
     }
 
     if (@$have != @$want)

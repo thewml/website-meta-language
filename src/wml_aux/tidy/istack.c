@@ -224,7 +224,7 @@ Node *InsertedToken(Lexer *lexer)
     }
 
     /*
-    
+
       is this is the "latest" node then update
       the position, otherwise use current values
     */
