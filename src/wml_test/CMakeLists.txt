@@ -7,6 +7,10 @@ SET (_test_cmd_cmd_line "make" "-f" "test.mak" "test"
     "top_srcdir=${CMAKE_SOURCE_DIR}"
     )
 
+SET (_test_cmd_cmd_line "${PERL_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/run_test.pl"
+)
+
 ADD_TEST(
     NAME wml_tests
     COMMAND ${_test_cmd_cmd_line})
