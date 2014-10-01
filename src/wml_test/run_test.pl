@@ -27,10 +27,14 @@ my $myprefix = Cwd::getcwd() . "/tests/installation";
 
 my $build_dir = "FOO";
 
-rmtree ([$build_dir]);
-if (system("mkdir $build_dir && cd $build_dir && cmake -DCMAKE_INSTALL_PREFIX=$myprefix -DLIB_INSTALL_DIR=$myprefix/lib $script_dir/.. && make && make install"))
+if (! -e $myprefix)
 {
-    die "cmake Failed";
+    rmtree ([$build_dir]);
+    if (system("mkdir $build_dir && cd $build_dir && cmake -DCMAKE_INSTALL_PREFIX=$myprefix -DLIB_INSTALL_DIR=$myprefix/lib $script_dir/.. && make && make install"))
+    {
+        rmtree ([$myprefix]);
+        die "cmake Failed";
+    }
 }
 
 $ENV{PERL5LIB} = "$myprefix/lib/perl5:$ENV{PERL5LIB}";
@@ -47,7 +51,7 @@ if ($is_interactive)
 }
 else
 {
-    exec {'prove' } ('prove', glob('t/{02}*.t'));
+    exec {'prove' } ('prove', glob('t/{02,03}-*.t'));
 }
 
 =head1 COPYRIGHT & LICENSE
