@@ -1,12 +1,12 @@
 
 require "TEST.pl";
-&TEST::init;
+TEST::init();
 
 print "1..2\n";
 
 $pass = "1-9";
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::std::href
 <href url="THE://URL">
 <href url="THE://URL" name="THE_NAME">
@@ -23,5 +23,5 @@ EOT_IN
 <a href="THE://URL" onmouseover="self.status='THE_HINT';return true" onmouseout="self.status='';return true" onfocus="self.status='THE_HINT';return true" onblur="self.status='';return true"><img src="THE_IMG.EXT" alt="THE_NAME" border="0"></a>
 EOT_OUT
 
-&TEST::cleanup;
+TEST::cleanup();
 

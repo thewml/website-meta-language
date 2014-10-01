@@ -1,12 +1,12 @@
 
 require "TEST.pl";
-&TEST::init;
+TEST::init();
 
 print "1..2\n";
 
 $pass = "1-9";
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::std::grid
 <grid layout=2x3 align=lr valign=tbm>
   <cell>This is Cell #1 of Grid #1</cell>
@@ -51,5 +51,5 @@ EOT_IN
 </table>
 EOT_OUT
 
-&TEST::cleanup;
+TEST::cleanup();
 

@@ -1,6 +1,6 @@
 
 require "TEST.pl";
-&TEST::init;
+TEST::init();
 
 print "1..2\n";
 
@@ -18,7 +18,7 @@ my $png_support = 0;
 
 if ($png_support) {
 #   PNG support available
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::des::space
 <space format=png width=6 height=4>
 <space format=gif width=6>
@@ -32,7 +32,7 @@ EOT_IN
 EOT_OUT
 } else {
 #   PNG support unavailable
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::des::space
 <space format=gif width=6>
 <space height=4>
@@ -49,5 +49,5 @@ EOT_OUT
 push(@TEST::TMPFILES, "imgdot-1x1-transp-ffffff.gif");
 push(@TEST::TMPFILES, "imgdot-1x1-transp-ffffff.png");
 
-&TEST::cleanup;
+TEST::cleanup();
 
