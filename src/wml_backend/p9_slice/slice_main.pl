@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!@PATH_PERL@
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 
