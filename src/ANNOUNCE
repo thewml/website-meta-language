@@ -11,7 +11,7 @@
   Newsgroup: comp.infosystems.www.servers.unix,
              comp.infosystems.www.authoring.html
              sdm.announce
-  
+
   NEWSGROUPS (MODERATED)
   ----------------------
   Subject:   SOFTWARE: Website META Language (WML) 2.0
@@ -20,11 +20,11 @@
   To:        linux-announce@news.ornl.gov
 
   -------------------------------------------------------------------
-  __        ___  __ _     
+  __        ___  __ _
   \ \      / / \/  | |     Website META Language, Version 2.0
    \ \ /\ / / |\/| | |     http://www.engelschall.com/sw/wml/
     \ V  V /| |  | | |___   ftp://ftp.engelschall.com/sw/wml/
-     \_/\_/ |_|  |_|_____| 
+     \_/\_/ |_|  |_|_____|
 
                  Ralf S. Engelschall     Denis Barbier
                  rse@engelschall.com     barbier@engelschall.com
@@ -34,11 +34,11 @@
   written in ANSI C and Perl 5, build via a GNU Autoconf based source tree
   and runs out-of-the-box on all major Unix derivates. It can be used free
   of charge both in educational and commercial environments.
-  
+
   WML consists of a control frontend driving up to nine backends in a
   sequential pass-oriented filtering scheme. Each backend provides one
   particular core language. While not trivial and idiot proof WML provides
-  most of the core features real hackers always wanted for HTML generation: 
+  most of the core features real hackers always wanted for HTML generation:
 
     Pass 1: Source Reading and Include File Expansion (backend: IPP)
     Pass 2: High-Level Macro Construct Expansion      (backend: mp4h)
@@ -60,7 +60,7 @@
   For maximum power WML already ships with a well-suited set of include files
   which provide high-level features build on top of the backends core
   languages. Some topics the shipped include files already address:
-  
+
     - generation of URLs through auto-adjustment variables
     - generation of typographically strong headlines via images
     - generation of typographically strong text rendering

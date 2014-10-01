@@ -1,6 +1,6 @@
-  __        ___  __ _     
-  \ \      / / \/  | |    
-   \ \ /\ / / |\/| | |    
+  __        ___  __ _
+  \ \      / / \/  | |
+   \ \ /\ / / |\/| | |
     \ V  V /| |  | | |___   ``WML is the Unix toolkit for getting
      \_/\_/ |_|  |_|_____|    your webdesigner's HTML job done.''
 
@@ -197,10 +197,10 @@
 
     Quotes are removed in %<digit> expressions, but not in %attributes!?
 
-    With mp4h, 
+    With mp4h,
       <define-tag foo>Arg1:%1 Attrs:%attributes!!</define-tag>
       <foo "x <foo "1" "2">" y>
-    gives 
+    gives
       Arg1:y Attrs:x Arg1:2 Attrs:1 2!! y!!
 
     In one word, unescape all double quotes when quotes are used to group
@@ -211,7 +211,7 @@
       <ifeq 0 0 <img src="foo.png" alt="">>
     or even
       <ifeq 0 0 <: print "Ok"; :>>
-    The ``<: ... :>'' tag is considered as a single expression. But 
+    The ``<: ... :>'' tag is considered as a single expression. But
     consider now
       <ifeq 0 0 <: print "Ok" if $value > 0; :>>
       <ifeq 0 0 <: print $var->{"name"}; :>>

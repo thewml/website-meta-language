@@ -17,11 +17,11 @@
      alternative ways described under 2.) and 3.).
 
   2. Directly write an E-Mail to sw-wml@engelschall.com
-     
+
      This is the last chance ;_) Go to a system from where you can send E-Mail
      and manually send one directly to sw-wml@engelschall.com. Please include
-     at least the output of `wml -V3'. 
-     
+     at least the output of `wml -V3'.
+
   Independent what way you choose, the result should be an E-Mail to
   sw-wml@engelschall.com, containing as much information and details so the
   WML author and maintainer is able to successfully investigate in your
