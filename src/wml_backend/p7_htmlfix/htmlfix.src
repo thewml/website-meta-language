@@ -87,23 +87,9 @@ use vars qw( $buffer );
 
 BEGIN { $buffer = ''; }
 
-if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV)
-{
-    my $in = IO::Handle->new;
-    $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
-    local $/;
-    $buffer = <$in>;
-    $in->close() || error("cannot close STDIN: $!");
-}
-elsif (@ARGV == 1) {
-    open my $in, '<', $ARGV[0] or error("cannot load $ARGV[0]: $!");
-    local $/;
-    $buffer = <$in>;
-    $in->close() || error("cannot close $ARGV[0]: $!");
-}
-else {
-    usage();
-}
+use WML_Backends;
+
+$buffer = WML_Backends->input(\@ARGV, \&error, \&usage);
 
 if (!defined($buffer)) { die "Egloo Buffer is undef." }
 
@@ -448,8 +434,6 @@ foreach my $m (split(',', $opt_F)) {
 #   statistic
 #
 verbose("Total amount of images: $bytes bytes");
-
-use WML_Backends;
 
 WML_Backends->out($opt_o, \&error, [$buffer]);
 

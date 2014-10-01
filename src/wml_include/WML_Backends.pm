@@ -27,5 +27,34 @@ sub out
     return;
 }
 
+sub input
+{
+    my ($self, $argv, $err_subref, $usage) = @_;
+
+    my @local_argv = @$argv;
+    my $foo_buffer;
+
+    if ((@local_argv == 1 and $local_argv[0] eq '-') or !@local_argv)
+    {
+        my $in = IO::Handle->new;
+        $in->fdopen(fileno(STDIN), 'r') || $err_subref->("cannot load STDIN: $!");
+        local $/;
+        $foo_buffer = <$in>;
+        $in->close() || $err_subref->("cannot close STDIN: $!");
+    }
+    elsif (@local_argv == 1) {
+        open my $in, '<', $local_argv[0] or $err_subref->("cannot load $local_argv[0]: $!");
+        local $/;
+        $foo_buffer = <$in>;
+        $in->close() || $err_subref->("cannot close $local_argv[0]: $!");
+    }
+    else {
+        $usage->();
+    }
+
+    return $foo_buffer;
+
+}
+
 1;
 

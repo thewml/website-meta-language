@@ -56,25 +56,9 @@ sub error {
 #
 #   open input file and read into buffer
 #
-my $foo_buffer;
+use WML_Backends;
 
-if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV)
-{
-    my $in = IO::Handle->new;
-    $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
-    local $/;
-    $foo_buffer = <$in>;
-    $in->close() || error("cannot close STDIN: $!");
-}
-elsif ($#ARGV == 0) {
-    open my $in, '<', $ARGV[0] or error("cannot load $ARGV[0]: $!");
-    local $/;
-    $foo_buffer = <$in>;
-    $in->close() || error("cannot close $ARGV[0]: $!");
-}
-else {
-    usage();
-}
+my $foo_buffer = WML_Backends->input(\@ARGV, \&error, \&usage);
 
 #
 #   processing loop
@@ -257,7 +241,6 @@ if ($rc) {
     exit(1);
 }
 
-use WML_Backends;
 
 WML_Backends->out($opt_o, \&error, [$foo_buffer]);
 

@@ -3,13 +3,12 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  htmlstrip -- Strip HTML markup code
-##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000 Denis Barbier
 ##
 
-require 5.003;
-
-BEGIN { $^W = 0; } # get rid of nasty warnings
+use strict;
+use warnings;
 
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
@@ -30,6 +29,8 @@ sub usage {
     print STDERR "  -v, --verbose             verbose mode\n";
     exit(1);
 }
+
+use vars ( qw( $opt_v $opt_o $opt_O $opt_b ) );
 $opt_v = 0;
 $opt_o = '-';
 $opt_O = 2;
@@ -37,11 +38,11 @@ $opt_b = 16384;
 $Getopt::Long::bundling = 1;
 $Getopt::Long::getopt_compat = 0;
 if (not Getopt::Long::GetOptions(
-    "v|verbose",
-    "O|optimize=i",
-    "b|blocksize=i",
-    "o|outputfile=s")) {
-    &usage;
+    "v|verbose" => \$opt_v,
+    "O|optimize=i" => \$opt_O,
+    "b|blocksize=i" => \$opt_b,
+    "o|outputfile=s" => \$opt_o,)) {
+    usage();
 }
 $opt_b = 32766 if $opt_b > 32766;
 $opt_b = 1024  if $opt_b > 0 and $opt_b < 1024;
@@ -52,6 +53,7 @@ sub verbose {
         print STDERR "** HTMLstrip:Verbose: $str\n";
     }
 }
+
 sub error {
     my ($str) = @_;
     print STDERR "** HTMLstrip:Error: $str\n";
@@ -61,30 +63,15 @@ sub error {
 #
 #   read input file
 #
-&verbose("Reading input file");
-if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
-    $in = new IO::Handle;
-    $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
-    local ($/) = undef;
-    $INPUT = <$in>;
-    $in->close() || error("cannot close STDIN: $!");
-}
-elsif ($#ARGV == 0) {
-    $in = new IO::File;
-    $in->open($ARGV[0]) || error("cannot load $ARGV[0]: $!");
-    local ($/) = undef;
-    $INPUT = <$in>;
-    $in->close() || error("cannot close $ARGV[0]: $!");
-}
-else {
-    &usage;
-}
+use WML_Backends;
+
+my $INPUT = WML_Backends->input(\@ARGV, \&error, \&usage);
 
 #
 #   global initial stripping
 #
 
-&verbose("Strip sharp-like comments");
+verbose("Strip sharp-like comments");
 #   strip sharp-like comments
 #$INPUT =~ s|^\s*#.*$||mg;
 1 while ($INPUT =~ s/^([ \t]*)#[^\n]*\n//s); # special  case: at begin
@@ -96,7 +83,7 @@ $INPUT =~ s/^([ \t]*)\\(#)/$1$2/mg;          # remove escaping backslash
 #   stripping functions for particular areas
 #
 
-#   Strip Plain Text, i.e. outside of any 
+#   Strip Plain Text, i.e. outside of any
 #   preformatted area and outside any HTML tag.
 sub StripPlainText {
     my ($buf) = @_;
@@ -131,9 +118,9 @@ sub StripPlainText {
     if ($opt_O >= 5) {
         #   concatenate all lines
         $buf =~ s|\n| |sg;
-        #  
-        $from = $buf;
-        $line = '';
+        #
+        my $from = $buf;
+        my $line = '';
         $buf = '';
         sub nexttoken {
             my ($buf) = @_;
@@ -153,15 +140,15 @@ sub StripPlainText {
             }
 
             if (length($token) > 80) {
-                $x = substr($token, 0, 80);
-                $i = rindex($x, ' ');
-                $bufN = substr($token, $i) . $bufN;
+                my $x = substr($token, 0, 80);
+                my $i = rindex($x, ' ');
+                my $bufN = substr($token, $i) . $bufN;
                 $token = substr($token, 0, $i);
             }
             return ($token, $bufN);
         }
         while (length($from) > 0) {
-            ($token, $from) = &nexttoken($from);
+            my ($token, $from) = &nexttoken($from);
             if ((length($line) + length($token)) < 80)  {
                 $line .= $token;
             }
@@ -177,7 +164,7 @@ sub StripPlainText {
     return $buf;
 }
 
-#   Strip HTML Tag, i.e. outside of any 
+#   Strip HTML Tag, i.e. outside of any
 #   preformatted area but inside a HTML tag.
 sub StripHTMLTag {
     my ($buf) = @_;
@@ -216,7 +203,7 @@ sub StripHTMLTag {
     return $buf;
 }
 
-#   Strip Preformatted Areas, i.e.  inside 
+#   Strip Preformatted Areas, i.e.  inside
 #   <pre>, <xmp> and <nostrip> container tags.
 sub StripPreformatted {
     my ($buf) = @_;
@@ -248,13 +235,13 @@ sub StripPreformatted {
 #
 #   Processing Loop
 #
-%TAGS = (
+my %TAGS = (
   "nostrip" => 1,
   "pre"     => 0,
   "xmp"     => 0,
 );
 
-$OUTPUT = '';
+my $OUTPUT = '';
 
 sub StripNonPreformatted {
     my ($I) = @_;
@@ -274,21 +261,25 @@ sub StripNonPreformatted {
 #   and CPU time, input is splitted into small chunks whose size may
 #   be changed by the -b flag.
 
-&verbose("Main processing");
-$chunksize = $opt_b;
-$loc = 0;
+verbose("Main processing");
+my $chunksize = $opt_b;
+my $loc = 0;
 do {
-    $NEXT = '';
+    my $NEXT = '';
     if ($chunksize > 0 && $chunksize < 32767 && length($INPUT) > $chunksize) {
         ($INPUT, $NEXT) = ($INPUT =~ m|^(.{$chunksize})(.*)$|s);
     }
     while (1) {
         #   look for a begin tag
-        $len = length($INPUT);
-        $pos = $len;
-        foreach $tag (keys(%TAGS)) {
+        my $len = length($INPUT);
+        my $pos = $len;
+        my $tagname;
+        my $epilog;
+        my $prolog;
+        my $curtag;
+        foreach my $tag (keys(%TAGS)) {
             if ($INPUT =~ m|^(.*?)(<$tag(?:\s+[^>]*)?>)(.*)$|is) {
-                $n = length($1);
+                my $n = length($1);
                 if ($n < $pos) {
                     $pos = $n;
                     $prolog = $1;
@@ -299,12 +290,13 @@ do {
             }
         }
         if ($pos < $len) {
-            $str = sprintf "found $curtag at position %d", $loc+$pos;
-            &verbose($str);
-            $o = &StripNonPreformatted($prolog);
+            my $str = sprintf "found $curtag at position %d", $loc+$pos;
+            verbose($str);
+            my $o = StripNonPreformatted($prolog);
             $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
             $OUTPUT .= $o;
 
+            my ($body, $endtag);
             #   if end tag not found, extend string
             if ($epilog =~ s|^(.*?)(</$tagname>)||is) {
                 $body   = $1;
@@ -318,9 +310,9 @@ do {
 
             $str = sprintf "found $endtag at position %d",
                 $loc+$pos+length($body);
-            &verbose($str);
+            verbose($str);
             $OUTPUT .= $curtag if (not $TAGS{$tagname});
-            $OUTPUT .= &StripPreformatted($body);
+            $OUTPUT .= StripPreformatted($body);
             $OUTPUT .= $endtag if (not $TAGS{$tagname});
             $loc  += $pos + length($body) + length($curtag);
             $INPUT = $epilog;
@@ -330,7 +322,7 @@ do {
             if ($INPUT =~ m|^(.+)(<.*)$|s) {
                 $loc += length($1);
                 $INPUT = $2;
-                $o = &StripNonPreformatted($1);
+                my $o = StripNonPreformatted($1);
                 $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
                 $OUTPUT .= $o;
             }
@@ -344,7 +336,7 @@ do {
                 $INPUT .= $NEXT;
             }
             else {
-                $o = &StripNonPreformatted($INPUT);
+                my $o = StripNonPreformatted($INPUT);
                 $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
                 $OUTPUT .= $o;
                 $INPUT = '';
@@ -361,23 +353,11 @@ do {
 #
 #   global final stripping
 #
-&verbose("Fix <suck> special command");
+verbose("Fix <suck> special command");
 $OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
 $OUTPUT =~ s|^\n||s;
 
-#
-#   write to output file
-#
-if ($opt_o eq '-') {
-    $out = new IO::Handle;
-    $out->fdopen(fileno(STDOUT), "w") || error("cannot write into STDOUT: $!");
-}
-else {
-    $out = new IO::File;
-    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
-}
-$out->print($OUTPUT) || error("cannot write into $opt_o: $!");
-$out->close() || error("cannot close $opt_o: $!");
+WML_Backends->out($opt_o, \&error, [$OUTPUT]);
 
 exit(0);
 
@@ -401,7 +381,7 @@ B<htmlstrip>
 
 HTMLstrip reads I<inputfile> or from C<stdin> and strips the contained HTML
 markup. Use this program to shrink and compactify your HTML files in a safe
-way.  
+way.
 
 =head2 Recognized Content Types
 
@@ -419,7 +399,7 @@ and ending with a closing angle bracket.
 =item Preformatted (pre)
 
 This is any contents enclosed in one of the following container tags:
- 
+
   1. <nostrip>
   2. <pre>
   3. <xmp>
@@ -427,7 +407,7 @@ This is any contents enclosed in one of the following container tags:
 The non-HTML-3.2-conforming C<E<lt>nostripE<gt>> tag is special here: It acts
 like C<E<lt>preE<gt>> as a protection container for HTMLstrip but is also
 stripped from the output.  Use this as a pseudo-block which just preserves its
-body for the HTMLstrip processing but itself is removed from the output.  
+body for the HTMLstrip processing but itself is removed from the output.
 
 =item Plain Text (txt)
 
@@ -458,7 +438,7 @@ Minimal stripping: Same as level 0 plus stripping of blank and empty lines
 
 Good stripping: Same as level 1 plus compression of multiple whitespaces (more
 then one in sequence) to single whitespaces [txt,tag] and stripping of
-trailing whitespaces at the of of a line [txt,tag,pre]. 
+trailing whitespaces at the of of a line [txt,tag,pre].
 
 B<This level is the default> because while providing good optimization the
 HTML markup is not destroyed and remains human readable.
@@ -486,7 +466,7 @@ Crazy stripping: Same as level 4 plus wrapping lines around to fit in an 80
 column view window. This saves some newlines but both leads to really
 unreadable markup code and opens the window for a lot of problems when this
 code is used to layout the page in a browser. B<Use with care. This is only
-experimental!> 
+experimental!>
 
 =back
 
