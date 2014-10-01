@@ -56,6 +56,10 @@ sub generic {
     Test::More::ok (!$rc, "generic cmp");
 }
 
+sub add_files {
+    push @files_to_del, @_;
+}
+
 sub cleanup {
     foreach my $fn (@files_to_del) {
         unlink ($fn);

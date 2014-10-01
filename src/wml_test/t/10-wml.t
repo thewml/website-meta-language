@@ -1,6 +1,6 @@
 
 require "TEST.pl";
-&TEST::init;
+TEST::init();
 
 print "1..4\n";
 
@@ -10,7 +10,7 @@ print "1..4\n";
 
 $pass = "1-9";
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 foo bar baz quux
 öäüÖÄÜß
 !"§$%&/()=?`'*+
@@ -20,7 +20,7 @@ foo bar baz quux
 !"§$%&/()=?`'*+
 EOT_OUT
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=');
+TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=');
 <protect pass=2-9>\
 $(bar)
 $(void)
@@ -34,5 +34,5 @@ EOT_IN
 .
 EOT_OUT
 
-&TEST::cleanup;
+TEST::cleanup();
 
