@@ -3,6 +3,9 @@
 ##  [automatically generated and maintained by GNU shtool]
 ##
 
+use strict;
+use warnings;
+
 my $slice_version = {
     'v_hex'   => 0x103208,
     'v_short' => "1.3.8",
