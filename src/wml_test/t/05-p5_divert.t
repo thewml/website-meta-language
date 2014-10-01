@@ -1,16 +1,20 @@
 
-require "TEST.pl";
-&TEST::init;
+use strict;
+use warnings;
 
-print "1..2\n";
+
+use WmlTest;
+WmlTest::init();
+
+use Test::More tests => 2;
 
 #
 #   TEST 1-2: throughput
 #
 
-$pass = 5;
+my $pass = 5;
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 FOO
 <<BAR>>
 QUUX
@@ -26,5 +30,5 @@ QUUX
 
 EOT_OUT
 
-&TEST::cleanup;
+WmlTest::cleanup();
 
