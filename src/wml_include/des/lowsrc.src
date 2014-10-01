@@ -1,6 +1,6 @@
 ##
 ##  wml::des::lowsrc - Create Image and LOWSRC-Attribute for IMG-Tag
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #use wml::std::tags

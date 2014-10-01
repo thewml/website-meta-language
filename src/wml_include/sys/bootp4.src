@@ -1,6 +1,6 @@
 ##
 ##  wml::sys::bootp4 -- WML Bootstrap Code for pass 4 (gm4)
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 1999-2001 Denis Barbier
 ##
 m4_changequote()m4_changequote(`,')m4_dnl

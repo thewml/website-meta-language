@@ -1,6 +1,6 @@
 ##
 ##  wml::des::gfont - Graphical Font Tag
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -55,7 +55,7 @@ sub write_gfont_info {
                  <get-var WML_SRC_BASENAME /> /> />
 <perl>
 {
-    #   import attributes to ePerl 
+    #   import attributes to ePerl
     my $base    = '<get-var base />';
     my $color   = '<get-var color />';
     my $bgcolor = '<get-var bgcolor />';
@@ -124,7 +124,7 @@ sub write_gfont_info {
     }
     else {
         # default is black
-        $color = '-f 000000'; 
+        $color = '-f 000000';
     }
     $align = " align=$align" if ($align ne '');
 

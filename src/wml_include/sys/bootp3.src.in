@@ -1,10 +1,10 @@
 ##
 ##  wml::sys::bootp3 -- WML Bootstrap Code for pass 3 (ePerl)
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 <:
 BEGIN {
-    #   don't use "use lib" here because this leads to conflict 
+    #   don't use "use lib" here because this leads to conflict
     #   warnings from "lib.pm" when using a Perl runtime system
     #   which is different from the one used under compile time.
     # get rid of nasty warnings
