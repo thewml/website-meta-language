@@ -51,7 +51,7 @@ if ($is_interactive)
 }
 else
 {
-    exec {'prove' } ('prove', glob('t/{02,03}-*.t'));
+    exec {'prove' } ('prove', glob('t/{02,03,05,06,07,08,09}-*.t'));
 }
 
 =head1 COPYRIGHT & LICENSE
