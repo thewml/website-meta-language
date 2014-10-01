@@ -5,6 +5,25 @@ SET(intermediate "${CMAKE_CURRENT_BINARY_DIR}/${intermediatebase}")
 SET(destbase "${BASENAME}.pl")
 SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
 
+SET (yyperl "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.pl")
+SET (yytab "${CMAKE_CURRENT_SOURCE_DIR}/SliceTermParser.pm")
+
+ADD_CUSTOM_COMMAND(
+    OUTPUT "${yyperl}"
+    COMMAND "${PERL_EXECUTABLE}"
+    ARGS "-lap" "${CMAKE_CURRENT_SOURCE_DIR}/etc/p1.pl" "<" "${yytab}"
+        ">" "${yyperl}"
+    DEPENDS "${yytab}"
+)
+
+ADD_CUSTOM_COMMAND(
+    OUTPUT "${yytab}"
+    COMMAND "pbyacc"
+    ARGS "-l" "-P" "SliceTermParser" "slice_term.y"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.y"
+)
+
 ADD_CUSTOM_COMMAND(
     OUTPUT "${intermediate}"
     COMMAND "${PERL_EXECUTABLE}"
@@ -13,6 +32,13 @@ ADD_CUSTOM_COMMAND(
          "${intermediate}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     DEPENDS "${src}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_pass1.pl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_pass2.pl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_pass3.pl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_setup.pl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.pl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_util.pl"
+    "${CMAKE_CURRENT_SOURCE_DIR}/slice_vers.pl"
 )
 
 ADD_CUSTOM_TARGET(
