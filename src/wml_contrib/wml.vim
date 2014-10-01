@@ -22,25 +22,25 @@ syn region  htmlTag  start=+<[^/<]+ end=+>+  contains=htmlTagN,htmlString,htmlAr
 
 "
 " Add in extra Arguments used by wml
-syn keyword htmlTagName contained gfont imgbg imgdot lowsrc 
+syn keyword htmlTagName contained gfont imgbg imgdot lowsrc
 syn keyword htmlTagName contained navbar:define navbar:header
 syn keyword htmlTagName contained navbar:footer navbar:prolog
 syn keyword htmlTagName contained navbar:epilog navbar:button
 syn keyword htmlTagName contained navbar:filter navbar:debug
 syn keyword htmlTagName contained navbar:render
-syn keyword htmlTagName contained preload rollover 
+syn keyword htmlTagName contained preload rollover
 syn keyword htmlTagName contained space hspace vspace over
 syn keyword htmlTagName contained ps ds pi ein big sc spaced headline
 syn keyword htmlTagName contained ue subheadline zwue verbcode
 syn keyword htmlTagName contained isolatin pod sdf text url verbatim
 syn keyword htmlTagName contained xtable
-syn keyword htmlTagName contained csmap fsview import box 
+syn keyword htmlTagName contained csmap fsview import box
 syn keyword htmlTagName contained case:upper case:lower
 syn keyword htmlTagName contained grid cell info lang: logo page
 syn keyword htmlTagName contained set-var restore
 syn keyword htmlTagName contained array:push array:show set-var ifdef
 syn keyword htmlTagName contained say m4 symbol dump enter divert
-syn keyword htmlTagName contained toc 
+syn keyword htmlTagName contained toc
 " added due to request by Alfie [2000-09-19]
 syn keyword htmlTagName contained wml card do refresh oneevent catch spawn
 
@@ -89,7 +89,7 @@ if main_syntax != 'perl'
   syn region perlScript start=+<:+ keepend end=+:>+ contains=@wmlPerlScript,wmlPerlTag
   syn match    wmlPerlTag  contained "</*perl>" contains=wmlPerlTagN
   "syn match   wmlPerlTag  contained "</perl>" contains=wmlPerlTagN
-  syn keyword  wmlPerlTagN contained perl 
+  syn keyword  wmlPerlTagN contained perl
 
   hi link   wmlPerlTag  htmlTag
   hi link   wmlPerlTagN htmlStatement

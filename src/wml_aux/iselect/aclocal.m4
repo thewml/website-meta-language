@@ -10,7 +10,7 @@ dnl
 dnl
 dnl ##########################################################
 dnl ##
-dnl ##  support for User Variables 
+dnl ##  support for User Variables
 dnl ##
 dnl ##########################################################
 dnl
@@ -57,7 +57,7 @@ echo "" >>$ac_uvar_editfile
 dnl
 dnl
 dnl -----------
-dnl 
+dnl
 define(AC_UVAR_VERB,[dnl
 AC_UVAR_CODE(dnl
 cat >>$ac_uvar_editfile <<'EOF'
@@ -67,23 +67,23 @@ EOF
 ])dnl
 dnl
 dnl -----------
-dnl 
+dnl
 define(AC_SET,[dnl
 $1="$2"
 AC_SUBST($1) dnl
 ])dnl
 dnl
 dnl -----------
-dnl 
+dnl
 define(AC_UVAR_SET,[dnl
 AC_SET($1, $2) dnl
 AC_UVAR_CODE(dnl
     echo '$1="$2"' >>$ac_uvar_editfile
 )dnl
 ])dnl
-dnl 
+dnl
 dnl -----------
-dnl 
+dnl
 define(AC_UVAR_SETQUOTE,[dnl
 AC_SET($1, $2) dnl
 AC_UVAR_CODE(dnl
@@ -92,9 +92,9 @@ AC_UVAR_CODE(dnl
     echo '"' >>$ac_uvar_editfile
 )dnl
 ])dnl
-dnl 
+dnl
 dnl -----------
-dnl 
+dnl
 define(AC_UVAR_SETCHK,[dnl
 if test -z "[$]$1"; then
 AC_UVAR_SET($1, $2) dnl
@@ -113,7 +113,7 @@ fi
 ])dnl
 dnl
 dnl -----------
-dnl 
+dnl
 define(AC_UVAR_SETCHKQUOTE,[dnl
 if test -z "[$]$1"; then
 AC_UVAR_SET($1, $2) dnl
@@ -157,8 +157,8 @@ fi
 rm -f $ac_uvar_editfile
 )dnl
 ])dnl
-dnl 
-dnl 
+dnl
+dnl
 dnl
 dnl ##########################################################
 dnl ##

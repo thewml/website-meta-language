@@ -13,9 +13,9 @@
 /* Define if you have the ANSI C header files.  */
 #cmakedefine STDC_HEADERS
 
-#cmakedefine USE_NCURSES 
-#cmakedefine USE_SLCURSES 
-#cmakedefine USE_CURSES   
+#cmakedefine USE_NCURSES
+#cmakedefine USE_SLCURSES
+#cmakedefine USE_CURSES
 
 /* Define if you have the <stddef.h> header file.  */
 #cmakedefine HAVE_STDDEF_H

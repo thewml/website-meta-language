@@ -2,7 +2,7 @@ MP4H_DIR = ../wml_backend/p2_mp4h
 MP4H_min = $(MP4H_DIR)/Makefile.in
 MP4H_cfg = $(MP4H_DIR)/configure
 
-all: run_modules_file $(MP4H_min) $(MP4H_cfg) ../configure noautocache 
+all: run_modules_file $(MP4H_min) $(MP4H_cfg) ../configure noautocache
 
 ../configure: configure.ac aclocal.m4
 	rm -f ../configure

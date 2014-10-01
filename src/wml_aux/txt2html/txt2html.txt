@@ -179,6 +179,6 @@
      [-LO/+LO    ] | [--linkonly / --nolinkonly       ]
      [-db <n>    ] | [--debug <n>                     ]
 
-  More complete explanations of these options can be found in 
+  More complete explanations of these options can be found in
   comments near the beginning of the script.
 

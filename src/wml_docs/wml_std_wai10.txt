@@ -1,6 +1,6 @@
 
-   W3C 
-   
+   W3C
+
 Web Content Accessibility Guidelines 1.0
 
 W3C Recommendation 5-May-1999
@@ -9,25 +9,25 @@ W3C Recommendation 5-May-1999
           http://www.w3.org/TR/1999/WAI-WEBCONTENT-19990505
           (plain text, PostScript, PDF, gzip tar file of HTML,
           zip archive of HTML)
-          
+
    Latest version:
           http://www.w3.org/TR/WAI-WEBCONTENT
-          
+
    Previous version:
           http://www.w3.org/TR/1999/WAI-WEBCONTENT-19990324
-          
+
    Editors:
           Wendy Chisholm, Trace R & D Center, University of
           Wisconsin -- Madison
           Gregg Vanderheiden, Trace R & D Center, University of
           Wisconsin -- Madison
           Ian Jacobs, W3C
-          
+
    Copyright © 1999 W3C (MIT, INRIA, Keio), All Rights Reserved.
    W3C liability, trademark, document use and software licensing
    rules apply.
      _________________________________________________________
-   
+
 Abstract
 
    These guidelines explain how to make Web content accessible to
@@ -45,7 +45,7 @@ Abstract
    quickly. These guidelines do not discourage content developers
    from using images, video, etc., but rather explain how to make
    multimedia content more accessible to a wide audience.
-   
+
    This is a reference document for accessibility principles and
    design ideas. Some of the strategies discussed in this
    document address certain Web internationalization and mobile
@@ -54,13 +54,13 @@ Abstract
    of other W3C Activities. Please consult the W3C Mobile Access
    Activity home page and the W3C Internationalization Activity
    home page for more information.
-   
+
    This document is meant to be stable and therefore does not
    provide specific information about browser support for
    different technologies as that information changes rapidly.
    Instead, the Web Accessibility Initiative (WAI) Web site
    provides such information (refer to [WAI-UA-SUPPORT]).
-   
+
    This document includes an appendix that organizes all of the
    checkpoints by topic and priority. The checkpoints in the
    appendix link to their definitions in the current document.
@@ -68,7 +68,7 @@ Abstract
    multimedia, tables, frames, forms, and scripts. The appendix
    is available as either a tabular summary of checkpoints or as
    a simple list of checkpoints.
-   
+
    A separate document, entitled "Techniques for Web Content
    Accessibility Guidelines 1.0" ([TECHNIQUES]), explains how to
    implement the checkpoints defined in the current document. The
@@ -85,13 +85,13 @@ Abstract
    or multimedia tools may support the features described in the
    guidelines. In particular, new features of HTML 4.0 or CSS 1
    or CSS 2 may not be supported.
-   
+
    "Web Content Accessibility Guidelines 1.0" is part of a series
    of accessibility guidelines published by the Web Accessibility
    Initiative. The series also includes User Agent Accessibility
    Guidelines ([WAI-USERAGENT]) and Authoring Tool Accessibility
    Guidelines ([WAI-AUTOOLS]).
-   
+
 Status of this document
 
    This document has been reviewed by W3C Members and other
@@ -102,24 +102,24 @@ Status of this document
    to draw attention to the specification and to promote its
    widespread deployment. This enhances the functionality and
    universality of the Web.
-   
+
    The English version of this specification is the only
    normative version. However, for translations in other
    languages see
    http://www.w3.org/WAI/GL/WAI-WEBCONTENT-TRANSLATIONS.
-   
+
    The list of known errors in this document is available at
    http://www.w3.org/WAI/GL/WAI-WEBCONTENT-ERRATA. Please report
    errors in this document to wai-wcag-editor@w3.org.
-   
+
    A list of current W3C Recommendations and other technical
    documents can be found at http://www.w3.org/TR.
-   
+
    This document has been produced as part of the W3C Web
    Accessibility Initiative. The goal of the Web Content
    Guidelines Working Group is discussed in the Working Group
    charter.
-   
+
 Table of Contents
 
      * Abstract
@@ -152,15 +152,15 @@ Table of Contents
           + 13. Provide clear navigation mechanisms.
           + 14. Ensure that documents are clear and simple.
      * Appendix A. -- Validation
-     * Appendix B. -- Glossary 
+     * Appendix B. -- Glossary
      * Acknowledgments
      * References
-       
+
    The appendix list of checkpoints is available as either a
    tabular summary of checkpoints or as a simple list of
    checkpoints.
      _________________________________________________________
-   
+
 1. Introduction
 
    For those unfamiliar with accessibility issues pertaining to
@@ -181,7 +181,7 @@ Table of Contents
      * They may have an early version of a browser, a different
        browser entirely, a voice browser, or a different
        operating system.
-       
+
    Content developers must consider these different situations
    during page design. While there are several situations to
    consider, each accessible design choice generally benefits
@@ -191,7 +191,7 @@ Table of Contents
    have more control over their pages, make those pages more
    accessible to people with low vision, and by sharing the style
    sheets, will often shorten page download times for all users.
-   
+
    The guidelines discuss accessibility issues and provide
    accessible design solutions. They address typical scenarios
    (similar to the font style example) that may pose problems for
@@ -204,7 +204,7 @@ Table of Contents
    avoiding images as a way to improve accessibility. Instead,
    they explain that providing a text equivalent of the image
    will make it accessible.
-   
+
    How does a text equivalent make the image accessible? Both
    words in "text equivalent" are important:
      * Text content can be presented to the user as synthesized
@@ -230,17 +230,17 @@ Table of Contents
        function or purpose for the user with a disability as the
        image does for other users, then it can be considered a
        text equivalent.
-       
+
    Note that, in addition to benefitting users with disabilities,
    text equivalents can help all users find pages more quickly,
    since search robots can use the text when indexing the pages.
-   
+
    While Web content developers must provide text equivalents for
    images and other multimedia content, it is the responsibility
    of user agents (e.g., browsers and assistive technologies such
    as screen readers, braille displays, etc.) to present the
    information to the user.
-   
+
    Non-text equivalents of text (e.g., icons, pre-recorded
    speech, or a video of a person translating the text into sign
    language) can make documents accessible to people who may have
@@ -251,15 +251,15 @@ Table of Contents
    non-text equivalent of visual information. An auditory
    description of a multimedia presentation's visual track
    benefits people who cannot see the visual information.
-   
+
 2. Themes of Accessible Design
 
    The guidelines address two general themes: ensuring graceful
    transformation, and making content understandable and
    navigable.
-   
+
   2.1 Ensuring Graceful Transformation
-  
+
    By following these guidelines, content developers can create
    pages that transform gracefully. Pages that transform
    gracefully remain accessible despite any of the constraints
@@ -284,12 +284,12 @@ Table of Contents
        Pages should be usable by people without mice, with small
        screens, low resolution screens, black and white screens,
        no screens, with only voice or text output, etc.
-       
+
    The theme of graceful transformation is addressed primarily by
    guidelines 1 to 11.
-   
+
   2.2 Making Content Understandable and Navigable
-  
+
    Content developers should make content understandable and
    navigable. This includes not only making the language clear
    and simple, but also providing understandable mechanisms for
@@ -305,10 +305,10 @@ Table of Contents
    time (small display, or a magnified display). Without
    orientation information, users may not be able to understand
    very large tables, lists, menus, etc.
-   
+
    The theme of making content understandable and navigable is
    addressed primarily in guidelines 12 to 14.
-   
+
 3. How the Guidelines are Organized
 
    This document includes fourteen guidelines, or general
@@ -322,7 +322,7 @@ Table of Contents
      * The rationale behind the guideline and some groups of
        users who benefit from it.
      * A list of checkpoint definitions.
-       
+
    The checkpoint definitions in each guideline explain how the
    guideline applies in typical content development scenarios.
    Each checkpoint definition includes:
@@ -335,49 +335,49 @@ Table of Contents
      * A link to a section of the Techniques Document
        ([TECHNIQUES]) where implementations and examples of the
        checkpoint are discussed.
-       
+
    Each checkpoint is intended to be specific enough so that
    someone reviewing a page or site may verify that the
    checkpoint has been satisfied.
-   
+
   3.1 Document conventions
-  
+
    The following editorial conventions are used throughout this
    document:
      * Element names are in uppercase letters.
      * Attribute names are quoted in lowercase letters.
      * Links to definitions are highlighted through the use of
        style sheets.
-       
+
 4. Priorities
 
    Each checkpoint has a priority level assigned by the Working
    Group based on the checkpoint's impact on accessibility.
-   
+
    [Priority 1]
           A Web content developer must satisfy this checkpoint.
           Otherwise, one or more groups will find it impossible
           to access information in the document. Satisfying this
           checkpoint is a basic requirement for some groups to be
           able to use Web documents.
-          
+
    [Priority 2]
           A Web content developer should satisfy this checkpoint.
           Otherwise, one or more groups will find it difficult to
           access information in the document. Satisfying this
           checkpoint will remove significant barriers to
           accessing Web documents.
-          
+
    [Priority 3]
           A Web content developer may address this checkpoint.
           Otherwise, one or more groups will find it somewhat
           difficult to access information in the document.
           Satisfying this checkpoint will improve access to Web
           documents.
-          
+
    Some checkpoints specify a priority level that may change
    under certain (indicated) conditions.
-   
+
 5. Conformance
 
    This section defines three levels of conformance to this
@@ -388,13 +388,13 @@ Table of Contents
        checkpoints are satisfied;
      * Conformance Level "Triple-A": all Priority 1, 2, and 3
        checkpoints are satisfied;
-       
+
    Note. Conformance levels are spelled out in text so they may
    be understood when rendered to speech.
-   
+
    Claims of conformance to this document must use one of the
    following two forms.
-   
+
    Form 1: Specify:
      * The guidelines title: "Web Content Accessibility
        Guidelines 1.0"
@@ -404,32 +404,32 @@ Table of Contents
        "Triple-A".
      * The scope covered by the claim (e.g., page, site, or
        defined portion of a site.).
-       
+
    Example of Form 1:
-   
+
      This page conforms to W3C's "Web Content Accessibility
      Guidelines 1.0", available at
      http://www.w3.org/TR/1999/WAI-WEBCONTENT-19990505, level
      Double-A.
-     
+
    Form 2: Include, on each page claiming conformance, one of
    three icons provided by W3C and link the icon to the
    appropriate W3C explanation of the claim. Information about
    the icons and how to insert them in pages is available at
    [WCAG-ICONS].
      _________________________________________________________
-   
+
 6. Web Content Accessibility Guidelines
 
   Guideline 1. Provide equivalent alternatives to auditory and visual
   content.
-  
-   Next guideline: 2 Previous guideline: 14 Go to contents 
-   
+
+   Next guideline: 2 Previous guideline: 14 Go to contents
+
     Provide content that, when presented to the user, conveys
     essentially the same function or purpose as auditory or visual
     content.
-    
+
    Although some people cannot use images, movies, sounds,
    applets, etc. directly, they may still use pages that include
    equivalent information to the visual or auditory content. The
@@ -441,7 +441,7 @@ Table of Contents
    content (e.g., for complex charts, billboards, or diagrams) or
    the sound of auditory content (e.g., for audio samples used in
    education).
-   
+
    This guideline emphasizes the importance of providing text
    equivalents of non-text content (images, pre-recorded audio,
    video). The power of text equivalents lies in their capacity
@@ -457,7 +457,7 @@ Table of Contents
    as many individuals whose only sensory disability is
    blindness. Text displayed visually benefits users who are deaf
    as well as the majority of Web users.
-   
+
    Providing non-text equivalents (e.g., pictures, videos, and
    pre-recorded audio) of text is also beneficial to some users,
    especially nonreaders or people who have difficulty reading.
@@ -467,9 +467,9 @@ Table of Contents
    verbal descriptions of this visual information are provided,
    people who cannot see (or look at) the visual content will not
    be able to perceive it.
-   
+
     Checkpoints:
-    
+
    1.1 Provide a text equivalent for every non-text element
           (e.g., via "alt", "longdesc", or in element content).
           This includes: images, graphical representations of
@@ -481,7 +481,7 @@ Table of Contents
           audio files, audio tracks of video, and video.
           [Priority 1]
           For example, in HTML:
-          
+
           + Use "alt" for the IMG, INPUT, and APPLET elements, or
             provide a text equivalent in the content of the
             OBJECT and APPLET elements.
@@ -493,16 +493,16 @@ Table of Contents
           + For image maps, either use the "alt" attribute with
             AREA, or use the MAP element with A elements (and
             other text) as content.
-            
+
           Refer also to checkpoint 9.1 and checkpoint 13.10.
-          
+
           Techniques for checkpoint 1.1
-          
+
    1.2 Provide redundant text links for each active region of a
           server-side image map. [Priority 1]
           Refer also to checkpoint 1.5 and checkpoint 9.1.
           Techniques for checkpoint 1.2
-          
+
    1.3 Until user agents can automatically read aloud the text
           equivalent of a visual track, provide an auditory
           description of the important information of the visual
@@ -512,26 +512,26 @@ Table of Contents
           for information about textual equivalents for visual
           information.
           Techniques for checkpoint 1.3
-          
+
    1.4 For any time-based multimedia presentation (e.g., a movie
           or animation), synchronize equivalent alternatives
           (e.g., captions or auditory descriptions of the visual
           track) with the presentation. [Priority 1]
           Techniques for checkpoint 1.4
-          
+
    1.5 Until user agents render text equivalents for client-side
           image map links, provide redundant text links for each
           active region of a client-side image map. [Priority 3]
           Refer also to checkpoint 1.2 and checkpoint 9.1.
           Techniques for checkpoint 1.5
-          
+
   Guideline 2. Don't rely on color alone.
-  
-   Next guideline: 3 Previous guideline: 1 Go to contents 
-   
+
+   Next guideline: 3 Previous guideline: 1 Go to contents
+
     Ensure that text and graphics are understandable when viewed
     without color.
-    
+
    If color alone is used to convey information, people who
    cannot differentiate between certain colors and users with
    devices that have non-color or non-visual displays will not
@@ -539,29 +539,29 @@ Table of Contents
    are too close to the same hue, they may not provide sufficient
    contrast when viewed using monochrome displays or by people
    with different types of color deficits.
-   
+
     Checkpoints:
-    
+
    2.1 Ensure that all information conveyed with color is also
           available without color, for example from context or
           markup. [Priority 1]
           Techniques for checkpoint 2.1
-          
+
    2.2 Ensure that foreground and background color combinations
           provide sufficient contrast when viewed by someone
           having color deficits or when viewed on a black and
           white screen. [Priority 2 for images, Priority 3 for
           text].
           Techniques for checkpoint 2.2
-          
+
   Guideline 3. Use markup and style sheets and do so properly.
-  
-   Next guideline: 4 Previous guideline: 2 Go to contents 
-   
+
+   Next guideline: 4 Previous guideline: 2 Go to contents
+
     Mark up documents with the proper structural elements. Control
     presentation with style sheets rather than with presentation
     elements and attributes.
-    
+
    Using markup improperly -- not according to specification --
    hinders accessibility. Misusing markup for a presentation
    effect (e.g., using a table for layout or a header to change
@@ -573,14 +573,14 @@ Table of Contents
    element) makes it difficult to render a page intelligibly to
    other devices (refer to the description of difference between
    content, structure, and presentation).
-   
+
    Content developers may be tempted to use (or misuse)
    constructs that achieve a desired formatting effect on older
    browsers. They must be aware that these practices cause
    accessibility problems and must consider whether the
    formatting effect is so critical as to warrant making the
    document inaccessible to some users.
-   
+
    At the other extreme, content developers must not sacrifice
    appropriate markup because a certain browser or assistive
    technology does not process it correctly. For example, it is
@@ -591,9 +591,9 @@ Table of Contents
    transform gracefully (refer to guideline 5) makes it possible
    for software to render tables other than as two-dimensional
    grids.
-   
+
     Checkpoints:
-    
+
    3.1 When an appropriate markup language exists, use markup
           rather than images to convey information. [Priority 2]
           For example, use MathML to mark up mathematical
@@ -602,20 +602,20 @@ Table of Contents
           use text and style sheets instead. Refer also to
           guideline 6 and guideline 11.
           Techniques for checkpoint 3.1
-          
+
    3.2 Create documents that validate to published formal
           grammars. [Priority 2]
           For example, include a document type declaration at the
           beginning of a document that refers to a published DTD
           (e.g., the strict HTML 4.0 DTD).
           Techniques for checkpoint 3.2
-          
+
    3.3 Use style sheets to control layout and presentation.
           [Priority 2]
           For example, use the CSS 'font' property instead of the
           HTML FONT element to control font styles.
           Techniques for checkpoint 3.3
-          
+
    3.4 Use relative rather than absolute units in markup language
           attribute values and style sheet property values.
           [Priority 2]
@@ -624,31 +624,31 @@ Table of Contents
           absolute units are used, validate that the rendered
           content is usable (refer to the section on validation).
           Techniques for checkpoint 3.4
-          
+
    3.5 Use header elements to convey document structure and use
           them according to specification. [Priority 2]
           For example, in HTML, use H2 to indicate a subsection
           of H1. Do not use headers for font effects.
           Techniques for checkpoint 3.5
-          
+
    3.6 Mark up lists and list items properly. [Priority 2]
           For example, in HTML, nest OL, UL, and DL lists
           properly.
           Techniques for checkpoint 3.6
-          
+
    3.7 Mark up quotations. Do not use quotation markup for
           formatting effects such as indentation. [Priority 2]
           For example, in HTML, use the Q and BLOCKQUOTE elements
           to markup short and longer quotations, respectively.
           Techniques for checkpoint 3.7
-          
+
   Guideline 4. Clarify natural language usage
-  
-   Next guideline: 5 Previous guideline: 3 Go to contents 
-   
+
+   Next guideline: 5 Previous guideline: 3 Go to contents
+
     Use markup that facilitates pronunciation or interpretation of
     abbreviated or foreign text.
-    
+
    When content developers mark up natural language changes in a
    document, speech synthesizers and braille devices can
    automatically switch to the new language, making the document
@@ -657,27 +657,27 @@ Table of Contents
    document's content (through markup or HTTP headers). Content
    developers should also provide expansions of abbreviations and
    acronyms.
-   
+
    In addition to helping assistive technologies, natural
    language markup allows search engines to find key words and
    identify documents in a desired language. Natural language
    markup also improves readability of the Web for all people,
    including those with learning disabilities, cognitive
    disabilities, or people who are deaf.
-   
+
    When abbreviations and natural language changes are not
    identified, they may be indecipherable when machine-spoken or
    brailled.
-   
+
     Checkpoints:
-    
+
    4.1 Clearly identify changes in the natural language of a
           document's text and any text equivalents (e.g.,
           captions). [Priority 1]
           For example, in HTML use the "lang" attribute. In XML,
           use "xml:lang".
           Techniques for checkpoint 4.1
-          
+
    4.2 Specify the expansion of each abbreviation or acronym in a
           document where it first occurs. [Priority 3]
           For example, in HTML, use the "title" attribute of the
@@ -685,7 +685,7 @@ Table of Contents
           the main body of the document also helps document
           usability.
           Techniques for checkpoint 4.2
-          
+
    4.3 Identify the primary natural language of a document.
           [Priority 3]
           For example, in HTML set the "lang" attribute on the
@@ -695,40 +695,40 @@ Table of Contents
           14.13) so that clients can automatically retrieve
           documents of the preferred language.
           Techniques for checkpoint 4.3
-          
+
   Guideline 5. Create tables that transform gracefully.
-  
-   Next guideline: 6 Previous guideline: 4 Go to contents 
-   
+
+   Next guideline: 6 Previous guideline: 4 Go to contents
+
     Ensure that tables have necessary markup to be transformed by
     accessible browsers and other user agents.
-    
+
    Tables should be used to mark up truly tabular information
    ("data tables"). Content developers should avoid using them to
    lay out pages ("layout tables"). Tables for any use also
    present special problems to users of screen readers (refer to
    checkpoint 10.3).
-   
+
    Some user agents allow users to navigate among table cells and
    access header and other table cell information. Unless
    marked-up properly, these tables will not provide user agents
    with the appropriate information. (Refer also to guideline 3.)
-   
+
    The following checkpoints will directly benefit people who
    access a table through auditory means (e.g., a screen reader
    or an automobile-based personal computer) or who view only a
    portion of the page at a time (e.g., users with blindness or
    low vision using speech output or a braille display, or other
    users of devices with small displays, etc.).
-   
+
     Checkpoints:
-    
+
    5.1 For data tables, identify row and column headers.
           [Priority 1]
           For example, in HTML, use TD to identify data cells and
           TH to identify headers.
           Techniques for checkpoint 5.1
-          
+
    5.2 For data tables that have two or more logical levels of
           row or column headers, use markup to associate data
           cells and header cells. [Priority 1]
@@ -737,7 +737,7 @@ Table of Contents
           "axis", "scope", and "headers" attributes, to describe
           more complex relationships among data.
           Techniques for checkpoint 5.2
-          
+
    5.3 Do not use tables for layout unless the table makes sense
           when linearized. Otherwise, if the table does not make
           sense, provide an alternative equivalent (which may be
@@ -746,7 +746,7 @@ Table of Contents
           tables should not be used for layout. Refer also to
           checkpoint 3.3.
           Techniques for checkpoint 5.3
-          
+
    5.4 If a table is used for layout, do not use any structural
           markup for the purpose of visual formatting.
           [Priority 2]
@@ -754,35 +754,35 @@ Table of Contents
           the content of a (non-table header) cell to be
           displayed centered and in bold.
           Techniques for checkpoint 5.4
-          
+
    5.5 Provide summaries for tables. [Priority 3]
           For example, in HTML, use the "summary" attribute of
           the TABLE element.
           Techniques for checkpoint 5.5
-          
+
    5.6 Provide abbreviations for header labels. [Priority 3]
           For example, in HTML, use the "abbr" attribute on the
           TH element.
           Techniques for checkpoint 5.6
-          
+
    Refer also to checkpoint 10.3.
-   
+
   Guideline 6. Ensure that pages featuring new technologies transform
   gracefully.
-  
-   Next guideline: 7 Previous guideline: 5 Go to contents 
-   
+
+   Next guideline: 7 Previous guideline: 5 Go to contents
+
     Ensure that pages are accessible even when newer technologies are
     not supported or are turned off.
-    
+
    Although content developers are encouraged to use new
    technologies that solve problems raised by existing
    technologies, they should know how to make their pages still
    work with older browsers and people who choose to turn off
    features.
-   
+
     Checkpoints:
-    
+
    6.1 Organize documents so they may be read without style
           sheets. For example, when an HTML document is rendered
           without associated style sheets, it must still be
@@ -791,11 +791,11 @@ Table of Contents
           rendered in a meaningful order when style sheets are
           turned off or not supported.
           Techniques for checkpoint 6.1
-          
+
    6.2 Ensure that equivalents for dynamic content are updated
           when the dynamic content changes. [Priority 1]
           Techniques for checkpoint 6.2
-          
+
    6.3 Ensure that pages are usable when scripts, applets, or
           other programmatic objects are turned off or not
           supported. If this is not possible, provide equivalent
@@ -811,28 +811,28 @@ Table of Contents
           accessible page as per checkpoint 11.4. Refer also to
           guideline 1.
           Techniques for checkpoint 6.3
-          
+
    6.4 For scripts and applets, ensure that event handlers are
           input device-independent. [Priority 2]
           Refer to the definition of device independence.
           Techniques for checkpoint 6.4
-          
+
    6.5 Ensure that dynamic content is accessible or provide an
           alternative presentation or page. [Priority 2]
           For example, in HTML, use NOFRAMES at the end of each
           frameset. For some applications, server-side scripts
           may be more accessible than client-side scripts.
           Techniques for checkpoint 6.5
-          
+
    Refer also to checkpoint 11.4.
-   
+
   Guideline 7. Ensure user control of time-sensitive content changes.
-  
-   Next guideline: 8 Previous guideline: 6 Go to contents 
-   
+
+   Next guideline: 8 Previous guideline: 6 Go to contents
+
     Ensure that moving, blinking, scrolling, or auto-updating objects
     or pages may be paused or stopped.
-    
+
    Some people with cognitive or visual disabilities are unable
    to read moving text quickly enough or at all. Movement can
    also cause such a distraction that the rest of the page
@@ -840,13 +840,13 @@ Table of Contents
    Screen readers are unable to read moving text. People with
    physical disabilities might not be able to move quickly or
    accurately enough to interact with moving objects.
-   
+
    Note. All of the following checkpoints involve some content
    developer responsibility until user agents provide adequate
    feature control mechanisms.
-   
+
     Checkpoints:
-    
+
    7.1 Until user agents allow users to control flickering, avoid
           causing the screen to flicker. [Priority 1]
           Note. People with photosensitive epilepsy can have
@@ -855,13 +855,13 @@ Table of Contents
           sensitivity at 20 flashes per second as well as quick
           changes from dark to light (like strobe lights).
           Techniques for checkpoint 7.1
-          
+
    7.2 Until user agents allow users to control blinking, avoid
           causing content to blink (i.e., change presentation at
           a regular rate, such as turning on and off).
           [Priority 2]
           Techniques for checkpoint 7.2
-          
+
    7.3 Until user agents allow users to freeze moving content,
           avoid movement in pages. [Priority 2]
           When a page includes moving content, provide a
@@ -871,7 +871,7 @@ Table of Contents
           or override the effect more easily. Refer also to
           guideline 8.
           Techniques for checkpoint 7.3
-          
+
    7.4 Until user agents provide the ability to stop the refresh,
           do not create periodically auto-refreshing pages.
           [Priority 2]
@@ -879,52 +879,52 @@ Table of Contents
           with "HTTP-EQUIV=refresh" until user agents allow users
           to turn off the feature.
           Techniques for checkpoint 7.4
-          
+
    7.5 Until user agents provide the ability to stop
           auto-redirect, do not use markup to redirect pages
           automatically. Instead, configure the server to perform
           redirects. [Priority 2]
           Techniques for checkpoint 7.5
-          
+
    Note. The BLINK and MARQUEE elements are not defined in any
    W3C HTML specification and should not be used. Refer also to
    guideline 11.
-   
+
   Guideline 8. Ensure direct accessibility of embedded user interfaces.
-  
-   Next guideline: 9 Previous guideline: 7 Go to contents 
-   
+
+   Next guideline: 9 Previous guideline: 7 Go to contents
+
     Ensure that the user interface follows principles of accessible
     design: device-independent access to functionality, keyboard
     operability, self-voicing, etc.
-    
+
    When an embedded object has its "own interface", the interface
    -- like the interface to the browser itself -- must be
    accessible. If the interface of the embedded object cannot be
    made accessible, an alternative accessible solution must be
    provided.
-   
+
    Note. For information about accessible interfaces, please
    consult the User Agent Accessibility Guidelines
    ([WAI-USERAGENT]) and the Authoring Tool Accessibility
    Guidelines ([WAI-AUTOOL]).
-   
+
     Checkpoint:
-    
+
    8.1 Make programmatic elements such as scripts and applets
           directly accessible or compatible with assistive
           technologies [Priority 1 if functionality is important
           and not presented elsewhere, otherwise Priority 2.]
           Refer also to guideline 6.
           Techniques for checkpoint 8.1
-          
+
   Guideline 9. Design for device-independence.
-  
-   Next guideline: 10 Previous guideline: 8 Go to contents 
-   
+
+   Next guideline: 10 Previous guideline: 8 Go to contents
+
     Use features that enable activation of page elements via a variety
     of input devices.
-    
+
    Device-independent access means that the user may interact
    with the user agent or document with a preferred input (or
    output) device -- mouse, keyboard, voice, head wand, or other.
@@ -933,60 +933,60 @@ Table of Contents
    without sight, with voice input, or with a keyboard or who is
    using some other non-pointing input device will not be able to
    use the form.
-   
+
    Note. Providing text equivalents for image maps or images used
    as links makes it possible for users to interact with them
    without a pointing device. Refer also to guideline 1.
-   
+
    Generally, pages that allow keyboard interaction are also
    accessible through speech input or a command line interface.
-   
+
     Checkpoints:
-    
+
    9.1 Provide client-side image maps instead of server-side
           image maps except where the regions cannot be defined
           with an available geometric shape. [Priority 1]
           Refer also to checkpoint 1.1, checkpoint 1.2, and
           checkpoint 1.5.
           Techniques for checkpoint 9.1
-          
+
    9.2 Ensure that any element that has its own interface can be
           operated in a device-independent manner. [Priority 2]
           Refer to the definition of device independence.
           Refer also to guideline 8.
           Techniques for checkpoint 9.2
-          
+
    9.3 For scripts, specify logical event handlers rather than
           device-dependent event handlers. [Priority 2]
           Techniques for checkpoint 9.3
-          
+
    9.4 Create a logical tab order through links, form controls,
           and objects. [Priority 3]
           For example, in HTML, specify tab order via the
           "tabindex" attribute or ensure a logical page design.
           Techniques for checkpoint 9.4
-          
+
    9.5 Provide keyboard shortcuts to important links (including
           those in client-side image maps), form controls, and
           groups of form controls. [Priority 3]
           For example, in HTML, specify shortcuts via the
           "accesskey" attribute.
           Techniques for checkpoint 9.5
-          
+
   Guideline 10. Use interim solutions.
-  
-   Next guideline: 11 Previous guideline: 9 Go to contents 
-   
+
+   Next guideline: 11 Previous guideline: 9 Go to contents
+
     Use interim accessibility solutions so that assistive technologies
     and older browsers will operate correctly.
-    
+
    For example, older browsers do not allow users to navigate to
    empty edit boxes. Older screen readers read lists of
    consecutive links as one link. These active elements are
    therefore difficult or impossible to access. Also, changing
    the current window or popping up new windows can be very
    disorienting to users who cannot see that this has happened.
-   
+
    Note. The following checkpoints apply until user agents
    (including assistive technologies) address these issues. These
    checkpoints are classified as "interim", meaning that the Web
@@ -996,9 +996,9 @@ Table of Contents
    these checkpoints to be necessary in the future, once Web
    technologies have incorporated anticipated features or
    capabilities.
-   
+
     Checkpoints:
-    
+
    10.1 Until user agents allow users to turn off spawned
           windows, do not cause pop-ups or other windows to
           appear and do not change the current window without
@@ -1006,7 +1006,7 @@ Table of Contents
           For example, in HTML, avoid using a frame whose target
           is a new window.
           Techniques for checkpoint 10.1
-          
+
    10.2 Until user agents support explicit associations between
           labels and form controls, for all form controls with
           implicitly associated labels, ensure that the label is
@@ -1017,7 +1017,7 @@ Table of Contents
           only one label and one control per line). Refer also to
           checkpoint 12.4.
           Techniques for checkpoint 10.2
-          
+
    10.3 Until user agents (including assistive technologies)
           render side-by-side text correctly, provide a linear
           text alternative (on the current page or some other)
@@ -1030,29 +1030,29 @@ Table of Contents
           should not discourage content developers from using
           tables to represent tabular information.
           Techniques for checkpoint 10.3
-          
+
    10.4 Until user agents handle empty controls correctly,
           include default, place-holding characters in edit boxes
           and text areas. [Priority 3]
           For example, in HTML, do this for TEXTAREA and INPUT.
           Techniques for checkpoint 10.4
-          
+
    10.5 Until user agents (including assistive technologies)
           render adjacent links distinctly, include non-link,
           printable characters (surrounded by spaces) between
           adjacent links. [Priority 3]
           Techniques for checkpoint 10.5
-          
+
   Guideline 11. Use W3C technologies and guidelines.
-  
-   Next guideline: 12 Previous guideline: 10 Go to contents 
-   
+
+   Next guideline: 12 Previous guideline: 10 Go to contents
+
     Use W3C technologies (according to specification) and follow
     accessibility guidelines. Where it is not possible to use a W3C
     technology, or doing so results in material that does not transform
     gracefully, provide an alternative version of the content that is
     accessible.
-    
+
    The current guidelines recommend W3C technologies (e.g., HTML,
    CSS, etc.) for several reasons:
      * W3C technologies include "built-in" accessibility
@@ -1062,7 +1062,7 @@ Table of Contents
        phase.
      * W3C specifications are developed in an open, industry
        consensus process.
-       
+
    Many non-W3C formats (e.g., PDF, Shockwave, etc.) require
    viewing with either plug-ins or stand-alone applications.
    Often, these formats cannot be viewed or navigated with
@@ -1073,12 +1073,12 @@ Table of Contents
    variety of hardware and software. When inaccessible
    technologies (proprietary or not) must be used, equivalent
    accessible pages must be provided.
-   
+
    Even when W3C technologies are used, they must be used in
    accordance with accessibility guidelines. When using new
    technologies, ensure that they transform gracefully (Refer
    also to guideline 6.).
-   
+
    Note. Converting documents (from PDF, PostScript, RTF, etc.)
    to W3C markup languages (HTML, XML) does not always create an
    accessible document. Therefore, validate each page for
@@ -1087,9 +1087,9 @@ Table of Contents
    readily convert, either revise the page until its original
    representation converts appropriately or provide an HTML or
    plain text version.
-   
+
     Checkpoints:
-    
+
    11.1 Use W3C technologies when they are available and
           appropriate for a task and use the latest versions when
           supported. [Priority 2]
@@ -1098,27 +1098,27 @@ Table of Contents
           [WAI-UA-SUPPORT] for information about user agent
           support for W3C technologies.
           Techniques for checkpoint 11.1
-          
+
    11.2 Avoid deprecated features of W3C technologies.
           [Priority 2]
           For example, in HTML, don't use the deprecated FONT
           element; use style sheets instead (e.g., the 'font'
           property in CSS).
           Techniques for checkpoint 11.2
-          
+
    11.3 Provide information so that users may receive documents
           according to their preferences (e.g., language, content
           type, etc.) [Priority 3]
           Note. Use content negotiation where possible.
           Techniques for checkpoint 11.3
-          
+
    11.4 If, after best efforts, you cannot create an accessible
           page, provide a link to an alternative page that uses
           W3C technologies, is accessible, has equivalent
           information (or functionality), and is updated as often
           as the inaccessible (original) page. [Priority 1]
           Techniques for checkpoint 11.4
-          
+
    Note. Content developers should only resort to alternative
    pages when other solutions fail because alternative pages are
    generally updated less often than "primary" pages. An
@@ -1132,35 +1132,35 @@ Table of Contents
    alternative pages, or both. Before resorting to an alternative
    page, reconsider the design of the original page; making it
    accessible is likely to improve it for all users.
-   
+
   Guideline 12. Provide context and orientation information.
-  
-   Next guideline: 13 Previous guideline: 11 Go to contents 
-   
+
+   Next guideline: 13 Previous guideline: 11 Go to contents
+
     Provide context and orientation information to help users
     understand complex pages or elements.
-    
+
    Grouping elements and providing contextual information about
    the relationships between elements can be useful for all
    users. Complex relationships between parts of a page may be
    difficult for people with cognitive disabilities and people
    with visual disabilities to interpret.
-   
+
     Checkpoints:
-    
+
    12.1 Title each frame to facilitate frame identification and
           navigation. [Priority 1]
           For example, in HTML use the "title" attribute on FRAME
           elements.
           Techniques for checkpoint 12.1
-          
+
    12.2 Describe the purpose of frames and how frames relate to
           each other if it is not obvious by frame titles alone.
           [Priority 2]
           For example, in HTML, use "longdesc," or a description
           link.
           Techniques for checkpoint 12.2
-          
+
    12.3 Divide large blocks of information into more manageable
           groups where natural and appropriate. [Priority 2]
           For example, in HTML, use OPTGROUP to group OPTION
@@ -1169,27 +1169,27 @@ Table of Contents
           appropriate; use headings to structure documents, etc.
           Refer also to guideline 3.
           Techniques for checkpoint 12.3
-          
+
    12.4 Associate labels explicitly with their controls.
           [Priority 2]
           For example, in HTML use LABEL and its "for" attribute.
           Techniques for checkpoint 12.4
-          
+
   Guideline 13. Provide clear navigation mechanisms.
-  
-   Next guideline: 14 Previous guideline: 12 Go to contents 
-   
+
+   Next guideline: 14 Previous guideline: 12 Go to contents
+
     Provide clear and consistent navigation mechanisms -- orientation
     information, navigation bars, a site map, etc. -- to increase the
     likelihood that a person will find what they are looking for at a
     site.
-    
+
    Clear and consistent navigation mechanisms are important to
    people with cognitive disabilities or blindness, and benefit
    all users.
-   
+
     Checkpoints:
-    
+
    13.1 Clearly identify the target of each link. [Priority 2]
           Link text should be meaningful enough to make sense
           when read out of context -- either on its own or as
@@ -1201,7 +1201,7 @@ Table of Contents
           of a link with an informative link title (e.g., in
           HTML, the "title" attribute).
           Techniques for checkpoint 13.1
-          
+
    13.2 Provide metadata to add semantic information to pages and
           sites. [Priority 2]
           For example, use RDF ([RDF]) to indicate the document's
@@ -1212,31 +1212,31 @@ Table of Contents
           rel="next", rel="previous", rel="index", etc.). Refer
           also to checkpoint 13.5.
           Techniques for checkpoint 13.2
-          
+
    13.3 Provide information about the general layout of a site
           (e.g., a site map or table of contents). [Priority 2]
           In describing site layout, highlight and explain
           available accessibility features.
           Techniques for checkpoint 13.3
-          
+
    13.4 Use navigation mechanisms in a consistent manner.
           [Priority 2]
           Techniques for checkpoint 13.4
-          
+
    13.5 Provide navigation bars to highlight and give access to
           the navigation mechanism. [Priority 3]
           Techniques for checkpoint 13.5
-          
+
    13.6 Group related links, identify the group (for user
           agents), and, until user agents do so, provide a way to
           bypass the group. [Priority 3]
           Techniques for checkpoint 13.6
-          
+
    13.7 If search functions are provided, enable different types
           of searches for different skill levels and preferences.
           [Priority 3]
           Techniques for checkpoint 13.7
-          
+
    13.8 Place distinguishing information at the beginning of
           headings, paragraphs, lists, etc. [Priority 3]
           Note. This is commonly referred to as "front-loading"
@@ -1244,7 +1244,7 @@ Table of Contents
           information with serial devices such as speech
           synthesizers.
           Techniques for checkpoint 13.8
-          
+
    13.9 Provide information about document collections (i.e.,
           documents comprising multiple pages.). [Priority 3]
           For example, in HTML specify document collections with
@@ -1256,20 +1256,20 @@ Table of Contents
           processing can make browsing much less expensive for
           people with disabilities who may be browsing slowly.
           Techniques for checkpoint 13.9
-          
+
    13.10 Provide a means to skip over multi-line ASCII art.
           [Priority 3]
           Refer to checkpoint 1.1 and the example of ascii art in
           the glossary.
           Techniques for checkpoint 13.10
-          
+
   Guideline 14. Ensure that documents are clear and simple.
-  
-   Next guideline: 1 Previous guideline: 13 Go to contents 
-   
+
+   Next guideline: 1 Previous guideline: 13 Go to contents
+
     Ensure that documents are clear and simple so they may be more
     easily understood.
-    
+
    Consistent page layout, recognizable graphics, and easy to
    understand language benefit all users. In particular, they
    help people with cognitive disabilities or who have difficulty
@@ -1277,42 +1277,42 @@ Table of Contents
    for people who are blind, have low vision, or for any user who
    cannot or has chosen not to view graphics. Refer also to
    guideline 1.)
-   
+
    Using clear and simple language promotes effective
    communication. Access to written information can be difficult
    for people who have cognitive or learning disabilities. Using
    clear and simple language also benefits people whose first
    language differs from your own, including those people who
    communicate primarily in sign language.
-   
+
     Checkpoints:
-    
+
    14.1 Use the clearest and simplest language appropriate for a
           site's content. [Priority 1]
           Techniques for checkpoint 14.1
-          
+
    14.2 Supplement text with graphic or auditory presentations
           where they will facilitate comprehension of the page.
           [Priority 3]
           Refer also to guideline 1.
           Techniques for checkpoint 14.2
-          
+
    14.3 Create a style of presentation that is consistent across
           pages. [Priority 3]
           Techniques for checkpoint 14.3
      _________________________________________________________
-   
+
 Appendix A. -- Validation
 
    Validate accessibility with automatic tools and human review.
    Automated methods are generally rapid and convenient but
    cannot identify all accessibility issues. Human review can
    help ensure clarity of language and ease of navigation.
-   
+
    Begin using validation methods at the earliest stages of
    development. Accessibility issues identified early are easier
    to correct and avoid.
-   
+
    Following are some important validation methods, discussed in
    more detail in the section on validation in the Techniques
    Document.
@@ -1349,16 +1349,16 @@ Appendix A. -- Validation
        valuable feedback about accessibility or usability
        problems and their severity.
      _________________________________________________________
-   
+
 Appendix B. -- Glossary
 
    Accessible
           Content is accessible when it may be used by someone
           with a disability.
-          
+
    Applet
           A program inserted into a Web page.
-          
+
    Assistive technology
           Software or hardware that has been specifically
           designed to assist people with disabilities in carrying
@@ -1371,7 +1371,7 @@ Appendix B. -- Glossary
           graphical desktop browsers (among other user agents).
           Hardware assistive technologies include alternative
           keyboards and pointing devices.
-          
+
    ASCII art
           ASCII art refers to text characters and symbols that
           are combined to create an image. For example ";-)" is
@@ -1380,7 +1380,7 @@ Appendix B. -- Glossary
           photoconvulsive response in patients with eyes open and
           closed [skip over ascii figure or consult a description
           of chart]:
-          
+
 
   %   __ __ __ __ __ __ __ __ __ __ __ __ __ __
 100 |             *                             |
@@ -1402,11 +1402,11 @@ Appendix B. -- Glossary
           tools. Refer to the "Authoring Tool Accessibility
           Guidelines" ([WAI-AUTOOLS]) for information about
           developing accessible tools.
-          
+
    Backward compatible
           Design that continues to work with earlier versions of
           a language, program, etc.
-          
+
    Braille
           Braille uses six raised dots in different patterns to
           represent letters and numbers to be read by people who
@@ -1421,11 +1421,11 @@ Appendix B. -- Glossary
           range in size from one cell (six or eight dots) to an
           eighty-cell line, most having between twelve and twenty
           cells per line.
-          
+
    Content developer
           Someone who authors Web pages or designs Web sites.
-          
-   Deprecated 
+
+   Deprecated
           A deprecated element or attribute is one that has been
           outdated by newer constructs. Deprecated elements may
           become obsolete in future versions of HTML. The index
@@ -1435,7 +1435,7 @@ Appendix B. -- Glossary
           Authors should avoid using deprecated elements and
           attributes. User agents should continue to support for
           reasons of backward compatibility.
-          
+
    Device independent
           Users must be able to interact with a user agent (and
           the document it renders) using the supported input and
@@ -1452,7 +1452,7 @@ Appendix B. -- Glossary
           keyboard and mouse input, users should be able to
           interact with all features using either the keyboard or
           the mouse.
-          
+
    Document Content, Structure, and Presentation
           The content of a document refers to what it says to the
           user through natural language, images, sounds, movies,
@@ -1474,7 +1474,7 @@ Appendix B. -- Glossary
           presentation of the header might be a bold block text
           in the margin, a centered line of text, a title spoken
           with a certain voice style (like an aural font), etc.
-          
+
    Dynamic HTML (DHTML)
           DHTML is the marketing term applied to a mixture of
           standards including HTML, style sheets, the Document
@@ -1485,7 +1485,7 @@ Appendix B. -- Glossary
           related to scripting and style sheets: guideline 1,
           guideline 3, guideline 6, guideline 7, and guideline
           9.
-          
+
    Element
           This document uses the term "element" both in the
           strict SGML sense (an element is a syntactic construct)
@@ -1501,7 +1501,7 @@ Appendix B. -- Glossary
           information to be processed by a style sheet or script
           engine). An element that causes text characters to be
           part of the document is called a text element.
-          
+
    Equivalent
           Content is "equivalent" to other content when both
           fulfill essentially the same function or purpose upon
@@ -1580,10 +1580,10 @@ Appendix B. -- Glossary
           usually during natural pauses in the audio track.
           Auditory descriptions include information about
           actions, body language, graphics, and scene changes.
-          
+
    Image
           A graphical presentation.
-          
+
    Image map
           An image that has been divided into regions with
           associated actions. Clicking on an active region causes
@@ -1601,12 +1601,12 @@ Appendix B. -- Glossary
           Client-side image maps allow the user agent to provide
           immediate feedback as to whether or not the user's
           pointer is over an active region.
-          
+
    Important
           Information in a document is important if understanding
           that information is crucial to understanding the
           document.
-          
+
    Linearized table
           A table rendering process where the contents of the
           cells become a series of paragraphs (e.g., down the
@@ -1616,10 +1616,10 @@ Appendix B. -- Glossary
           should include structural elements (that create
           paragraphs, headers, lists, etc.) so the page makes
           sense after linearization.
-          
+
    Link text
           The rendered text content of a link.
-          
+
    Natural Language
           Spoken, written, or signed human languages such as
           French, Japanese, American Sign Language, and braille.
@@ -1627,44 +1627,44 @@ Appendix B. -- Glossary
           the "lang" attribute in HTML ([HTML40], section 8.1)
           and the "xml:lang" attribute in XML ([XML], section
           2.12).
-          
+
    Navigation Mechanism
           A navigation mechanism is any means by which a user can
           navigate a page or site. Some typical mechanisms
           include:
-          
+
         navigation bars
                 A navigation bar is a collection of links to the
                 most important parts of a document or site.
-                
+
         site maps
                 A site map provides a global view of the
                 organization of a page or site.
-                
+
         tables of contents
                 A table of contents generally lists (and links
                 to) the most important sections of a document.
-                
+
    Personal Digital Assistant (PDA)
           A PDA is a small, portable computing device. Most PDAs
           are used to track personal data such as calendars,
           contacts, and electronic mail. A PDA is generally a
           handheld device with a small screen that allows input
           from various sources.
-          
+
    Screen magnifier
           A software program that magnifies a portion of the
           screen, so that it can be more easily viewed. Screen
           magnifiers are used primarily by individuals with low
           vision.
-          
+
    Screen reader
           A software program that reads the contents of the
           screen aloud to a user. Screen readers are used
           primarily by individuals who are blind. Screen readers
           can usually only read text that is printed, not
           painted, to the screen.
-          
+
    Style sheets
           A style sheet is a set of statements that specify
           presentation of a document. Style sheets may have three
@@ -1679,7 +1679,7 @@ Appendix B. -- Glossary
           are not considered presentation markup since they
           convey information that is independent of a particular
           font style.
-          
+
    Tabular information
           When tables are used to represent logical relationships
           among data -- text, numbers, images, etc., that
@@ -1688,7 +1688,7 @@ Appendix B. -- Glossary
           expressed by a table may be rendered visually (usually
           on a two-dimensional grid), aurally (often preceding
           cells with header information), or in other formats.
-          
+
    Until user agents ...
           In most of the checkpoints, content developers are
           asked to ensure the accessibility of their pages and
@@ -1710,7 +1710,7 @@ Appendix B. -- Glossary
           accessibility features. Content developers are
           encouraged to consult this page regularly for updated
           information.
-          
+
    User agent
           Software to access Web content, including desktop
           graphical browsers, text browsers, voice browsers,
@@ -1719,16 +1719,16 @@ Appendix B. -- Glossary
           with browsers such as screen readers, screen
           magnifiers, and voice recognition software.
      _________________________________________________________
-   
+
 Acknowledgments
 
    Web Content Guidelines Working Group Co-Chairs:
           Chuck Letourneau, Starling Access Services
           Gregg Vanderheiden, Trace Research and Development
-          
+
    W3C Team contacts:
           Judy Brewer and Daniel Dardailler
-          
+
    We wish to thank the following people who have contributed
           their time and valuable comments to shaping these
           guidelines:
@@ -1743,17 +1743,17 @@ Acknowledgments
           Liam Quinn, Dave Raggett, T.V. Raman, Robert Savellis,
           Jutta Treviranus, Steve Tyler, Jaap van Lelieveld, and
           Jason White
-          
+
    The original draft of this document is based on "The Unified
    Web Site Accessibility Guidelines" ([UWSAG]) compiled by the
    Trace R & D Center at the University of Wisconsin. That
    document includes a list of additional contributors.
-   
+
 References
 
    For the latest version of any W3C specification please consult
    the list of W3C Technical Reports.
-   
+
    [CSS1]
           "CSS, level 1 Recommendation", B. Bos, H. Wium Lie,
           eds., 17 December 1996, revised 11 January 1999. The
@@ -1761,7 +1761,7 @@ References
           http://www.w3.org/TR/1999/REC-CSS1-19990111.
           The latest version of CSS1 is available at:
           http://www.w3.org/TR/REC-CSS1.
-          
+
    [CSS2]
           "CSS, level 2 Recommendation", B. Bos, H. Wium Lie, C.
           Lilley, and I. Jacobs, eds., 12 May 1998. The CSS2
@@ -1769,7 +1769,7 @@ References
           http://www.w3.org/TR/1998/REC-CSS2-19980512.
           The latest version of CSS2 is available at:
           http://www.w3.org/TR/REC-CSS2.
-          
+
    [DOM1]
           "Document Object Model (DOM) Level 1 Specification", V.
           Apparao, S. Byrne, M. Champion, S. Isaacs, I. Jacobs,
@@ -1779,7 +1779,7 @@ References
           http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001.
           The latest version of DOM Level 1 is available at:
           http://www.w3.org/TR/REC-DOM-Level-1
-          
+
    [HTML40]
           "HTML 4.0 Recommendation", D. Raggett, A. Le Hors, and
           I. Jacobs, eds., 17 December 1997, revised 24 April
@@ -1787,25 +1787,25 @@ References
           http://www.w3.org/TR/1998/REC-html40-19980424.
           The latest version of HTML 4.0 is available at:
           http://www.w3.org/TR/REC-html40.
-          
+
    [HTML32]
           "HTML 3.2 Recommendation", D. Raggett, ed., 14 January
           1997. The latest version of HTML 3.2 is available at:
           http://www.w3.org/TR/REC-html32.
-          
+
    [MATHML]
           "Mathematical Markup Language", P. Ion and R. Miner,
           eds., 7 April 1998. The MathML 1.0 Recommendation is:
           http://www.w3.org/TR/1998/REC-MathML-19980407.
           The latest version of MathML 1.0 is available at:
           http://www.w3.org/TRREC-MathML.
-          
+
    [PNG]
           "PNG (Portable Network Graphics) Specification", T.
           Boutell, ed., T. Lane, contributing ed., 1 October
           1996. The latest version of PNG 1.0 is:
           http://www.w3.org/TR/REC-png.
-          
+
    [RDF]
           "Resource Description Framework (RDF) Model and Syntax
           Specification", O. Lassila, R. Swick, eds., 22 February
@@ -1813,11 +1813,11 @@ References
           http://www.w3.org/TR/1999/REC-rdf-syntax-19990222.
           The latest version of RDF 1.0 is available at:
           http://www.w3.org/TR/REC-rdf-syntax
-          
+
    [RFC2068]
           "HTTP Version 1.1", R. Fielding, J. Gettys, J. Mogul,
           H. Frystyk Nielsen, and T. Berners-Lee, January 1997.
-          
+
    [SMIL]
           "Synchronized Multimedia Integration Language (SMIL)
           1.0 Specification", P. Hoschka, ed., 15 June 1998. The
@@ -1825,7 +1825,7 @@ References
           http://www.w3.org/TR/1998/REC-smil-19980615
           The latest version of SMIL 1.0 is available at:
           http://www.w3.org/TR/REC-smil
-          
+
    [TECHNIQUES]
           "Techniques for Web Content Accessibility Guidelines
           1.0", W. Chisholm, G. Vanderheiden, I. Jacobs, eds.
@@ -1833,32 +1833,32 @@ References
           defined in "Web Content Accessibility Guidelines 1.0".
           The latest draft of the techniques is available at:
           http://www.w3.org/TR/WAI-WEBCONTENT-TECHS/
-          
+
    [WAI-AUTOOLS]
           "Authoring Tool Accessibility Guidelines", J.
           Treviranus, J. Richards, I. Jacobs, C. McCathieNevile,
           eds. The latest Working Draft of these guidelines for
           designing accessible authoring tools is available at:
           http://www.w3.org/TR/WAI-AUTOOLS/
-          
+
    [WAI-UA-SUPPORT]
           This page documents known support by user agents
           (including assistive technologies) of some
           accessibility features listed in this document. The
           page is available at:
           http://www.w3.org/WAI/Resources/WAI-UA-Support
-          
+
    [WAI-USERAGENT]
           "User Agent Accessibility Guidelines", J. Gunderson and
           I. Jacobs, eds. The latest Working Draft of these
           guidelines for designing accessible user agents is
           available at: http://www.w3.org/TR/WAI-USERAGENT/
-          
+
    [WCAG-ICONS]
           Information about conformance icons for this document
           and how to use them is available at
           http://www.w3.org/WAI/WCAG1-Conformance.html
-          
+
    [UWSAG]
           "The Unified Web Site Accessibility Guidelines", G.
           Vanderheiden, W. Chisholm, eds. The Unified Web Site
@@ -1869,7 +1869,7 @@ References
           document is available at:
           http://www.tracecenter.org/docs/html_guidelines/versio
           n8.htm
-          
+
    [XML]
           "Extensible Markup Language (XML) 1.0.", T. Bray, J.
           Paoli, C.M. Sperberg-McQueen, eds., 10 February 1998.

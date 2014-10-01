@@ -11,7 +11,7 @@ use lib "@INSTALLARCHLIB@";
 # txt2html.pl
 # Convert raw text to something with a little HTML formatting
 #
-# Written by Seth Golub <seth@aigeek.com> 
+# Written by Seth Golub <seth@aigeek.com>
 #            http://www.aigeek.com/txt2html/
 #
 # $Revision: 1.28 $
@@ -40,17 +40,17 @@ $short_line_length = 40;        # Lines this short (or shorter) must be
                                 # that short. <BR>
 
 # [-p <n>    ] | [--prewhite <n>                  ]
-$preformat_whitespace_min = 5;  # Minimum number of consecutive 
-                                # whitespace characters to trigger 
-                                # preformatting.  
+$preformat_whitespace_min = 5;  # Minimum number of consecutive
+                                # whitespace characters to trigger
+                                # preformatting.
                                 # NOTE: Tabs are now expanded to
-                                # spaces before this check is made. 
+                                # spaces before this check is made.
                                 # That means if $tab_width is 8 and
                                 # this is 5, then one tab may be
                                 # expanded to 8 spaces, which is
                                 # enough to trigger preformatting.
 
-$par_indent = 2;                # Minumum number of spaces indented in 
+$par_indent = 2;                # Minumum number of spaces indented in
                                 # first lines of paragraphs.
                                 #   Only used when there's no blank line
                                 # preceding the new paragraph.  (Like in
@@ -92,7 +92,7 @@ $unhyphenation = 1;             # Enables unhyphenation of text.
 # [-ab <file>] | [--append_body <file>            ]
 # [+a        ] | [--noappend                      ]
 # [+ab <file>] | [--noappend_body <file>          ]
-$append_file = 0;               # If you want something appended by 
+$append_file = 0;               # If you want something appended by
                                 # default, put the filename here.
                                 # The appended text will not be
                                 # processed at all, so make sure it's
@@ -133,11 +133,11 @@ $doctype = "-//W3C//DTD HTML 3.2 Final//EN";
                                 # top of the document, unless it's 0.
 
 # [-ul <n>   ] | [--ulength <n>             ]
-$underline_length_tolerance = 1; # How much longer or shorter can 
+$underline_length_tolerance = 1; # How much longer or shorter can
                                  # underlines be and still be underlines?
 
 # [-uo <n>   ] | [--uoffset <n>            ]
-$underline_offset_tolerance = 1; # How far offset can underlines 
+$underline_offset_tolerance = 1; # How far offset can underlines
                                  # be and still be underlines?
 
 # [-tw <n>   ] | [--tabwidth <n>                  ]
@@ -145,7 +145,7 @@ $tab_width = 8;                 # How many spaces equal a tab?
 
 
 # [-iw <n>   ] | [--indent <n>                    ]
-$indent_width = 2;              # Indents this many spaces for each 
+$indent_width = 2;              # Indents this many spaces for each
                                 # level of a list
 
 # [-/+e      ] | [--extract / --noextract         ]
@@ -162,9 +162,9 @@ $escape_HTML_chars = 1;         # turn & < > into &amp; &gt; &lt;
 $eight_bit_clean = 0;           # disable Latin-1 character entity naming
 
 # [-LO/+LO    ] | [--linkonly / --nolinkonly       ]
-$link_only = 0;                 # Do no escaping or marking up at all, 
+$link_only = 0;                 # Do no escaping or marking up at all,
                                 # except for processing the links
-                                # dictionary file and applying it. 
+                                # dictionary file and applying it.
                                 # This is useful if you want to use
                                 # txt2html's linking feature on an
                                 # HTML document.  If the HTML is a
@@ -195,7 +195,7 @@ $link_only = 0;                 # Do no escaping or marking up at all,
                                 # (assuming they were found in that
                                 # order, and that no other header
                                 # styles were encountered).
-                                # If you prefer that the first one 
+                                # If you prefer that the first one
                                 # specified always be H1, the second
                                 # always be H2, the third H3, etc,
                                 # then use the -EH/--explicit-headings
@@ -214,7 +214,7 @@ $explicit_headings = 0;         # Don't try to find any headings
 # Not implemented yet.
 # [-T <t>:<r> ] | [--tag <tagname>:<regexp>        ]
 @custom_tags = ();              # Similar to --heading, this lets you
-                                # specify arbitrary patterns to tag. 
+                                # specify arbitrary patterns to tag.
                                 # The first subexpression, if one is
                                 # present, will replace the entire
                                 # matched text.  Example:
@@ -236,7 +236,7 @@ $default_link_dict = "$ENV{'HOME'}/.txt2html.dict"; # before options
 # [-pm/+pm    ] | [--preformat-marker / --nopreformat-marker ]
 $use_preformat_marker = 0;      # Turn on preformatting when encountering
                                 # "<PRE>" on a line by itself, and turn it
-                                # off when there's a line containing only 
+                                # off when there's a line containing only
                                 # "</PRE>".
 
 $preformat_start_marker = "^(:?(:?&lt;)|<)PRE(:?(:?&gt;)|>)\$";
@@ -265,7 +265,7 @@ $preformat_end_marker   = "^(:?(:?&lt;)|<)/PRE(:?(:?&gt;)|>)\$";
 
 # These are just constants I use for making bit vectors to keep track
 # of what modes I'm in and what actions I've taken on the current and
-# previous lines.  
+# previous lines.
 
 $NONE       =   0;
 $LIST       =   1;
@@ -282,7 +282,7 @@ $LINK       =1024;
 $PRE_EXPLICIT = 2048;
 
 
-# Constants for Ordered Lists and Unordered Lists.  
+# Constants for Ordered Lists and Unordered Lists.
 # I use this in the list stack to keep track of what's what.
 
 $OL = 1;
@@ -291,7 +291,7 @@ $UL = 2;
 
 # Character entity names
 # characters to replace *before* processing a line
-%char_entities = ( 
+%char_entities = (
      "\241", "&iexcl;",  "\242", "&cent;",   "\243", "&pound;",
      "\244", "&curren;", "\245", "&yen;",    "\246", "&brvbar;",
      "\247", "&sect;",   "\250", "&uml;",    "\251", "&copy;",
@@ -302,28 +302,28 @@ $UL = 2;
      "\266", "&para;",                       "\270", "&cedil;",
      "\271", "&sup1;",   "\272", "&ordm;",   "\273", "&raquo;",
      "\274", "&fraq14;", "\275", "&fraq12;", "\276", "&fraq34;",
-     "\277", "&iquest;", "\300", "&Agrave;", "\301", "&Aacute;", 
+     "\277", "&iquest;", "\300", "&Agrave;", "\301", "&Aacute;",
      "\302", "&Acirc;",  "\303", "&Atilde;", "\304", "&Auml;",
-     "\305", "&Aring;",  "\306", "&AElig;",  "\307", "&Ccedil;", 
-     "\310", "&Egrave;", "\311", "&Eacute;", "\312", "&Ecirc;", 
-     "\313", "&Euml;",   "\314", "&Igrave;", "\315", "&Iacute;", 
-     "\316", "&Icirc;",  "\317", "&Iuml;",   "\320", "&ETH;", 
+     "\305", "&Aring;",  "\306", "&AElig;",  "\307", "&Ccedil;",
+     "\310", "&Egrave;", "\311", "&Eacute;", "\312", "&Ecirc;",
+     "\313", "&Euml;",   "\314", "&Igrave;", "\315", "&Iacute;",
+     "\316", "&Icirc;",  "\317", "&Iuml;",   "\320", "&ETH;",
      "\321", "&Ntilde;", "\322", "&Ograve;", "\323", "&Oacute;",
-     "\324", "&Ocirc;",  "\325", "&Otilde;", "\326", "&Ouml;", 
+     "\324", "&Ocirc;",  "\325", "&Otilde;", "\326", "&Ouml;",
      "\327", "&times;",  "\330", "&Oslash;", "\331", "&Ugrave;",
-     "\332", "&Uacute;", "\333", "&Ucirc;",  "\334", "&Uuml;", 
-     "\335", "&Yacute;", "\336", "&THORN;",  "\337", "&szlig;", 
-     "\340", "&agrave;", "\341", "&aacute;", "\342", "&acirc;", 
-     "\343", "&atilde;", "\344", "&auml;",   "\345", "&aring;", 
-     "\346", "&aelig;",  "\347", "&ccedil;", "\350", "&egrave;", 
-     "\351", "&eacute;", "\352", "&ecirc;",  "\353", "&euml;", 
+     "\332", "&Uacute;", "\333", "&Ucirc;",  "\334", "&Uuml;",
+     "\335", "&Yacute;", "\336", "&THORN;",  "\337", "&szlig;",
+     "\340", "&agrave;", "\341", "&aacute;", "\342", "&acirc;",
+     "\343", "&atilde;", "\344", "&auml;",   "\345", "&aring;",
+     "\346", "&aelig;",  "\347", "&ccedil;", "\350", "&egrave;",
+     "\351", "&eacute;", "\352", "&ecirc;",  "\353", "&euml;",
      "\354", "&igrave;", "\355", "&iacute;", "\356", "&icirc;",
      "\357", "&iuml;",   "\360", "&eth;",    "\361", "&ntilde;",
-     "\362", "&ograve;", "\363", "&oacute;", "\364", "&ocirc;", 
+     "\362", "&ograve;", "\363", "&oacute;", "\364", "&ocirc;",
      "\365", "&otilde;", "\366", "&ouml;",   "\367", "&divide;",
      "\370", "&oslash;", "\371", "&ugrave;", "\372", "&uacute;",
-     "\373", "&ucirc;",  "\374", "&uuml;",   "\375", "&yacute;", 
-     "\376", "&thorn;",  "\377", "&yuml;", 
+     "\373", "&ucirc;",  "\374", "&uuml;",   "\375", "&yacute;",
+     "\376", "&thorn;",  "\377", "&yuml;",
     );
 
 # characters to replace *after* processing a line
@@ -381,7 +381,7 @@ where options are:
      [-db <n>    ] | [--debug <n>                     ]
      [-pm/+pm    ] | [--preformat-marker / --nopreformat-marker ]
 
-  More complete explanations of these options can be found in 
+  More complete explanations of these options can be found in
   comments near the beginning of the script.
 
 EOUsage
@@ -475,7 +475,7 @@ sub deal_with_options
             shift @ARGV;
             next;
         }
-    
+
         if (($ARGV[0] eq "-pe" || $ARGV[0] eq "--preend") &&
             $ARGV[1] =~ /^-?\d+$/)
         {
@@ -793,8 +793,8 @@ sub shortline
 
     if (!($mode & ($PRE | $LIST))
         && !&is_blank($line)
-        && !&is_blank($prev) 
-        && ($prev_line_length < $short_line_length) 
+        && !&is_blank($prev)
+        && ($prev_line_length < $short_line_length)
         && !($line_action & ($END | $HEADER | $HRULE | $LIST | $PAR))
         && !($prev_action & ($HEADER | $HRULE | $BREAK)))
     {
@@ -821,10 +821,10 @@ sub mailstuff
     {
         &anchor_mail if !($prev_action & $MAILHEADER);
         chomp $line;
-        $line = "<!-- New Message -->\n<p>\n" . $line . "<BR>\n";        
+        $line = "<!-- New Message -->\n<p>\n" . $line . "<BR>\n";
         $line_action |= ($BREAK | $MAILHEADER | $PAR);
     } elsif (($line =~ /^[\w\-]*:/)  # Handle "Some-Header: blah"
-             && ($prev_action & $MAILHEADER) 
+             && ($prev_action & $MAILHEADER)
              && !&is_blank($nextline))
     {
         $line =~ s/$/<BR>/;
@@ -850,7 +850,7 @@ sub paragraph
     if(!&is_blank($line)
        && !($mode & $PRE)
        && !&subtract_modes($line_action, $END | $MAILQUOTE | $CAPS | $BREAK)
-       && (&is_blank($prev) 
+       && (&is_blank($prev)
            || ($line_action & $END)
            || ($line_indent > $prev_indent + $par_indent)))
     {
@@ -972,7 +972,7 @@ sub liststuff
         &endlist($listnum) if $listnum;
         return;
     }
-    
+
     # If numbers with more than one digit grow to the left instead of
     # to the right, the prefix will shrink and we'll fail to match the
     # right list.  We need to account for this.
@@ -981,7 +981,7 @@ sub liststuff
     {
         $prefix_alternate = ( " " x ( length( "" . $number ) -1 )) . $prefix;
     }
-    
+
     # Maybe we're going back up to a previous list
     for($i = $listnum - 1; ($i >= 0) && ($prefix ne $listprefix[$i]); $i--)
     {
@@ -1003,17 +1003,17 @@ sub liststuff
     $islist = 1;
     $i++;
     if (($i > 0) && ($i != $listnum))
-    { 
+    {
         &endlist($listnum - $i);
         $islist = 0;
     } elsif (!$listnum || ($i != $listnum))
-    { 
-        if ( ($line_indent > 0) 
-            || &is_blank($prev) 
+    {
+        if ( ($line_indent > 0)
+            || &is_blank($prev)
             || ($prev_action & ($BREAK | $HEADER | $CAPS)))
         {
             $islist = &startlist($prefix, $number, $rawprefix);
-        } else 
+        } else
         {
             # We have something like this: "- foo" which usually
             # turns out not to be a list.
@@ -1046,8 +1046,8 @@ sub endpreformat
       return;
     }
 
-    if(!&is_preformatted($line) 
-       && ($endpreformat_trigger_lines == 1 
+    if(!&is_preformatted($line)
+       && ($endpreformat_trigger_lines == 1
            || !&is_preformatted($nextline)))
     {
         $prev .= "</PRE>\n";
@@ -1070,7 +1070,7 @@ sub preformat
         }
     }
 
-    if($preformat_trigger_lines == 0 
+    if($preformat_trigger_lines == 0
        || (&is_preformatted($line) &&
            ($preformat_trigger_lines == 1 || &is_preformatted($nextline))))
     {
@@ -1221,7 +1221,7 @@ sub iscaps
 {
     local($_) = @_;
     # This is ugly, but I don't know a better way to do it.
-    # (And, yes, I could use the literal characters instead of the 
+    # (And, yes, I could use the literal characters instead of the
     # numeric codes, but this keeps the script 8-bit clean, which will
     # save someone a big headache when they transfer via ASCII ftp.
     /^[^a-z\341\343\344\352\353\354\363\370\337\373\375\342\345\347\350\355\357\364\365\376\371\377\340\346\351\360\356\361\362\366\372\374<]*[A-Z\300\301\302\303\304\305\306\307\310\311\312\313\314\315\316\317\320\321\322\323\324\325\326\330\331\332\333\334\335\336]{$min_caps_length,}[^a-z\341\343\344\352\353\354\363\370\337\373\375\342\345\347\350\355\357\364\365\376\371\377\340\346\351\360\356\361\362\366\372\374<]*$/;
@@ -1243,7 +1243,7 @@ sub glob2regexp
     # Escape funky chars
     $glob =~ s/[^\w\[\]\*\?\|\\]/\\$&/g;
     local($regexp,$i,$len,$escaped) = ("",0,length($glob),0);
-    
+
     for(;$i < $len; $i++)
     {
         $char = substr($glob,$i,1);
@@ -1281,10 +1281,10 @@ sub add_regexp_to_links_table
 
             $links_table{$key} = $URL;        # Put it in The Table
             $links_switch_table{$key} = $switches;
-            print STDERR 
+            print STDERR
  " ($#links_table_order)\tKEY: $key\n\tVALUE: $URL\n\tSWITCHES: $switches\n\n"
                 if ($dict_debug & 1);
-        } else 
+        } else
         {
             if($dict_debug & 1) {
                 print STDERR " Skipping entry.  Key already in table.\n";
@@ -1304,7 +1304,7 @@ sub add_literal_to_links_table
 sub add_glob_to_links_table
 {
     local($key,$URL,$switches) = @_;
-    &add_regexp_to_links_table(&glob2regexp($key),$URL,$switches);    
+    &add_regexp_to_links_table(&glob2regexp($key),$URL,$switches);
 }
 
 # This is the only function you should need to change if you want to
@@ -1324,7 +1324,7 @@ sub parse_dict
 
         # Print out any useful context so they can find it.
         ($near) = $dict =~ /([\S ]*\s*->\s*->\s*\S*)/;
-        $message .= "\n$near\n" if $near =~ /\S/; 
+        $message .= "\n$near\n" if $near =~ /\S/;
         die $message;
     }
 
@@ -1375,15 +1375,15 @@ sub in_link_context
     $final_open = rindex($before, "<A ") - $[;
     $final_close = rindex($before, "</A>") - $[;
 
-    return 1 if ($final_open >= 0) # Link opened 
+    return 1 if ($final_open >= 0) # Link opened
         && (($final_close < 0)     # and not closed    or
             || ($final_open > $final_close)); # one opened after last close
 
-    # Now check to see if we're inside a tag, matching a tag name, 
+    # Now check to see if we're inside a tag, matching a tag name,
     # or attribute name or value
     $final_open  = rindex($before, "<") - $[;
     $final_close = rindex($before, ">") - $[;
-    ($final_open >= 0)          # Tag opened 
+    ($final_open >= 0)          # Tag opened
         && (($final_close < 0)  # and not closed    or
             || ($final_open > $final_close)); # one opened after last close
 }
@@ -1419,10 +1419,10 @@ EOCode
         $pattern = $links_table_order[$i];
         $key = $pattern;
         $switches = $links_switch_table{$key};
-        
+
         $s_sw = "";             # Options for searching
         $s_sw .= "i" if($switches & 1);
-        
+
         $r_sw = "";             # Options for replacing
         $r_sw .= "i" if($switches & 1);
         $r_sw .= "e" if($switches & 2);
@@ -1485,12 +1485,12 @@ sub load_dictionary_links
     local( $dict, $contents );
     @links_table_order = 0;
     %links_table = ();
-    
+
     foreach $dict ( @links_dictionaries )
     {
         next unless $dict;
         open(DICT, "$dict") || die "Can't open Dictionary file $dict\n";
-        
+
         $contents = "";
         $contents .= $_ while(<DICT>);
         close(DICT);
@@ -1518,7 +1518,7 @@ sub getline
 sub main
 {
     $* = 1;                     # Turn on multiline searches
-    push(@links_dictionaries,($default_link_dict)) 
+    push(@links_dictionaries,($default_link_dict))
         if ($make_links && (-f $default_link_dict));
     &deal_with_options;
     if($make_links)
@@ -1549,7 +1549,7 @@ sub main
         $prev = $line;
         $line = $nextline;
         $nextline = &getline if $nextline;
-    }       
+    }
 
     if(!$extract)
     {
@@ -1592,7 +1592,7 @@ sub main
         }
     }
 
-    do 
+    do
     {
 
         if ( !$link_only )
@@ -1614,32 +1614,32 @@ sub main
           &custom_heading if (($#custom_heading_regexp > -1)
                               && !($mode & $PRE));
 
-          &liststuff if (!($mode & $PRE) && 
+          &liststuff if (!($mode & $PRE) &&
                          !&is_blank($line));
 
           &heading   if (!$explicit_headings &&
-                         !($mode & ($PRE | $HEADER)) && 
+                         !($mode & ($PRE | $HEADER)) &&
                          $nextline =~ /^\s*[=\-\*\.~\+]+\s*$/);
 
 #        &custom_tag if (($#custom_tags > -1)
 #                        && !($mode & $PRE)
 #                        && !($line_action & $HEADER));
 
-          &mailstuff if ($mailmode && 
-                         !($mode & $PRE) && 
+          &mailstuff if ($mailmode &&
+                         !($mode & $PRE) &&
                          !($line_action & $HEADER));
 
-          &preformat if (!($line_action & ($HEADER | $LIST | $MAILHEADER)) && 
+          &preformat if (!($line_action & ($HEADER | $LIST | $MAILHEADER)) &&
                          !($mode & ($LIST | $PRE)) &&
                          $preformat_enabled);
 
           &paragraph;
           &shortline;
 
-          &unhyphenate if ($unhyphenation && 
+          &unhyphenate if ($unhyphenation &&
                            ($line =~ /[^\W\d_]\-$/) && # ends in hyphen
                            # next line starts w/letters
-                           ($nextline =~ /^\s*[^\W\d_]/) && 
+                           ($nextline =~ /^\s*[^\W\d_]/) &&
                            !($mode & ($PRE | $HEADER | $MAILHEADER | $BREAK)));
 
           &caps if  !($mode & $PRE);
@@ -1650,7 +1650,7 @@ sub main
                                    && !&is_blank($line)
                                    && $#links_table_order);
 
-        # All the matching and formatting is done.  Now we can 
+        # All the matching and formatting is done.  Now we can
         # replace non-ASCII characters with character entities.
         if ( !$eight_bit_clean )
         {

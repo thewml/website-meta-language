@@ -141,8 +141,8 @@ B<Example:>
   <perl>
   sub isotime {
       my ($time) = @_;
-  
-      my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = 
+
+      my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
           localtime($time);
       my ($str) = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
            $year+1900, $mon+1, $mday, $hour, $min, $sec);
@@ -368,12 +368,12 @@ F<.wmlrc> file at the top of your Webarea.
 
 And there is one more special case: The option form
 
-   -DNAME~VALUE 
+   -DNAME~VALUE
 
 is always sticky to its location, i.e. it always gets evaluated for its local
 directory context instead of the current working directory where F<wml> was
 started. Use this to easily introduce path or URL variables which adjust
-automatically to the current context of the generated webpage. 
+automatically to the current context of the generated webpage.
 
 
 
@@ -405,7 +405,7 @@ as either a (not fully qualified) URL or filename.  When you interpolate the
 variable the result is VALUE if the current working directory is the same as
 where you used the B<-D> option (either where you run the frontend F<wml> or a
 F<.wmlrc> file). Else the result is VALUE relative path-adjusted for the
-current working directory. 
+current working directory.
 
 =back
 

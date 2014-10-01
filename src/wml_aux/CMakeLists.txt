@@ -3,7 +3,7 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SUBDIRS ( 
+SUBDIRS (
     iselect
     htmlclean
     htmlinfo

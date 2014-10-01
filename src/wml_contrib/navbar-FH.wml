@@ -1,13 +1,13 @@
 ##
 ##  wml::des::navbar -- Navigation Bar
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 ##     Modified by Florian Hars, 1998--1999 <florian@hars.de>
 ##     Added support for nested and multi-lingual navbars
 ##     Last version of this file is available at
 ##        http://www.hars.de/www/navbar-FH.wml
 ##     Further information is available at
-##        http://www.hars.de/www/wml_navbars.html	  
+##        http://www.hars.de/www/wml_navbars.html
 ##
 ##     $Log: navbar-FH.wml,v $
 ##     Revision 1.3  1999/04/18 13:04:44  hars
@@ -41,7 +41,7 @@
 <set-var %attributes>
 <if <get-var name>    "" <set-var name="unknown-navbar">>
 <if <get-var imgstar> "" <set-var imgstar="n:s:o">>
-<: 
+<:
 {
     #   initialise the data structure for this particular navbar
     #   and fill it with some already known information
@@ -118,7 +118,7 @@
 </define-container>
 
 <define-container navbar:header>
-<: 
+<:
     $NAVBAR{'<get-var name>'}->{HEADER} = <<'EOT';
 %body
 EOT
@@ -126,7 +126,7 @@ _:>
 </define-container>
 
 <define-container navbar:footer>
-<: 
+<:
     $NAVBAR{'<get-var name>'}->{FOOTER} = <<'EOT';
 %body
 EOT
@@ -139,7 +139,7 @@ _:>
 <set-var %attributes>
 <if <get-var type> "" <set-var type="N">>
 <if <get-var pos>  "" <set-var pos="any">>
-<: 
+<:
     $NAVBAR{'<get-var name>'}
         ->{PROLOG}
         ->{'<get-var type>'}
@@ -157,7 +157,7 @@ _:>
 <set-var %attributes>
 <if <get-var type> "" <set-var type="N">>
 <if <get-var pos>  "" <set-var pos="any">>
-<: 
+<:
     $NAVBAR{'<get-var name>'}
         ->{EPILOG}
         ->{'<get-var type>'}
@@ -173,7 +173,7 @@ _:>
 <preserve level>
 <set-var %attributes>
 <if <get-var level> "" <set-var level="0">>
-<: 
+<:
     $NAVBAR{'<get-var name>'}
         ->{SUBPROLOG}
         ->['<get-var level>'] = <<'EOT';
@@ -187,7 +187,7 @@ _:>
 <preserve level>
 <set-var %attributes>
 <if <get-var level> "" <set-var level="0">>
-<: 
+<:
     $NAVBAR{'<get-var name>'}
         ->{SUBEPILOG}
         ->['<get-var level>'] = <<'EOT';
@@ -234,7 +234,7 @@ _:>
 </define-tag>
 
 <define-container navbar:filter>
-<: 
+<:
     $NAVBAR{'<get-var name>'}->{FILTER} = <<'EOT';
 %body
 EOT
@@ -302,7 +302,7 @@ sub parse_langtxt {
 <set-var languages="">
 <set-var %attributes>
 <if <get-var name> "" <set-var name="unknown-navbar">>
-<if <get-var languages> "" 
+<if <get-var languages> ""
    <prog <set-var __i=0>\
      <while <get-var __languages[__i]>>\
        <set-var languages=<get-var languages>:<get-var __languages[__i]>>\
@@ -317,16 +317,16 @@ sub parse_langtxt {
     my $subselected = (qq|<get-var subselected>| eq '' ? 1 : 0);
     my $txtonly     = (qq|<get-var txtonly>|     eq '' ? 1 : 0);
     my $nopreload   = (qq|<get-var nopreload>|   eq '' ? 1 : 0);
-    my @langs = split(":", '<get-var languages>');	
+    my @langs = split(":", '<get-var languages>');
     my @languages = ();
-    foreach my $lang (@langs) {	
+    foreach my $lang (@langs) {
         if ($lang ne "") {
             push @languages, $lang;
         }
     }
     my $imgstyle = '<get-var imgstyle>';
     my @sel;
-    my $sublevels = 0;	
+    my $sublevels = 0;
 
     if ($select =~ m/^[^.]+$/) {
         $sel[0] = $select;
@@ -385,8 +385,8 @@ sub parse_langtxt {
 
 	$renderbutton = 1 unless $id =~ m/\./;
             for ($sublevnr = 0; $sublevnr <= $sublevels; $sublevnr++) {
-            $renderbutton = 1 if $id =~ m/^$sel[$sublevnr]\.[^.]+$/; 
-        }	
+            $renderbutton = 1 if $id =~ m/^$sel[$sublevnr]\.[^.]+$/;
+        }
 
         if ($renderbutton) {
 	    my %txt    = parse_langtxt($B->{TXT}, $deflang);
@@ -487,7 +487,7 @@ sub parse_langtxt {
 			$hint .= '[LANG_'.uc($lang).':'.$hint{uc($lang)}.':]';
 		    } elsif (exists($hint{default}) && $hint{default} ne '') {
 			$hint .= '[LANG_'.uc($lang).':'.$hint{default}.':]';
-		    } 
+		    }
 		}
 	    } elsif (exists($hint{default}) && $hint{default} ne '') {
 		$hint = $hint{default};
@@ -519,7 +519,7 @@ sub parse_langtxt {
 		    }
 		    $O .= '<a href="'.$url.'"'.$target.$js.'>'.$txt.'</a>';
 		}
-		else {  # not selected 
+		else {  # not selected
 		    $js = '';
 		    if ($hint ne '' && ! $nohints) {
 			$js = qq# onMouseOver="self.status = '$hint'; return true"# .
@@ -538,12 +538,12 @@ sub parse_langtxt {
 
                 $hint = $txt if ($hint eq '');
 		$hint = '' if $nohints;
-		
+
 		#   alt attribute defaults to txt attribute if missing
 		if ($alt{default} eq '') {
 		    %alt = %txt;
 		}
-		
+
 		#   cleanup image information
 		if ($#img == 0 and $img[0] =~ m|\*|) {
 		    ($img[2] = $img[0]) =~ s|\*|$imgstar[2]|g;
@@ -551,7 +551,7 @@ sub parse_langtxt {
 		    $img[0] =~ s|\*|$imgstar[0]|g;
 		}
 		if ($#img == 0) {
-		    $img[1] = $img[0] 
+		    $img[1] = $img[0]
 		    }
 		for ($i = 0; $i <= $#img; $i++) {
 		    if ($img[$i] =~ m/(.*)\|(.*)/) {
@@ -577,13 +577,13 @@ sub parse_langtxt {
 			    }
 			    if ($tmpimg !~ m;^http://;) {
 				$tmpimg  = &canonpath($tmpimg);
-                                &{$imgstyle{$imgstyle}}($tmpimg, 
+                                &{$imgstyle{$imgstyle}}($tmpimg,
 							 $txt{uc($lang)}||$txt{default},
 							 $i,
 							 $idlevel,
 							 $lang,
 							 $id)
-				    unless -e $tmpimg || 
+				    unless -e $tmpimg ||
 					!exists($imgstyle{$imgstyle});
 			    }
 			    $img[$i] .= "[LANG_".uc($lang).":".$tmpimg.":]";
@@ -602,19 +602,19 @@ sub parse_langtxt {
 			$img[$i]  = "$imgbase/$img[$i]" if ($imgbase ne '' and $img[$i] !~ m;^(http://|/););
 			    if ($img[$i] !~ m;^http://;) {
 				$img[$i]  = &canonpath($img[$i]);
-                                &{$imgstyle{$imgstyle}}($img[$i], 
+                                &{$imgstyle{$imgstyle}}($img[$i],
 							 $txt{default},
 							 $i,
 							 $idlevel,
 							 "",
-							 $id) 
-				    unless -e $img[$i] || 
+							 $id)
+				    unless -e $img[$i] ||
 					!exists($imgstyle{$imgstyle});
 			    }
 			$imgs[$i] = '<img name="nb_img_'.$jsid.'" src="'.$img[$i].'" alt="'.$alt{default}.'" border=0>'
 		    }
 		}
-		
+
 		if ($select eq $id and not $subselected) {
 		    $O .= $imgs[1];
 		}
@@ -633,7 +633,7 @@ sub parse_langtxt {
 			$imgs[1] .
 			    '</a>';
 		}
-		else { # not selected 
+		else { # not selected
 		    $js = '';
 		    if ($#img == 2) {
 			$js = qq# onMouseOver="nb_imgOver('nb_img_$jsid', '$hint'); return true"# .

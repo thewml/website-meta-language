@@ -3,34 +3,34 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  WMb -- Website META Language Bug Reporting Tool
-##  
+##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2001 Denis Barbier.
-##  
+##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software Foundation; either version 2 of the License, or
 ##  (at your option) any later version.
-##  
+##
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##  GNU General Public License for more details.
-##  
+##
 ##  You should have received a copy of the GNU General Public License
 ##  along with this program; if not, write to
-##  
+##
 ##      Free Software Foundation, Inc.
 ##      59 Temple Place - Suite 330
 ##      Boston, MA  02111-1307, USA
-##  
+##
 ##  Notice, that ``free software'' addresses the fact that this program
 ##  is __distributed__ under the term of the GNU General Public License
 ##  and because of this, it can be redistributed and modified under the
 ##  conditions of this license, but the software remains __copyrighted__
-##  by the author. Don't intermix this with the general meaning of 
+##  by the author. Don't intermix this with the general meaning of
 ##  Public Domain software or such a derivated distribution label.
-##  
+##
 ##  The author reserves the right to distribute following releases of
 ##  this program under different conditions or license agreements.
 ##
@@ -83,7 +83,7 @@ $opt_h = 0;
 sub ProcessOptions {
     $Getopt::Long::bundling = 1;
     $Getopt::Long::getopt_compat = 0;
-    $SIG{'__WARN__'} = sub { 
+    $SIG{'__WARN__'} = sub {
         print STDERR "WMd:Error: $_[0]";
     };
     if (not Getopt::Long::GetOptions(
@@ -154,7 +154,7 @@ if ($editor =~ m|^vim?|) {
 }
 
 $mailer = '';
-@M = ( 
+@M = (
     { PRG => 'elm'     , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '-d "$ENV{\'HOME\'}/.elm"' },
     { PRG => 'mutt'    , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '-f "$ENV{\'HOME\'}/.muttrc"' },
     { PRG => 'pine'    , HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '-d "$ENV{\'HOME\'}/.pine"' },
@@ -212,10 +212,10 @@ print MAIL <<'EOT';
 | specifing the correct reply-to e-mail address and    |
 | the detailed problem description.                    |
 +------------------------------------------------------+
-__        ___  __ _     
+__        ___  __ _
 \ \      / / \/  | |      Website META Language
  \ \ /\ / / |\/| | |      Version @WML_VERSION@
-  \ V  V /| |  | | |___ 
+  \ V  V /| |  | | |___
    \_/\_/ |_|  |_|_____|  BUG REPORT
 _________________________________________________________
 
@@ -232,7 +232,7 @@ close(MAIL);
 print STDERR "done.\n";
 
 #
-#   Editing the message   
+#   Editing the message
 #
 system("$editor $editoropt $tmpfile");
 
@@ -246,7 +246,7 @@ $rc = ReadKey(0);
 ReadMode 0;
 print STDERR "\n";
 if ($rc eq '' or $rc eq "\n" or $rc eq "\r") {
-    $rc = 'y'; 
+    $rc = 'y';
 }
 if ($rc =~ m|[yY]|) {
     print STDERR "Sending bug report...";
@@ -341,7 +341,7 @@ send the bug report manually to sw-wml@engelschall.com.
 =item B<-V>, B<--version>
 
 Gives the version identification string of WMb. Use this to determine the
-version of a installed WML toolkit. 
+version of a installed WML toolkit.
 
 =item B<-h>, B<--help>
 

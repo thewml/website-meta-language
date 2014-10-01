@@ -3,7 +3,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  wmg.cgi -- webdesign magnifying glass
-##  Copyright (c) 1998,1999 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1998,1999 Ralf S. Engelschall, All Rights Reserved.
 ##
 ##  This script is a webdesigner's tool to explore how
 ##  real-life webpages are constructed. It works by acting
@@ -47,12 +47,12 @@ $proxy_url = 'http://en1.engelschall.com:8080/' if ($server_name =~ m|^en1|);
 $proxy_url = 'http://www-proxy.de.uu.net:3128/' if ($server_name =~ m|^www\.engelschall\.com$|);
 $proxy_url = 'http://proxy.ee.ethz.ch:3128/'    if ($server_name =~ m|^www\.ch\.engelschall\.com$|);
 
-#   comma seperated list of domains for 
+#   comma seperated list of domains for
 #   which no proxy is used
 $no_proxy_domains = 'none';
 
 #   the URL to ourself for URL rewriting
-#   
+#
 #   Note: I use it with a directory style URL through
 #          the use of the following Apache/mod_rewrite
 #          ruleset. Just index.cgi will not work! You
@@ -170,12 +170,12 @@ if ($path_info eq '' and $query_string eq '') {
     <table bgcolor="#ffffff" cellspacing=0 cellpadding=10 border=2>
     <tr>
     <td align=center>
-    <form method="POST" action="$my_url" 
+    <form method="POST" action="$my_url"
           enctype="application/x-www-form-urlencoded">
       <table cellspacing=0 cellpadding=0 border=0>
       <tr>
         <td4>
-          <img src="${my_url}${my_url_sep}head.gif" 
+          <img src="${my_url}${my_url_sep}head.gif"
                alt="webdesign magnifying glass" width="511" height="219">
         </td>
       </tr>
@@ -251,7 +251,7 @@ if ($path_info eq '' and $qs{'url'} ne '' and $qs{'level'} ne '') {
 #   some of the inlined images, etc.)
 #
 
-#   define an own user-agent which has the 
+#   define an own user-agent which has the
 #   resolving of HTTP redirections disabled
 #   because redirects have to go through us, too.
 package LWP::MyUA;
@@ -320,7 +320,7 @@ if ($level >= 0) {
         $contents =~ s/(<script\s+[^>]+?javascript.+?>)(.+?)(<\/script>)/$1.&fixattr_js($2).$3/isge;
         sub fixattr_imgsrc {
             my ($attr) = @_;
-            my $alt = ''; 
+            my $alt = '';
             $attr =~ s|(alt\s*=\s*")([^"]+)(")|$alt = $2, $1.$2.$3|isge;
             $attr =~ s|(alt\s*=\s*)([^"]\S+)|$alt = $2, $1.$2.$3|isge;
             if ($alt ne '') {
@@ -382,7 +382,7 @@ if ($level >= 1) {
     }
 }
 if ($level >= 2) {
-    #   
+    #
     #   replace all border=0 attributes with border=1
     #
     if ($type eq 'text/html') {
@@ -431,7 +431,7 @@ if ($level >= 3) {
     }
 }
 if ($level >= 4) {
-    #   
+    #
     #   remove all color attributes
     #
     if ($type eq 'text/html') {
@@ -451,7 +451,7 @@ if ($level >= 4) {
     }
 }
 
-#  
+#
 #   Puhhh... now the filtering is done.
 #   All we now have to do is to send the
 #   stuff to the user...

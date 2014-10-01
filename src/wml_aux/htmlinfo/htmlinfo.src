@@ -3,7 +3,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  htmlinfo -- HTML markup code information report
-##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 require 5.003;
@@ -239,7 +239,7 @@ B<htmlinfo>
 =head1 DESCRIPTION
 
 The F<htmlinfo> program reads I<inputfile> or from C<stdin> and displays
-a webpage contents report on B<STDERR>. 
+a webpage contents report on B<STDERR>.
 
 =head1 AUTHOR
 

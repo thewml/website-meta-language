@@ -345,7 +345,7 @@ enable bad-text-context
 enable attribute-format
 
 # ========================================================================
-# Warnings added in the 1.015 release  
+# Warnings added in the 1.015 release
 #       NOTE: the netscape-markup and netscape-attribute warnings
 #               were deleted with the 1.015 release
 # ========================================================================
@@ -359,7 +359,7 @@ enable attribute-format
 # if the page uses Netscape or Microsoft extensions.
 #------------------------------------------------------------------------
 enable extension-markup
- 
+
 #------------------------------------------------------------------------
 # Warn if using extended attributes without an appropriate extension enabled.
 # This warning replaces the 'netscape-attribute' warning, and is now generated

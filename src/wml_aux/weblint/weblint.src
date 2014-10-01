@@ -1459,7 +1459,7 @@ sub AddExtension
    # Microsoft extensions
    #---------------------------------------------------------------------
    if ($extension eq 'microsoft')
-   {      
+   {
       #-- new element attributes for existing elements ---------------------
       foreach $element (keys %msAttributes)
       {

@@ -10,7 +10,7 @@ use strict;
 my $usage=<<EO_USAGE;
 Usage: mkwml [options]  [filespec filespec ...]
 
-Options:  
+Options:
   -nn  Just show the list of commands to process
   -n   Just show list of files to process
   -q   Is obeyed and passed onto wml
@@ -19,7 +19,7 @@ Options:
    Anything else starting with - gets passed to wml.  Use a single - to denote
    no options
 
-Filespec:  
+Filespec:
 Only files that match (RE) the file spec will get processed.  If a spec begins
 with ^ then it means NOT those files.
 EO_USAGE
@@ -29,7 +29,7 @@ EO_USAGE
 my @cmd_args;
 my ($nop, $fop, $quiet, @no_opt, %rc_hash);
 
-while (@ARGV and $ARGV[0] =~ /^-/) { 
+while (@ARGV and $ARGV[0] =~ /^-/) {
     my $arg = shift @ARGV;
     $arg eq '-nn'      and do {$nop = 1;           next};
     $arg eq '-n'       and do {$fop = 1;           next};
@@ -74,7 +74,7 @@ my $root_path = 'html';   #-- NOT PORTABLE (yet)
 $quiet or print join("\n", @files), "\n\n";
 
 SRC_FILE:
-foreach my $full (@files) { 
+foreach my $full (@files) {
     my ($path, $file) = $full =~ m!(.*)/([^/]+$)! ? ($1, $2) : ("", $full);
     my $base = $file =~ /^([^\.]+)/ ? $1 : $file;
     my $rel_path = $path =~ m!^/?$root_path/(.*)! ? $1 : 'home';
@@ -89,7 +89,7 @@ foreach my $full (@files) {
             my ($option, $data) = ($1, $2);
             $data =~ $arg_regex{$option} and $arg = "";
             next;
-        };  
+        };
         $arg =~ m/^(:?-o|--outputfile=)(.*)/ or next;
         my $out_file = $2;
         $out_file =~ s/^[^:]*://;

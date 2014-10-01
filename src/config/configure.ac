@@ -1,6 +1,6 @@
 dnl ##
 dnl ##  configure.in -- GNU autoconf source for WML
-dnl ##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+dnl ##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 dnl ##
 
 AC_PREREQ(2.50)dnl

@@ -69,7 +69,7 @@ if [ ".$1" = ".-h" -o ".$1" = ".--help" ]; then
     echo "Copyright (c) 1994-2000 Ralf S. Engelschall <rse@engelschall.com>"
     echo "Report bugs to <bug-shtool@gnu.org>"
     echo ''
-    echo "Usage: shtool [<options>] [<cmd-name> [<cmd-options>] [<cmd-args>]]" 
+    echo "Usage: shtool [<options>] [<cmd-name> [<cmd-options>] [<cmd-args>]]"
     echo ''
     echo 'Available global <options>:'
     echo '  -v, --version   display shtool version information'
@@ -352,9 +352,9 @@ echo )
     ##  Copyright (c) 1998-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for WML as buildinfo
     ##
-    
+
     text="$*"
-    
+
     #   check for broken escape sequence expansion
     seo=''
     bytes=`echo '\1' | wc -c | awk '{ printf("%s", $1); }'`
@@ -364,16 +364,16 @@ echo )
             seo='-E'
         fi
     fi
-    
+
     #   check for existing -n option (to suppress newline)
     minusn=''
     bytes=`echo -n 123 2>/dev/null | wc -c | awk '{ printf("%s", $1); }'`
     if [ ".$bytes" = .3 ]; then
         minusn='-n'
     fi
-    
+
     #   determine terminal bold sequence
-    term_bold='' 
+    term_bold=''
     term_norm=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%[Bb]'`" != . ]; then
         case $TERM in
@@ -421,7 +421,7 @@ echo )
             echo "$msgprefix:Warning: unable to determine terminal sequence for bold mode" 1>&2
         fi
     fi
-    
+
     #   determine user name
     username=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%[uU]'`" != . ]; then
@@ -441,7 +441,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine user id
     userid=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%U'`" != . ]; then
@@ -465,7 +465,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine host name
     hostname=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%h'`" != . ]; then
@@ -485,7 +485,7 @@ echo )
                 ;;
         esac
     fi
-    
+
     #   determine domain name
     domainname=''
     if [ ".$opt_e" = .yes -a ".`echo $text | egrep '%d'`" != . ]; then
@@ -507,7 +507,7 @@ echo )
             fi
         fi
     fi
-    
+
     #   determine current time
     time_day=''
     time_month=''
@@ -539,7 +539,7 @@ echo )
               12) time_monthname='Dec' ;;
         esac
     fi
-    
+
     #   expand special ``%x'' constructs
     if [ ".$opt_e" = .yes ]; then
         text=`echo $seo "$text" |\
@@ -554,7 +554,7 @@ echo )
                   -e "s/%Y/${time_year}/g" \
                   -e "s/%m/${time_monthname}/g" 2>/dev/null`
     fi
-    
+
     #   create output
     if [ .$opt_n = .no ]; then
         echo $seo "$text"
@@ -575,8 +575,8 @@ install )
     ##  Copyright (c) 1997-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for shtool
     ##
-    
-    #   determine source(s) and destination 
+
+    #   determine source(s) and destination
     argc=$#
     srcs=""
     while [ $# -gt 1 ]; do
@@ -584,36 +584,36 @@ install )
         shift
     done
     dstpath="$1"
-    
+
     #   type check for destination
     dstisdir=0
     if [ -d $dstpath ]; then
         dstpath=`echo "$dstpath" | sed -e 's:/$::'`
         dstisdir=1
     fi
-    
+
     #   consistency check for destination
     if [ $argc -gt 2 -a $dstisdir = 0 ]; then
         echo "$msgprefix:Error: multiple sources require destination to be directory" 1>&2
         exit 1
     fi
-    
+
     #   iterate over all source(s)
     for src in $srcs; do
         dst=$dstpath
-    
+
         #  If destination is a directory, append the input filename
         if [ $dstisdir = 1 ]; then
             dstfile=`echo "$src" | sed -e 's;.*/\([^/]*\)$;\1;'`
             dst="$dst/$dstfile"
         fi
-    
+
         #  Add a possible extension to src and dst
         if [ ".$opt_e" != . ]; then
             src="$src$opt_e"
             dst="$dst$opt_e"
         fi
-    
+
         #  Check for correct arguments
         if [ ".$src" = ".$dst" ]; then
             echo "$msgprefix:Warning: source and destination are the same - skipped" 1>&2
@@ -623,17 +623,17 @@ install )
             echo "$msgprefix:Warning: source \`$src' is a directory - skipped" 1>&2
             continue
         fi
-    
+
         #  Make a temp file name in the destination directory
         dsttmp=`echo $dst |\
                 sed -e 's;[^/]*$;;' -e 's;\(.\)/$;\1;' -e 's;^$;.;' \
                     -e "s;\$;/#INST@$$#;"`
-    
+
         #  Verbosity
         if [ ".$opt_v" = .yes ]; then
             echo "$src -> $dst" 1>&2
         fi
-    
+
         #  Copy or move the file name to the temp name
         #  (because we might be not allowed to change the source)
         if [ ".$opt_C" = .yes ]; then
@@ -650,7 +650,7 @@ install )
             fi
             mv $src $dsttmp || exit $?
         fi
-    
+
         #  Adjust the target file
         #  (we do chmod last to preserve setuid bits)
         if [ ".$opt_s" = .yes ]; then
@@ -677,7 +677,7 @@ install )
             fi
             chmod $opt_m $dsttmp || exit $?
         fi
-    
+
         #   Determine whether to do a quick install
         #   (has to be done _after_ the strip was already done)
         quick=no
@@ -688,7 +688,7 @@ install )
                 fi
             fi
         fi
-    
+
         #   Finally install the file to the real destination
         if [ $quick = yes ]; then
             if [ ".$opt_t" = .yes ]; then
@@ -711,7 +711,7 @@ mkdir )
     ##  Originally written for public domain by Noah Friedman <friedman@prep.ai.mit.edu>
     ##  Cleaned up and enhanced for shtool
     ##
-    
+
     errstatus=0
     for p in ${1+"$@"}; do
         #   if the directory already exists...
@@ -769,16 +769,16 @@ fixperm )
     ##  Copyright (c) 1996-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for ePerl
     ##
-    
+
     paths="$*"
-    
+
     #   check whether the test command supports the -x option
     if [ -x /bin/sh ] 2>/dev/null; then
         minusx="-x"
     else
         minusx="-r"
     fi
-    
+
     #   iterate over paths
     for p in $paths; do
         for file in `find $p -depth -print`; do
@@ -825,13 +825,13 @@ version )
     ##  Copyright (c) 1994-2000 Ralf S. Engelschall <rse@engelschall.com>
     ##  Originally written for ePerl, rewritten from scratch for shtool
     ##
-    
+
     file="$1"
-    
+
     #   determine prefix and name
     name="$opt_n"
     prefix="$opt_p"
-    
+
     #   determine current version
     triple="$opt_s"
     if [ ".$triple" != . ]; then
@@ -857,7 +857,7 @@ version )
         lev=0
         tim=calc
     fi
-    
+
     #   determine new version in batch
     if [ ".$opt_i" != . ]; then
         case $opt_i in
@@ -876,7 +876,7 @@ version )
         esac
         tim=calc
     fi
-    
+
     #   determine new version interactively
     if [ ".$opt_e" = .yes ]; then
         echo "old version: ${ver}.${rev}${typ}${lev}"
@@ -884,7 +884,7 @@ version )
             echo dummy | awk '{ printf("new version: "); }'
             read triple
             case $triple in
-                [0-9]*.[0-9]*[sabp.][0-9]* ) 
+                [0-9]*.[0-9]*[sabp.][0-9]* )
                     ;;
                 * ) echo "$msgprefix:Error: invalid version string entered: \`$triple'" 1>&2
                     continue
@@ -897,7 +897,7 @@ version )
               ver="\1";rev="\2";typ="\3";lev="\4"%'`
         tim=calc
     fi
-    
+
     #   determine hexadecimal and libtool value of version
     case $typ in
         a     ) typnum=0;  levnum=$lev ;;
@@ -910,7 +910,7 @@ version )
          tr 'abcdef' 'ABCDEF'`
     ltv=`echo "$ver:$rev:$typnum:$levnum" |\
          awk -F: '{ printf("%d:%d", $1*10 + $2, $3*10 + $4); }'`
-    
+
     #   determine date
     if [ ".$tim" = .calc ]; then
         day=`date '+%d'`
@@ -939,7 +939,7 @@ version )
         esac
         tim="${day}-${month}-${year}"
     fi
-    
+
     #   perform result actions
     mode=show
     if [ ".$opt_i" != . ]; then
@@ -968,9 +968,9 @@ version )
                 exit 1
                 ;;
         esac
-    else 
+    else
         #   update the version file
-    
+
         #   pre-generate various strings
         triple="${ver}.${rev}${typ}${lev}"
         vHex="$hex"
@@ -981,20 +981,20 @@ version )
         vWeb="${name}/${triple}"
         vSCCS="@(#)${name} ${triple} (${tim})"
         vRCS="\$Id: ${name} ${triple} (${tim}) \$"
-    
+
         #   determine string out of filename
         #   (do NOT try to optimize this in any way because of portability)
         filestr=`echo $file |\
                  tr 'abcdefghijklmnopqrstuvwxyz./%+' \
                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ____' | sed -e 's/-/_/g'`
-    
+
         #   generate uppercase prefix
         prefixupper=`echo $prefix |\
                      tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-        
+
         #   create the version file according the the selected language
         echo "new version: ${vLong}"
-    
+
         cp /dev/null $file
         case $opt_l in
             txt )

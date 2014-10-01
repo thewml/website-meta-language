@@ -1,31 +1,31 @@
-##      _ ____       _           _   
-##     (_) ___|  ___| | ___  ___| |_ 
+##      _ ____       _           _
+##     (_) ___|  ___| | ___  ___| |_
 ##    / /\___ \ / _ \ |/ _ \/ __| __|
-##   / /  ___) |  __/ |  __/ (__| |_ 
+##   / /  ___) |  __/ |  __/ (__| |_
 ##  (_(  |____/ \___|_|\___|\___|\__|
 ##
 ##  iSelect -- Interactive Selection Tool
 ##
-##  iSelect is a Curses-based tool for interactive line selection 
+##  iSelect is a Curses-based tool for interactive line selection
 ##  in an ASCII file via a full-screen terminal session.
-##  
+##
 ##  ======================================================================
 ##
 ##  Copyright (c) 1996-1999 Ralf S. Engelschall.
 ##
 ##  This program is free software; it may be redistributed and/or
-##  modified only under the terms of the GNU General Public License, 
-##  which may be found in the iSelect source distribution.  
-##  Look at the file COPYING for details. 
-##  
-##  This program is distributed in the hope that it will be useful, 
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+##  modified only under the terms of the GNU General Public License,
+##  which may be found in the iSelect source distribution.
+##  Look at the file COPYING for details.
+##
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ##  See the the GNU General Public License for more details.
 ##
 ##  ======================================================================
 ##
-##  iselect.pod -- manual page 
+##  iselect.pod -- manual page
 ##
 
 =encoding utf8
@@ -76,7 +76,7 @@ used for any types of interactice line-based selections.
 Input is read either from the command line (I<line1> I<line2> ...) where each
 argument corresponds to one buffer line or from F<stdin> (when no arguments
 are given) where the buffer lines are determined according to the newline
-characters. 
+characters.
 
 You can additionally let substrings displayed in Bold mode for non-selectable
 lines (because the selectable lines are always displayed bold) by using the
@@ -257,7 +257,7 @@ shell.
 
  #   database scan for enhanced cd command
  cds () {
-     (cd $HOME; 
+     (cd $HOME;
       find . -type d -print |\
       sed -e "s;^\.;$HOME;" |\
       sort -u >$HOME/.cdpaths ) &
@@ -270,7 +270,7 @@ shell.
      else
           builtin cd `egrep "/$1[^/]*$" $HOME/.cdpaths |\
                       iselect -a -Q $1 -n "chdir" \
-                              -t "Change Directory to..."` 
+                              -t "Change Directory to..."`
      fi
      PS1="\u@\h:$PWD\n:> "
  }

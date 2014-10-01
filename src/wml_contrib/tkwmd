@@ -5,7 +5,7 @@
 # Copyright (c) 1999 Denis Barbier <barbier@engelschall.com>
 # This program is free software released under the GNU General
 # Public License v2
-# 
+#
 #    This program is not intended to replace wmd, i write it
 #    to learn Perl::Tk. Bug reports and comments are welcome ;-)
 #    Any ideas to format man pages into Tk widgets as tkman does
@@ -76,9 +76,9 @@ sub add_doc_menu {
     }
 }
 
-add_doc_menu('Basics', 
+add_doc_menu('Basics',
     qw(wml_intro wml_tutorial wml_faq wml_tags wml_barebone));
-add_doc_menu('References', 
+add_doc_menu('References',
     qw(wml_std_html40 wml_std_html32 wml_std_html20 wml_std_css1
        wml_std_css2 wml_std_csspos));
 add_doc_menu('Frontends', qw(wml wmk wmd wmb wmu));

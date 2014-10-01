@@ -40,9 +40,9 @@ ADD_CUSTOM_COMMAND(
         "--dest" "${TAGS_POD}"
         "--main" "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.main"
         "--incl" "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.incl"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.pod.in" 
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.pod.in"
             "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.main"
-            "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.incl" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/wml_tags.L.incl"
     VERBATIM
 )
 

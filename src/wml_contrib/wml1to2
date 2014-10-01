@@ -154,7 +154,7 @@ the C<README.mp4h> file shipped with the distribution.
 =item Macro Functions
 
 The C<E<lt>define-tagE<gt>> command replaces C<E<lt>defsubstE<gt>>, C<E<lt>define-containerE<gt>> and
-C<E<lt>defmacroE<gt>>.  On the other hand, C<E<lt>define-functionE<gt>>, C<E<lt>defunE<gt>> and 
+C<E<lt>defmacroE<gt>>.  On the other hand, C<E<lt>define-functionE<gt>>, C<E<lt>defunE<gt>> and
 C<E<lt>defweakmacroE<gt>> have no equivalent and should be rewritten.
 
 Special sequences C<%qbody> and C<%xbody> are replaced by C<%body>.

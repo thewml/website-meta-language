@@ -58,7 +58,7 @@ else
     echo "the option --with-perl=/path/to/bin/perl to"
     echo "provide the correct executable."
     echo ""
-    AC_ERROR([Perl version too old]) 
+    AC_ERROR([Perl version too old])
 fi
 AC_SUBST(PATH_PERL)
 AC_SUBST(perlprog)
@@ -67,7 +67,7 @@ AC_SUBST(perlvers)
 
 AC_DEFUN(AC_CHECK_PERL_MODULE,[dnl
 AC_MSG_CHECKING([for Perl module $1 ($2)])
-rc=`$path_perl -e 'eval {require $1 ifelse($2, ANY, , $2)}; print "ok" unless [$]@'`; 
+rc=`$path_perl -e 'eval {require $1 ifelse($2, ANY, , $2)}; print "ok" unless [$]@'`;
 if test ".$rc" = .ok; then
     have_$3=1
     AC_MSG_RESULT([found])
