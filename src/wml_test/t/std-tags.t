@@ -1,12 +1,16 @@
 
-require "TEST.pl";
-&TEST::init;
+use strict;
+use warnings;
 
-print "1..2\n";
 
-$pass = "1-9";
+use WmlTest;
+WmlTest::init();
 
-&TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+use Test::More tests => 2;
+
+my $pass = "1-9";
+
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::std::tags
 <define-tag nesting endtag=required whitespace=delete>
 <perl>
@@ -21,5 +25,5 @@ ABC
 DEF
 EOT_OUT
 
-&TEST::cleanup;
+WmlTest::cleanup();
 
