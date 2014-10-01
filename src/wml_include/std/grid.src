@@ -1,6 +1,6 @@
 ##
 ##  wml::std::grid - Layout Grid
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -9,7 +9,7 @@
 
 #use wml::std::tags
 
-<: 
+<:
 #   top-level globals
 $NGRID     = 0;
 $GRIDLEVEL = 0;
@@ -32,12 +32,12 @@ $GRIDLEVEL = 0;
     my %CELL_ATTR = ();
     my %CELL_BODY = ();
 
-    #   import cell specs... 
+    #   import cell specs...
     my $div;
 </perl>\
 %body
 <perl>
-    #   then import attributes to ePerl 
+    #   then import attributes to ePerl
     my $layout  = '<get-var layout />';
     my $align   = '<get-var align />';
     my $valign  = '<get-var valign />';
@@ -195,7 +195,7 @@ wml::std::grid - Layout Grid
 
 The C<E<lt>gridE<gt>> container tag provides a mixture between a HTML table
 and a TeX-like way of specifying its dimensions and the alignment of its
-cells. 
+cells.
 
 =head1 ATTRIBUTES
 
@@ -261,7 +261,7 @@ to set the background color of the grid. Default is no specified color.
 
 This sets the foreground (text) color of the grid's contents. Actually this
 sets the default for the same attribute of C<E<lt>cellE<gt>>. Default is no
-specified color. 
+specified color.
 
 =back
 
@@ -316,7 +316,7 @@ set the height of the cell. Default is no specified height.
 
 =head1 EXAMPLE
 
-  <grid bgcolor="#000000" color="#ffffff" 
+  <grid bgcolor="#000000" color="#ffffff"
         layout="3x2" align="llr" valign="tm">
     <cell>A</cell> <cell>B</cell> <cell>C</cell>
     <cell>D</cell> <cell>E</cell> <cell>F</cell>

@@ -1,6 +1,6 @@
 ##
 ##  wml::std::case - Convert Tags to Upper or Lower Case
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 <define-tag case:upper endtag=required whitespace=delete>
@@ -53,7 +53,7 @@ all HTML tags in their body either to upper or lower case.  Alternatively
 there is a useful variant: Adding the C<global> attribute while loading this
 include file leads to a global case conversion, i.e.  C<#use wml::std::case
 global=upper> just converts all HTML tags of the finally generated page to
-upper case. 
+upper case.
 
 Internally this include file uses the C<E<lt>tagconvE<gt>> container tag
 provided by HTMLfix (pass 7).
