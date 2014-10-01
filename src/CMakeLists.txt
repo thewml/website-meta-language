@@ -107,6 +107,8 @@ SET(CPACK_PACKAGE_EXECUTABLES
 
 INCLUDE (CPack)
 
+ENABLE_TESTING()
+
 SUBDIRS (
     wml_aux
     wml_backend
