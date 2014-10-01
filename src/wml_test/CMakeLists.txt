@@ -1,5 +1,3 @@
-ENABLE_TESTING()
-
 SET (_test_cmd_cmd_line "make" "-f" "test.mak" "test"
     "PATH_PERL=${PERL_EXECUTABLE}"
     "prefix=${CMAKE_INSTALL_PREFIX}"
