@@ -1,6 +1,6 @@
 ##
 ##  wml::fmt::pod - Plain Old Document (POD) Format
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -98,11 +98,11 @@ sub wml_fmt_pod {
     print POD $buf;
     close(POD);
     <perl:print:
-         "&wml_fmt_pod({ FILE        => $tmpfile, 
+         "&wml_fmt_pod({ FILE        => $tmpfile,
                          NAMEKLUDGE  => $namekludge,
-                         KEEPINDEX   => $keepindex, 
-                         KEEPHR      => $keephr, 
-                         NONETSCAPE  => $nonetscape, 
+                         KEEPINDEX   => $keepindex,
+                         KEEPHR      => $keephr,
+                         NONETSCAPE  => $nonetscape,
                          NOTYPO      => $notypo,
                          EPERLFILTER => $eperlfilter })" />
 
@@ -137,7 +137,7 @@ wml::fmt::pod - Plain Old Document (POD) Format
 The usage is simple: Just surround all POD source text with the B<pod>
 container tag and then just write POD format inside it as you would do when
 writing plain POD documents. The corresponding HTML code is created via Perl's
-C<pod2html> filter. 
+C<pod2html> filter.
 
 B<ATTENTION! There are a lot of pod2html versions around from the various Perl
 versions. I really recommend you the pod2html from Perl 5.004!>

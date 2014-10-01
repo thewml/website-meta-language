@@ -1,6 +1,6 @@
 ##
 ##  wml::des::rollover - RollOver-Style Image-Button
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -94,7 +94,7 @@ One of the most interesting trick to make a webpage more interactive is the
 so-called I<rollover effect> commonly known from window system GUIs. The idea
 is simply to change the underlaying image when the mouse I<rolls over> it.
 Additionally when a mouse click occurs over the image it acts like a button
-and jumps to a new URL.  
+and jumps to a new URL.
 
 Although there are more then one way to achieve this optical effect, to use
 the client-side scripting-language I<JavaScript> currently is the best

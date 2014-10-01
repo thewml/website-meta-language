@@ -1,6 +1,6 @@
 ##
 ##  wml::des::typography - Typography
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##
 
 #  The <preserve>/<restore> tags with multiple arguments require WML 2.0.3
@@ -279,7 +279,7 @@ wml::des::typography - Typography
 =head1 SYNOPSIS
 
  #use wml::des::typography [face_shortcuts]
-  
+
  #   paragraph whitespace
  <ps [height]>
  (<ds [height]>)
@@ -327,7 +327,7 @@ C<E<lt>dsE<gt>> for this tag.
   <ps>
   The new line of the following paragraph...
 
-=item B<Typographical Paragraph Indention> 
+=item B<Typographical Paragraph Indention>
 
 B<C<E<lt>pi >>[I<width>]B<C<E<gt>>>
 
@@ -354,7 +354,7 @@ beginning of a more important paragraph by rendering the first letter of the
 first word of this paragraph in huge font. Optically this letter then is
 approximately three times bigger then the normal text font. Additionally the
 B<alt> attribute of the used C<E<lt>imgE<gt>> tag is set to the letter, so
-text-based browsers correctly show the first word. Because 
+text-based browsers correctly show the first word. Because
 such a paragraph should also be introduced by more whitespace, one
 usually uses the standard C<E<lt>pE<gt>> tag in front of C<E<lt>bigE<gt>> to
 achieve the correct optical effect.
@@ -365,7 +365,7 @@ Example:
   <p>
   <big T>he new line of the following paragraph...
 
-=item B<Small Caps Text> 
+=item B<Small Caps Text>
 
 B<C<E<lt>sc >>[B<complete>]B<C<E<gt>>>...B<C<E<lt>/scE<gt>>>
 
@@ -379,7 +379,7 @@ If you have support for i18n (internationalization) you may also convert case
 of non-ASCII characters. See your local documentation locale(7) for details
 or ask your system administrator.
 
-=item B<Spaced Text> 
+=item B<Spaced Text>
 
 B<C<E<lt>spaced >>[B<interchar=>I<N>] [B<interline=>I<N>]B<C<E<gt>>>...B<C<E<lt>/spacedE<gt>>>
 
@@ -440,7 +440,7 @@ treats it like plain (source) code. Internally this just is an indented
 C<E<lt>verbatimE<gt>> container from wml::fmt::verbatim(3) which itself is an
 enhanced C<E<lt>preE<gt>> container.
 
-=item B<Unnumbered Lists> 
+=item B<Unnumbered Lists>
 
 B<C<E<lt>tul >>[B<ps=>I<N>] [B<pi=>I<N>]B<C<E<gt>>>...B<C<E<lt>/tulE<gt>>>
 
