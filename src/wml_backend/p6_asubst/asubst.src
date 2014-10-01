@@ -3,12 +3,11 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
 ##  asubst -- Area Substitution
-##  Copyright (c) 1997,1998,1999 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997,1998,1999 Ralf S. Engelschall, All Rights Reserved.
 ##
 
-require 5.003;
-
-BEGIN { $^W = 0; } # get rid of nasty warnings
+use strict;
+use warnings;
 
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
@@ -16,6 +15,8 @@ use lib "@INSTALLARCHLIB@";
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
 use IO::File 1.06;
+
+my $_my_debug = 0;
 
 #
 #   process command line
@@ -28,15 +29,18 @@ sub usage {
     print STDERR "  -v, --verbose            verbose mode\n";
     exit(1);
 }
-$opt_v = 0;
-$opt_o = '-';
+my $opt_v = 0;
+my $opt_o;
 $Getopt::Long::bundling = 1;
 $Getopt::Long::getopt_compat = 0;
 if (not Getopt::Long::GetOptions(
-    "v|verbose",
-    "o|outputfile=s")) {
-    &usage;
+    "v|verbose" => \$opt_v,
+    "o|outputfile=s" => \$opt_o,)) {
+    usage();
 }
+
+$opt_o //= '-';
+
 sub verbose {
     my ($str) = @_;
     if ($opt_v) {
@@ -52,22 +56,24 @@ sub error {
 #
 #   open input file and read into buffer
 #
-if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
-    $in = new IO::Handle;
+my $foo_buffer;
+
+if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV)
+{
+    my $in = IO::Handle->new;
     $in->fdopen(fileno(STDIN), 'r') || error("cannot load STDIN: $!");
-    local ($/) = undef;
-    $buffer = <$in>;
+    local $/;
+    $foo_buffer = <$in>;
     $in->close() || error("cannot close STDIN: $!");
 }
 elsif ($#ARGV == 0) {
-    $in = new IO::File;
-    $in->open($ARGV[0]) || error("cannot load $ARGV[0]: $!");
-    local ($/) = undef;
-    $buffer = <$in>;
+    open my $in, '<', $ARGV[0] or error("cannot load $ARGV[0]: $!");
+    local $/;
+    $foo_buffer = <$in>;
     $in->close() || error("cannot close $ARGV[0]: $!");
 }
 else {
-    &usage;
+    usage();
 }
 
 #
@@ -79,7 +85,7 @@ else {
 #  ($rc, $buffer) = ExpandBlock($buffer, \&cnvpre, $startdel, \&cnvin, $enddel, \&cnvpost, $level);
 #
 sub ExpandBlock {
-    return &ExpandBlockMore(@_);
+    return ExpandBlockMore(@_);
 }
 
 #   This subvariant is used to split the input into
@@ -89,9 +95,9 @@ sub ExpandBlock {
 #   inputs for ExpandBlockOne: "... < < > > ...", "< >", "< < > < > > ...", #   ...
 #
 sub ExpandBlockMore {
-    local ($buffer, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level) = @_;
-    local ($rc, $opened, $offset, @segment, $del, $openidx, $closeidx);
-    local ($bufferN, $s, $e, $i, $data);
+    my ($buffer, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level) = @_;
+    my ($rc, $opened, $offset, @segment, $del, $openidx, $closeidx);
+    my ($bufferN, $s, $e, $i, $data);
 
     #
     #   first, check for corresponding delimiters
@@ -103,7 +109,7 @@ sub ExpandBlockMore {
     while (1) {
         $openidx  = index($buffer, $opendel,  $offset);
         $closeidx = index($buffer, $closedel, $offset);
-        &Dbg(1, "buffer=<>, off=$offset, o=$openidx, c=$closeidx\n");
+        _wml_back_end_asubst_debug(1, "buffer=<>, off=$offset, o=$openidx, c=$closeidx\n");
         if ($openidx == -1 && $closeidx == -1) {
             #   both not found, stop now
             push(@segment, length($buffer));
@@ -111,13 +117,13 @@ sub ExpandBlockMore {
         }
         if ($openidx != -1 && $closeidx != -1) {
             #   both found, take closer one
-            ($offset, $del, $opened) = ($openidx < $closeidx ? 
+            ($offset, $del, $opened) = ($openidx < $closeidx ?
                 ($openidx, $opendel, $opened+1) :
                 ($closeidx, $closedel, $opened-1) );
         }
         else {
             #   one not found, take other one
-            ($offset, $del, $opened) = ($openidx != -1 ? 
+            ($offset, $del, $opened) = ($openidx != -1 ?
                 ($openidx, $opendel, $opened+1) :
                 ($closeidx, $closedel, $opened-1) );
         }
@@ -140,7 +146,8 @@ sub ExpandBlockMore {
         $e = $segment[$i+1];
         $i++;
         $data = substr($buffer, $s, ($e-$s));
-        ($rc, $data) = &ExpandBlockOne($data, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level);
+        my $rc;
+        ($rc, $data) = ExpandBlockOne($opendel, $closedel, $data, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level);
         if ($rc != 0) {
             return ($rc, $data);
         }
@@ -155,15 +162,15 @@ sub ExpandBlockMore {
 #   input: "... < < > > ... "
 #
 sub ExpandBlockOne {
-    local ($buffer, $cnvpre, $startdel, $cnvin, $enddel, $cnvpost, $level) = @_;
-    local ($openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data);
+    my ($opendel, $closedel, $buffer, $cnvpre, $startdel, $cnvin, $enddel, $cnvpost, $level) = @_;
+    my ($openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data);
 
     $openidx  =  index($buffer,  $opendel);
     $closeidx = rindex($buffer, $closedel);
     #   either both exist or both not exist
     if ($openidx == -1 && $closeidx == -1) {
         if ($level == 0) {
-            $data = &$cnvpre($buffer, $level); # could also be cnvpost..
+            $data = $cnvpre->($buffer, $level); # could also be cnvpost..
         }
         else {
             $data = $buffer;
@@ -172,33 +179,34 @@ sub ExpandBlockOne {
     }
     else {
         #   convert prefix
-        $prefix  = &$cnvpre(substr($buffer, 0, $openidx), $level);
-        Dbg($level, "ExpandBlockOne::prefix", $prefix);
+        $prefix  = $cnvpre->(substr($buffer, 0, $openidx), $level);
+        _wml_back_end_asubst_debug($level, "ExpandBlockOne::prefix", $prefix);
 
         #   recursive into the body
         $inner = substr($buffer, $openidx+length($opendel), $closeidx-($openidx+length($opendel)));
-        Dbg($level, "ExpandBlockOne::inner", $inner);
-        ($rc, $inner) = &ExpandBlockMore($inner, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level+1);
-        Dbg($level, "ExpandBlockOne::inner", $inner);
-        $inner = &$cnvin($inner, $level+1);
-        Dbg($level, "ExpandBlockOne::inner", $inner);
+        _wml_back_end_asubst_debug($level, "ExpandBlockOne::inner", $inner);
+        ($rc, $inner) = ExpandBlockMore($inner, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level+1);
+        _wml_back_end_asubst_debug($level, "ExpandBlockOne::inner", $inner);
+        $inner = $cnvin->($inner, $level+1);
+        _wml_back_end_asubst_debug($level, "ExpandBlockOne::inner", $inner);
 
         #   convert postfix
-        $postfix = &$cnvpost(substr($buffer, $closeidx+length($closedel), length($buffer)-($closeidx+length($closedel))), $level);
-        Dbg($level, "ExpandBlockOne::postfix", $postfix);
+        $postfix = $cnvpost->(substr($buffer, $closeidx+length($closedel), length($buffer)-($closeidx+length($closedel))), $level);
+        _wml_back_end_asubst_debug($level, "ExpandBlockOne::postfix", $postfix);
 
         return ($rc, $prefix . $inner . $postfix);
     }
 }
 
-$debug = 0;
 
 #   A debugging function
-sub Dbg {
+sub _wml_back_end_asubst_debug {
     my ($level, $name, $str) = @_;
     my (@o, $l);
 
-    return if ($debug == 0);
+    # return if ($_my_debug == 0);
+    return;
+
     push(@o, "    " x $level . "### $name =\n");
     if ($str eq '') {
         push(@o, "    " x $level . "    ||\n");
@@ -209,6 +217,8 @@ sub Dbg {
         }
     }
     print STDERR @o;
+
+    return;
 }
 
 sub cnvpre {
@@ -222,10 +232,10 @@ sub cnvin {
 
     return '' if $str eq '';
 
-    @SCMD = ();
+    my @SCMD;
     $str =~ s|\[\[(s(.)[^\2]+?\2[^\2]*?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
     $str =~ s|\[\[(tr(.)[^\2]+?\2[^\2]+?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
-    foreach $scmd (@SCMD) {
+    foreach my $scmd (@SCMD) {
         eval "\$str =~ $scmd;";
     }
     return $str;
@@ -237,27 +247,29 @@ sub cnvpost {
     return $str;
 }
 
-if (index($buffer, '{:') != -1) {
-    ($rc, $buffer) = ExpandBlock($buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost, 0);
+my $rc;
+if (index($foo_buffer, '{:') != -1) {
+    ($rc, $foo_buffer) = ExpandBlock($foo_buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost, 0);
 }
 
 if ($rc) {
-    print STDERR "aSubst:Error: $buffer\n";
+    print STDERR "aSubst:Error: $foo_buffer\n";
     exit(1);
 }
 
 #
 #   write to output file
 #
+my $out;
 if ($opt_o eq '-') {
-    $out = new IO::Handle;
+    $out = IO::Handle->new;
     $out->fdopen(fileno(STDOUT), 'w') || error("cannot write into STDOUT: $!");
 }
 else {
-    $out = new IO::File;
-    $out->open(">$opt_o") || error("cannot write into $opt_o: $!");
+    open $out, '>', $opt_o
+        or error("cannot write into $opt_o: $!");
 }
-$out->print($buffer) || error("cannot write into $opt_o: $!");
+$out->print($foo_buffer) || error("cannot write into $opt_o: $!");
 $out->close() || error("cannot close $opt_o: $!");
 
 exit(0);
