@@ -1,6 +1,6 @@
 ##
 ##  wml::des::imgbg - Background Images
-##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved. 
+##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000-2001 Denis Barbier
 ##
 
@@ -111,7 +111,7 @@ sub imgbg {
 <defvar format <or <get-var IMAGE_FORMAT /> gif /> />
 <defvar pixels 1 />
 <perl>
-    #   import attributes to ePerl 
+    #   import attributes to ePerl
     $base      = qq|<get-var base />|;
     $direction = qq|<get-var direction />|;
     $content   = qq|<get-var content />|;
@@ -173,7 +173,7 @@ C<base=foo> attribute, then the resulting files are named
 F<foo.imgbg-xxxxxx.png>.  Actually you can even use a complete filename
 including a directory prefix, i.e. when you use C<base=../../common/foo>
 attribute, then the images are created as
-F<../../common/foo.imgbg-xxxxxx.png>. 
+F<../../common/foo.imgbg-xxxxxx.png>.
 
 And for most flexibility when no base is specified and the variable
 C<BGIMG_BASE> is defined (usually from within a F<.wmlrc> file via
@@ -203,13 +203,13 @@ Size of the image in the other direction, 1 by default.
 This is a comma-separated list of size/color specifications
 ``I<pixels>C<:#>I<rrggbb>C<:#>I<rrggbb>C<:>I<slices>''
 
-The last two arguments are optional, only present for gradient images. 
+The last two arguments are optional, only present for gradient images.
 In this case, a linear gradient line is drawn from color 1 to color 2,
 with I<slices> different colors.
 
 To get a background with two columns, a black one with 150 point in size
 and a white one which fills the rest of the page use
-``C<150:#000000,1200:#ffffff>''. 
+``C<150:#000000,1200:#ffffff>''.
 
 =back
 
