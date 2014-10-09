@@ -902,13 +902,19 @@ int main(int argc, char **argv, char **env)
         uid = getuid();
         gid = getgid();
 #ifdef HAVE_SETEUID
-        seteuid(uid);
+        if (seteuid(uid)) {
+            PrintError(mode, source, NULL, NULL, "Unable to set EUID %ld: seteuid failed", (long)uid);
+            exit(-1);
+        }
 #else
         /* HP/UX and others eliminate the effective UID with setuid(uid) ! */
         setuid(uid);
 #endif
 #ifdef HAVE_SETEGID
-        setegid(uid);
+        if (setegid(uid)) {
+            PrintError(mode, source, NULL, NULL, "Unable to set EGID %ld: setegid failed", (long)uid);
+            exit(-1);
+        }
 #else
         /* HP/UX and others eliminate the effective GID with setgid(gid) ! */
         setgid(gid);
