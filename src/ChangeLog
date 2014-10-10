@@ -8,6 +8,15 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.2.3 to 2.4.0:
+
+  *) Got make check / make test to work.
+     [Shlomi Fish <shlomif@cpan.org>]
+
+  *) Many perl code cleanups.
+
+  *) Fixes to the CMake build system.
+
   Changes between 2.2.2 to 2.2.3:
 
   *) Get rid of a warning with version 3.0.0-rc3 of CMake.
