@@ -7,7 +7,7 @@ INCLUDE(Shlomif_Common)
 
 SHLOMIF_COMMON_SETUP("${private_mod_path}")
 
-SET(VERSION "2.2.2")
+SET(VERSION "2.4.0")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
