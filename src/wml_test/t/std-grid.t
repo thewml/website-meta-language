@@ -1,12 +1,15 @@
 
-require "TEST.pl";
-TEST::init();
+use strict;
+use warnings;
 
-print "1..2\n";
+use WmlTest;
+WmlTest::init();
 
-$pass = "1-9";
+use Test::More tests => 2;
 
-TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+my $pass = "1-9";
+
+my $in = <<'EOT_IN';
 #use wml::std::grid
 <grid layout=2x3 align=lr valign=tbm>
   <cell>This is Cell #1 of Grid #1</cell>
@@ -24,6 +27,8 @@ TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
   <cell>This is Cell #6 of Grid #1</cell>
 </grid>
 EOT_IN
+
+my $out = <<'EOT_OUT';
 <table border="0" cellspacing="0" cellpadding="0" summary="">
   <tr>
     <td align="left" valign="top">This is Cell #1 of Grid #1</td>
@@ -51,5 +56,8 @@ EOT_IN
 </table>
 EOT_OUT
 
-TEST::cleanup();
+# TEST*2
+WmlTest::generic($pass, $in, $out, '');
+
+WmlTest::cleanup();
 
