@@ -1,26 +1,37 @@
 
-require "TEST.pl";
-TEST::init();
+use strict;
+use warnings;
 
-print "1..4\n";
+use WmlTest;
+WmlTest::init();
+
+use Test::More tests => 4;
 
 #
 #   TEST 1-2: throughput
 #
 
-$pass = "1-9";
+my $pass = "1-9";
 
-TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+{
+    my $in = <<'EOT_IN';
 foo bar baz quux
 öäüÖÄÜß
 !"§$%&/()=?`'*+
 EOT_IN
+
+    my $out = <<'EOT_OUT';
 foo bar baz quux
 öäüÖÄÜß
 !"§$%&/()=?`'*+
 EOT_OUT
 
-TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=');
+    # TEST*2
+    WmlTest::generic($pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2=');
+}
+
+{
+    my $in = <<'EOT_IN';
 <protect pass=2-9>\
 $(bar)
 $(void)
@@ -28,11 +39,17 @@ $(void2)
 $(ROOT)\
 </protect>
 EOT_IN
+
+    my $out = <<'EOT_OUT';
 1
 
 
 .
 EOT_OUT
 
-TEST::cleanup();
+    # TEST*2
+    WmlTest::generic($pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2= -DROOT=.', );
+}
+
+WmlTest::cleanup();
 
