@@ -8,6 +8,12 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.4.0 to 2.4.1:
+
+  *) Fix the test suite using the -j9/etc. Test::Harness options.
+    (Convert the rest of the active test scripts to WmlTest.pm)
+	(Thanks to Axel Beckert from the Debian project for the report.)
+
   Changes between 2.2.3 to 2.4.0:
 
   *) Got make check / make test to work.
