@@ -1,24 +1,37 @@
 
-require "TEST.pl";
-TEST::init();
+use strict;
+use warnings;
 
-print "1..2\n";
+use WmlTest;
+WmlTest::init();
 
-$pass = "1-9";
+use Test::More tests => 2;
+
+my $pass = "1-9";
 
 #   Test if PNG support was found
 my $png_support = 0;
+
+=begin removed
+
+my $conf;
 {
-  open (IN, '<../wml_common/gd/Makefile');
+  open (my $IN, '<', '../wml_common/gd/Makefile');
   local $/ = undef;
-  $conf = <IN>;
-  close (IN);
+  $conf = <$IN>;
+  close ($IN);
   $png_support = ($conf =~ m/-lpng/);
 }
 
+=end removed
+
+=cut
+
+
+# TEST*2
 if ($png_support) {
 #   PNG support available
-TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::des::space
 <space format=png width=6 height=4>
 <space format=gif width=6>
@@ -32,7 +45,7 @@ EOT_IN
 EOT_OUT
 } else {
 #   PNG support unavailable
-TEST::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
 #use wml::des::space
 <space format=gif width=6>
 <space height=4>
@@ -46,8 +59,10 @@ EOT_OUT
 
 #   If the variable @TEST::TMPFILES appears only once, a warning
 #   is reported
-push(@TEST::TMPFILES, "imgdot-1x1-transp-ffffff.gif");
-push(@TEST::TMPFILES, "imgdot-1x1-transp-ffffff.png");
+WmlTest::add_files(
+    "imgdot-1x1-transp-ffffff.gif",
+    "imgdot-1x1-transp-ffffff.png",
+);
 
-TEST::cleanup();
+WmlTest::cleanup();
 

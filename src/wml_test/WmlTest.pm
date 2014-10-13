@@ -62,7 +62,9 @@ sub add_files {
 
 sub cleanup {
     foreach my $fn (@files_to_del) {
-        unlink ($fn);
+        eval {
+            unlink ($fn);
+        };
     }
 }
 
