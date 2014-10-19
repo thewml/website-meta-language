@@ -35,6 +35,9 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  this program under different conditions or license agreements.
 ##
 
+use strict;
+use warnings;
+
 our $VERSION = "@WML_VERSION@";
 
 if ($ENV{'PATH'} !~ m|@bindir@|) {
@@ -147,7 +150,7 @@ sub ProcessOptions {
         exit(0);
     }
     usage($0) if ($opt_h);
-    foreach (@list_options) {
+    foreach my (@list_options) {
         if (m|=s|) {
             s/^(.)\|.*$/opt_$1/;
             my ($arg) = $1;
@@ -308,7 +311,7 @@ if (not $opt_r) {
 
 
     #   now parse these RC files
-    foreach $dir (reverse(@DIR)) {
+    foreach my $dir (reverse(@DIR)) {
         if (-f "$dir/.wmlrc") {
             verbose(2, "Reading RC file: $dir/.wmlrc\n");
             open(FP, "<$dir/.wmlrc") || error("Unable to load $dir/.wmlrc: $!");
@@ -334,7 +337,7 @@ if (not $opt_r) {
             #   adjust -D options
             $reldir = File::Spec->abs2rel("$dir", "$src");
             $reldir = "." if $reldir eq '';
-            foreach $d (@opt_D) {
+            foreach my $d (@opt_D) {
                 if ($d =~ m|^([A-Za-z0-9_]+)~(.+)$|) {
                     ($var, $path) = ($1, $2);
                     if ($path !~ m|^/|) {
@@ -359,7 +362,7 @@ if (not $opt_r) {
             #   adjust -I options
             $reldir = File::Spec->abs2rel("$dir");
             $reldir = "." if $reldir eq '';
-            foreach $path (@opt_I) {
+            foreach my $path (@opt_I) {
                 if ($path !~ m|^/|) {
                     if ($path eq '.') {
                         $path = CanonPath("$reldir");
@@ -385,7 +388,7 @@ if (not $opt_r) {
 ProcessOptions();
 
 #   quote the characters the shell have escaped
-foreach $d (@opt_D) {
+foreach my $d (@opt_D) {
     push(@opt_D_ADD, quotearg($d));
 }
 @opt_D = @opt_D_OLD;
@@ -477,7 +480,7 @@ if (not $src_istmp) {
 else {
     $reldir = '.';
 }
-foreach $d (@opt_D_ADD) {
+foreach my $d (@opt_D_ADD) {
     if ($d =~ m|^([A-Za-z0-9_]+)~(.+)$|) {
         ($var, $path) = ($1, $2);
         if ($path !~ m|^/|) {
@@ -520,7 +523,7 @@ if (not $opt_n) {
 
 #   6. expand %DIR and %BASE in the -o flags
 @opt_o_OLD = @opt_o; @opt_o = ();
-foreach $opts (@opt_o_OLD) {
+foreach my $opts (@opt_o_OLD) {
     my ($dir, $base);
 
     if ($src =~ m|^(.+)/([^/]+)$|) {
@@ -537,7 +540,7 @@ foreach $opts (@opt_o_OLD) {
 
 #   7. Undefine variables when requested
 %new_opt_D = ();
-foreach $d (@opt_D) {
+foreach my $d (@opt_D) {
     ($var, $val) = ($d =~ m|^(.+?)=(.*)$|);
     if ($val eq 'UNDEF') {
         delete $new_opt_D{$var};
@@ -611,7 +614,7 @@ sub dosource {
     $pkgname = $prog;
     $pkgname =~ s|^.*/([^/]+)$|$1|;
     if ($prog !~ m|^/|) {
-        foreach $p (split(/:/, $ENV{'PATH'})) {
+        foreach my $p (split(/:/, $ENV{'PATH'})) {
             if (-f "$p/$prog") {
                 $prog = "$p/$prog";
                 last;
@@ -745,8 +748,11 @@ sub unprotect {
     $data =~ s|</?protect.*?>||gs if $pass == 9;
     $fp->print($data) || error("Unable to write into $file for unprotection: $!");
     $fp->close() || error("Unable to close $file: $!");
-    foreach $key (%PROTECT_STORAGE) {
-        $PROTECT_STORAGE{$key} = undef if $pass < 9;
+    if ($pass < 9)
+    {
+        foreach my $key (keys %PROTECT_STORAGE) {
+            $PROTECT_STORAGE{$key} = undef;
+        }
     }
 }
 
@@ -1058,7 +1064,7 @@ foreach my $i (@opt_I) {
 
 #   determine preloads
 $preload = '';
-foreach $p (@p) {
+foreach my $p (@p) {
     $preload .= " -s 'sys/bootp${p}.wml'"
       if -f "@libdir@/include/sys/bootp${p}.wml" and $p =~ m/^[34]$/;
 }
@@ -1073,13 +1079,13 @@ foreach my $i (@opt_i) {
 
 #   determine prologs
 $prolog = '';
-foreach $p (@opt_P) {
+foreach my $p (@opt_P) {
     $prolog .= ' -P "'.quotearg($p).'"';
 }
 
 $defipp = '';
 my $dummy;
-foreach $d (@opt_D) {
+foreach my $d (@opt_D) {
     ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defipp .= " \"-D$var=$val\"";
 }
@@ -1087,24 +1093,24 @@ $defipp .= " -M$opt_M" if $opt_M ne '-';
 $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $src_istmp;
 
 $defmp4h = '';
-foreach $d (@opt_D) {
+foreach my $d (@opt_D) {
     ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defmp4h .= " -D $var=\"$val\"";
 }
 $cnt=0;
-foreach $o (@opt_o) {
+foreach my $o (@opt_o) {
     $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
     $cnt++;
 }
 
 $defeperl = '';
-foreach $d (@opt_D) {
+foreach my $d (@opt_D) {
     ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defeperl .= " \"-d$var=$val\"";
 }
 
 $defgm4 = '';
-foreach $d (@opt_D) {
+foreach my $d (@opt_D) {
     ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defgm4 .= " \"-Dm4_$var=$val\"";
 }
@@ -1114,7 +1120,7 @@ sub ProcessOutfiles {
 
     $out = '';
     @outfiles = ();
-    foreach $o (@opt_o) {
+    foreach my $o (@opt_o) {
         next if ($o =~ m|\*[^:]*$|);
 
         #   create option
@@ -1226,8 +1232,8 @@ if ($opt_M ne '-') {
     if ($#outfiles > -1) {
         $o = '"'. join(' ',@outfiles) . '"';
         $opt_pass = '';
-        foreach $a (@opt_W) {
-            if ($a =~ m|^(\d),(.*)$|) {
+        foreach my $aa (@opt_W) {
+            if ($aa =~ m|^(\d),(.*)$|) {
                 $opt_pass .= " $2 " if $1 == 1;
             }
         }
@@ -1254,7 +1260,7 @@ if ($opt_M ne '-') {
 #
 @TIMES = ();
 $firstpass = 1;
-foreach $p (@p) {
+foreach my $p (@p) {
     verbose(2, "PASS $p:\n");
     print STDERR @prop[$pcnt++ % 4] . "\b" if (not $opt_q);
 
@@ -1263,8 +1269,8 @@ foreach $p (@p) {
     $stime = $u + $s + $cu + $cs;
     protect($from, $p);
     $opt_pass = '';
-    foreach $a (@opt_W) {
-        if ($a =~ m|^(\d),(.*)$|) {
+    foreach my $aa (@opt_W) {
+        if ($aa =~ m|^(\d),(.*)$|) {
             $opt_pass .= " $2 " if $1 == $p;
         }
     }
@@ -1321,7 +1327,7 @@ if ($last ne '' and $final and $out_istmp) {
     my $fp;
     unprotect($last, 9);
     if ($#outfiles > -1) {
-        foreach $o (@outfiles) {
+        foreach my $o (@outfiles) {
             $fh[$i] = new IO::File "> $o";
             error("Unable to write into $o") if !defined $fh[$i];
             $i++;
@@ -1332,12 +1338,12 @@ if ($last ne '' and $final and $out_istmp) {
     }
     open(FP, "<$last") || error("Unable to load $last: $!");
     while (<FP>) {
-        foreach $fp (@fh) {
-            print $fp $_
+        foreach my $fp (@fh) {
+            $fp->print( $_ )
                 or error("Unable to write into output file: $!");
         }
     }
-    foreach $fp (@fh) {
+    foreach my $fp (@fh) {
         $fp->close() || error("Unable to close output file: $!");
     }
     close(FP) || error("Unable to close $last: $!");
@@ -1345,7 +1351,7 @@ if ($last ne '' and $final and $out_istmp) {
 #   Unprotect output files and run epilog filters
 if ($#outfiles > -1) {
     #   unprotect all outputfiles
-    foreach $o (@outfiles) {
+    foreach my $o (@outfiles) {
         unprotect($o, 9);
     }
 
@@ -1355,14 +1361,14 @@ if ($#outfiles > -1) {
         ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
          $atime,$mtime,$ctime,$blksize,$blocks) = stat($src);
          $atime = time();
-         foreach $o (@outfiles) {
+         foreach my $o (@outfiles) {
              utime($atime, $mtime+1, $o);
          }
     }
 
     #   run epilog filters
-    foreach $o (@outfiles) {
-        foreach $e (@opt_E) {
+    foreach my $o (@outfiles) {
+        foreach my $e (@opt_E) {
             if ($e =~ m|^htmlinfo(.*)|) {
                 $e = "@libdir@/exec/wml_aux_htmlinfo$1";
             }
