@@ -38,10 +38,11 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use strict;
 use warnings;
 
-our $VERSION = "@WML_VERSION@";
+our $VERSION = '@WML_VERSION@';
 
-if ($ENV{'PATH'} !~ m|@bindir@|) {
-    $ENV{'PATH'} = '@bindir@:'.$ENV{'PATH'};
+my $bindir = '@bindir@';
+if ($ENV{'PATH'} !~ m|\Q$bindir\E|) {
+    $ENV{'PATH'} = "$bindir:$ENV{'PATH'}";
 }
 
 use Getopt::Long 2.13;
@@ -50,6 +51,17 @@ use Cwd;
 use IO::File 1.06;
 use Term::ReadKey;
 use Cwd;
+
+use IO::All qw/ io /;
+
+sub _my_cwd
+{
+    my $cwd = Cwd::cwd;
+
+    $cwd =~ s|/$||;
+
+    return $cwd;
+}
 
 sub ctime {
     my ($time) = @_;
@@ -118,6 +130,7 @@ sub usage {
     exit(1);
 }
 
+our $opt_h = 0;
 sub ProcessOptions {
     local $SIG{'__WARN__'} = sub {
         print STDERR "WML:Error: $_[0]";
@@ -150,11 +163,12 @@ sub ProcessOptions {
         exit(0);
     }
     usage($0) if ($opt_h);
-    foreach my (@list_options) {
-        if (m|=s|) {
-            s/^(.)\|.*$/opt_$1/;
+    foreach my $opt (@list_options) {
+        if ($opt =~ m|=s|) {
+            $opt =~ s/^(.)\|.*$/opt_$1/;
             my ($arg) = $1;
-            if ($#$_ > -1 && $$_[0] =~ m|^=|) {
+            no strict 'refs';
+            if (@{$opt} && ${$opt}[0] =~ m|^=|) {
                 warn "An equal sign has been detected after the `-$arg' option\n";
                 warn "Try `$0 --help' for more information.\n\n";
                 exit(0);
@@ -164,31 +178,30 @@ sub ProcessOptions {
 }
 
 #   pre-process argument line for option -r and -v
-$opt_r = 0;
-$opt_v = -1;
-$opt_c = 0;
-@ARGVLINE = @ARGV;
+our $opt_r = 0;
+our $opt_v = -1;
+our $opt_c = 0;
+our @ARGVLINE = @ARGV;
 ProcessOptions();
-$src  = $ARGV[0];
+our $src  = $ARGV[0];
 @ARGV = @ARGVLINE;
 
 #   reset with defaults (except $opt_r and $opt_v)
-@opt_I = ();
-@opt_i = ();
-@opt_D = ();
-$opt_n = 0;
-$opt_O = '';
-@opt_o = ();
-@opt_P = ();
-@opt_E = ();
-$opt_t = 0;
-@opt_p = ();
-@opt_W = ();
-$opt_M = '-';
-$opt_s = 0;
-$opt_q = 0;
-$opt_V = -1;
-$opt_h = 0;
+our @opt_I = ();
+our @opt_i = ();
+our @opt_D = ();
+our $opt_n = 0;
+our $opt_O = '';
+our @opt_o = ();
+our @opt_P = ();
+our @opt_E = ();
+our $opt_t = 0;
+our @opt_p = ();
+our @opt_W = ();
+our $opt_M = '-';
+our $opt_s = 0;
+our $opt_q = 0;
+our $opt_V = -1;
 
 #   save argument line
 @ARGVLINE = @ARGV;
@@ -230,7 +243,7 @@ sub split_argv {
 sub CanonPath {
     my ($path) = @_;
 
-    $pathL = '';
+    my $pathL = '';
     while ($path ne $pathL) {
         $pathL = $path;
         $path =~ s|//|/|g;
@@ -261,15 +274,15 @@ sub unquotearg {
 }
 
 #   1. process options in WMLOPTS variable
-if ($var = $ENV{'WMLOPTS'}) {
+if (my $opts = $ENV{'WMLOPTS'}) {
     verbose(2, "Reading WMLOPTS variable");
-    $var =~ s|^\s+||;
-    $var =~ s|\s+$||;
+    $opts =~ s|^\s+||;
+    $opts =~ s|\s+$||;
     #   arguments are not quoted because shell metacharacters
     #   have already been expanded, but dollar sign must be
     #   escaped
-    $var =~ s|\$|\\\$|g;
-    @ARGV = split_argv($var);
+    $opts =~ s|\$|\\\$|g;
+    @ARGV = split_argv($opts);
     ProcessOptions();
 }
 
@@ -278,7 +291,7 @@ if ($var = $ENV{'WMLOPTS'}) {
 ##
 if (not $opt_r) {
     my $savedir = '';
-    @DIR = ();
+    my @DIR = ();
 
     #   First save current directory and go to input file directory
     if (not $opt_c and $src =~ m|/|) {
@@ -291,7 +304,7 @@ if (not $opt_r) {
     $src = '' if not $savedir;
 
     #   2. add all parent dirs .wmlrc files for options
-    ($cwd = Cwd::cwd) =~ s|/$||;
+    my $cwd = _my_cwd;
     while ($cwd) {
         push(@DIR, $cwd);
         $cwd =~ s|/[^/]+$||;
@@ -299,11 +312,10 @@ if (not $opt_r) {
 
     #   Restore directory
     chdir($savedir) if $savedir;
-    $cwd = Cwd::cwd;
 
     #   3. add ~/.wmlrc file for options
-    @pwinfo = getpwuid($<);
-    $home = $pwinfo[7];
+    my @pwinfo = getpwuid($<);
+    my $home = $pwinfo[7];
     $home =~ s|/$||;
     if (-f "$home/.wmlrc") {
         push(@DIR, $home);
@@ -314,7 +326,7 @@ if (not $opt_r) {
     foreach my $dir (reverse(@DIR)) {
         if (-f "$dir/.wmlrc") {
             verbose(2, "Reading RC file: $dir/.wmlrc\n");
-            open (my $wml_rc_fh, '<', $dir/.wmlrc)
+            open (my $wml_rc_fh, '<', "$dir/.wmlrc")
                 or error("Unable to load $dir/.wmlrc: $!");
             @ARGV = ();
             WMLRC_LINES:
@@ -329,20 +341,20 @@ if (not $opt_r) {
                 push (@ARGV, split_argv($l));
             }
             close ($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-            @opt_D_OLD = @opt_D;
-            @opt_I_OLD = @opt_I;
+            my @opt_D_OLD = @opt_D;
+            my @opt_I_OLD = @opt_I;
             @opt_D = ();
             @opt_I = ();
             ProcessOptions();
-            @opt_D_NEW = @opt_D_OLD;
-            @opt_I_NEW = @opt_I_OLD;
+            my @opt_D_NEW = @opt_D_OLD;
+            my @opt_I_NEW = @opt_I_OLD;
 
             #   adjust -D options
-            $reldir = File::Spec->abs2rel("$dir", "$src");
+            my $reldir = File::Spec->abs2rel("$dir", "$src");
             $reldir = "." if $reldir eq '';
             foreach my $d (@opt_D) {
                 if ($d =~ m|^([A-Za-z0-9_]+)~(.+)$|) {
-                    ($var, $path) = ($1, $2);
+                    my ($var, $path) = ($1, $2);
                     if ($path !~ m|^/|) {
                         if ($path eq '.') {
                             $path = CanonPath("$reldir");
@@ -387,9 +399,10 @@ if (not $opt_r) {
 
 #   4. process the command line options
 @ARGV = @ARGVLINE;
-@opt_D_OLD = @opt_D; @opt_D = (); # extra remember -D options from command line
+my @opt_D_OLD = @opt_D; @opt_D = (); # extra remember -D options from command line
 ProcessOptions();
 
+my @opt_D_ADD;
 #   quote the characters the shell have escaped
 foreach my $d (@opt_D) {
     push(@opt_D_ADD, quotearg($d));
@@ -428,7 +441,8 @@ if ($opt_V) {
     if ($opt_V > 2) {
         print STDERR "\n";
         print STDERR "Used Perl System:\n";
-        print STDERR `@perlprog@ -V`;
+        my $perlprog = '@perlprog@';
+        print STDERR `$perlprog -V`;
     }
     exit(0);
 }
@@ -450,10 +464,10 @@ if ($src eq '') {
     $opt_q = 1;
 }
 
-$tmpdir = $ENV{'TMPDIR'} || '/tmp';
+my $tmpdir = $ENV{'TMPDIR'} || '/tmp';
 
 #   if input is stdin we create a temporary file
-$src_istmp = 0;
+my $src_istmp = 0;
 if ($src eq '-') {
     $src_istmp = 1;
     $src = "$tmpdir/wml.input.$$.tmp";
@@ -473,10 +487,11 @@ if (not $src_istmp and not -f $src) {
 
 #   now adjust -D options from command line
 #   relative to path to source file
+my ($reldir);
 if (not $src_istmp) {
     $reldir = $src;
     $reldir =~ s,(:?/|^)[^/]+$,,;
-    ($cwd = Cwd::cwd) =~ s|/$||;
+    my $cwd = _my_cwd;
     $reldir = File::Spec->abs2rel($cwd, "$cwd/$reldir");
     $reldir = "." if $reldir eq '';
 }
@@ -485,7 +500,7 @@ else {
 }
 foreach my $d (@opt_D_ADD) {
     if ($d =~ m|^([A-Za-z0-9_]+)~(.+)$|) {
-        ($var, $path) = ($1, $2);
+        my ($var, $path) = ($1, $2);
         if ($path !~ m|^/|) {
             if ($path eq '.') {
                 $path = CanonPath("$reldir");
@@ -507,7 +522,7 @@ foreach my $d (@opt_D_ADD) {
 #   5. process the options from the pseudo-shebang line
 if (not $opt_n) {
     open(TMP, "<$src") || error("Unable to load $src: $!");
-    $shebang = '';
+    my $shebang = '';
     while (1) {
         $shebang .= <TMP>;
         if ($shebang =~ m|^(.*)\\\s*$|s) {
@@ -525,7 +540,8 @@ if (not $opt_n) {
 }
 
 #   6. expand %DIR and %BASE in the -o flags
-@opt_o_OLD = @opt_o; @opt_o = ();
+my @opt_o_OLD = @opt_o;
+@opt_o = ();
 foreach my $opts (@opt_o_OLD) {
     my ($dir, $base);
 
@@ -542,9 +558,9 @@ foreach my $opts (@opt_o_OLD) {
 }
 
 #   7. Undefine variables when requested
-%new_opt_D = ();
+my %new_opt_D;
 foreach my $d (@opt_D) {
-    ($var, $val) = ($d =~ m|^(.+?)=(.*)$|);
+    my ($var, $val) = ($d =~ m|^(.+?)=(.*)$|);
     if ($val eq 'UNDEF') {
         delete $new_opt_D{$var};
     } else {
@@ -593,9 +609,9 @@ sub precompile {
 
     $in =~ s|exit(\s*\(0\))|return$1|sg;
     $in =~ s|exit(\s*\([^0].*?\))|die$1|sg;
-    eval("package $name; \$main = sub { \@ARGV = \@_; ".$in."; return 0; }; package main;");
+    eval("no strict; no warnings; package $name; \$main = sub { \@ARGV = \@_; ".$in."; return 0; }; package main;");
     $error = "$@" if ($@);
-    eval("\$func = \$${name}::main;");
+    eval("no strict; no warnings; \$func = \$${name}::main;");
 
     if ($error) {
         $@ = $error;
@@ -655,16 +671,18 @@ sub dosource {
     verbose(9, "splitting to argv: ".join("|", @argv)."\n");
 
     verbose(9, "running script\n");
-    eval "\$rc = \&{\$func}(\@argv);";
+    eval "no strict; no warnings; \$rc = \&{\$func}(\@argv);";
+    $rc //= '';
     verbose(9, "running script: rc=$rc\n");
     $rc = 256 if not defined $rc;
 
     return $rc;
 }
 
-$PROTECT_COUNTER = 0;
-%PROTECT_STORAGE = ();
+my $PROTECT_COUNTER = 0;
+my %PROTECT_STORAGE;
 
+my $firstpass = 1;
 sub protect {
     my ($file, $pass) = @_;
     my ($fp, $data, $prolog, $arg, $body, $key, $p, $pe);
@@ -687,7 +705,7 @@ sub protect {
 
     #  This loop must take care of nestable <protect> tags
     while ($data =~ s|^(.*)<protect(.*?)>(.*?)</protect>||is) {
-        $p = '123456789';
+        my $p = '123456789';
         ($prolog, $arg, $body) = ($1, $2, $3);
         #    unquote the attribute
         $arg =~ s|(['"])(.*)\1\s*$|$2|;
@@ -759,15 +777,16 @@ sub unprotect {
     }
 }
 
+my $libdir = '@libdir@';
 sub pass1 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($rc);
 
     if ($opt_s) {
-        $rc = dosystem("@libdir@/exec/wml_p1_ipp $opt -o $to $from");
+        $rc = dosystem("$libdir/exec/wml_p1_ipp $opt -o $to $from");
     }
     else {
-        $rc = dosource("@libdir@/exec/wml_p1_ipp", "$opt -o $to $from");
+        $rc = dosource("$libdir/exec/wml_p1_ipp", "$opt -o $to $from");
     }
     return $rc;
 }
@@ -777,8 +796,8 @@ sub pass2 {
     my ($buf, $rc);
     local(*TMP, *TO);
 
-    ($cwd = Cwd::cwd) =~ s|/$||;
-    $rc = dosystem("@libdir@/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
+    my $cwd = _my_cwd;
+    $rc = dosystem("$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -803,7 +822,7 @@ sub pass3 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($rc);
 
-    $rc = dosystem("@libdir@/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
+    $rc = dosystem("$libdir/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
 
     return $rc;
 }
@@ -812,7 +831,7 @@ sub pass4 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($rc);
 
-    $rc = dosystem("@libdir@/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
+    $rc = dosystem("$libdir/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
 
     return $rc;
 }
@@ -822,10 +841,10 @@ sub pass5 {
     my ($rc) = 0;
 
     if ($opt_s) {
-        $rc = dosystem("@libdir@/exec/wml_p5_divert $opt -o$to $from");
+        $rc = dosystem("$libdir/exec/wml_p5_divert $opt -o$to $from");
     }
     else {
-        $rc = dosource("@libdir@/exec/wml_p5_divert", "$opt -o$to $from");
+        $rc = dosource("$libdir/exec/wml_p5_divert", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -835,10 +854,10 @@ sub pass6 {
     my ($rc) = 0;
 
     if ($opt_s) {
-        $rc = dosystem("@libdir@/exec/wml_p6_asubst $opt -o$to $from");
+        $rc = dosystem("$libdir/exec/wml_p6_asubst $opt -o$to $from");
     }
     else {
-        $rc = dosource("@libdir@/exec/wml_p6_asubst", "$opt -o$to $from");
+        $rc = dosource("$libdir/exec/wml_p6_asubst", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -848,10 +867,10 @@ sub pass7 {
     my ($rc);
 
     if ($opt_s) {
-        $rc = dosystem("@libdir@/exec/wml_p7_htmlfix $opt -o$to $from");
+        $rc = dosystem("$libdir/exec/wml_p7_htmlfix $opt -o$to $from");
     }
     else {
-        $rc = dosource("@libdir@/exec/wml_p7_htmlfix", "$opt -o$to $from");
+        $rc = dosource("$libdir/exec/wml_p7_htmlfix", "$opt -o$to $from");
     }
     return $rc;
 }
@@ -861,14 +880,19 @@ sub pass8 {
     my ($rc);
 
     if ($opt_s) {
-        $rc = dosystem("@libdir@/exec/wml_p8_htmlstrip $opt -o $to $from");
+        $rc = dosystem("$libdir/exec/wml_p8_htmlstrip $opt -o $to $from");
     }
     else {
-        $rc = dosource("@libdir@/exec/wml_p8_htmlstrip", "$opt -o$to $from");
+        $rc = dosource("$libdir/exec/wml_p8_htmlstrip", "$opt -o$to $from");
     }
     return $rc;
 }
 
+#   Flag set if some output goes to stdout
+my $out_istmp = 0;
+
+my $out = '';
+my $verbose = '';
 sub pass9 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($rc, $shebang, @X);
@@ -897,7 +921,7 @@ sub pass9 {
     }
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
-    $rc = dosystem("@libdir@/exec/wml_p9_slice $opt $from");
+    $rc = dosystem("$libdir/exec/wml_p9_slice $opt $from");
 
     return $rc;
 }
@@ -906,24 +930,24 @@ sub pass9 {
 #   predefine some useful variables
 #
 
-@pwinfo = getpwuid($<);
+my @pwinfo = getpwuid($<);
 
-$gen_username = $pwinfo[0];
+my $gen_username = $pwinfo[0];
 $gen_username =~ s|[\'\$\`\"]||g; # make safe for shell interpolation
 $gen_username ||= 'UNKNOWN-USERNAME';
 
-$gen_realname = $pwinfo[6];
+my $gen_realname = $pwinfo[6];
 $gen_realname =~ s|^([^\,]+)\,.*$|$1|;
 $gen_realname =~ s|[\'\$\`\"]||g; # make safe for shell interpolation
 $gen_realname ||= 'UNKNOWN-REALNAME';
 
-$gen_hostname = `hostname`;
+my $gen_hostname = `hostname`;
 $gen_hostname =~ s|\n$||;
 $gen_hostname ||= 'UNKNOWN-HOSTNAME';
 
 if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and
     -f "/etc/resolv.conf") {
-    $domain = '';
+    my $domain = '';
     open(TMP, "</etc/resolv.conf")
         || error("Unable to load /etc/resolv.conf: $!");
     while (<TMP>) {
@@ -937,13 +961,27 @@ if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and
         $gen_hostname = "$gen_hostname.$domain";
     }
 }
-$gen_time = time();
-$gen_ctime = ctime(time());
-$gen_isotime = isotime(time());
-$gen_gmt_ctime = gmt_ctime(time());
-$gen_gmt_isotime = gmt_isotime(time());
+my $gen_time = time();
+my $gen_ctime = ctime(time());
+my $gen_isotime = isotime(time());
+my $gen_gmt_ctime = gmt_ctime(time());
+my $gen_gmt_isotime = gmt_isotime(time());
 
-($cwd = Cwd::cwd) =~ s|/+$||;
+my $cwd = _my_cwd;
+my (
+    $src_dirname,
+    $src_filename,
+    $src_basename,
+    $src_suffix,
+    $src_time,
+    $src_ctime,
+    $src_isotime,
+    $src_gmt_ctime,
+    $src_gmt_isotime,
+    $src_username,
+    $src_realname,
+);
+
 if ($src_istmp) {
     $src_dirname  = $cwd;
     $src_filename = 'STDIN';
@@ -971,14 +1009,14 @@ else {
     $src_basename = $src_filename;
     $src_basename =~ s|(\.[a-zA-Z0-9]+)$||;
     $src_suffix   = $1;
-    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
      $atime,$mtime,$ctime,$blksize,$blocks) = stat($src);
     $src_time  = $mtime;
     $src_ctime = ctime($mtime);
     $src_isotime = isotime($mtime);
     $src_gmt_ctime = gmt_ctime($mtime);
     $src_gmt_isotime = gmt_isotime($mtime);
-    @pwinfo = getpwuid($uid);
+    my @pwinfo = getpwuid($uid);
     $src_username = $pwinfo[0] || 'UNKNOWN-USERNAME';
     $src_username =~ s|[\'\$\`\"]||g; # make safe for shell interpolation
     $src_realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
@@ -1004,21 +1042,15 @@ unshift(@opt_D, "WML_GEN_GMT_ISOTIME=$gen_gmt_isotime");
 unshift(@opt_D, "WML_GEN_USERNAME=$gen_username");
 unshift(@opt_D, "WML_GEN_REALNAME=$gen_realname");
 unshift(@opt_D, "WML_GEN_HOSTNAME=$gen_hostname");
-unshift(@opt_D, "WML_LOC_PREFIX=@prefix@");
-unshift(@opt_D, "WML_LOC_BINDIR=@bindir@");
-unshift(@opt_D, "WML_LOC_LIBDIR=@libdir@");
-unshift(@opt_D, "WML_LOC_MANDIR=@mandir@");
+unshift(@opt_D, 'WML_LOC_PREFIX=@prefix@');
+unshift(@opt_D, "WML_LOC_BINDIR=$bindir");
+unshift(@opt_D, "WML_LOC_LIBDIR=$libdir");
+unshift(@opt_D, 'WML_LOC_MANDIR=@mandir@');
 unshift(@opt_D, "WML_VERSION=$VERSION");
 unshift(@opt_D, "WML_TMPDIR=$tmpdir");
 
 #   Create temporary file names as soon as $src_suffix is set
-$tmp[0] = "$tmpdir/wml.$$.tmp1" . $src_suffix;
-$tmp[1] = "$tmpdir/wml.$$.tmp2" . $src_suffix;
-$tmp[2] = "$tmpdir/wml.$$.tmp3" . $src_suffix;
-$tmp[3] = "$tmpdir/wml.$$.tmp4" . $src_suffix;
-
-#   Flag set if some output goes to stdout
-$out_istmp = 0;
+my @tmp = (map { sprintf("%s/wml.%s.tmp%d", $tmpdir, $$, $_+1) } 0 .. 3);
 
 #
 #   generate options
@@ -1033,7 +1065,7 @@ if (not -s $src) {
     #   on empty input optimize to just use pass 9
     @opt_p = ( '9' );
 }
-$p = join('', @opt_p);
+my $p = join('', @opt_p);
 $p =~ s|,||g;
 
 sub expandrange
@@ -1048,6 +1080,7 @@ sub expandrange
 }
 
 $p =~ s|(\d)-(\d)|expandrange($1, $2)|sge;
+my @p;
 if ($p =~ m/!$/) {
     $p =~ s/!$//;
     @p = split('', $p);
@@ -1060,16 +1093,16 @@ else {
 @p = ( '1' ) if $opt_M ne '-';
 
 #   determine includes
-$inc = '';
+my $inc = '';
 foreach my $i (@opt_I) {
     $inc .= " -I $i";
 }
 
 #   determine preloads
-$preload = '';
+my $preload = '';
 foreach my $p (@p) {
     $preload .= " -s 'sys/bootp${p}.wml'"
-      if -f "@libdir@/include/sys/bootp${p}.wml" and $p =~ m/^[34]$/;
+      if -f "$libdir/include/sys/bootp${p}.wml" and $p =~ m/^[34]$/;
 }
 foreach my $i (@opt_i) {
     if ($i =~ m|^<(.+)>$|) {
@@ -1081,48 +1114,50 @@ foreach my $i (@opt_i) {
 }
 
 #   determine prologs
-$prolog = '';
+my $prolog = '';
 foreach my $p (@opt_P) {
     $prolog .= ' -P "'.quotearg($p).'"';
 }
 
-$defipp = '';
+my $defipp = '';
 my $dummy;
 foreach my $d (@opt_D) {
-    ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
+    my ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defipp .= " \"-D$var=$val\"";
 }
 $defipp .= " -M$opt_M" if $opt_M ne '-';
 $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $src_istmp;
 
-$defmp4h = '';
+my $defmp4h = '';
 foreach my $d (@opt_D) {
-    ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
+    my ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defmp4h .= " -D $var=\"$val\"";
 }
-$cnt=0;
+my $cnt=0;
 foreach my $o (@opt_o) {
     $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
     $cnt++;
 }
 
-$defeperl = '';
+my $defeperl = '';
 foreach my $d (@opt_D) {
-    ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
+    my ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defeperl .= " \"-d$var=$val\"";
 }
 
-$defgm4 = '';
+my $defgm4 = '';
 foreach my $d (@opt_D) {
-    ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
+    my ($var, $dummy, $val) = ($d =~ m|^(.+?)=("?)(.*)\2\n*$|);
     $defgm4 .= " \"-Dm4_$var=$val\"";
 }
+
+my @out_filenames;
 
 sub ProcessOutfiles {
     my ($o);
 
     $out = '';
-    @outfiles = ();
+    @out_filenames = ();
     foreach my $o (@opt_o) {
         next if ($o =~ m|\*[^:]*$|);
 
@@ -1142,43 +1177,33 @@ sub ProcessOutfiles {
 
         #   create output file list for epilog filters
         if ($o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$|) {
-            push(@outfiles, ($2 ne '-' ? $2 : $tmp[3]));
+            push(@out_filenames, ($2 ne '-' ? $2 : $tmp[3]));
         }
         elsif ($o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$|) {
-            push(@outfiles, ($2 ne '-' ? $2 : $tmp[3]));
+            push(@out_filenames, ($2 ne '-' ? $2 : $tmp[3]));
         }
         elsif ($o =~ m|^(.+)\@(.+)$|) {
-            push(@outfiles, ($1 ne '-' ? $1 : $tmp[3]));
+            push(@out_filenames, ($1 ne '-' ? $1 : $tmp[3]));
         }
         else {
-            push(@outfiles, ($o ne '-' ? $o : $tmp[3]));
+            push(@out_filenames, ($o ne '-' ? $o : $tmp[3]));
         }
     }
 }
 ProcessOutfiles();
 
-$verbose = '';
 if ($opt_v >= 3) {
     $verbose = '-v';
 }
 
-$optimize = '';
+my $optimize = '';
 if ($opt_O ne '') {
     $optimize = "-O$opt_O";
 }
 
+my ($from, $to);
 if (not $src_istmp) {
-    #  Input file is copied because of the protect/unprotect stuff
-    $fpin = new IO::File;
-    $fpin->open("<$src") || error("Unable to load $src: $!");
-    $fpout = new IO::File;
-    $fpout->open(">$tmp[0]") || error("Unable to write into $tmp[0]: $!");
-    while (<$fpin>) {
-        $fpout->print($_) || error("Unable to write into $tmp[0]: $!");
-    }
-    $fpout->close() || error("Unable to close $tmp[0]: $!");
-    $fpin->close() || error("Unable to close $src: $!");
-
+    io->file($tmp[0])->print(io->file($src)->all);
     $from  = $tmp[0];
     $to    = $tmp[1];
     $cnt   = 1;
@@ -1194,22 +1219,22 @@ if ($out eq '') {
     $out_istmp = 1;
 }
 
-$opt_pass1 = "$defipp $verbose -S @libdir@/include -n $src $inc $preload $prolog";
-$opt_pass2 = "$defmp4h";
-$opt_pass3 = "$defeperl";
-$opt_pass4 = "$defgm4";
-$opt_pass5 = "$verbose";
-$opt_pass6 = "$verbose";
-$opt_pass7 = "$verbose";
-$opt_pass8 = "$verbose $optimize";
-$opt_pass9 = "$verbose $out";
+my $opt_pass1 = "$defipp $verbose -S $libdir/include -n $src $inc $preload $prolog";
+my $opt_pass2 = "$defmp4h";
+my $opt_pass3 = "$defeperl";
+my $opt_pass4 = "$defgm4";
+my $opt_pass5 = "$verbose";
+my $opt_pass6 = "$verbose";
+my $opt_pass7 = "$verbose";
+my $opt_pass8 = "$verbose $optimize";
+my $opt_pass9 = "$verbose $out";
 
 
-$pcnt  = 0;
-@prop  = ( "-", "\\", "|", "/");
-$last  = '';
-$final = 0;
-$pager = ($ENV{'PAGER'} || 'more');
+my $pcnt  = 0;
+my @prop  = ( "-", "\\", "|", "/");
+my $last  = '';
+my $final = 0;
+my $pager = ($ENV{'PAGER'} || 'more');
 
 #
 #   clear out any existing CGI environments because some of our
@@ -1232,14 +1257,15 @@ sub unlink_tmp {
 }
 
 if ($opt_M ne '-') {
-    if ($#outfiles > -1) {
-        $o = '"'. join(' ',@outfiles) . '"';
-        $opt_pass = '';
+    if (@out_filenames) {
+        my $o = '"'. join(' ',@out_filenames) . '"';
+        my $opt_pass = '';
         foreach my $aa (@opt_W) {
             if ($aa =~ m|^(\d),(.*)$|) {
                 $opt_pass .= " $2 " if $1 == 1;
             }
         }
+        my $rc;
         eval {
             $rc = pass1($opt_pass1 . $opt_pass, $src, $o, $tmp[2]);
         };
@@ -1261,23 +1287,27 @@ if ($opt_M ne '-') {
 #
 #   MAIN PROCESSING LOOP
 #
-@TIMES = ();
-$firstpass = 1;
+my @TIMES;
 foreach my $p (@p) {
     verbose(2, "PASS $p:\n");
     print STDERR @prop[$pcnt++ % 4] . "\b" if (not $opt_q);
 
     #   run pass
-    ($u, $s, $cu, $cs) = times();
-    $stime = $u + $s + $cu + $cs;
+    my ($u, $s, $cu, $cs) = times();
+    my $stime = $u + $s + $cu + $cs;
     protect($from, $p);
-    $opt_pass = '';
+    my $opt_pass = '';
     foreach my $aa (@opt_W) {
         if ($aa =~ m|^(\d),(.*)$|) {
             $opt_pass .= " $2 " if $1 == $p;
         }
     }
-    eval "\$rc = pass$p(\$opt_pass$p . \$opt_pass, \$from, \$to, \$tmp[2]);";
+    my $rc;
+    eval "no strict; no warnings; \$rc = pass$p(\$opt_pass$p . \$opt_pass, \$from, \$to, \$tmp[2]);";
+    if (!length ($rc))
+    {
+        $rc = 0;
+    }
     if ($rc != 0) {
         if ($rc % 256 != 0) {
             printf(STDERR "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n", $p, $rc % 256, $rc / 256);
@@ -1290,8 +1320,8 @@ foreach my $p (@p) {
     }
     unprotect($to, $p) if ($p < 9); # pass 9 is a special case
     ($u, $s, $cu, $cs) = times();
-    $etime = $u + $s + $cu + $cs;
-    $dtime = $etime-$stime;
+    my $etime = $u + $s + $cu + $cs;
+    my $dtime = $etime-$stime;
     $dtime = 0.01 if ($dtime < 0);
     $TIMES[$p] = $dtime;
 
@@ -1299,7 +1329,7 @@ foreach my $p (@p) {
     if ($opt_v >= 3 && $p < 9) {
         print STDERR "Want to see result after Pass$p [yNq]: ";
         ReadMode 4;
-        $key = ReadKey(0);
+        my $key = ReadKey(0);
         ReadMode 0;
         print STDERR "\n";
         if ($key =~ m|[Yy]|) {
@@ -1329,8 +1359,8 @@ if ($last ne '' and $final and $out_istmp) {
     my @fh = ();
     my $fp;
     unprotect($last, 9);
-    if ($#outfiles > -1) {
-        foreach my $o (@outfiles) {
+    if (@out_filenames) {
+        foreach my $o (@out_filenames) {
             $fh[$i] = new IO::File "> $o";
             error("Unable to write into $o") if !defined $fh[$i];
             $i++;
@@ -1352,44 +1382,44 @@ if ($last ne '' and $final and $out_istmp) {
     close(FP) || error("Unable to close $last: $!");
 }
 #   Unprotect output files and run epilog filters
-if ($#outfiles > -1) {
+if (@out_filenames) {
     #   unprotect all outputfiles
-    foreach my $o (@outfiles) {
+    foreach my $o (@out_filenames) {
         unprotect($o, 9);
     }
 
     #   optionally set mtime of outputfiles
     #   to mtime of inputfile if inputfile was not STDIN
     if (not $src_istmp and $opt_t) {
-        ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+        my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
          $atime,$mtime,$ctime,$blksize,$blocks) = stat($src);
          $atime = time();
-         foreach my $o (@outfiles) {
+         foreach my $o (@out_filenames) {
              utime($atime, $mtime+1, $o);
          }
     }
 
     #   run epilog filters
-    foreach my $o (@outfiles) {
+    foreach my $o (@out_filenames) {
         foreach my $e (@opt_E) {
             if ($e =~ m|^htmlinfo(.*)|) {
-                $e = "@libdir@/exec/wml_aux_htmlinfo$1";
+                $e = "$libdir/exec/wml_aux_htmlinfo$1";
             }
             elsif ($e =~ m|^linklint(.*)|) {
-                $e = "@libdir@/exec/wml_aux_linklint$1";
+                $e = "$libdir/exec/wml_aux_linklint$1";
                 $e .= " -nocache -one -summary" if ($1 eq '');
             }
             elsif ($e =~ m|^weblint(.*)|) {
-                $e = "@libdir@/exec/wml_aux_weblint$1";
+                $e = "$libdir/exec/wml_aux_weblint$1";
             }
             elsif ($e =~ m|^tidy(.*)|) {
-                $e = "@libdir@/exec/wml_aux_tidy$1";
+                $e = "$libdir/exec/wml_aux_tidy$1";
                 $e .= " -m" if ($1 eq '');
             }
             verbose(2, "EPILOG: $e $o\n");
-            $rc = system("$e $o");
+            my $rc = system("$e $o");
             #   Tidy returns 1 on warnings and 2 on errors :(
-            $rc = 0 if ($rc == 256 and $e =~ m|@libdir@/exec/wml_aux_tidy|);
+            $rc = 0 if ($rc == 256 and $e =~ m|\Q$libdir\E/exec/wml_aux_tidy|);
             error("epilog failed: $e $o") if $rc != 0;
         }
     }
@@ -1405,15 +1435,19 @@ if ($out_istmp) {
 
 unlink_tmp();
 
-($u, $s, $cu, $cs) = times();
-$at = $u + $s + $cu + $cs;
-$pt = 0;
-$timestr = '';
+my ($u, $s, $cu, $cs) = times();
+my $at = $u + $s + $cu + $cs;
+my $pt = 0;
+my $timestr = '';
 
 {
     my $i  = 1;
     foreach my $t (@TIMES[1..9]) {
-        $pt += $t;
+        $t //= '';
+        if ( length ($t) )
+        {
+            $pt += $t;
+        }
         if ($i == 2 or $i == 3) {
             $timestr .= sprintf($t ne '' ? "%5.2f " : "   -- ", $t);
         }
