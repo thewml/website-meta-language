@@ -314,18 +314,21 @@ if (not $opt_r) {
     foreach my $dir (reverse(@DIR)) {
         if (-f "$dir/.wmlrc") {
             verbose(2, "Reading RC file: $dir/.wmlrc\n");
-            open(FP, "<$dir/.wmlrc") || error("Unable to load $dir/.wmlrc: $!");
+            open (my $wml_rc_fh, '<', $dir/.wmlrc)
+                or error("Unable to load $dir/.wmlrc: $!");
             @ARGV = ();
-            while (<FP>) {
-                next if (m|^\s*\n$|);
-                next if (m|^\s*#[#\s]*.*$|);
-                s|^\s+||;
-                s|\s+$||;
-                s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-                @X = split_argv($_);
-                push(@ARGV, @X);
+            WMLRC_LINES:
+            while (my $l = <$wml_rc_fh>) {
+                if ($l =~ m|^\s*\n$| or $l =~ m|^\s*#[#\s]*.*$|)
+                {
+                    next WMLRC_LINES;
+                }
+                $l =~ s|^\s+||;
+                $l =~ s|\s+$||;
+                $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
+                push (@ARGV, split_argv($l));
             }
-            close(FP) || error("Unable to close $dir/.wmlrc: $!");
+            close ($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
             @opt_D_OLD = @opt_D;
             @opt_I_OLD = @opt_I;
             @opt_D = ();
