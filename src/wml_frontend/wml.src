@@ -1920,4 +1920,4 @@ wml_tags(7),
 wml::all(3).
 
 =cut
-
+# vim: ft=perl
