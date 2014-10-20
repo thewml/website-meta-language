@@ -900,7 +900,7 @@ my $out = '';
 my $verbose = '';
 sub pass9 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc, $shebang, @X);
+    my ($rc, $shebang);
 
     #   First check whether a shebang line is found and no
     #   output files were assigned on command line.
@@ -908,14 +908,15 @@ sub pass9 {
     if ($#opt_o == -1) {
         @ARGVLINE = @ARGV;
         @ARGV = ();
-        open(SLICE,"<$from") || error("Unable to load $from: $!");
-        while ($_ = <SLICE>) {
-            if ($_ =~ m|%!slice\s+(.*)$|) {
-                @X = split_argv($1);
-                push(@ARGV, @X);
+        open (my $slice_fh, '<', $from)
+            or error("Unable to load $from: $!");
+        while (my $l = <$slice_fh>) {
+            if ($l =~ m|%!slice\s+(.*)$|) {
+                push (@ARGV, split_argv($1));
             }
         }
-        close(SLICE) || error("Unable to close $from: $!");
+        close($slice_fh)
+            or error("Unable to close $from: $!");
         if ($#ARGV > -1) {
             $out_istmp = 0;
             ProcessOptions();
@@ -953,15 +954,17 @@ $gen_hostname ||= 'UNKNOWN-HOSTNAME';
 if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and
     -f "/etc/resolv.conf") {
     my $domain = '';
-    open(TMP, "</etc/resolv.conf")
-        || error("Unable to load /etc/resolv.conf: $!");
-    while (<TMP>) {
-        if (m|^domain\s+\.?(\S+)|) {
-            $domain = $1;
-            last;
+    open (my $tmp_fh, '<', '</etc/resolv.conf')
+        or error("Unable to load /etc/resolv.conf: $!");
+    RESOLV_LOOP:
+    while (my $l = <$tmp_fh>) {
+        if (my ($new_domain) = $l =~ m|\Adomain\s+\.?(\S+)|) {
+            $domain = $new_domain;
+            last RESOLV_LOOP;
         }
     }
-    close(TMP) || error("Unable to close /etc/resolv.conf: $!");
+    close ($tmp_fh)
+        or error("Unable to close /etc/resolv.conf: $!");
     if ($domain ne '') {
         $gen_hostname = "$gen_hostname.$domain";
     }
@@ -1374,17 +1377,18 @@ if ($last ne '' and $final and $out_istmp) {
         $fh[$i] = new IO::File "> $tmp[3]";
         error("Unable to write into $tmp[3]") if !defined $fh[$i];
     }
-    open(FP, "<$last") || error("Unable to load $last: $!");
-    while (<FP>) {
+    open(my $fp_fh, '<', $last)
+        or error("Unable to load $last: $!");
+    while (my $l = <$fp_fh>) {
         foreach my $fp (@fh) {
-            $fp->print( $_ )
+            $fp->print( $l )
                 or error("Unable to write into output file: $!");
         }
     }
     foreach my $fp (@fh) {
-        $fp->close() || error("Unable to close output file: $!");
+        $fp->close() or error("Unable to close output file: $!");
     }
-    close(FP) || error("Unable to close $last: $!");
+    close($fp_fh) || error("Unable to close $last: $!");
 }
 #   Unprotect output files and run epilog filters
 if (@out_filenames) {
@@ -1432,10 +1436,7 @@ if (@out_filenames) {
 
 #   ... and eventually send to stdout
 if ($out_istmp) {
-    open(FP, "<$tmp[3]") || error("Unable to load $tmp[3]: $!");
-    while (<FP>) {
-        print $_;
-    }
+    io->file($tmp[3]) > io('-');
 }
 
 unlink_tmp();
