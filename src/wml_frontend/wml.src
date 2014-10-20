@@ -472,12 +472,14 @@ if ($src eq '-') {
     $src_istmp = 1;
     $src = "$tmpdir/wml.input.$$.tmp";
     unlink($src);
-    open(TMP, ">$src") || error("Unable to write into $src: $!");
-    while (<STDIN>) {
-        print TMP $_
+    open( my $tmp_fh, '>', $src)
+        or error("Unable to write into $src: $!");
+    while (my $l = <STDIN>) {
+        $tmp_fh->print($l)
             or error("Unable to write into $src: $!");
     }
-    close(TMP) || error("Unable to close $src: $!");
+    close ($tmp_fh)
+        or error("Unable to close $src: $!");
 }
 
 if (not $src_istmp and not -f $src) {
