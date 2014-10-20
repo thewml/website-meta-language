@@ -1,0 +1,4 @@
+To run the tests, create an empty directory and type:
+
+    perl ../path-to-wml/src/wml_tests/run_test.pl
+
