@@ -1249,12 +1249,14 @@ my $pager = ($ENV{'PAGER'} || 'more');
 #   passes (currently Pass 2 and 3) get totally confused by these
 #   variables.
 #
-map { delete $ENV{$_} } qw(
+delete @ENV{
+    qw(
     SERVER_SOFTWARE SERVER_NAME GATEWAY_INTERFACE SERVER_PROTOCOL
     SERVER_PORT REQUEST_METHOD PATH_INFO PATH_TRANSLATED SCRIPT_NAME
     QUERY_STRING REMOTE_HOST REMOTE_ADDR AUTH_TYPE REMOTE_USER REMOTE_IDENT
     CONTENT_TYPE CONTENT_LENGTH HTTP_ACCEPT HTTP_USER_AGENT
-);
+    )
+};
 
 sub unlink_tmp {
     unlink($tmp[0]);
@@ -1423,7 +1425,7 @@ if (@out_filenames) {
             }
             elsif ($e =~ m|^tidy(.*)|) {
                 $e = "$libdir/exec/wml_aux_tidy$1";
-                $e .= " -m" if ($1 eq '');
+                $e .= ' -m' if ($1 eq '');
             }
             verbose(2, "EPILOG: $e $o\n");
             my $rc = system("$e $o");
@@ -1455,17 +1457,17 @@ my $timestr = '';
             $pt += $t;
         }
         if ($i == 2 or $i == 3) {
-            $timestr .= sprintf($t ne '' ? "%5.2f " : "   -- ", $t);
+            $timestr .= sprintf($t ne '' ? '%5.2f ' : '   -- ', $t);
         }
         else {
-            $timestr .= sprintf($t ne '' ? "%4.2f " : "  -- ", $t);
+            $timestr .= sprintf($t ne '' ? '%4.2f ' : '  -- ', $t);
         }
         $i++;
     }
 }
 
-$timestr = sprintf("%4.2f | ", $at-$pt) . $timestr;
-$timestr .= sprintf("| %6.2f", $at);
+$timestr = sprintf('%4.2f | ', $at-$pt) . $timestr;
+$timestr .= sprintf('| %6.2f', $at);
 verbose(1, "Processing time (seconds):\n");
 verbose(1, "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n");
 verbose(1, "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n");
