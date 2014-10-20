@@ -523,17 +523,19 @@ foreach my $d (@opt_D_ADD) {
 
 #   5. process the options from the pseudo-shebang line
 if (not $opt_n) {
-    open(TMP, "<$src") || error("Unable to load $src: $!");
+    open(my $tmp_fh, '<', $src)
+        or error("Unable to load $src: $!");
     my $shebang = '';
     while (1) {
-        $shebang .= <TMP>;
+        $shebang .= <$tmp_fh>;
         if ($shebang =~ m|^(.*)\\\s*$|s) {
             $shebang = $1;
             next;
         }
         last;
     }
-    close(TMP) || error("Unable to close $src: $!");
+    close($tmp_fh)
+        or error("Unable to close $src: $!");
     if ($shebang =~ m|^#!wml\s+(.+\S)\s*$|is) {
         #   split opts into arguments and process them
         @ARGV = split_argv($1);
@@ -796,26 +798,27 @@ sub pass1 {
 sub pass2 {
     my ($opt, $from, $to, $tmp) = @_;
     my ($buf, $rc);
-    local(*TMP, *TO);
 
     my $cwd = _my_cwd;
     $rc = dosystem("$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
-    open(TMP, "<$tmp") || error("Unable to load $tmp: $!");
-    open(TO, ">$to") || error("Unable to write into $to: $!");
-    $buf = '';
-    while (<TMP>) {
-        $buf .= $_;
+    open (my $tmp_fh, '<', $tmp)
+        or error("Unable to load $tmp: $!");
+    open (my $to_fh, '>', $to)
+        or error("Unable to write into $to: $!");
+    {
+        local $/;
+        $buf = <$tmp_fh>;
     }
     $buf =~ s|<\*?([a-zA-Z][a-zA-Z0-9-_]*)\*?([^a-zA-Z0-9-_])|<$1$2|sg;
     $buf =~ s|<\*?(/[a-zA-Z][a-zA-Z0-9-_]*)\*?>|<$1>|sg;
-    print TO $buf
+    $to_fh->print($buf)
         or error("Unable to write into $to: $!");
 
-    close(TMP) || error("Unable to close $tmp: $!");
-    close(TO) || error("Unable to close $to: $!");
+    close($tmp_fh) || error("Unable to close $tmp: $!");
+    close($to_fh) || error("Unable to close $to: $!");
 
     return $rc;
 }
