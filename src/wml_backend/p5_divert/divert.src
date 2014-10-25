@@ -78,7 +78,8 @@ use Class::XSAccessor
     constructor => 'new',
     accessors => +{
         map { $_ => $_ }
-        qw(_BUFFER _expand_stack _filename _in_fh _line _loc_stack _location)
+        qw(_BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
+        _OVRWRITE)
     },
 )
     ;
@@ -117,7 +118,7 @@ else {
 $self->_location('main');                    # currently active location
 $self->_loc_stack(['null']); # stack of remembered locations
 $self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
-my %OVRWRITE = ();                           # the overwrite flags
+$self->_OVRWRITE(+{});                            # the overwrite flags
 $self->_line(0);
 
 sub run {
@@ -177,13 +178,13 @@ sub run {
                 $self->_BUFFER->{$self->_location} = [] if (not exists($self->_BUFFER->{$self->_location}));
 
                 #   is a "rewind now" forced by a "rewind next" from last time?
-                if ($OVRWRITE{$self->_location}) {
+                if ($self->_OVRWRITE->{$self->_location}) {
                     $rewind_now = 1;
-                    $OVRWRITE{$self->_location} = 0;
+                    $self->_OVRWRITE->{$self->_location} = 0;
                 }
 
                 #   remember a "rewind next" for next time
-                $OVRWRITE{$self->_location} = 1 if ($rewind_next);
+                $self->_OVRWRITE->{$self->_location} = 1 if ($rewind_next);
 
                 #   execute a "rewind now" by clearing the location buffer
                 if ($rewind_now == 1) {
