@@ -23,14 +23,18 @@ use IO::File 1.06;
 #   process command line
 #
 sub usage {
-    print STDERR "Usage: divert [options] [file]\n";
-    print STDERR "\n";
-    print STDERR "Options:\n";
-    print STDERR "  -o, --outputfile=<file>  set output file instead of stdout\n";
-    print STDERR "  -q, --quiet              quiet mode (no warnings)\n";
-    print STDERR "  -v, --verbose            verbose mode\n";
+    print STDERR <<'EOF';
+Usage: divert [options] [file]
+
+Options:
+  -o, --outputfile=<file>  set output file instead of stdout
+  -q, --quiet              quiet mode (no warnings)
+  -v, --verbose            verbose mode
+EOF
+
     exit(1);
 }
+
 my $opt_v = 0;
 my $opt_q = 0;
 my $opt_o = '-';
@@ -38,7 +42,7 @@ $Getopt::Long::bundling = 1;
 $Getopt::Long::getopt_compat = 0;
 if (not Getopt::Long::GetOptions(
     "v|verbose" => \$opt_v,
-    "q|quiet" => $opt_q,
+    "q|quiet" => \$opt_q,
     "o|outputfile=s" => \$opt_o,
 )
 )
@@ -98,12 +102,10 @@ my @LOCSTACK = ('null');                     # stack of remembered locations
 my %BUFFER   = ('null' => [], 'main' => []); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
 my $line = 0;
-my $remain;
 
-while (<$in>) {
-    $remain = $_;
+while (my $remain = <$in>) {
     $line++;
-    while ($remain) {
+    while (length $remain > 0) {
         if (   $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||
             or $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}||) {
             ##
