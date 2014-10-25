@@ -78,7 +78,7 @@ use Class::XSAccessor
     constructor => 'new',
     accessors => +{
         map { $_ => $_ }
-        qw(_filename _in_fh _line _location)
+        qw(_BUFFER _filename _in_fh _line _location)
     },
 )
     ;
@@ -116,7 +116,7 @@ else {
 
 $self->_location('main');                    # currently active location
 my @LOCSTACK = ('null');                     # stack of remembered locations
-my %BUFFER   = ('null' => [], 'main' => []); # the location buffers
+$self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
 $self->_line(0);
 
@@ -132,14 +132,14 @@ while (defined(my $remain = $self->_in_fh->getline)) {
             ##
 
             #   initialize new location buffer
-            $BUFFER{$m1} = [] if (not exists($BUFFER{$m1}));
+            $self->_BUFFER->{$m1} = [] if (not exists($self->_BUFFER->{$m1}));
 
             #   insert location pointer into current location
-            if ($BUFFER{$self->_location} == $BUFFER{$m1}) {
+            if ($self->_BUFFER->{$self->_location} == $self->_BUFFER->{$m1}) {
                 warning($self->_filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
             }
             else {
-                push(@{$BUFFER{$self->_location}}, $BUFFER{$m1});
+                push(@{$self->_BUFFER->{$self->_location}}, $self->_BUFFER->{$m1});
             }
         }
         elsif ( $m1 = (($remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>||) ? $1 :
@@ -171,7 +171,7 @@ while (defined(my $remain = $self->_in_fh->getline)) {
             }
 
             #   initialize location buffer
-            $BUFFER{$self->_location} = [] if (not exists($BUFFER{$self->_location}));
+            $self->_BUFFER->{$self->_location} = [] if (not exists($self->_BUFFER->{$self->_location}));
 
             #   is a "rewind now" forced by a "rewind next" from last time?
             if ($OVRWRITE{$self->_location}) {
@@ -184,8 +184,8 @@ while (defined(my $remain = $self->_in_fh->getline)) {
 
             #   execute a "rewind now" by clearing the location buffer
             if ($rewind_now == 1) {
-                while ($#{$BUFFER{$self->_location}} > -1) {
-                    shift(@{$BUFFER{$self->_location}});
+                while ($#{$self->_BUFFER->{$self->_location}} > -1) {
+                    shift(@{$self->_BUFFER->{$self->_location}});
                 }
             }
         }
@@ -254,11 +254,11 @@ while (defined(my $remain = $self->_in_fh->getline)) {
             #   append plain text to remembered data and adjust $remain
             #   variable
             if ($i == $l) {
-                push(@{$BUFFER{$self->_location}}, $remain);
+                push(@{$self->_BUFFER->{$self->_location}}, $remain);
                 $remain = '';
             } else {
                 #   substr with 4 arguments was introduced in perl 5.005
-                push(@{$BUFFER{$self->_location}}, substr($remain, 0, $i));
+                push(@{$self->_BUFFER->{$self->_location}}, substr($remain, 0, $i));
                 substr($remain, 0, $i) = '';
             }
         }
@@ -283,7 +283,7 @@ sub ExpandDiversion {
         #   find name of location via location pointer
         #   for human readable warning message
         my $name = (
-            (first { $BUFFER{$_} == $loc } keys(%BUFFER))
+            (first { $self->_BUFFER->{$_} == $loc } keys(%{$self->_BUFFER}))
                 //
                 'unknown'
         );
@@ -316,7 +316,7 @@ sub ExpandDiversion {
 #
 use WML_Backends;
 
-WML_Backends->out($opt_o, \&error, [ExpandDiversion($BUFFER{'main'})]);
+WML_Backends->out($opt_o, \&error, [ExpandDiversion($self->_BUFFER->{'main'})]);
 
 #
 #   die gracefully
