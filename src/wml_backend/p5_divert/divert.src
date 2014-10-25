@@ -17,11 +17,14 @@ use lib '@INSTALLARCHLIB@';
 
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
-use IO::File 1.06;
 
 #
 #   process command line
 #
+
+
+package WmlDivert;
+
 sub usage {
     print STDERR <<'EOF';
 Usage: divert [options] [file]
@@ -35,39 +38,22 @@ EOF
     exit(1);
 }
 
-my $opt_v = 0;
-my $opt_q = 0;
-my $opt_o = '-';
-$Getopt::Long::bundling = 1;
-$Getopt::Long::getopt_compat = 0;
-if (not Getopt::Long::GetOptions(
-    "v|verbose" => \$opt_v,
-    "q|quiet" => \$opt_q,
-    "o|outputfile=s" => \$opt_o,
-)
-)
-{
-    usage();
-}
-
-package WmlDivert;
-
 sub verbose {
-    my ($str) = @_;
-    if ($opt_v) {
+    my ($self, $str) = @_;
+    if ($self->_opt_v) {
         print STDERR "** Divert:Verbose: $str\n";
     }
 }
 
 sub error {
-    my ($str) = @_;
+    my ($self, $str) = @_;
     print STDERR "** Divert:Error: $str\n";
     exit(1);
 }
 
 sub warning {
-    my ($filename, $line, $str) = @_;
-    if (not $opt_q) {
+    my ($self, $filename, $line, $str) = @_;
+    if (not $self->_opt_q) {
         print STDERR "** Divert:Warning: ${filename}:$line: $str\n";
     }
 }
@@ -80,14 +66,79 @@ use Class::XSAccessor
     constructor => '_cons',
     accessors => +{
         map { $_ => $_ }
-        qw(_BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
-        _OVRWRITE)
+        qw( _BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
+        _opt_o _opt_q _opt_v _OVRWRITE )
     },
 );
 
 sub new
 {
-    return shift->_cons;
+    my $self = shift->_cons;
+
+    $self->_init;
+
+    return $self;
+}
+
+sub _init
+{
+    my ($self) = @_;
+
+    {
+        my $opt_v = 0;
+        my $opt_q = 0;
+        my $opt_o = '-';
+        local $Getopt::Long::bundling = 1;
+        local $Getopt::Long::getopt_compat = 0;
+        if (not Getopt::Long::GetOptions(
+                "v|verbose" => \$opt_v,
+                "q|quiet" => \$opt_q,
+                "o|outputfile=s" => \$opt_o,
+            )
+        )
+        {
+            usage();
+        }
+        $self->_opt_v($opt_v);
+        $self->_opt_q($opt_q);
+        $self->_opt_o($opt_o);
+    }
+
+    #
+    #   open input file and read into buffer
+    #
+    {
+        my $in;
+
+        if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
+            $in = IO::Handle->new;
+            $self->_filename ('STDIN');
+            $in->fdopen(fileno(STDIN), "r") || $self->error("cannot load STDIN: $!");
+        }
+        elsif (@ARGV == 1) {
+            open $in, '<', $self->_filename($ARGV[0])
+                or $self->error("cannot load @{[$self->_filename]}: $!");
+        }
+        else {
+            usage();
+        }
+        $self->_in_fh($in);
+    }
+
+    ##
+    ##   Pass 1: Parse the input data into disjunct location buffers
+    ##           Each location buffer contains plain text blocks and
+    ##           location pointers.
+    ##
+
+    $self->_location('main');                    # currently active location
+    $self->_loc_stack(['null']); # stack of remembered locations
+    $self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
+    $self->_OVRWRITE(+{});                            # the overwrite flags
+    $self->_line(0);
+    $self->_expand_stack([]);
+
+    return;
 }
 
 sub _run {
@@ -109,7 +160,7 @@ sub _run {
 
                 #   insert location pointer into current location
                 if ($self->_BUFFER->{$self->_location} == $self->_BUFFER->{$m1}) {
-                    warning($self->_filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
+                    $self->warning($self->_filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
                 }
                 else {
                     push(@{$self->_BUFFER->{$self->_location}}, $self->_BUFFER->{$m1});
@@ -169,12 +220,12 @@ sub _run {
                 ##
 
                 if (! @{ $self->_loc_stack } ) {
-                    warning($self->_filename, $self->_line, "already in ``null'' location -- ignoring leave");
+                    $self->warning($self->_filename, $self->_line, "already in ``null'' location -- ignoring leave");
                 }
                 else {
                     my $loc = ($1 // '');
                     if ($loc eq 'null') {
-                        warning($self->_filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
+                        $self->warning($self->_filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
                     }
                     elsif ($loc ne '' and $loc ne $self->_location) {
                         #   leave the named location and all locations
@@ -187,7 +238,7 @@ sub _run {
                             }
                         }
                         if ($n == -1) {
-                            warning($self->_filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
+                            $self->warning($self->_filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
                         }
                         else {
                             splice(@{ $self->_loc_stack }, $n);
@@ -253,7 +304,7 @@ sub ExpandDiversion {
                 //
                 'unknown'
         );
-        warning($self->_filename, $self->_line, "recursion through location ``$name'' - break");
+        $self->warning($self->_filename, $self->_line, "recursion through location ``$name'' - break");
         return '';
     }
 
@@ -280,41 +331,7 @@ sub calc_result
 {
     my ($self) = @_;
 
-    #
-    #   open input file and read into buffer
-    #
-    {
-        my $in;
-
-        if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
-            $in = IO::Handle->new;
-            $self->_filename ('STDIN');
-            $in->fdopen(fileno(STDIN), "r") || error("cannot load STDIN: $!");
-        }
-        elsif (@ARGV == 1) {
-            open $in, '<', $self->_filename($ARGV[0])
-                or error("cannot load @{[$self->_filename]}: $!");
-        }
-        else {
-            usage();
-        }
-        $self->_in_fh($in);
-    }
-
-    ##
-    ##   Pass 1: Parse the input data into disjunct location buffers
-    ##           Each location buffer contains plain text blocks and
-    ##           location pointers.
-    ##
-
-    $self->_location('main');                    # currently active location
-    $self->_loc_stack(['null']); # stack of remembered locations
-    $self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
-    $self->_OVRWRITE(+{});                            # the overwrite flags
-    $self->_line(0);
-
     $self->_run;
-    $self->_expand_stack([]);
 
     ##
     ##   Pass 2: Recursively expand the location structure
@@ -330,7 +347,11 @@ sub calc_result
 #
 use WML_Backends;
 
-WML_Backends->out($opt_o, \&error, [WmlDivert->new->calc_result]);
+my $obj = WmlDivert->new;
+WML_Backends->out($obj->_opt_o(),
+    sub { return $obj->error(@_); } ,
+    [$obj->calc_result]
+);
 
 #
 #   die gracefully
