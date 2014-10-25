@@ -116,6 +116,11 @@ INSTALL (
     DESTINATION "${WML_LIB_DIR}"
 )
 
+INSTALL (
+    FILES "WML_Backends/Divert.pm"
+    DESTINATION "${WML_LIB_DIR}/WML_Backends"
+)
+
 ADD_CUSTOM_TARGET(
     "preprocess_perl_includes" ALL
     DEPENDS ${preproc_target_dests}
