@@ -50,6 +50,8 @@ if (not Getopt::Long::GetOptions(
     usage();
 }
 
+package WmlDivert;
+
 sub verbose {
     my ($str) = @_;
     if ($opt_v) {
@@ -75,53 +77,20 @@ use List::MoreUtils qw(any);
 
 use Class::XSAccessor
 (
-    constructor => 'new',
+    constructor => '_cons',
     accessors => +{
         map { $_ => $_ }
         qw(_BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
         _OVRWRITE)
     },
-)
-    ;
+);
 
-my $self = __PACKAGE__->new;
-
-#
-#   open input file and read into buffer
-#
+sub new
 {
-my $in;
-
-if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
-    $in = IO::Handle->new;
-    $self->_filename ('STDIN');
-    $in->fdopen(fileno(STDIN), "r") || error("cannot load STDIN: $!");
-}
-elsif (@ARGV == 1) {
-    open $in, '<', $self->_filename($ARGV[0])
-        or error("cannot load @{[$self->_filename]}: $!");
-}
-else {
-    usage();
-}
-    $self->_in_fh($in);
+    return shift->_cons;
 }
 
-##
-##   Pass 1: Parse the input data into disjunct location buffers
-##           Each location buffer contains plain text blocks and
-##           location pointers.
-##
-
-
-
-$self->_location('main');                    # currently active location
-$self->_loc_stack(['null']); # stack of remembered locations
-$self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
-$self->_OVRWRITE(+{});                            # the overwrite flags
-$self->_line(0);
-
-sub run {
+sub _run {
     my ($self) = @_;
 
     while (defined(my $remain = $self->_in_fh->getline)) {
@@ -271,15 +240,6 @@ sub run {
     $self->_in_fh->close();
 }
 
-$self->run;
-
-##
-##   Pass 2: Recursively expand the location structure
-##           by starting from the main location buffer
-##
-
-$self->_expand_stack([]);
-
 sub ExpandDiversion {
     my ($self, $loc) = @_;
 
@@ -316,13 +276,61 @@ sub ExpandDiversion {
     return $data;
 }
 
+sub calc_result
+{
+    my ($self) = @_;
+
+    #
+    #   open input file and read into buffer
+    #
+    {
+        my $in;
+
+        if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
+            $in = IO::Handle->new;
+            $self->_filename ('STDIN');
+            $in->fdopen(fileno(STDIN), "r") || error("cannot load STDIN: $!");
+        }
+        elsif (@ARGV == 1) {
+            open $in, '<', $self->_filename($ARGV[0])
+                or error("cannot load @{[$self->_filename]}: $!");
+        }
+        else {
+            usage();
+        }
+        $self->_in_fh($in);
+    }
+
+    ##
+    ##   Pass 1: Parse the input data into disjunct location buffers
+    ##           Each location buffer contains plain text blocks and
+    ##           location pointers.
+    ##
+
+    $self->_location('main');                    # currently active location
+    $self->_loc_stack(['null']); # stack of remembered locations
+    $self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
+    $self->_OVRWRITE(+{});                            # the overwrite flags
+    $self->_line(0);
+
+    $self->_run;
+    $self->_expand_stack([]);
+
+    ##
+    ##   Pass 2: Recursively expand the location structure
+    ##           by starting from the main location buffer
+    ##
+    return $self->ExpandDiversion(
+        $self->_BUFFER->{'main'}
+    );
+}
 
 #
 #   create output file
 #
 use WML_Backends;
 
-WML_Backends->out($opt_o, \&error, [$self->ExpandDiversion($self->_BUFFER->{'main'})]);
+WML_Backends->out($opt_o, \&error, [WmlDivert->new->calc_result]);
 
 #
 #   die gracefully
