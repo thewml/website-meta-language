@@ -255,26 +255,25 @@ $in->close();
 
 @LOCSTACK = ();
 
+use List::Util qw(first);
+use List::MoreUtils qw(any);
+
 sub ExpandDiversion {
     my ($loc) = @_;
-    my ($data, $locseen, $name, $n, $el);
+    my ($data, $el);
 
     #   check for recursion by making sure
     #   the current location has not already been seen.
-    foreach $locseen (@LOCSTACK) {
-        if ($locseen == $loc) {
-            #   find name of location via location pointer
-            #   for human readable warning message
-            $name = 'unknown';
-            foreach $n (keys(%BUFFER)) {
-                if ($BUFFER{$n} == $loc) {
-                    $name = $n;
-                    last;
-                }
-            }
-            warning($filename, $line, "recursion through location ``$name'' - break");
-            return '';
-        }
+    if (any { $_ == $loc } @LOCSTACK) {
+        #   find name of location via location pointer
+        #   for human readable warning message
+        my $name = (
+            (first { $BUFFER{$_} == $loc } keys(%BUFFER))
+                //
+                'unknown'
+        );
+        warning($filename, $line, "recursion through location ``$name'' - break");
+        return '';
     }
 
     #   ok, location still not seen,
