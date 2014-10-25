@@ -12,8 +12,8 @@ use warnings;
 
 BEGIN { $^W = 0; } # get rid of nasty warnings
 
-use lib "@INSTALLPRIVLIB@";
-use lib "@INSTALLARCHLIB@";
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
 
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
