@@ -8,8 +8,6 @@ package WML_Backends::Divert;
 use strict;
 use warnings;
 
-BEGIN { $^W = 0; } # get rid of nasty warnings
-
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
