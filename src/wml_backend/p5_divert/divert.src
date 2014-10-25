@@ -70,29 +70,38 @@ sub warning {
     }
 }
 
+use List::Util qw(first min);
+use List::MoreUtils qw(any);
+
+use Class::XSAccessor
+(
+    constructor => 'new',
+    accessors => +{
+        map { $_ => $_ }
+        qw(_filename _line _location)
+    },
+)
+    ;
+
+my $self = __PACKAGE__->new;
+
 #
 #   open input file and read into buffer
 #
-my $filename;
 my $in;
 
 if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
     $in = IO::Handle->new;
-    $filename = 'STDIN';
+    $self->_filename ('STDIN');
     $in->fdopen(fileno(STDIN), "r") || error("cannot load STDIN: $!");
 }
 elsif (@ARGV == 1) {
-    $filename = $ARGV[0];
-    open $in, '<', $filename
-        or error("cannot load ${filename}: $!");
+    open $in, '<', $self->_filename($ARGV[0])
+        or error("cannot load @{[$self->_filename]}: $!");
 }
 else {
     usage();
 }
-
-use List::Util qw(first min);
-use List::MoreUtils qw(any);
-
 
 ##
 ##   Pass 1: Parse the input data into disjunct location buffers
@@ -100,17 +109,7 @@ use List::MoreUtils qw(any);
 ##           location pointers.
 ##
 
-use Class::XSAccessor
-(
-    constructor => 'new',
-    accessors => +{
-        map { $_ => $_ }
-        qw(_line _location)
-    },
-)
-    ;
 
-my $self = __PACKAGE__->new;
 
 $self->_location('main');                    # currently active location
 my @LOCSTACK = ('null');                     # stack of remembered locations
@@ -134,7 +133,7 @@ while (my $remain = <$in>) {
 
             #   insert location pointer into current location
             if ($BUFFER{$self->_location} == $BUFFER{$m1}) {
-                warning($filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
+                warning($self->_filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
             }
             else {
                 push(@{$BUFFER{$self->_location}}, $BUFFER{$m1});
@@ -194,12 +193,12 @@ while (my $remain = <$in>) {
             ##
 
             if (! @LOCSTACK ) {
-                warning($filename, $self->_line, "already in ``null'' location -- ignoring leave");
+                warning($self->_filename, $self->_line, "already in ``null'' location -- ignoring leave");
             }
             else {
                 my $loc = ($1 // '');
                 if ($loc eq 'null') {
-                    warning($filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
+                    warning($self->_filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
                 }
                 elsif ($loc ne '' and $loc ne $self->_location) {
                     #   leave the named location and all locations
@@ -212,7 +211,7 @@ while (my $remain = <$in>) {
                         }
                     }
                     if ($n == -1) {
-                        warning($filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
+                        warning($self->_filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
                     }
                     else {
                         splice(@LOCSTACK, $n);
@@ -285,7 +284,7 @@ sub ExpandDiversion {
                 //
                 'unknown'
         );
-        warning($filename, $self->_line, "recursion through location ``$name'' - break");
+        warning($self->_filename, $self->_line, "recursion through location ``$name'' - break");
         return '';
     }
 
