@@ -105,7 +105,7 @@ use Class::XSAccessor
     constructor => 'new',
     accessors => +{
         map { $_ => $_ }
-        qw(_location)
+        qw(_line _location)
     },
 )
     ;
@@ -116,10 +116,10 @@ $self->_location('main');                    # currently active location
 my @LOCSTACK = ('null');                     # stack of remembered locations
 my %BUFFER   = ('null' => [], 'main' => []); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
-my $line = 0;
+$self->_line(0);
 
 while (my $remain = <$in>) {
-    $line++;
+    $self->_line($self->_line + 1);
     while (length $remain > 0) {
 
         if (my $m1 = (($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||)
@@ -134,7 +134,7 @@ while (my $remain = <$in>) {
 
             #   insert location pointer into current location
             if ($BUFFER{$self->_location} == $BUFFER{$m1}) {
-                warning($filename, $line, "self-reference of location ``". $self->_location . "'' - ignoring");
+                warning($filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
             }
             else {
                 push(@{$BUFFER{$self->_location}}, $BUFFER{$m1});
@@ -194,12 +194,12 @@ while (my $remain = <$in>) {
             ##
 
             if (! @LOCSTACK ) {
-                warning($filename, $line, "already in ``null'' location -- ignoring leave");
+                warning($filename, $self->_line, "already in ``null'' location -- ignoring leave");
             }
             else {
                 my $loc = ($1 // '');
                 if ($loc eq 'null') {
-                    warning($filename, $line, "cannot leave ``null'' location -- ignoring named leave");
+                    warning($filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
                 }
                 elsif ($loc ne '' and $loc ne $self->_location) {
                     #   leave the named location and all locations
@@ -212,7 +212,7 @@ while (my $remain = <$in>) {
                         }
                     }
                     if ($n == -1) {
-                        warning($filename, $line, "no such currently entered location ``$loc'' -- ignoring named leave");
+                        warning($filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
                     }
                     else {
                         splice(@LOCSTACK, $n);
@@ -285,7 +285,7 @@ sub ExpandDiversion {
                 //
                 'unknown'
         );
-        warning($filename, $line, "recursion through location ``$name'' - break");
+        warning($filename, $self->_line, "recursion through location ``$name'' - break");
         return '';
     }
 
