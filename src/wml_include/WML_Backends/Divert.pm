@@ -24,7 +24,7 @@ Options:
   -v, --verbose            verbose mode
 EOF
 
-    exit(1);
+    exit 1;
 }
 
 sub verbose {
@@ -32,12 +32,14 @@ sub verbose {
     if ( $self->_opt_v ) {
         STDERR->print("** Divert:Verbose: $str\n");
     }
+
+    return;
 }
 
 sub error {
     my ( $self, $str ) = @_;
     STDERR->print("** Divert:Error: $str\n");
-    exit(1);
+    exit 1;
 }
 
 sub warning {
@@ -45,6 +47,8 @@ sub warning {
     if ( not $self->_opt_q ) {
         STDERR->print("** Divert:Warning: ${filename}:$line: $str\n");
     }
+
+    return;
 }
 
 use List::Util qw(first min);
@@ -73,14 +77,14 @@ sub _init {
     {
         my $opt_v = 0;
         my $opt_q = 0;
-        my $opt_o = '-';
+        my $opt_o = q{-};
         local $Getopt::Long::bundling      = 1;
         local $Getopt::Long::getopt_compat = 0;
         if (
             not Getopt::Long::GetOptions(
-                "v|verbose"      => \$opt_v,
-                "q|quiet"        => \$opt_q,
-                "o|outputfile=s" => \$opt_o,
+                'v|verbose'      => \$opt_v,
+                'q|quiet'        => \$opt_q,
+                'o|outputfile=s' => \$opt_o,
             )
           )
         {
@@ -97,10 +101,10 @@ sub _init {
     {
         my $in;
 
-        if ( ( @ARGV == 1 and $ARGV[0] eq '-' ) or !@ARGV ) {
+        if ( ( ( @ARGV == 1 ) && ( $ARGV[0] eq q{-} ) ) || ( !@ARGV ) ) {
             $in = IO::Handle->new;
             $self->_filename('STDIN');
-            $in->fdopen( fileno(STDIN), "r" )
+            $in->fdopen( fileno(STDIN), 'r' )
               || $self->error("cannot load STDIN: $!");
         }
         elsif ( @ARGV == 1 ) {
@@ -121,8 +125,8 @@ sub _init {
 
     $self->_location('main');    # currently active location
     $self->_loc_stack( ['null'] );    # stack of remembered locations
-    $self->_BUFFER( +{ 'null' => [], 'main' => [], } );   # the location buffers
-    $self->_OVRWRITE( +{} );                              # the overwrite flags
+    $self->_BUFFER( +{ null => [], main => [], } );    # the location buffers
+    $self->_OVRWRITE( +{} );                           # the overwrite flags
     $self->_line(0);
     $self->_expand_stack( [] );
 
@@ -157,9 +161,9 @@ sub _run {
                     $self->_BUFFER->{$m1} )
                 {
                     $self->warning( $self->_filename, $self->_line,
-                            "self-reference of location ``"
+                            'self-reference of location ``'
                           . $self->_location
-                          . "'' - ignoring" );
+                          . q{'' - ignoring} );
                 }
                 else {
                     push(
@@ -232,14 +236,14 @@ sub _run {
 
                 if ( !@{ $self->_loc_stack } ) {
                     $self->warning( $self->_filename, $self->_line,
-                        "already in ``null'' location -- ignoring leave" );
+                        q{already in ``null'' location -- ignoring leave} );
                 }
                 else {
                     my $loc = ( $1 // '' );
                     if ( $loc eq 'null' ) {
                         $self->warning( $self->_filename, $self->_line,
-"cannot leave ``null'' location -- ignoring named leave"
-                        );
+                                q{cannot leave ``null'' location }
+                              . q{-- ignoring named leave} );
                     }
                     elsif ( $loc ne '' and $loc ne $self->_location ) {
 
@@ -255,7 +259,7 @@ sub _run {
                         }
                         if ( $n == -1 ) {
                             $self->warning( $self->_filename, $self->_line,
-"no such currently entered location ``$loc'' -- ignoring named leave"
+qq{no such currently entered location ``$loc'' -- ignoring named leave}
                             );
                         }
                         else {
