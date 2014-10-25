@@ -90,6 +90,9 @@ else {
     usage();
 }
 
+use List::Util qw(first min);
+use List::MoreUtils qw(any);
+
 
 ##
 ##   Pass 1: Parse the input data into disjunct location buffers
@@ -223,10 +226,7 @@ while (my $remain = <$in>) {
             my $i3 = index($remain, '{#');  $i3 = $l if $i3 == -1; #}
             my $i4 = index($remain, ':#');  $i4 = $l if $i4 == -1;
 
-            my $i = $i1;
-            $i = $i2 if $i > $i2;
-            $i = $i3 if $i > $i3;
-            $i = $i4 if $i > $i4;
+            my $i = min($i1, $i2, $i3, $i4);
 
             #   skip at least 2 characters if we are sitting
             #   on just a "<<", "..", "{#" or ":#"
@@ -254,9 +254,6 @@ $in->close();
 ##
 
 @LOCSTACK = ();
-
-use List::Util qw(first);
-use List::MoreUtils qw(any);
 
 sub ExpandDiversion {
     my ($loc) = @_;
