@@ -10,8 +10,6 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use strict;
 use warnings;
 
-BEGIN { $^W = 0; } # get rid of nasty warnings
-
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 

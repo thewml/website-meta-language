@@ -11,14 +11,11 @@ use warnings;
 
 our $VERSION = '0.0.1';
 
-use lib '@INSTALLPRIVLIB@';
-use lib '@INSTALLARCHLIB@';
-
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
 
 sub usage {
-    print STDERR <<'EOF';
+    STDERR->print(<<'EOF');
 Usage: divert [options] [file]
 
 Options:
@@ -33,20 +30,20 @@ EOF
 sub verbose {
     my ( $self, $str ) = @_;
     if ( $self->_opt_v ) {
-        print STDERR "** Divert:Verbose: $str\n";
+        STDERR->print("** Divert:Verbose: $str\n");
     }
 }
 
 sub error {
     my ( $self, $str ) = @_;
-    print STDERR "** Divert:Error: $str\n";
+    STDERR->print("** Divert:Error: $str\n");
     exit(1);
 }
 
 sub warning {
     my ( $self, $filename, $line, $str ) = @_;
     if ( not $self->_opt_q ) {
-        print STDERR "** Divert:Warning: ${filename}:$line: $str\n";
+        STDERR->print("** Divert:Warning: ${filename}:$line: $str\n");
     }
 }
 
