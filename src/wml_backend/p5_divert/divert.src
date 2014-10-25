@@ -260,7 +260,6 @@ use List::MoreUtils qw(any);
 
 sub ExpandDiversion {
     my ($loc) = @_;
-    my ($data, $el);
 
     #   check for recursion by making sure
     #   the current location has not already been seen.
@@ -282,17 +281,9 @@ sub ExpandDiversion {
 
     #   recursively expand the location
     #   by stepping through its list elements
-    $data = '';
-    foreach $el (@{$loc}) {
-        if (ref($el)) {
-            #   element is a location pointer, so
-            #   recurse into the expansion of it
-            $data .= ExpandDiversion($el);
-        }
-        else {
-            #   element is just a plain text block
-            $data .= $el;
-        }
+    my $data = '';
+    foreach my $el (@{$loc}) {
+        $data .= ref($el) ? ExpandDiversion($el) : $el;
     }
 
     #   we can remove the location from
