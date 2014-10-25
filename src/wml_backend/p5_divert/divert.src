@@ -22,7 +22,6 @@ use IO::Handle 1.15;
 #   process command line
 #
 
-
 package WmlDivert;
 
 sub usage {
@@ -341,6 +340,8 @@ sub calc_result
         $self->_BUFFER->{'main'}
     );
 }
+
+package main;
 
 #
 #   create output file
