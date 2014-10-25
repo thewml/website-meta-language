@@ -78,7 +78,7 @@ use Class::XSAccessor
     constructor => 'new',
     accessors => +{
         map { $_ => $_ }
-        qw(_filename _line _location)
+        qw(_filename _in_fh _line _location)
     },
 )
     ;
@@ -88,6 +88,7 @@ my $self = __PACKAGE__->new;
 #
 #   open input file and read into buffer
 #
+{
 my $in;
 
 if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
@@ -101,6 +102,8 @@ elsif (@ARGV == 1) {
 }
 else {
     usage();
+}
+    $self->_in_fh($in);
 }
 
 ##
@@ -117,7 +120,7 @@ my %BUFFER   = ('null' => [], 'main' => []); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
 $self->_line(0);
 
-while (my $remain = <$in>) {
+while (defined(my $remain = $self->_in_fh->getline)) {
     $self->_line($self->_line + 1);
     while (length $remain > 0) {
 
@@ -261,7 +264,7 @@ while (my $remain = <$in>) {
         }
     }
 }
-$in->close();
+$self->_in_fh->close();
 
 
 ##
