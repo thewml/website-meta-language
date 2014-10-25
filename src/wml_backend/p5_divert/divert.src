@@ -78,7 +78,7 @@ use Class::XSAccessor
     constructor => 'new',
     accessors => +{
         map { $_ => $_ }
-        qw(_BUFFER _filename _in_fh _line _location)
+        qw(_BUFFER _expand_stack _filename _in_fh _line _loc_stack _location)
     },
 )
     ;
@@ -115,7 +115,7 @@ else {
 
 
 $self->_location('main');                    # currently active location
-my @LOCSTACK = ('null');                     # stack of remembered locations
+$self->_loc_stack(['null']); # stack of remembered locations
 $self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
 $self->_line(0);
@@ -153,7 +153,7 @@ sub run {
                 ##
 
                 #   remember old location on stack
-                push(@LOCSTACK, $self->_location);
+                push(@{ $self->_loc_stack }, $self->_location);
 
                 #   determine location and optional
                 #   qualifies, then enter this location
@@ -198,7 +198,7 @@ sub run {
                 ##  Tag: leave location
                 ##
 
-                if (! @LOCSTACK ) {
+                if (! @{ $self->_loc_stack } ) {
                     warning($self->_filename, $self->_line, "already in ``null'' location -- ignoring leave");
                 }
                 else {
@@ -210,8 +210,8 @@ sub run {
                         #   leave the named location and all locations
                         #   on the stack above it.
                         my $n = -1;
-                        for (my $i = $#LOCSTACK; $i >= 0; $i--) {
-                            if ($LOCSTACK[$i] eq $loc) {
+                        for (my $i = $#{$self->_loc_stack}; $i >= 0; $i--) {
+                            if ($self->_loc_stack->[$i] eq $loc) {
                                 $n = $i;
                                 last;
                             }
@@ -220,13 +220,13 @@ sub run {
                             warning($self->_filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
                         }
                         else {
-                            splice(@LOCSTACK, $n);
-                            $self->_location( pop(@LOCSTACK) );
+                            splice(@{ $self->_loc_stack }, $n);
+                            $self->_location( pop(@{ $self->_loc_stack }) );
                         }
                     }
                     else {
                         #   leave just the current location
-                        $self->_location(pop(@LOCSTACK));
+                        $self->_location(pop(@{ $self->_loc_stack }));
                     }
                 }
             }
@@ -277,14 +277,14 @@ $self->run;
 ##           by starting from the main location buffer
 ##
 
-@LOCSTACK = ();
+$self->_expand_stack([]);
 
 sub ExpandDiversion {
     my ($self, $loc) = @_;
 
     #   check for recursion by making sure
     #   the current location has not already been seen.
-    if (any { $_ == $loc } @LOCSTACK) {
+    if (any { $_ == $loc } @{$self->_expand_stack}) {
         #   find name of location via location pointer
         #   for human readable warning message
         my $name = (
@@ -298,7 +298,7 @@ sub ExpandDiversion {
 
     #   ok, location still not seen,
     #   but remember it for recursive calls.
-    push(@LOCSTACK, $loc);
+    push(@{$self->_expand_stack}, $loc);
 
     #   recursively expand the location
     #   by stepping through its list elements
@@ -309,7 +309,7 @@ sub ExpandDiversion {
 
     #   we can remove the location from
     #   the stack because we are back from recursive calls.
-    pop(@LOCSTACK);
+    pop(@{ $self->_expand_stack });
 
     #   return expanded buffer
     return $data;
