@@ -100,7 +100,19 @@ use List::MoreUtils qw(any);
 ##           location pointers.
 ##
 
-my $location = 'main';                       # currently active location
+use Class::XSAccessor
+(
+    constructor => 'new',
+    accessors => +{
+        map { $_ => $_ }
+        qw(_location)
+    },
+)
+    ;
+
+my $self = __PACKAGE__->new;
+
+$self->_location('main');                    # currently active location
 my @LOCSTACK = ('null');                     # stack of remembered locations
 my %BUFFER   = ('null' => [], 'main' => []); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
@@ -109,64 +121,69 @@ my $line = 0;
 while (my $remain = <$in>) {
     $line++;
     while (length $remain > 0) {
-        if (   $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||
-            or $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}||) {
+
+        if (my $m1 = (($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||)
+            ? $1 : ($remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}||) ? $1 : undef))
+        {
             ##
             ##  Tag: dump location
             ##
 
             #   initialize new location buffer
-            $BUFFER{$1} = [] if (not exists($BUFFER{$1}));
+            $BUFFER{$m1} = [] if (not exists($BUFFER{$m1}));
 
             #   insert location pointer into current location
-            if ($BUFFER{$location} == $BUFFER{$1}) {
-                warning($filename, $line, "self-reference of location ``$location'' - ignoring");
+            if ($BUFFER{$self->_location} == $BUFFER{$m1}) {
+                warning($filename, $line, "self-reference of location ``". $self->_location . "'' - ignoring");
             }
             else {
-                push(@{$BUFFER{$location}}, $BUFFER{$1});
+                push(@{$BUFFER{$self->_location}}, $BUFFER{$m1});
             }
         }
-        elsif (   $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>||
-               or $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||) {
+        elsif ( $m1 = (($remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>||) ? $1 :
+               ($remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||) ? $1 : undef))
+        {
             ##
             ##  Tag: enter location
             ##
 
             #   remember old location on stack
-            push(@LOCSTACK, $location);
+            push(@LOCSTACK, $self->_location);
 
             #   determine location and optional
             #   qualifies, then enter this location
-            $location = $1;
+            $self->_location($m1);
             my $rewind_now  = 0;
             my $rewind_next = 0;
-            if ($location =~ m|^\!(.*)$|) {
+
+            if (my ($new_loc) = $self->_location =~ m|^\!(.*)$|) {
                 #   location should be rewinded now
-                $location = $1;
+                $self->_location($new_loc);
                 $rewind_now = 1;
             }
-            if ($location =~ m|^(.*)\!$|) {
+
+            if (my ($new_loc) = $self->_location =~ m|^(.*)\!$|) {
                 #   location should be rewinded next time
-                $location = $1;
+                $self->_location($new_loc);
                 $rewind_next = 1;
             }
 
             #   initialize location buffer
-            $BUFFER{$location} = [] if (not exists($BUFFER{$location}));
+            $BUFFER{$self->_location} = [] if (not exists($BUFFER{$self->_location}));
 
             #   is a "rewind now" forced by a "rewind next" from last time?
-            if ($OVRWRITE{$location}) {
+            if ($OVRWRITE{$self->_location}) {
                 $rewind_now = 1;
-                $OVRWRITE{$location} = 0;
+                $OVRWRITE{$self->_location} = 0;
             }
 
             #   remember a "rewind next" for next time
-            $OVRWRITE{$location} = 1 if ($rewind_next);
+            $OVRWRITE{$self->_location} = 1 if ($rewind_next);
 
             #   execute a "rewind now" by clearing the location buffer
             if ($rewind_now == 1) {
-                while ($#{$BUFFER{$location}} > -1) {
-                    shift(@{$BUFFER{$location}});
+                while ($#{$BUFFER{$self->_location}} > -1) {
+                    shift(@{$BUFFER{$self->_location}});
                 }
             }
         }
@@ -184,7 +201,7 @@ while (my $remain = <$in>) {
                 if ($loc eq 'null') {
                     warning($filename, $line, "cannot leave ``null'' location -- ignoring named leave");
                 }
-                elsif ($loc ne '' and $loc ne $location) {
+                elsif ($loc ne '' and $loc ne $self->_location) {
                     #   leave the named location and all locations
                     #   on the stack above it.
                     my $n = -1;
@@ -199,12 +216,12 @@ while (my $remain = <$in>) {
                     }
                     else {
                         splice(@LOCSTACK, $n);
-                        $location = pop(@LOCSTACK);
+                        $self->_location( pop(@LOCSTACK) );
                     }
                 }
                 else {
                     #   leave just the current location
-                    $location = pop(@LOCSTACK);
+                    $self->_location(pop(@LOCSTACK));
                 }
             }
         }
@@ -235,11 +252,11 @@ while (my $remain = <$in>) {
             #   append plain text to remembered data and adjust $remain
             #   variable
             if ($i == $l) {
-                push(@{$BUFFER{$location}}, $remain);
+                push(@{$BUFFER{$self->_location}}, $remain);
                 $remain = '';
             } else {
                 #   substr with 4 arguments was introduced in perl 5.005
-                push(@{$BUFFER{$location}}, substr($remain, 0, $i));
+                push(@{$BUFFER{$self->_location}}, substr($remain, 0, $i));
                 substr($remain, 0, $i) = '';
             }
         }
