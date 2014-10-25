@@ -120,152 +120,157 @@ $self->_BUFFER(+{'null' => [], 'main' => [], }); # the location buffers
 my %OVRWRITE = ();                           # the overwrite flags
 $self->_line(0);
 
-while (defined(my $remain = $self->_in_fh->getline)) {
-    $self->_line($self->_line + 1);
-    while (length $remain > 0) {
+sub run {
+    my ($self) = @_;
 
-        if (my $m1 = (($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||)
-            ? $1 : ($remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}||) ? $1 : undef))
-        {
-            ##
-            ##  Tag: dump location
-            ##
+    while (defined(my $remain = $self->_in_fh->getline)) {
+        $self->_line($self->_line + 1);
+        while (length $remain > 0) {
 
-            #   initialize new location buffer
-            $self->_BUFFER->{$m1} = [] if (not exists($self->_BUFFER->{$m1}));
+            if (my $m1 = (($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>||)
+                    ? $1 : ($remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}||) ? $1 : undef))
+            {
+                ##
+                ##  Tag: dump location
+                ##
 
-            #   insert location pointer into current location
-            if ($self->_BUFFER->{$self->_location} == $self->_BUFFER->{$m1}) {
-                warning($self->_filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
-            }
-            else {
-                push(@{$self->_BUFFER->{$self->_location}}, $self->_BUFFER->{$m1});
-            }
-        }
-        elsif ( $m1 = (($remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>||) ? $1 :
-               ($remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||) ? $1 : undef))
-        {
-            ##
-            ##  Tag: enter location
-            ##
+                #   initialize new location buffer
+                $self->_BUFFER->{$m1} = [] if (not exists($self->_BUFFER->{$m1}));
 
-            #   remember old location on stack
-            push(@LOCSTACK, $self->_location);
-
-            #   determine location and optional
-            #   qualifies, then enter this location
-            $self->_location($m1);
-            my $rewind_now  = 0;
-            my $rewind_next = 0;
-
-            if (my ($new_loc) = $self->_location =~ m|^\!(.*)$|) {
-                #   location should be rewinded now
-                $self->_location($new_loc);
-                $rewind_now = 1;
-            }
-
-            if (my ($new_loc) = $self->_location =~ m|^(.*)\!$|) {
-                #   location should be rewinded next time
-                $self->_location($new_loc);
-                $rewind_next = 1;
-            }
-
-            #   initialize location buffer
-            $self->_BUFFER->{$self->_location} = [] if (not exists($self->_BUFFER->{$self->_location}));
-
-            #   is a "rewind now" forced by a "rewind next" from last time?
-            if ($OVRWRITE{$self->_location}) {
-                $rewind_now = 1;
-                $OVRWRITE{$self->_location} = 0;
-            }
-
-            #   remember a "rewind next" for next time
-            $OVRWRITE{$self->_location} = 1 if ($rewind_next);
-
-            #   execute a "rewind now" by clearing the location buffer
-            if ($rewind_now == 1) {
-                while ($#{$self->_BUFFER->{$self->_location}} > -1) {
-                    shift(@{$self->_BUFFER->{$self->_location}});
-                }
-            }
-        }
-        elsif (   $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)?\.\.||
-               or $remain =~ s|^:#([a-zA-Z][a-zA-Z0-9_]*)?#}||) {
-            ##
-            ##  Tag: leave location
-            ##
-
-            if (! @LOCSTACK ) {
-                warning($self->_filename, $self->_line, "already in ``null'' location -- ignoring leave");
-            }
-            else {
-                my $loc = ($1 // '');
-                if ($loc eq 'null') {
-                    warning($self->_filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
-                }
-                elsif ($loc ne '' and $loc ne $self->_location) {
-                    #   leave the named location and all locations
-                    #   on the stack above it.
-                    my $n = -1;
-                    for (my $i = $#LOCSTACK; $i >= 0; $i--) {
-                        if ($LOCSTACK[$i] eq $loc) {
-                            $n = $i;
-                            last;
-                        }
-                    }
-                    if ($n == -1) {
-                        warning($self->_filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
-                    }
-                    else {
-                        splice(@LOCSTACK, $n);
-                        $self->_location( pop(@LOCSTACK) );
-                    }
+                #   insert location pointer into current location
+                if ($self->_BUFFER->{$self->_location} == $self->_BUFFER->{$m1}) {
+                    warning($self->_filename, $self->_line, "self-reference of location ``". $self->_location . "'' - ignoring");
                 }
                 else {
-                    #   leave just the current location
-                    $self->_location(pop(@LOCSTACK));
+                    push(@{$self->_BUFFER->{$self->_location}}, $self->_BUFFER->{$m1});
                 }
             }
-        }
-        else {
-            ##
-            ##  Plain text
-            ##
+            elsif ( $m1 = (($remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>||) ? $1 :
+                    ($remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||) ? $1 : undef))
+            {
+                ##
+                ##  Tag: enter location
+                ##
 
-            #   calculate the minimum amount of plain characters we can skip
-            my $l = length($remain);
-            my $i1 = index($remain, '<<');  $i1 = $l if $i1 == -1;
-            #   Skip ../ which is often used in URLs
-            my $i2 = -1;
-            do {
-                $i2 = index($remain, '..', $i2+1);
-            } while ($i2 > -1 and $i2+2 < $l and substr($remain, $i2+2, 1) eq '/');
-            $i2 = $l if $i2 == -1;
+                #   remember old location on stack
+                push(@LOCSTACK, $self->_location);
 
-            my $i3 = index($remain, '{#');  $i3 = $l if $i3 == -1; #}
-            my $i4 = index($remain, ':#');  $i4 = $l if $i4 == -1;
+                #   determine location and optional
+                #   qualifies, then enter this location
+                $self->_location($m1);
+                my $rewind_now  = 0;
+                my $rewind_next = 0;
 
-            my $i = min($i1, $i2, $i3, $i4);
+                if (my ($new_loc) = $self->_location =~ m|^\!(.*)$|) {
+                    #   location should be rewinded now
+                    $self->_location($new_loc);
+                    $rewind_now = 1;
+                }
 
-            #   skip at least 2 characters if we are sitting
-            #   on just a "<<", "..", "{#" or ":#"
-            $i = 1 if ($i == 0);
+                if (my ($new_loc) = $self->_location =~ m|^(.*)\!$|) {
+                    #   location should be rewinded next time
+                    $self->_location($new_loc);
+                    $rewind_next = 1;
+                }
 
-            #   append plain text to remembered data and adjust $remain
-            #   variable
-            if ($i == $l) {
-                push(@{$self->_BUFFER->{$self->_location}}, $remain);
-                $remain = '';
-            } else {
-                #   substr with 4 arguments was introduced in perl 5.005
-                push(@{$self->_BUFFER->{$self->_location}}, substr($remain, 0, $i));
-                substr($remain, 0, $i) = '';
+                #   initialize location buffer
+                $self->_BUFFER->{$self->_location} = [] if (not exists($self->_BUFFER->{$self->_location}));
+
+                #   is a "rewind now" forced by a "rewind next" from last time?
+                if ($OVRWRITE{$self->_location}) {
+                    $rewind_now = 1;
+                    $OVRWRITE{$self->_location} = 0;
+                }
+
+                #   remember a "rewind next" for next time
+                $OVRWRITE{$self->_location} = 1 if ($rewind_next);
+
+                #   execute a "rewind now" by clearing the location buffer
+                if ($rewind_now == 1) {
+                    while ($#{$self->_BUFFER->{$self->_location}} > -1) {
+                        shift(@{$self->_BUFFER->{$self->_location}});
+                    }
+                }
+            }
+            elsif (   $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)?\.\.||
+                    or $remain =~ s|^:#([a-zA-Z][a-zA-Z0-9_]*)?#}||) {
+                ##
+                ##  Tag: leave location
+                ##
+
+                if (! @LOCSTACK ) {
+                    warning($self->_filename, $self->_line, "already in ``null'' location -- ignoring leave");
+                }
+                else {
+                    my $loc = ($1 // '');
+                    if ($loc eq 'null') {
+                        warning($self->_filename, $self->_line, "cannot leave ``null'' location -- ignoring named leave");
+                    }
+                    elsif ($loc ne '' and $loc ne $self->_location) {
+                        #   leave the named location and all locations
+                        #   on the stack above it.
+                        my $n = -1;
+                        for (my $i = $#LOCSTACK; $i >= 0; $i--) {
+                            if ($LOCSTACK[$i] eq $loc) {
+                                $n = $i;
+                                last;
+                            }
+                        }
+                        if ($n == -1) {
+                            warning($self->_filename, $self->_line, "no such currently entered location ``$loc'' -- ignoring named leave");
+                        }
+                        else {
+                            splice(@LOCSTACK, $n);
+                            $self->_location( pop(@LOCSTACK) );
+                        }
+                    }
+                    else {
+                        #   leave just the current location
+                        $self->_location(pop(@LOCSTACK));
+                    }
+                }
+            }
+            else {
+                ##
+                ##  Plain text
+                ##
+
+                #   calculate the minimum amount of plain characters we can skip
+                my $l = length($remain);
+                my $i1 = index($remain, '<<');  $i1 = $l if $i1 == -1;
+                #   Skip ../ which is often used in URLs
+                my $i2 = -1;
+                do {
+                    $i2 = index($remain, '..', $i2+1);
+                } while ($i2 > -1 and $i2+2 < $l and substr($remain, $i2+2, 1) eq '/');
+                $i2 = $l if $i2 == -1;
+
+                my $i3 = index($remain, '{#');  $i3 = $l if $i3 == -1; #}
+                my $i4 = index($remain, ':#');  $i4 = $l if $i4 == -1;
+
+                my $i = min($i1, $i2, $i3, $i4);
+
+                #   skip at least 2 characters if we are sitting
+                #   on just a "<<", "..", "{#" or ":#"
+                $i = 1 if ($i == 0);
+
+                #   append plain text to remembered data and adjust $remain
+                #   variable
+                if ($i == $l) {
+                    push(@{$self->_BUFFER->{$self->_location}}, $remain);
+                    $remain = '';
+                } else {
+                    #   substr with 4 arguments was introduced in perl 5.005
+                    push(@{$self->_BUFFER->{$self->_location}}, substr($remain, 0, $i));
+                    substr($remain, 0, $i) = '';
+                }
             }
         }
     }
+    $self->_in_fh->close();
 }
-$self->_in_fh->close();
 
+$self->run;
 
 ##
 ##   Pass 2: Recursively expand the location structure
@@ -275,7 +280,7 @@ $self->_in_fh->close();
 @LOCSTACK = ();
 
 sub ExpandDiversion {
-    my ($loc) = @_;
+    my ($self, $loc) = @_;
 
     #   check for recursion by making sure
     #   the current location has not already been seen.
@@ -299,7 +304,7 @@ sub ExpandDiversion {
     #   by stepping through its list elements
     my $data = '';
     foreach my $el (@{$loc}) {
-        $data .= ref($el) ? ExpandDiversion($el) : $el;
+        $data .= ref($el) ? $self->ExpandDiversion($el) : $el;
     }
 
     #   we can remove the location from
@@ -316,7 +321,7 @@ sub ExpandDiversion {
 #
 use WML_Backends;
 
-WML_Backends->out($opt_o, \&error, [ExpandDiversion($self->_BUFFER->{'main'})]);
+WML_Backends->out($opt_o, \&error, [$self->ExpandDiversion($self->_BUFFER->{'main'})]);
 
 #
 #   die gracefully
