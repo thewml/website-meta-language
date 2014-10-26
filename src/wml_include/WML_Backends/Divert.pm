@@ -133,9 +133,8 @@ sub _init {
     return;
 }
 
-sub _handle_location
-{
-    my ($self, $m1) = @_;
+sub _handle_location {
+    my ( $self, $m1 ) = @_;
 
     ##
     ##  Tag: dump location
@@ -143,29 +142,25 @@ sub _handle_location
 
     #   initialize new location buffer
     $self->_BUFFER->{$m1} = []
-    if ( not exists( $self->_BUFFER->{$m1} ) );
+      if ( not exists( $self->_BUFFER->{$m1} ) );
 
     #   insert location pointer into current location
-    if ( $self->_BUFFER->{ $self->_location } ==
-        $self->_BUFFER->{$m1} )
-    {
+    if ( $self->_BUFFER->{ $self->_location } == $self->_BUFFER->{$m1} ) {
         $self->warning( $self->_filename, $self->_line,
-            'self-reference of location ``'
-            . $self->_location
-            . q{'' - ignoring} );
+                'self-reference of location ``'
+              . $self->_location
+              . q{'' - ignoring} );
     }
     else {
-        push(
-            @{ $self->_BUFFER->{ $self->_location } },
-            $self->_BUFFER->{$m1}
-        );
+        push( @{ $self->_BUFFER->{ $self->_location } },
+            $self->_BUFFER->{$m1} );
     }
 
     return;
 }
 
 sub _handle_enter_location {
-    my ($self, $m1) = @_;
+    my ( $self, $m1 ) = @_;
 
     ##
     ##  Tag: enter location
@@ -196,7 +191,7 @@ sub _handle_enter_location {
 
     #   initialize location buffer
     $self->_BUFFER->{ $self->_location } = []
-    if ( not exists( $self->_BUFFER->{ $self->_location } ) );
+      if ( not exists( $self->_BUFFER->{ $self->_location } ) );
 
     #   is a "rewind now" forced by a "rewind next" from last time?
     if ( $self->_OVRWRITE->{ $self->_location } ) {
@@ -217,7 +212,7 @@ sub _handle_enter_location {
 }
 
 sub _handle_leave_location {
-    my ($self, $m1) = @_;
+    my ( $self, $m1 ) = @_;
 
     ##
     ##  Tag: leave location
@@ -231,16 +226,15 @@ sub _handle_leave_location {
         my $loc = ( $1 // '' );
         if ( $loc eq 'null' ) {
             $self->warning( $self->_filename, $self->_line,
-                q{cannot leave ``null'' location }
-                . q{-- ignoring named leave} );
+                    q{cannot leave ``null'' location }
+                  . q{-- ignoring named leave} );
         }
         elsif ( $loc ne '' and $loc ne $self->_location ) {
 
             #   leave the named location and all locations
             #   on the stack above it.
             my $n = -1;
-            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- )
-            {
+            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- ) {
                 if ( $self->_loc_stack->[$i] eq $loc ) {
                     $n = $i;
                     last;
@@ -248,7 +242,7 @@ sub _handle_leave_location {
             }
             if ( $n == -1 ) {
                 $self->warning( $self->_filename, $self->_line,
-                    qq{no such currently entered location ``$loc'' -- ignoring named leave}
+qq{no such currently entered location ``$loc'' -- ignoring named leave}
                 );
             }
             else {
@@ -266,14 +260,14 @@ sub _handle_leave_location {
 }
 
 sub _handle_plain_text {
-    my ($self, $remain_ref) = @_;
+    my ( $self, $remain_ref ) = @_;
 
     ##
     ##  Plain text
     ##
 
     #   calculate the minimum amount of plain characters we can skip
-    my $l = length(${$remain_ref});
+    my $l = length( ${$remain_ref} );
     my $i1 = index( ${$remain_ref}, '<<' );
     $i1 = $l if $i1 == -1;
 
@@ -281,9 +275,9 @@ sub _handle_plain_text {
     my $i2 = -1;
     do {
         $i2 = index( ${$remain_ref}, '..', $i2 + 1 );
-    } while ( $i2 > -1
-            and $i2 + 2 < $l
-            and substr( ${$remain_ref}, $i2 + 2, 1 ) eq '/' );
+      } while ( $i2 > -1
+        and $i2 + 2 < $l
+        and substr( ${$remain_ref}, $i2 + 2, 1 ) eq '/' );
     $i2 = $l if $i2 == -1;
 
     my $i3 = index( ${$remain_ref}, '{#' );
@@ -315,7 +309,6 @@ sub _handle_plain_text {
     return;
 }
 
-
 sub _run {
     my ($self) = @_;
 
@@ -323,24 +316,16 @@ sub _run {
         $self->_line( $self->_line + 1 );
         while ( length $remain > 0 ) {
 
-            if ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| )
-            {
+            if ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| ) {
                 $self->_handle_location($1);
             }
-            elsif ( $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}|| )
-            {
+            elsif ( $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}|| ) {
                 $self->_handle_location($1);
             }
-            elsif (
-                $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|| 
-            )
-            {
+            elsif ( $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|| ) {
                 $self->_handle_enter_location($1);
             }
-            elsif (
-                $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||
-            )
-            {
+            elsif ( $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:|| ) {
                 $self->_handle_enter_location($1);
             }
             elsif ($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)?\.\.||
@@ -349,7 +334,7 @@ sub _run {
                 $self->_handle_leave_location($1);
             }
             else {
-                $self->_handle_plain_text(\$remain);
+                $self->_handle_plain_text( \$remain );
             }
         }
     }
