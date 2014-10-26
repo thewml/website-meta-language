@@ -21,6 +21,8 @@ use IO::File 1.06;
 use File::Temp qw/tempdir/;
 use File::Spec;
 
+use IO::All qw/ io /;
+
 use Carp qw( cluck );
 
 #
@@ -49,23 +51,26 @@ sub warning {
 #   process command line
 #
 sub usage {
-    print STDERR "Usage: ipp [options] file ...\n";
-    print STDERR "\n";
-    print STDERR "Options:\n";
-    print STDERR "  -D, --define=<name>=<value>  define a variable\n";
-    print STDERR "  -S, --sysincludedir=<dir>    add system include directory\n";
-    print STDERR "  -I, --includedir=<dir>       add user include directory\n";
-    print STDERR "  -s, --sysincludefile=<file>  pre-include system include file\n";
-    print STDERR "  -i, --includefile=<file>     pre-include user include file\n";
-    print STDERR "  -M, --depend=<options>       dump dependencies as gcc does\n";
-    print STDERR "  -P, --prolog=<path>          specify one or more prolog filters\n";
-    print STDERR "  -m, --mapfile=<file>         use include file mapping table\n";
-    print STDERR "  -N, --nosynclines            do not output sync lines\n";
-    print STDERR "  -n, --inputfile=<file>       set input file name printed by sync lines\n";
-    print STDERR "  -o, --outputfile=<file>      set output file instead of stdout\n";
-    print STDERR "  -v, --verbose                verbosity\n";
+    print STDERR <<'EOF';
+Usage: ipp [options] file ...
+
+Options:
+  -D, --define=<name>=<value>  define a variable
+  -S, --sysincludedir=<dir>    add system include directory
+  -I, --includedir=<dir>       add user include directory
+  -s, --sysincludefile=<file>  pre-include system include file
+  -i, --includefile=<file>     pre-include user include file
+  -M, --depend=<options>       dump dependencies as gcc does
+  -P, --prolog=<path>          specify one or more prolog filters
+  -m, --mapfile=<file>         use include file mapping table
+  -N, --nosynclines            do not output sync lines
+  -n, --inputfile=<file>       set input file name printed by sync lines
+  -o, --outputfile=<file>      set output file instead of stdout
+  -v, --verbose                verbosity
+EOF
     exit(1);
 }
+
 our $opt_M = '-';
 our @opt_I = ();
 our @opt_D = ();
@@ -102,20 +107,24 @@ if ($opt_M !~ m%^(-|[MD]*)$% && (! @ARGV)) {
 usage() if (! @ARGV);
 push(@opt_I, '.');
 
+
 #
 #   read mapfiles
 #
 my $MAP = {};
 sub read_mapfile {
     my ($MAP, $mapfile) = @_;
-    local (*FP);
 
-    open(FP, "<$mapfile") || error("cannot load $mapfile: $!");
-    while (<FP>) {
-        next if (m|^\s*$|);
-        next if (m|^\s*#.*$|);
+    my $fp = io->file($mapfile);
+
+    LINES:
+    while (my $l = $fp->getline) {
+        if ($l =~ m|^\s*$| or m|^\s*#.*$|)
+        {
+            next LINES;
+        }
         if (my ($given, $replace, $actiontype, $actiontext) =
-             m|^(\S+)\s+(\S+)\s+\[\s*([SWE])\s*:\s*(.+?)\s*\].*$|) {
+             $l =~ m|^(\S+)\s+(\S+)\s+\[\s*([SWE])\s*:\s*(.+?)\s*\].*$|) {
              my @given = split(/,/, $given);
             foreach my $g (@given) {
                 $MAP->{$g} = {
@@ -126,8 +135,8 @@ sub read_mapfile {
             }
         }
     }
-    close(FP) || error("cannot close $mapfile");
 }
+
 foreach my $file (@opt_m) {
     read_mapfile($MAP, $file);
 }
@@ -211,12 +220,13 @@ sub PatternProcess {
     else {
         $test = '-d "$dir/$dirname"';
     }
-    if ($delimiter eq '<') {
+
+    my $process_dirs = sub {
+        my ($dirs) = @_;
+
         $found = 0;
-        foreach $dir (reverse @opt_S) {
-            opendir(DIR, "$dir/$dirname") || next;
-            @ls = grep { /^$pattern$/  && eval $test } readdir(DIR);
-            closedir DIR;
+        foreach my $dir (reverse @$dirs) {
+            @ls = grep { /^$pattern$/  && eval $test } @{ io->dir("$dir/$dirname") };
             foreach (@ls) {
                 next if (m|/\.+$| or m|^\.+$|);
                 $out .= ProcessFile($mode, $delimiter, "$dirname/$_$ext", "", $level, $noid, %arg);
@@ -224,27 +234,21 @@ sub PatternProcess {
             }
             last if $found;
         }
+
+        return;
+
+    };
+
+    if ($delimiter eq '<') {
+        $process_dirs->(\@opt_S);
     }
     if ($delimiter eq '<' or $delimiter eq '"') {
-        $found = 0;
-        foreach $dir (reverse @opt_I) {
-            opendir(DIR, "$dir/$dirname") || next;
-            @ls = grep { /^$pattern$/  && eval $test } readdir(DIR);
-            closedir DIR;
-            foreach (@ls) {
-                next if (m|/\.+$| or m|^\.+$|);
-                $out .= ProcessFile($mode, $delimiter, "$dirname/$_$ext", "", $level, $noid, %arg);
-                $found = 1;
-            }
-            last if $found;
-        }
+        $process_dirs->(\@opt_I);
     }
     if ($delimiter eq '<' or $delimiter eq '"' or $delimiter eq "'") {
         $dir = '.';
         if (-d $dirname) {
-            opendir(DIR, "$dirname");
-            @ls = grep { /^$pattern$/  && eval $test } readdir(DIR);
-            closedir DIR;
+            @ls = grep { /^$pattern$/  && eval $test } @{ io->dir("$dirname") };
 
             #   Sort list of files
             my $criterion = $arg{'IPP_SORT'} || $arg{'IPP_REVERSE'};
