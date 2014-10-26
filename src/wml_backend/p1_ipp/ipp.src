@@ -661,8 +661,11 @@ if ($opt_M ne '-' && $opt_o ne '-') {
         || error("cannot write into $depfile: $!");
 
     my @deps = @ARGV;
-    foreach (keys(%INCLUDES)) {
-        push(@deps,$_) if $INCLUDES{$_} != 1 or $opt_M !~ m|M|;
+    foreach my $inc (keys(%INCLUDES)) {
+        if ($INCLUDES{$inc} != 1 or $opt_M !~ m|M|)
+        {
+            push(@deps,$inc);
+        }
     }
     #    and its dependencies
     $depout->print("\t" . join(" \\\n\t",@deps) . "\n")
