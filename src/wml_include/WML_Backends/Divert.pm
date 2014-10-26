@@ -265,6 +265,57 @@ sub _handle_leave_location {
     return;
 }
 
+sub _handle_plain_text {
+    my ($self, $remain_ref) = @_;
+
+    ##
+    ##  Plain text
+    ##
+
+    #   calculate the minimum amount of plain characters we can skip
+    my $l = length(${$remain_ref});
+    my $i1 = index( ${$remain_ref}, '<<' );
+    $i1 = $l if $i1 == -1;
+
+    #   Skip ../ which is often used in URLs
+    my $i2 = -1;
+    do {
+        $i2 = index( ${$remain_ref}, '..', $i2 + 1 );
+    } while ( $i2 > -1
+            and $i2 + 2 < $l
+            and substr( ${$remain_ref}, $i2 + 2, 1 ) eq '/' );
+    $i2 = $l if $i2 == -1;
+
+    my $i3 = index( ${$remain_ref}, '{#' );
+    $i3 = $l if $i3 == -1;    #}
+    my $i4 = index( ${$remain_ref}, ':#' );
+    $i4 = $l if $i4 == -1;
+
+    my $i = min( $i1, $i2, $i3, $i4 );
+
+    #   skip at least 2 characters if we are sitting
+    #   on just a "<<", "..", "{#" or ":#"
+    $i = 1 if ( $i == 0 );
+
+    #   append plain text to remembered data and adjust ${$remain_ref}
+    #   variable
+    if ( $i == $l ) {
+        push( @{ $self->_BUFFER->{ $self->_location } }, ${$remain_ref} );
+        ${$remain_ref} = '';
+    }
+    else {
+        #   substr with 4 arguments was introduced in perl 5.005
+        push(
+            @{ $self->_BUFFER->{ $self->_location } },
+            substr( ${$remain_ref}, 0, $i )
+        );
+        substr( ${$remain_ref}, 0, $i ) = '';
+    }
+
+    return;
+}
+
+
 sub _run {
     my ($self) = @_;
 
@@ -298,49 +349,7 @@ sub _run {
                 $self->_handle_leave_location($1);
             }
             else {
-                ##
-                ##  Plain text
-                ##
-
-                #   calculate the minimum amount of plain characters we can skip
-                my $l = length($remain);
-                my $i1 = index( $remain, '<<' );
-                $i1 = $l if $i1 == -1;
-
-                #   Skip ../ which is often used in URLs
-                my $i2 = -1;
-                do {
-                    $i2 = index( $remain, '..', $i2 + 1 );
-                  } while ( $i2 > -1
-                    and $i2 + 2 < $l
-                    and substr( $remain, $i2 + 2, 1 ) eq '/' );
-                $i2 = $l if $i2 == -1;
-
-                my $i3 = index( $remain, '{#' );
-                $i3 = $l if $i3 == -1;    #}
-                my $i4 = index( $remain, ':#' );
-                $i4 = $l if $i4 == -1;
-
-                my $i = min( $i1, $i2, $i3, $i4 );
-
-                #   skip at least 2 characters if we are sitting
-                #   on just a "<<", "..", "{#" or ":#"
-                $i = 1 if ( $i == 0 );
-
-                #   append plain text to remembered data and adjust $remain
-                #   variable
-                if ( $i == $l ) {
-                    push( @{ $self->_BUFFER->{ $self->_location } }, $remain );
-                    $remain = '';
-                }
-                else {
-                    #   substr with 4 arguments was introduced in perl 5.005
-                    push(
-                        @{ $self->_BUFFER->{ $self->_location } },
-                        substr( $remain, 0, $i )
-                    );
-                    substr( $remain, 0, $i ) = '';
-                }
+                $self->_handle_plain_text(\$remain);
             }
         }
     }
