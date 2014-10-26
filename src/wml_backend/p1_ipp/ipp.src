@@ -7,8 +7,8 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
-use lib "@INSTALLPRIVLIB@";
-use lib "@INSTALLARCHLIB@";
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
 
 require 5.006;
 
