@@ -292,7 +292,7 @@ sub PatternProcess {
 
 sub ProcessFile {
     my ($mode, $delimiter, $file, $realname, $level, $noid, %arg) = @_;
-    my ($in, $found, $line, $incfile, $type, %argO, $out, $store);
+    my ($found, $line, $incfile, $type, %argO, $out, $store);
     my ($dirname, $pattern, $ext);
 
     #
@@ -380,17 +380,16 @@ sub ProcessFile {
     #   process the file
     #
     $realname = $file if $realname eq '';
-    $in = new IO::File;
     verbose($level, "|");
     verbose($level, "+-- $file");
-    $in->open("<$file") || error("cannot load $file: $!");
+    my $in = io()->file($file);
     $line   = 0;
     $out    = '';
     $out    = "<__file__ $realname /><__line__ 0 />" .
               "<protect pass=2><:# line $line \"$realname\":></protect>\n"
                         if not $opt_N and not $arg{'IPP_NOSYNCLINES'};
     $store  = '';
-    while (my $l = <$in>) {
+    while (my $l = $in->getline) {
         $line++;
 
         #   EOL-comments
@@ -538,7 +537,6 @@ sub ProcessFile {
         }
     }
     $out .= $store;
-    $in->close() || error("cannot close $file: $!");
 
     return $out;
 }
