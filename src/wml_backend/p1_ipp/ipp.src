@@ -573,8 +573,7 @@ my $tmpfile = File::Spec->catfile($tmpdir, "ipp.$$.tmp");
 
 unlink($tmpfile);
 {
-    open my $tmp, '>', $tmpfile
-        or error("cannot write into $tmpfile: $!");
+    my $tmp = io()->file($tmpfile)->open('>');
     foreach my $file (@opt_s) {
         if ($file =~ m|^(\S+?)::(\S+)(.*)\n$|) {
             $file = "$2.$1";
@@ -593,7 +592,6 @@ unlink($tmpfile);
             || error("cannot write into $tmpfile: $!");
         }
     }
-    $tmp->close() || error("cannot close $tmpfile: $!");
 }
 $outbuf .= ProcessFile('include', "'", $tmpfile, "", 0, 1, %arg);
 unlink($tmpfile);
