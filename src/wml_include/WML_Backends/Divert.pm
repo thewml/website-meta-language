@@ -321,6 +321,8 @@ qq{no such currently entered location ``$loc'' -- ignoring named leave}
         }
     }
     $self->_in_fh->close();
+
+    return;
 }
 
 sub ExpandDiversion {
