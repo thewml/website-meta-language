@@ -133,6 +133,17 @@ sub _init {
     return;
 }
 
+sub _init_buffer {
+    my ($self, $key) = @_;
+
+    if ( not exists( $self->_BUFFER->{$key} ) )
+    {
+        $self->_BUFFER->{$key} = [];
+    }
+
+    return;
+}
+
 sub _handle_location {
     my ( $self, $m1 ) = @_;
 
@@ -141,8 +152,7 @@ sub _handle_location {
     ##
 
     #   initialize new location buffer
-    $self->_BUFFER->{$m1} = []
-      if ( not exists( $self->_BUFFER->{$m1} ) );
+    $self->_init_buffer($m1);
 
     #   insert location pointer into current location
     if ( $self->_BUFFER->{ $self->_location } == $self->_BUFFER->{$m1} ) {
@@ -190,8 +200,7 @@ sub _handle_enter_location {
     }
 
     #   initialize location buffer
-    $self->_BUFFER->{ $self->_location } = []
-      if ( not exists( $self->_BUFFER->{ $self->_location } ) );
+    $self->_init_buffer($self->_location);
 
     #   is a "rewind now" forced by a "rewind next" from last time?
     if ( $self->_OVRWRITE->{ $self->_location } ) {
