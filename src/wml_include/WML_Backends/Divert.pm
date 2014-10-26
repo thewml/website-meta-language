@@ -133,6 +133,138 @@ sub _init {
     return;
 }
 
+sub _handle_location
+{
+    my ($self, $m1) = @_;
+
+    ##
+    ##  Tag: dump location
+    ##
+
+    #   initialize new location buffer
+    $self->_BUFFER->{$m1} = []
+    if ( not exists( $self->_BUFFER->{$m1} ) );
+
+    #   insert location pointer into current location
+    if ( $self->_BUFFER->{ $self->_location } ==
+        $self->_BUFFER->{$m1} )
+    {
+        $self->warning( $self->_filename, $self->_line,
+            'self-reference of location ``'
+            . $self->_location
+            . q{'' - ignoring} );
+    }
+    else {
+        push(
+            @{ $self->_BUFFER->{ $self->_location } },
+            $self->_BUFFER->{$m1}
+        );
+    }
+
+    return;
+}
+
+sub _handle_enter_location {
+    my ($self, $m1) = @_;
+
+    ##
+    ##  Tag: enter location
+    ##
+
+    #   remember old location on stack
+    push( @{ $self->_loc_stack }, $self->_location );
+
+    #   determine location and optional
+    #   qualifies, then enter this location
+    $self->_location($m1);
+    my $rewind_now  = 0;
+    my $rewind_next = 0;
+
+    if ( my ($new_loc) = $self->_location =~ m|^\!(.*)$| ) {
+
+        #   location should be rewinded now
+        $self->_location($new_loc);
+        $rewind_now = 1;
+    }
+
+    if ( my ($new_loc) = $self->_location =~ m|^(.*)\!$| ) {
+
+        #   location should be rewinded next time
+        $self->_location($new_loc);
+        $rewind_next = 1;
+    }
+
+    #   initialize location buffer
+    $self->_BUFFER->{ $self->_location } = []
+    if ( not exists( $self->_BUFFER->{ $self->_location } ) );
+
+    #   is a "rewind now" forced by a "rewind next" from last time?
+    if ( $self->_OVRWRITE->{ $self->_location } ) {
+        $rewind_now = 1;
+        $self->_OVRWRITE->{ $self->_location } = 0;
+    }
+
+    #   remember a "rewind next" for next time
+    $self->_OVRWRITE->{ $self->_location } = 1 if ($rewind_next);
+
+    #   execute a "rewind now" by clearing the location buffer
+    if ( $rewind_now == 1 ) {
+        while ( $#{ $self->_BUFFER->{ $self->_location } } > -1 ) {
+            shift( @{ $self->_BUFFER->{ $self->_location } } );
+        }
+    }
+    return;
+}
+
+sub _handle_leave_location {
+    my ($self, $m1) = @_;
+
+    ##
+    ##  Tag: leave location
+    ##
+
+    if ( !@{ $self->_loc_stack } ) {
+        $self->warning( $self->_filename, $self->_line,
+            q{already in ``null'' location -- ignoring leave} );
+    }
+    else {
+        my $loc = ( $1 // '' );
+        if ( $loc eq 'null' ) {
+            $self->warning( $self->_filename, $self->_line,
+                q{cannot leave ``null'' location }
+                . q{-- ignoring named leave} );
+        }
+        elsif ( $loc ne '' and $loc ne $self->_location ) {
+
+            #   leave the named location and all locations
+            #   on the stack above it.
+            my $n = -1;
+            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- )
+            {
+                if ( $self->_loc_stack->[$i] eq $loc ) {
+                    $n = $i;
+                    last;
+                }
+            }
+            if ( $n == -1 ) {
+                $self->warning( $self->_filename, $self->_line,
+                    qq{no such currently entered location ``$loc'' -- ignoring named leave}
+                );
+            }
+            else {
+                splice( @{ $self->_loc_stack }, $n );
+                $self->_location( pop( @{ $self->_loc_stack } ) );
+            }
+        }
+        else {
+            #   leave just the current location
+            $self->_location( pop( @{ $self->_loc_stack } ) );
+        }
+    }
+
+    return;
+}
+
 sub _run {
     my ($self) = @_;
 
@@ -140,138 +272,30 @@ sub _run {
         $self->_line( $self->_line + 1 );
         while ( length $remain > 0 ) {
 
-            if (
-                my $m1 = (
-                      ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| ) ? $1
-                    : ( $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}|| ) ? $1
-                    :                                                   undef
-                )
-              )
+            if ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| )
             {
-                ##
-                ##  Tag: dump location
-                ##
-
-                #   initialize new location buffer
-                $self->_BUFFER->{$m1} = []
-                  if ( not exists( $self->_BUFFER->{$m1} ) );
-
-                #   insert location pointer into current location
-                if ( $self->_BUFFER->{ $self->_location } ==
-                    $self->_BUFFER->{$m1} )
-                {
-                    $self->warning( $self->_filename, $self->_line,
-                            'self-reference of location ``'
-                          . $self->_location
-                          . q{'' - ignoring} );
-                }
-                else {
-                    push(
-                        @{ $self->_BUFFER->{ $self->_location } },
-                        $self->_BUFFER->{$m1}
-                    );
-                }
+                $self->_handle_location($1);
+            }
+            elsif ( $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}|| )
+            {
+                $self->_handle_location($1);
             }
             elsif (
-                $m1 = (
-                    ( $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|| ) ? $1
-                    : ( $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:|| ) ? $1
-                    :   undef
-                )
-              )
+                $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|| 
+            )
             {
-                ##
-                ##  Tag: enter location
-                ##
-
-                #   remember old location on stack
-                push( @{ $self->_loc_stack }, $self->_location );
-
-                #   determine location and optional
-                #   qualifies, then enter this location
-                $self->_location($m1);
-                my $rewind_now  = 0;
-                my $rewind_next = 0;
-
-                if ( my ($new_loc) = $self->_location =~ m|^\!(.*)$| ) {
-
-                    #   location should be rewinded now
-                    $self->_location($new_loc);
-                    $rewind_now = 1;
-                }
-
-                if ( my ($new_loc) = $self->_location =~ m|^(.*)\!$| ) {
-
-                    #   location should be rewinded next time
-                    $self->_location($new_loc);
-                    $rewind_next = 1;
-                }
-
-                #   initialize location buffer
-                $self->_BUFFER->{ $self->_location } = []
-                  if ( not exists( $self->_BUFFER->{ $self->_location } ) );
-
-                #   is a "rewind now" forced by a "rewind next" from last time?
-                if ( $self->_OVRWRITE->{ $self->_location } ) {
-                    $rewind_now = 1;
-                    $self->_OVRWRITE->{ $self->_location } = 0;
-                }
-
-                #   remember a "rewind next" for next time
-                $self->_OVRWRITE->{ $self->_location } = 1 if ($rewind_next);
-
-                #   execute a "rewind now" by clearing the location buffer
-                if ( $rewind_now == 1 ) {
-                    while ( $#{ $self->_BUFFER->{ $self->_location } } > -1 ) {
-                        shift( @{ $self->_BUFFER->{ $self->_location } } );
-                    }
-                }
+                $self->_handle_enter_location($1);
+            }
+            elsif (
+                $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:||
+            )
+            {
+                $self->_handle_enter_location($1);
             }
             elsif ($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)?\.\.||
                 or $remain =~ s|^:#([a-zA-Z][a-zA-Z0-9_]*)?#}|| )
             {
-                ##
-                ##  Tag: leave location
-                ##
-
-                if ( !@{ $self->_loc_stack } ) {
-                    $self->warning( $self->_filename, $self->_line,
-                        q{already in ``null'' location -- ignoring leave} );
-                }
-                else {
-                    my $loc = ( $1 // '' );
-                    if ( $loc eq 'null' ) {
-                        $self->warning( $self->_filename, $self->_line,
-                                q{cannot leave ``null'' location }
-                              . q{-- ignoring named leave} );
-                    }
-                    elsif ( $loc ne '' and $loc ne $self->_location ) {
-
-                        #   leave the named location and all locations
-                        #   on the stack above it.
-                        my $n = -1;
-                        for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- )
-                        {
-                            if ( $self->_loc_stack->[$i] eq $loc ) {
-                                $n = $i;
-                                last;
-                            }
-                        }
-                        if ( $n == -1 ) {
-                            $self->warning( $self->_filename, $self->_line,
-qq{no such currently entered location ``$loc'' -- ignoring named leave}
-                            );
-                        }
-                        else {
-                            splice( @{ $self->_loc_stack }, $n );
-                            $self->_location( pop( @{ $self->_loc_stack } ) );
-                        }
-                    }
-                    else {
-                        #   leave just the current location
-                        $self->_location( pop( @{ $self->_loc_stack } ) );
-                    }
-                }
+                $self->_handle_leave_location($1);
             }
             else {
                 ##
