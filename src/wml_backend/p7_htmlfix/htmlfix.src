@@ -270,7 +270,7 @@ sub Fixup_summary {
 sub Fixup_center {
     verbose("replacing <center>..</center> by <div align=center>..</div>");
 
-    $buffer =~ s|<[cC][eE][nN][tT][eE][rR](\s[^>]*)?>|<div align="center"$1>|g;
+    $buffer =~ s|<[cC][eE][nN][tT][eE][rR]((?:\s[^>ck]*)?)>|<div align="center"$1>|g;
     $buffer =~ s|</[cC][eE][nN][tT][eE][rR]>|</div>|g;
 
     return;
