@@ -16,7 +16,7 @@ DEFINE_WML_AUX_C_PROG_WITHOUT_MAN (
    tidy.c
 )
 
-SET (html "Overview.html")
+SET (html "${CMAKE_CURRENT_SOURCE_DIR}/Overview.html")
 SET (man "wml_aux_tidy.1")
 ADD_CUSTOM_COMMAND(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${man}"
