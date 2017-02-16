@@ -1456,13 +1456,10 @@ my $timestr = '';
         {
             $pt += $t;
         }
-        if ($i == 2 or $i == 3) {
-            $timestr .= sprintf($t ne '' ? '%5.2f ' : '   -- ', $t);
-        }
-        else {
-            $timestr .= sprintf($t ne '' ? '%4.2f ' : '  -- ', $t);
-        }
-        $i++;
+        my $cond = ($i == 2 or $i == 3);
+        $timestr .= (($t ne '') ? sprintf($cond ? '%5.2f' : '%4.2f', $t) :
+            $cond ? '   -- ' : '  -- ');
+        ++$i;
     }
 }
 
