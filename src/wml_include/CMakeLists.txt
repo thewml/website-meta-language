@@ -49,7 +49,7 @@ SET (myfiles
 CONFIGURE_FILE(
     "${CMAKE_CURRENT_SOURCE_DIR}/sys/bootp3.src.in"
     "${CMAKE_CURRENT_BINARY_DIR}/sys/bootp3.src"
-    COPY_ONLY
+    COPYONLY
 )
 
 SET (dirs_to_make )
