@@ -37,7 +37,8 @@ if (! -e $myprefix)
     }
 }
 
-$ENV{PERL5LIB} = "$myprefix/lib/perl5:$ENV{PERL5LIB}:$script_dir";
+my $P5L = $ENV{PERL5LIB} ? $ENV{PERL5LIB}.':' : ':';
+$ENV{PERL5LIB} = "$myprefix/lib/perl5:$P5L$script_dir";
 $ENV{QUAD_PRES_NO_HOME_LIB} = 1;
 $ENV{PATH} = "$myprefix/bin:$ENV{PATH}";
 $ENV{WML} = "$myprefix/bin/wml -q -W1-N";
@@ -83,5 +84,3 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
-
-
