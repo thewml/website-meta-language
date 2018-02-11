@@ -646,9 +646,9 @@ sub dosource {
     }
     $fp = new IO::File;
     $fp->open($prog) || error("Unable to load $prog: $!");
-    $src = '';
-    while (<$fp>) {
-        $src .= $_;
+    {
+        local $/;
+        $src = <$fp>;
     }
     $fp->close() || error("Unable to close $prog: $!");
     verbose(9, "loading: succeeded with $prog (".length($src)." bytes)\n");
@@ -696,9 +696,9 @@ sub protect {
 
     $fp = new IO::File;
     $fp->open("<$file") || error("Unable to load $file for protection: $!");
-    $data = '';
-    while (<$fp>) {
-        $data .= $_;
+    {
+        local $/;
+        $data = <$fp>;
     }
     $fp->close() || error("Unable to close $file: $!");
     $fp->open(">$file") || error("Unable to write into $file for protection: $!");
@@ -760,9 +760,9 @@ sub unprotect {
     $fp = new IO::File;
     # $fp->open("<$file") || error("Unable to load $file for unprotection: $!");
     $fp->open("<$file") || Carp::confess("Unable to load $file for unprotection: $!");
-    $data = '';
-    while (<$fp>) {
-        $data .= $_;
+    {
+        local $/;
+        $data = <$fp>;
     }
     $fp->close() || error("Unable to close $file: $!");
     $fp->open(">$file") || error("Unable to write into $file for unprotection: $!");
@@ -830,20 +830,14 @@ sub pass2 {
 
 sub pass3 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc);
 
-    $rc = dosystem("$libdir/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
-
-    return $rc;
+    return scalar dosystem("$libdir/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
 }
 
 sub pass4 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc);
 
-    $rc = dosystem("$libdir/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
-
-    return $rc;
+    return scalar dosystem("$libdir/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
 }
 
 sub pass5 {
