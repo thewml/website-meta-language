@@ -954,7 +954,7 @@ $gen_hostname ||= 'UNKNOWN-HOSTNAME';
 if ($gen_hostname =~ m|^[a-zA-Z0-9_-]+$| and
     -f "/etc/resolv.conf") {
     my $domain = '';
-    open (my $tmp_fh, '<', '</etc/resolv.conf')
+    open (my $tmp_fh, '<', '/etc/resolv.conf')
         or error("Unable to load /etc/resolv.conf: $!");
     RESOLV_LOOP:
     while (my $l = <$tmp_fh>) {
