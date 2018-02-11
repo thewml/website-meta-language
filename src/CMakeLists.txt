@@ -1,11 +1,9 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+
+INCLUDE ("${CMAKE_SOURCE_DIR}/cmake/shlomif_common_bootstrap.cmake")
+SHLOMIF_COMMON_SETUP("${private_mod_path}")
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
-
-SET (private_mod_path "${CMAKE_SOURCE_DIR}/cmake")
-LIST (APPEND CMAKE_MODULE_PATH "${private_mod_path}")
-INCLUDE(Shlomif_Common)
-
-SHLOMIF_COMMON_SETUP("${private_mod_path}")
 
 SET(VERSION "2.4.1")
 
