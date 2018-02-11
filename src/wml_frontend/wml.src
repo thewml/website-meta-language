@@ -676,6 +676,9 @@ sub dosource {
 
     verbose(9, "running script\n");
     eval "no strict; no warnings; \$rc = \&{\$func}(\@argv);";
+    if ($@) {
+        die $@;
+    }
     $rc //= '';
     verbose(9, "running script: rc=$rc\n");
     $rc = 256 if not defined $rc;
