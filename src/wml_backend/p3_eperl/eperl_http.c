@@ -258,11 +258,18 @@ static char *HTTP_FileOfURL(char *url)
     char *cps;
 
     cps = strstr(url, "//");
-    cps = strstr(cps+2, "/");
-    if (cps == NUL)
+    if (! cps)
+    {
         strcpy(file, "/");
+    }
     else
-        strncpy(file, cps, sizeof(file));
+    {
+        cps = strstr(cps+2, "/");
+        if (! cps)
+            strcpy(file, "/");
+        else
+            strncpy(file, cps, sizeof(file));
+    }
     file[sizeof(file)-1] = NUL;
     return file;
 }
