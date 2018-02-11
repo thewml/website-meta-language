@@ -9,4 +9,4 @@ python:
 script:
     - mkdir build
     - cd build
-    - perl ../src/wml_test/run_test.pl
+    - WMLOPTS="--verbose=9" perl ../src/wml_test/run_test.pl
