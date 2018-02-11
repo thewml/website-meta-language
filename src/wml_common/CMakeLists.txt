@@ -1,5 +1,6 @@
 SET (CPAN_MODULES_TO_CHECK
     "Bit::Vector"
+    "Class::XSAccessor"
     "GD"
     "Getopt::Long"
     "Image::Size"
