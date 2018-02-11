@@ -2,7 +2,7 @@ os: linux
 dist: trusty
 before_install:
     - sudo apt-get update -qq
-    - sudo apt-get install -y build-essential cmake cpanminus fortune-mod hunspell libgd-dev libhunspell-dev libncurses-dev libpcre-dev libperl-dev lynx perl myspell-en-gb python3 python3-setuptools python3-pip valgrind xsltproc xz-utils zip
+    - sudo apt-get install -y build-essential cmake cpanminus fortune-mod hunspell libgd-dev libhunspell-dev libncurses-dev libpcre3-dev libperl-dev lynx perl myspell-en-gb python3 python3-setuptools python3-pip valgrind xsltproc xz-utils zip
     - sudo cpanm Bit::Vector GD Getopt::Long IO::All Image::Size Term::ReadKey
 python:
     - "3.5"
