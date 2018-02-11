@@ -1079,7 +1079,7 @@ m4_maketemp (struct obstack *obs, int argc, token_data **argv)
 {
   if (bad_argc (argv[0], argc, 2, 2))
     return;
-  mktemp (ARG (1));
+  mkstemp (ARG (1));
   obstack_grow (obs, ARG (1), strlen (ARG (1)));
 }
 
