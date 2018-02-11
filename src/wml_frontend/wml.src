@@ -1226,15 +1226,17 @@ if ($out eq '') {
     $out_istmp = 1;
 }
 
-my $opt_pass1 = "$defipp $verbose -S $libdir/include -n $src $inc $preload $prolog";
-my $opt_pass2 = "$defmp4h";
-my $opt_pass3 = "$defeperl";
-my $opt_pass4 = "$defgm4";
-my $opt_pass5 = "$verbose";
-my $opt_pass6 = "$verbose";
-my $opt_pass7 = "$verbose";
-my $opt_pass8 = "$verbose $optimize";
-my $opt_pass9 = "$verbose $out";
+my @opt_passes = ('',
+    "$defipp $verbose -S $libdir/include -n $src $inc $preload $prolog",
+    "$defmp4h",
+    "$defeperl",
+    "$defgm4",
+    "$verbose",
+    "$verbose",
+    "$verbose",
+    "$verbose $optimize",
+    "$verbose $out",
+);
 
 
 my $pcnt  = 0;
@@ -1276,7 +1278,7 @@ if ($opt_M ne '-') {
         }
         my $rc;
         eval {
-            $rc = pass1($opt_pass1 . $opt_pass, $src, $o, $tmp[2]);
+            $rc = pass1($opt_passes[1] . $opt_pass, $src, $o, $tmp[2]);
         };
         if ($rc != 0) {
             if ($rc % 256 != 0) {
@@ -1312,7 +1314,7 @@ foreach my $p (@p) {
         }
     }
     my $rc;
-    eval "no strict; no warnings; \$rc = pass$p(\$opt_pass$p . \$opt_pass, \$from, \$to, \$tmp[2]);";
+    eval "no strict; no warnings; \$rc = pass$p(\$opt_passes[\$p] . \$opt_pass, \$from, \$to, \$tmp[2]);";
     if (!length ($rc))
     {
         $rc = 0;
