@@ -1341,6 +1341,7 @@ foreach my $p (@p) {
     $TIMES[$p] = $dtime;
 
     #   optionally view current result
+    if (0) {
     if ($opt_v >= 3 && $p < 9) {
         print STDERR "Want to see result after Pass$p [yNq]: ";
         ReadMode 4;
@@ -1355,6 +1356,7 @@ foreach my $p (@p) {
             unlink_tmp();
             exit(1);
         }
+    }
     }
 
     #   step further
