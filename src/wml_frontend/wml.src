@@ -1301,7 +1301,7 @@ if ($opt_M ne '-') {
 my @TIMES;
 foreach my $p (@p) {
     verbose(2, "PASS $p:\n");
-    print STDERR @prop[$pcnt++ % 4] . "\b" if (not $opt_q);
+    print STDERR $prop[$pcnt++ % 4] . "\b" if (not $opt_q);
 
     #   run pass
     my ($u, $s, $cu, $cs) = times();
