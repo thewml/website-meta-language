@@ -751,10 +751,10 @@ sub protect {
 
 sub unprotect {
     my ($file, $pass) = @_;
-    my ($fp, $data, $prefix, $key);
+    my ($data, $prefix, $key);
     use Carp;
 
-    $fp = new IO::File;
+    my $fp = IO::File->new;
     # $fp->open("<$file") || error("Unable to load $file for unprotection: $!");
     $fp->open("<$file") || Carp::confess("Unable to load $file for unprotection: $!");
     {
