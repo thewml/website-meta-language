@@ -1310,8 +1310,8 @@ foreach my $p (@p) {
     protect($from, $p);
     my $opt_pass = '';
     foreach my $aa (@opt_W) {
-        if ($aa =~ m|^(\d),(.*)$|) {
-            $opt_pass .= " $2 " if $1 == $p;
+        if (my ($pp, $s) = $aa =~ m|\A([0-9]),(.*)\z|) {
+            $opt_pass .= " $s " if $pp == $p;
         }
     }
     my $rc = $_PASSES[$p]->($opt_passes[$p] . $opt_pass, $from, $to, $tmp[2]);
