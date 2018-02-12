@@ -713,15 +713,15 @@ sub protect {
         ($prolog, $arg, $body) = ($1, $2, $3);
         #    unquote the attribute
         $arg =~ s|(['"])(.*)\1\s*$|$2|;
-        if ($arg =~ m|pass=([\d,-]*)|i) {
+        if ($arg =~ m|pass=([0-9,-]*)|i) {
             $p = $1;
             $p =~ s|,||g;
             $p = "1$p" if $p =~ m|^-|;
             $p = "${p}9" if $p =~ m|-$|;
-            $p =~ s|(\d)-(\d)|expandrange($1, $2)|sge;
+            $p =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
         }
         $pe = join ('', sort {$a <=> $b} (split('', $p)));
-        $pe =~ s/^.*(\d)$/$1/;
+        $pe =~ s/^.*([0-9])$/$1/;
         $key = sprintf("%06d", $PROTECT_COUNTER++);
         $PROTECT_STORAGE{$key} = {
                 SPEC => $p,
@@ -733,7 +733,7 @@ sub protect {
     }
 
     #   And now unprotect passes
-    while ($data =~ s|^(.*?)-=P\[(\d+)\]=-||s) {
+    while ($data =~ s|^(.*?)-=P\[([0-9]+)\]=-||s) {
         $key = $2;
         $fp->print($1) || error("Unable to write into $file for protection: $!");
         if ($PROTECT_STORAGE{$key}->{SPEC} =~ m/$pass/) {
@@ -763,7 +763,7 @@ sub unprotect {
     }
     $fp->close() || error("Unable to close $file: $!");
     $fp->open(">$file") || error("Unable to write into $file for unprotection: $!");
-    while ($data =~ m|^(.*?)-=P\[(\d+)\]=-(.*)$|s) {
+    while ($data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s) {
         ($prefix, $key, $data) = ($1, $2, $3);
         if ($pass < 9 and $pass < $PROTECT_STORAGE{$key}->{MAX}) {
             $prefix .= "<protect" . $PROTECT_STORAGE{$key}->{ARG} . ">";
@@ -1051,7 +1051,7 @@ sub expandrange
     return $x;
 }
 
-$p =~ s|(\d)-(\d)|expandrange($1, $2)|sge;
+$p =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
 my @p;
 if ($p =~ m/!$/) {
     $p =~ s/!$//;
@@ -1237,7 +1237,7 @@ if ($opt_M ne '-') {
         my $o = '"'. join(' ',@out_filenames) . '"';
         my $opt_pass = '';
         foreach my $aa (@opt_W) {
-            if ($aa =~ m|^(\d),(.*)$|) {
+            if ($aa =~ m|^([0-9]),(.*)$|) {
                 $opt_pass .= " $2 " if $1 == 1;
             }
         }
