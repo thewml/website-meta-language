@@ -1313,8 +1313,8 @@ foreach my $p (@p) {
             $opt_pass .= " $2 " if $1 == $p;
         }
     }
-    my $rc;
-    eval "no strict; no warnings; \$rc = pass$p(\$opt_passes[\$p] . \$opt_pass, \$from, \$to, \$tmp[2]);";
+    my $func = eval "\\&pass$p";
+    my $rc = $func->($opt_passes[$p] . $opt_pass, $from, $to, $tmp[2]);
     if (!length ($rc))
     {
         $rc = 0;
