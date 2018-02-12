@@ -596,11 +596,8 @@ sub error {
 
 sub dosystem {
     my ($cmd) = @_;
-    my ($rc);
-
     verbose(2, "system: $cmd\n");
-    $rc = system($cmd);
-    return $rc;
+    return scalar system($cmd);
 }
 
 sub precompile {
@@ -787,17 +784,16 @@ sub unprotect {
 }
 
 my $libdir = '@libdir@';
+
+sub _generic_do {
+    my ($EXE, $opt, $from, $to) = @_;
+    return scalar ($opt_s ? dosystem("$libdir/exec/$EXE $opt -o $to $from") :
+        dosource("$libdir/exec/$EXE", "$opt -o $to $from"));
+}
+
 sub pass1 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc);
-
-    if ($opt_s) {
-        $rc = dosystem("$libdir/exec/wml_p1_ipp $opt -o $to $from");
-    }
-    else {
-        $rc = dosource("$libdir/exec/wml_p1_ipp", "$opt -o $to $from");
-    }
-    return $rc;
+    return _generic_do('wml_p1_ipp', $opt, $from, $to);
 }
 
 sub pass2 {
@@ -842,54 +838,22 @@ sub pass4 {
 
 sub pass5 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc) = 0;
-
-    if ($opt_s) {
-        $rc = dosystem("$libdir/exec/wml_p5_divert $opt -o$to $from");
-    }
-    else {
-        $rc = dosource("$libdir/exec/wml_p5_divert", "$opt -o$to $from");
-    }
-    return $rc;
+    return _generic_do('wml_p5_divert', $opt, $from, $to);
 }
 
 sub pass6 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc) = 0;
-
-    if ($opt_s) {
-        $rc = dosystem("$libdir/exec/wml_p6_asubst $opt -o$to $from");
-    }
-    else {
-        $rc = dosource("$libdir/exec/wml_p6_asubst", "$opt -o$to $from");
-    }
-    return $rc;
+    return _generic_do('wml_p6_asubst', $opt, $from, $to);
 }
 
 sub pass7 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc);
-
-    if ($opt_s) {
-        $rc = dosystem("$libdir/exec/wml_p7_htmlfix $opt -o$to $from");
-    }
-    else {
-        $rc = dosource("$libdir/exec/wml_p7_htmlfix", "$opt -o$to $from");
-    }
-    return $rc;
+    return _generic_do('wml_p7_htmlfix', $opt, $from, $to);
 }
 
 sub pass8 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc);
-
-    if ($opt_s) {
-        $rc = dosystem("$libdir/exec/wml_p8_htmlstrip $opt -o $to $from");
-    }
-    else {
-        $rc = dosource("$libdir/exec/wml_p8_htmlstrip", "$opt -o$to $from");
-    }
-    return $rc;
+    return _generic_do('wml_p8_htmlstrip', $opt, $from, $to);
 }
 
 #   Flag set if some output goes to stdout
