@@ -96,37 +96,39 @@ sub gmt_isotime {
 sub usage {
     my ($progname) = @_;
 
-    print STDERR "Usage: $progname [options] [inputfile]\n";
-    print STDERR "\n";
-    print STDERR "Input Options:\n";
-    print STDERR "  -I, --include=PATH      adds an include directory\n";
-    print STDERR "  -i, --includefile=PATH  pre-include a particular include file\n";
-    print STDERR "  -D, --define=NAME[=STR] define a variable\n";
-    print STDERR "  -D, --define=NAME~PATH  define an auto-adjusted path variable\n";
-    print STDERR "  -n, --noshebang         no shebang-line parsing (usually used by WMk)\n";
-    print STDERR "  -r, --norcfile          no .wmlrc files are read\n";
-    print STDERR "  -c, --nocd              read .wmlrc files without changing to input file directory\n";
-    print STDERR "\n";
-    print STDERR "Output Options:\n";
-    print STDERR "  -O, --optimize=NUM      specify the output optimization level\n";
-    print STDERR "  -o, --outputfile=PATH   specify the output file(s)\n";
-    print STDERR "  -P, --prolog=PATH       specify one or more prolog filters\n";
-    print STDERR "  -E, --epilog=PATH       specify one or more epilog filters\n";
-    print STDERR "  -t, --settime           sets mtime of outputfile(s) to mtime+1 of inputfile\n";
-    print STDERR "\n";
-    print STDERR "Processing Options:\n";
-    print STDERR "  -M, --depend[=OPTIONS]  dump dependencies as gcc does\n";
-    print STDERR "  -p, --pass=STR          specify which passed should be run\n";
-    print STDERR "  -W, --passoption[=PASS,OPTIONS]\n";
-    print STDERR "                          set options for a specific pass\n";
-    print STDERR "  -s, --safe              don't use precompile/inline hacks to speedup processing\n";
-    print STDERR "  -v, --verbose[=NUM]     verbose mode\n";
-    print STDERR "  -q, --quiet             quiet mode\n";
-    print STDERR "\n";
-    print STDERR "Giving Feedback:\n";
-    print STDERR "  -V, --version[=NUM]     display version and build information\n";
-    print STDERR "  -h, --help              display this usage summary\n";
-    print STDERR "\n";
+    print STDERR <<"EOF";
+Usage: $progname [options] [inputfile]
+
+Input Options:
+  -I, --include=PATH      adds an include directory
+  -i, --includefile=PATH  pre-include a particular include file
+  -D, --define=NAME[=STR] define a variable
+  -D, --define=NAME~PATH  define an auto-adjusted path variable
+  -n, --noshebang         no shebang-line parsing (usually used by WMk)
+  -r, --norcfile          no .wmlrc files are read
+  -c, --nocd              read .wmlrc files without changing to input file directory
+
+Output Options:
+  -O, --optimize=NUM      specify the output optimization level
+  -o, --outputfile=PATH   specify the output file(s)
+  -P, --prolog=PATH       specify one or more prolog filters
+  -E, --epilog=PATH       specify one or more epilog filters
+  -t, --settime           sets mtime of outputfile(s) to mtime+1 of inputfile
+
+Processing Options:
+  -M, --depend[=OPTIONS]  dump dependencies as gcc does
+  -p, --pass=STR          specify which passed should be run
+  -W, --passoption[=PASS,OPTIONS]
+                          set options for a specific pass
+  -s, --safe              don't use precompile/inline hacks to speedup processing
+  -v, --verbose[=NUM]     verbose mode
+  -q, --quiet             quiet mode
+
+Giving Feedback:
+  -V, --version[=NUM]     display version and build information
+  -h, --help              display this usage summary
+
+EOF
     exit(1);
 }
 
