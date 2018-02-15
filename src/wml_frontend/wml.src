@@ -503,11 +503,10 @@ else {
     $reldir = '.';
 }
 foreach my $d (@opt_D_ADD) {
-    if ($d =~ m|^([A-Za-z0-9_]+)~(.+)$|) {
-        my ($var, $path) = ($1, $2);
+    if (my ($var, $path) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$|) {
         if ($path !~ m|^/|) {
             if ($path eq '.') {
-                $path = CanonPath("$reldir");
+                $path = CanonPath($reldir);
             }
             else {
                 $path = CanonPath("$reldir/$path");
@@ -517,7 +516,7 @@ foreach my $d (@opt_D_ADD) {
         $d = "$var=$path";
     }
     elsif ($d =~ m|^([A-Za-z0-9_]+)$|) {
-        $d = $d.'=1';
+        $d .= '=1';
     }
     push(@opt_D, $d);
 }
