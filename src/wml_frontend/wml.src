@@ -41,8 +41,8 @@ use warnings;
 our $VERSION = '@WML_VERSION@';
 
 my $bindir = '@bindir@';
-if ($ENV{'PATH'} !~ m|\Q$bindir\E|) {
-    $ENV{'PATH'} = "$bindir:$ENV{'PATH'}";
+if ($ENV{PATH} !~ m|\Q$bindir\E|) {
+    $ENV{PATH} = "$bindir:$ENV{PATH}";
 }
 
 use Getopt::Long 2.13;
@@ -132,7 +132,7 @@ sub usage {
 
 our $opt_h = 0;
 sub ProcessOptions {
-    local $SIG{'__WARN__'} = sub {
+    local $SIG{__WARN__} = sub {
         print STDERR "WML:Error: $_[0]";
     };
     $Getopt::Long::bundling = 1;
@@ -274,7 +274,7 @@ sub unquotearg {
 }
 
 #   1. process options in WMLOPTS variable
-if (my $opts = $ENV{'WMLOPTS'}) {
+if (my $opts = $ENV{WMLOPTS}) {
     verbose(2, "Reading WMLOPTS variable");
     $opts =~ s|^\s+||;
     $opts =~ s|\s+$||;
@@ -464,7 +464,7 @@ if ($src eq '') {
     $opt_q = 1;
 }
 
-my $tmpdir = $ENV{'TMPDIR'} || '/tmp';
+my $tmpdir = $ENV{TMPDIR} || '/tmp';
 
 #   if input is stdin we create a temporary file
 my $src_istmp = 0;
@@ -605,8 +605,8 @@ sub precompile {
     my ($error, $func);
 
     $error = '';
-    local $SIG{'__WARN__'} = sub { $error .= $_[0]; };
-    local $SIG{'__DIE__'};
+    local $SIG{__WARN__} = sub { $error .= $_[0]; };
+    local $SIG{__DIE__};
 
     $in =~ s|exit(\s*\(0\))|return$1|sg;
     $in =~ s|exit(\s*\([^0].*?\))|die$1|sg;
@@ -634,7 +634,7 @@ sub dosource {
     $pkgname = $prog;
     $pkgname =~ s|^.*/([^/]+)$|$1|;
     if ($prog !~ m|^/|) {
-        foreach my $p (split(/:/, $ENV{'PATH'})) {
+        foreach my $p (split(/:/, $ENV{PATH})) {
             if (-f "$p/$prog") {
                 $prog = "$p/$prog";
                 last;
@@ -1208,7 +1208,7 @@ my $pcnt  = 0;
 my @prop  = ( "-", "\\", "|", "/");
 my $last  = '';
 my $final = 0;
-my $pager = ($ENV{'PAGER'} || 'more');
+my $pager = ($ENV{PAGER} || 'more');
 
 #
 #   clear out any existing CGI environments because some of our
