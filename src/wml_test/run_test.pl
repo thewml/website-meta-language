@@ -30,7 +30,7 @@ my $build_dir = "FOO";
 if (! -e $myprefix)
 {
     rmtree ([$build_dir]);
-    if (system("mkdir $build_dir && cd $build_dir && cmake -DCMAKE_INSTALL_PREFIX=$myprefix -DLIB_INSTALL_DIR=$myprefix/lib $script_dir/.. && make && make install"))
+    if (system("mkdir $build_dir && cd $build_dir && cmake -DCMAKE_INSTALL_PREFIX=$myprefix $script_dir/.. && make && make install"))
     {
         rmtree ([$myprefix]);
         die "cmake Failed";
