@@ -867,8 +867,7 @@ sub pass9 {
     #   output files were assigned on command line.
     #   This is needed to unprotect output files.
     if ($#opt_o == -1) {
-        @ARGVLINE = @ARGV;
-        @ARGV = ();
+        local @ARGV = ();
         open (my $slice_fh, '<', $from)
             or error("Unable to load $from: $!");
         while (my $l = <$slice_fh>) {
@@ -884,7 +883,6 @@ sub pass9 {
             ProcessOutfiles();
             $opt = "$verbose $out";
         }
-        @ARGV = @ARGVLINE;
     }
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
