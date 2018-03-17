@@ -73,9 +73,8 @@ sub isotime {
 
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
         localtime($time);
-    my ($str) = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d",
          $year+1900, $mon+1, $mday, $hour, $min, $sec);
-    return $str;
 }
 
 sub gmt_ctime {
@@ -88,9 +87,8 @@ sub gmt_isotime {
 
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) =
         gmtime($time);
-    my ($str) = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d",
          $year+1900, $mon+1, $mday, $hour, $min, $sec);
-    return $str;
 }
 
 sub usage {
@@ -864,7 +862,6 @@ my $out = '';
 my $verbose = '';
 sub pass9 {
     my ($opt, $from, $to, $tmp) = @_;
-    my ($rc, $shebang);
 
     #   First check whether a shebang line is found and no
     #   output files were assigned on command line.
@@ -891,9 +888,7 @@ sub pass9 {
     }
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
-    $rc = dosystem("$libdir/exec/wml_p9_slice $opt $from");
-
-    return $rc;
+    return scalar dosystem("$libdir/exec/wml_p9_slice $opt $from");
 }
 
 my @_PASSES = ('', \&pass1, \&pass2, \&pass3, \&pass4, \&pass5, \&pass6, \&pass7, \&pass8, \&pass9);
