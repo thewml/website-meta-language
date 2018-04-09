@@ -3,14 +3,12 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SUBDIRS (
-    iselect
-    htmlclean
-    htmlinfo
-    linklint
-    map2html
-    tidy
-    txt2html
-    weblint
-    freetable
-    )
+ADD_SUBDIRECTORY( iselect )
+ADD_SUBDIRECTORY( htmlclean )
+ADD_SUBDIRECTORY( htmlinfo )
+ADD_SUBDIRECTORY( linklint )
+ADD_SUBDIRECTORY( map2html )
+ADD_SUBDIRECTORY( tidy )
+ADD_SUBDIRECTORY( txt2html )
+ADD_SUBDIRECTORY( weblint )
+ADD_SUBDIRECTORY( freetable )

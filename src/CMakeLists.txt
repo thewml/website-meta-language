@@ -95,13 +95,11 @@ INCLUDE (CPack)
 
 ENABLE_TESTING()
 
-SUBDIRS (
-    wml_aux
-    wml_backend
-    wml_common
-    wml_docs
-    wml_frontend
-    wml_test
-    wml_include
-    wml_misc
-)
+ADD_SUBDIRECTORY( wml_aux )
+ADD_SUBDIRECTORY( wml_backend )
+ADD_SUBDIRECTORY( wml_common )
+ADD_SUBDIRECTORY( wml_docs )
+ADD_SUBDIRECTORY( wml_frontend )
+ADD_SUBDIRECTORY( wml_test )
+ADD_SUBDIRECTORY( wml_include )
+ADD_SUBDIRECTORY( wml_misc )

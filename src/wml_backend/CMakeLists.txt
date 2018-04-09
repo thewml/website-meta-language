@@ -1,12 +1,9 @@
-SUBDIRS (
-    p1_ipp
-    p2_mp4h
-    p3_eperl
-    p4_gm4
-    p5_divert
-    p6_asubst
-    p7_htmlfix
-    p8_htmlstrip
-    p9_slice
-)
-
+ADD_SUBDIRECTORY( p1_ipp )
+ADD_SUBDIRECTORY( p2_mp4h )
+ADD_SUBDIRECTORY( p3_eperl )
+ADD_SUBDIRECTORY( p4_gm4 )
+ADD_SUBDIRECTORY( p5_divert )
+ADD_SUBDIRECTORY( p6_asubst )
+ADD_SUBDIRECTORY( p7_htmlfix )
+ADD_SUBDIRECTORY( p8_htmlstrip )
+ADD_SUBDIRECTORY( p9_slice )
