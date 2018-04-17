@@ -8,6 +8,14 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.4.1 to 2.6.0:
+
+  *) Remove many letover autotools files.
+
+  *) Remove wml_aux/tidy - just use the tidy in the path.
+
+  *) Cleanups to the perl code.
+
   Changes between 2.4.0 to 2.4.1:
 
   *) Fix the test suite using the -j9/etc. Test::Harness options.

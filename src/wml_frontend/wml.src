@@ -1385,7 +1385,7 @@ if (@out_filenames) {
                 $e = "$libdir/exec/wml_aux_weblint$1";
             }
             elsif ($e =~ m|^tidy(.*)|) {
-                $e = "$libdir/exec/wml_aux_tidy$1";
+                $e = "tidy$1";
                 $e .= ' -m' if ($1 eq '');
             }
             verbose(2, "EPILOG: $e $o\n");
