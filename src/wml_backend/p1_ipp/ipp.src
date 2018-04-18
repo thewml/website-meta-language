@@ -16,8 +16,6 @@ use strict;
 use warnings;
 
 use Getopt::Long 2.13;
-use IO::Handle 1.15;
-use IO::File 1.06;
 use File::Temp qw/tempdir/;
 use File::Spec;
 
