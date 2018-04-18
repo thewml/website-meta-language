@@ -832,7 +832,7 @@ sub pass3 {
 sub pass4 {
     my ($opt, $from, $to, $tmp) = @_;
 
-    return scalar dosystem("$libdir/exec/wml_p4_gm4 $opt --prefix-builtins <$from >$to");
+    return scalar dosystem("m4 $opt --prefix-builtins <$from >$to");
 }
 
 sub pass5 {
