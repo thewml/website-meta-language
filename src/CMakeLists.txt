@@ -5,9 +5,7 @@ SHLOMIF_COMMON_SETUP("${private_mod_path}")
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(VERSION "2.4.1")
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+SET(VERSION "2.6.0")
 
 IF (NOT CMAKE_INSTALL_PREFIX)
     MESSAGE (FATAL_ERROR "CMAKE_INSTALL_PREFIX must be defined. Specify it with -DCMAKE_INSTALL_PREFIX=...")
