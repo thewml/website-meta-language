@@ -14,6 +14,12 @@ ENDIF (NOT CMAKE_INSTALL_PREFIX)
 INCLUDE(GNUInstallDirs)
 
 SET (WML_LIB_DIR_BASE "${CMAKE_INSTALL_LIBDIR}")
+set (p "${CMAKE_INSTALL_PREFIX}/")
+string(FIND "${WML_LIB_DIR_BASE}" "${p}" _pos)
+IF("${_pos}" EQUAL "0")
+    string(LENGTH "${p}" _l)
+    string(SUBSTRING "${WML_LIB_DIR_BASE}" "${_l}" -1 WML_LIB_DIR_BASE)
+ENDIF()
 
 SET (WML_LIB_DIR "${WML_LIB_DIR_BASE}/wml")
 SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
