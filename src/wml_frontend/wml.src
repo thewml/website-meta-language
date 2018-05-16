@@ -679,11 +679,11 @@ my %PROTECT_STORAGE;
 
 my $firstpass = 1;
 sub protect {
-    my ($file, $pass) = @_;
+    my ($fn, $pass) = @_;
     my ($prolog, $arg, $body, $key, $p, $pe);
 
-    my $data = io->file($file)->all;
-    open my $fp, '>', $file or error("Unable to write into $file for protection: $!");
+    my $data = io->file($fn)->all;
+    open my $fp, '>', $fn or error("Unable to write into $fn for protection: $!");
     #   First remove a shebang line
     if ($firstpass and $data =~ m/^#!wml/) {
         while ($data =~ s/^[^\n]*\\\n//s) { 1; }
@@ -720,25 +720,25 @@ sub protect {
     #   And now unprotect passes
     while ($data =~ s|^(.*?)-=P\[([0-9]+)\]=-||s) {
         $key = $2;
-        $fp->print($1) || error("Unable to write into $file for protection: $!");
+        $fp->print($1) || error("Unable to write into $fn for protection: $!");
         if ($PROTECT_STORAGE{$key}->{SPEC} =~ m/$pass/) {
             $fp->print("-=P[$key]=-")
-                || error("Unable to write into $file for protection: $!");
+                || error("Unable to write into $fn for protection: $!");
         }
         else {
             $data = "<protect" . $PROTECT_STORAGE{$key}->{ARG} . ">" .
                     $PROTECT_STORAGE{$key}->{BODY} . "</protect>" . $data;
         }
     }
-    $fp->print($data) || error("Unable to write into $file for protection: $!");
-    $fp->close() || error("Unable to close $file: $!");
+    $fp->print($data) || error("Unable to write into $fn for protection: $!");
+    $fp->close() || error("Unable to close ${fn}: $!");
 }
 
 sub unprotect {
-    my ($file, $pass) = @_;
+    my ($fn, $pass) = @_;
     use Carp;
 
-    my $data = io->file($file)->all;
+    my $data = io->file($fn)->all;
     while (my ($prefix, $key, $new) = $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s) {
         $data = $new;
         if ($pass < 9 and $pass < $PROTECT_STORAGE{$key}->{MAX}) {
@@ -749,7 +749,7 @@ sub unprotect {
     }
     #    Remove useless <protect> tags
     $data =~ s|</?protect.*?>||gs if $pass == 9;
-    io->file($file)->print($data);
+    io->file($fn)->print($data);
     if ($pass < 9)
     {
         foreach my $key (keys %PROTECT_STORAGE) {
