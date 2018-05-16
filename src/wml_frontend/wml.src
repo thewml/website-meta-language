@@ -48,7 +48,6 @@ if (index($ENV{PATH}, $bindir) < 0) {
 use Getopt::Long 2.13;
 use File::Spec;
 use Cwd;
-use IO::File 1.06;
 use Term::ReadKey;
 use Cwd;
 
@@ -331,12 +330,12 @@ if (not $opt_r) {
             @ARGV = ();
             WMLRC_LINES:
             while (my $l = <$wml_rc_fh>) {
-                if ($l =~ m|^\s*\n$| or $l =~ m|^\s*#[#\s]*.*$|)
+                if ($l =~ m|\A\s*\n?\z| or $l =~ m|\A\s*#[#\s]*.*\z|)
                 {
                     next WMLRC_LINES;
                 }
-                $l =~ s|^\s+||;
-                $l =~ s|\s+$||;
+                $l =~ s|\A\s+||;
+                $l =~ s|\s+\z||;
                 $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
                 push (@ARGV, split_argv($l));
             }
@@ -525,13 +524,12 @@ if (not $opt_n) {
     open(my $tmp_fh, '<', $src)
         or error("Unable to load $src: $!");
     my $shebang = '';
-    while (1) {
-        $shebang .= <$tmp_fh>;
-        if ($shebang =~ m|^(.*)\\\s*$|s) {
-            $shebang = $1;
-            next;
+    SHEBANG:
+    while (my $l = <$tmp_fh>) {
+        $shebang .= $l;
+        if ($shebang !~ s/\\\s*\z//s) {
+            last SHEBANG;
         }
-        last;
     }
     close($tmp_fh)
         or error("Unable to close $src: $!");
@@ -625,7 +623,7 @@ sub precompile {
 
 sub dosource {
     my ($prog, $args) = @_;
-    my ($rc, $fp, $src, @argv, $pkgname);
+    my ($rc, @argv, $pkgname);
     my ($error, $func);
 
     verbose(2, "source: $prog $args\n");
@@ -640,13 +638,7 @@ sub dosource {
             }
         }
     }
-    $fp = new IO::File;
-    $fp->open($prog) || error("Unable to load $prog: $!");
-    {
-        local $/;
-        $src = <$fp>;
-    }
-    $fp->close() || error("Unable to close $prog: $!");
+    my $src = io->file($prog)->all;
     verbose(9, "loading: succeeded with $prog (".length($src)." bytes)\n");
 
     verbose(9, "precompiling script: pkgname=$pkgname\n");
@@ -688,16 +680,10 @@ my %PROTECT_STORAGE;
 my $firstpass = 1;
 sub protect {
     my ($file, $pass) = @_;
-    my ($fp, $data, $prolog, $arg, $body, $key, $p, $pe);
+    my ($prolog, $arg, $body, $key, $p, $pe);
 
-    $fp = new IO::File;
-    $fp->open("<$file") || error("Unable to load $file for protection: $!");
-    {
-        local $/;
-        $data = <$fp>;
-    }
-    $fp->close() || error("Unable to close $file: $!");
-    $fp->open(">$file") || error("Unable to write into $file for protection: $!");
+    my $data = io->file($file)->all;
+    open my $fp, '>', $file or error("Unable to write into $file for protection: $!");
     #   First remove a shebang line
     if ($firstpass and $data =~ m/^#!wml/) {
         while ($data =~ s/^[^\n]*\\\n//s) { 1; }
@@ -750,18 +736,11 @@ sub protect {
 
 sub unprotect {
     my ($file, $pass) = @_;
-    my ($data, $prefix, $key);
+    my ($prefix, $key);
     use Carp;
 
-    my $fp = IO::File->new;
-    # $fp->open("<$file") || error("Unable to load $file for unprotection: $!");
-    $fp->open("<$file") || Carp::confess("Unable to load $file for unprotection: $!");
-    {
-        local $/;
-        $data = <$fp>;
-    }
-    $fp->close() || error("Unable to close $file: $!");
-    $fp->open(">$file") || error("Unable to write into $file for unprotection: $!");
+    my $data = io->file($file)->all;
+    open my $fp, '>', $file or error("Unable to write into $file for unprotection: $!");
     while ($data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s) {
         ($prefix, $key, $data) = ($1, $2, $3);
         if ($pass < 9 and $pass < $PROTECT_STORAGE{$key}->{MAX}) {
@@ -1332,13 +1311,12 @@ if ($last ne '' and $final and $out_istmp) {
     unprotect($last, 9);
     if (@out_filenames) {
         foreach my $o (@out_filenames) {
-            $fh[$i] = new IO::File "> $o";
-            error("Unable to write into $o") if !defined $fh[$i];
-            $i++;
+            open $fh[$i], '>', $o or error("Unable to write into $o");
+            ++$i;
         }
     } else {
-        $fh[$i] = new IO::File "> $tmp[3]";
-        error("Unable to write into $tmp[3]") if !defined $fh[$i];
+        my $o = $tmp[3];
+        open $fh[$i], '>', $o or error("Unable to write into $o");
     }
     open(my $fp_fh, '<', $last)
         or error("Unable to load $last: $!");
