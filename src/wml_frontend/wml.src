@@ -736,12 +736,11 @@ sub protect {
 
 sub unprotect {
     my ($file, $pass) = @_;
-    my ($prefix, $key);
     use Carp;
 
     my $data = io->file($file)->all;
-    while ($data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s) {
-        ($prefix, $key, $data) = ($1, $2, $3);
+    while (my ($prefix, $key, $new) = $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s) {
+        $data = $new;
         if ($pass < 9 and $pass < $PROTECT_STORAGE{$key}->{MAX}) {
             $prefix .= "<protect" . $PROTECT_STORAGE{$key}->{ARG} . ">";
             $data = "</protect>" . $data;
