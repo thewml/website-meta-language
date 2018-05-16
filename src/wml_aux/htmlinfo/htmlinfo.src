@@ -12,7 +12,6 @@ use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
 use Term::Cap;
-use IO::Handle 1.15;
 use IO::All qw/ io /;
 use Image::Size;
 
