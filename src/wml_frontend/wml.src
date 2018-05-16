@@ -740,7 +740,6 @@ sub unprotect {
     use Carp;
 
     my $data = io->file($file)->all;
-    open my $fp, '>', $file or error("Unable to write into $file for unprotection: $!");
     while ($data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s) {
         ($prefix, $key, $data) = ($1, $2, $3);
         if ($pass < 9 and $pass < $PROTECT_STORAGE{$key}->{MAX}) {
@@ -751,8 +750,7 @@ sub unprotect {
     }
     #    Remove useless <protect> tags
     $data =~ s|</?protect.*?>||gs if $pass == 9;
-    $fp->print($data) || error("Unable to write into $file for unprotection: $!");
-    $fp->close() || error("Unable to close $file: $!");
+    io->file($file)->print($data);
     if ($pass < 9)
     {
         foreach my $key (keys %PROTECT_STORAGE) {
