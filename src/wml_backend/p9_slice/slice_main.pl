@@ -45,8 +45,6 @@ use SliceTermParser;
 
 
 use Getopt::Long 2.13;
-use IO::Handle 1.15;
-use IO::File 1.07;
 use Bit::Vector 5.0;
 
 my $slice_version = {

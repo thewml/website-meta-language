@@ -14,8 +14,6 @@ use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
 use Getopt::Long 2.13;
-use IO::Handle 1.15;
-use IO::File 1.06;
 
 #
 #   process command line
@@ -74,7 +72,7 @@ my $INPUT = WML_Backends->input(\@ARGV, \&error, \&usage);
 verbose("Strip sharp-like comments");
 #   strip sharp-like comments
 #$INPUT =~ s|^\s*#.*$||mg;
-1 while ($INPUT =~ s/^([ \t]*)#[^\n]*\n//s); # special  case: at begin
+$INPUT =~ s/\A(?:(?:[ \t]*)#[^\n]*\n)+//s;   # special  case: at begin
 $INPUT =~ s/\n[ \t]*#[^\n]*(?=\n)//sg;       # standard case: in the middle
 $INPUT =~ s/\n[ \t]*#[^\n]*\n?$/\n/s;        # special  case: at end
 $INPUT =~ s/^([ \t]*)\\(#)/$1$2/mg;          # remove escaping backslash

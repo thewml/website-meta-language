@@ -13,7 +13,7 @@ use lib "@INSTALLARCHLIB@";
 
 use Term::Cap;
 use IO::Handle 1.15;
-use IO::File 1.06;
+use IO::All qw/ io /;
 use Image::Size;
 
 eval "\$term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }";
@@ -30,21 +30,12 @@ else {
 #
 #   open input file and read into buffer
 #
-if (($#ARGV == 0 and $ARGV[0] eq '-') or $#ARGV == -1) {
-    $in = new IO::Handle;
-    $in->fdopen(fileno(STDIN), "r");
-    local ($/) = undef;
-    $INPUT = <$in>;
-    $in->close;
+if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
+    $INPUT = io('-')->all;
     $src = "STDIN";
 }
 elsif ($#ARGV == 0) {
-    $in = new IO::File;
-    $in->open($ARGV[0]);
-    local ($/) = undef;
-    $INPUT = <$in>;
-    $in->close;
-    $src = $ARGV[0];
+    $INPUT = io->file($src = $ARGV[0])->all;
 }
 else {
     print STDERR "Usage: htmlinfo file.html\n";
