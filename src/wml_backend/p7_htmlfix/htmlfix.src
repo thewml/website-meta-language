@@ -144,8 +144,9 @@ sub ProcessImgTag {
             }
             if ($width  eq '*' or $width  == -1 or
                 $height eq '*' or $height == -1   ) {
-                if (-f $image) {
-                    ($Pwidth, $Pheight) = Image::Size::imgsize($image);
+                my $error;
+                ($Pwidth, $Pheight, $error) = Image::Size::imgsize($image);
+                if (defined($Pwidth) and defined($Pheight)) {
 
                     #    width given, height needs completed
                     if ((not ($width  eq '*' or $width  == -1)) and
@@ -200,7 +201,7 @@ sub ProcessImgTag {
                 }
                 else {
                     #   complain
-                    verbose("cannot complete size of $image: file not found");
+                    verbose("cannot complete size of $image: $error");
                     #   and make sure the =* placeholder constructs are removed
                     $attr =~ s|WIDTH\s*=\s*\*||is;
                     $attr =~ s|HEIGHT\s*=\s*\*||is;
