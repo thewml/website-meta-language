@@ -624,7 +624,6 @@ sub precompile {
 sub dosource {
     my ($prog, $args) = @_;
     my (@argv, $pkgname);
-    my ($error, $func);
 
     verbose(2, "source: $prog $args\n");
     verbose(9, "loading: $prog\n");
@@ -642,7 +641,7 @@ sub dosource {
     verbose(9, "loading: succeeded with $prog (".length($src)." bytes)\n");
 
     verbose(9, "precompiling script: pkgname=$pkgname\n");
-    ($func, $error) = precompile($pkgname, $src);
+    my ($func, $error) = precompile($pkgname, $src);
     if ($error ne '') {
         verbose(9, "precompiling script: error: $error\n");
     }
