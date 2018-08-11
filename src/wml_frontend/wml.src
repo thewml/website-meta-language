@@ -48,6 +48,7 @@ if (index($ENV{PATH}, $bindir) < 0) {
 use Getopt::Long 2.13;
 use File::Basename qw/ basename /;
 use File::Spec;
+use File::Which qw/ which /;
 use Cwd;
 use Term::ReadKey;
 use Cwd;
@@ -630,12 +631,7 @@ sub dosource {
     verbose(9, "loading: $prog\n");
     my $pkgname = basename($prog);
     if ($prog !~ m|\A/|) {
-        foreach my $p (split(/:/, $ENV{PATH})) {
-            if (-f "$p/$prog") {
-                $prog = "$p/$prog";
-                last;
-            }
-        }
+        $prog = which($prog);
     }
     my $src = io->file($prog)->all;
     verbose(9, "loading: succeeded with $prog (".length($src)." bytes)\n");
