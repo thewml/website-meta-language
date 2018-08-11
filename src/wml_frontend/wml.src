@@ -1226,46 +1226,47 @@ if ($opt_M ne '-') {
 #   MAIN PROCESSING LOOP
 #
 my @TIMES;
-foreach my $p (@p) {
+foreach my $pass_idx (@p) {
     verbose(2, "PASS $p:\n");
     print STDERR $prop[$pcnt++ % 4] . "\b" if (not $opt_q);
 
     #   run pass
     my ($u, $s, $cu, $cs) = times();
     my $stime = $u + $s + $cu + $cs;
-    protect($from, $p);
+    protect($from, $pass_idx);
     my $opt_pass = '';
     foreach my $aa (@opt_W) {
         if (my ($pp, $s) = $aa =~ m|\A([0-9]),(.*)\z|) {
-            $opt_pass .= " $s " if $pp == $p;
+            $opt_pass .= " $s " if $pp == $pass_idx;
         }
     }
-    my $rc = $_PASSES[$p]->($opt_passes[$p] . $opt_pass, $from, $to, $tmp[2]);
+    my $rc = $_PASSES[$pass_idx]->($opt_passes[$pass_idx] . $opt_pass, $from, $to, $tmp[2]);
     if (!length ($rc))
     {
         $rc = 0;
     }
     if ($rc != 0) {
         if ($rc % 256 != 0) {
-            printf(STDERR "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n", $p, $rc % 256, $rc / 256);
+            printf(STDERR "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n", $pass_idx, $rc % 256, $rc / 256);
         }
         else {
-            printf(STDERR "** WML:Break: Error in Pass %d (rc=%d).\n", $p, $rc / 256);
+            printf(STDERR "** WML:Break: Error in Pass %d (rc=%d).\n", $pass_idx, $rc / 256);
         }
         unlink_tmp();
         exit(1);
     }
-    unprotect($to, $p) if ($p < 9); # pass 9 is a special case
+    # pass 9 is a special case
+    unprotect($to, $pass_idx) if ($pass_idx < 9);
     ($u, $s, $cu, $cs) = times();
     my $etime = $u + $s + $cu + $cs;
     my $dtime = $etime-$stime;
     $dtime = 0.01 if ($dtime < 0);
-    $TIMES[$p] = $dtime;
+    $TIMES[$pass_idx] = $dtime;
 
     #   optionally view current result
     if (0) {
-    if ($opt_v >= 3 && $p < 9) {
-        print STDERR "Want to see result after Pass$p [yNq]: ";
+    if ($opt_v >= 3 && $pass_idx < 9) {
+        print STDERR "Want to see result after Pass$pass_idx [yNq]: ";
         ReadMode 4;
         my $key = ReadKey(0);
         ReadMode 0;
@@ -1283,13 +1284,13 @@ foreach my $p (@p) {
 
     #   step further
     $last  = $to;
-    $final = 1 if $p == 9;
+    $final = 1 if $pass_idx == 9;
     my $bit = ($cnt & 1);
     $from  = $tmp[$bit];
     $to    = $tmp[$bit ^ 1];
     unlink($to);
     ++$cnt;
-    last if $p == 9;
+    last if $pass_idx == 9;
 }
 
 if ($last ne '' and $final and $out_istmp) {
