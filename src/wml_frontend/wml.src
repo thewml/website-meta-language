@@ -1140,30 +1140,31 @@ else
     $src_realname =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
 }
 
-unshift( @opt_D, "WML_SRC_DIRNAME=$src_dirname" );
-unshift( @opt_D, "WML_SRC_FILENAME=$src_filename" );
-unshift( @opt_D, "WML_SRC_BASENAME=$src_basename" );
-unshift( @opt_D, "WML_SRC_TIME=$src_time" );
-unshift( @opt_D, "WML_SRC_CTIME=$src_ctime" );
-unshift( @opt_D, "WML_SRC_ISOTIME=$src_isotime" );
-unshift( @opt_D, "WML_SRC_GMT_CTIME=$src_gmt_ctime" );
-unshift( @opt_D, "WML_SRC_GMT_ISOTIME=$src_gmt_isotime" );
-unshift( @opt_D, "WML_SRC_USERNAME=$src_username" );
-unshift( @opt_D, "WML_SRC_REALNAME=$src_realname" );
-unshift( @opt_D, "WML_GEN_TIME=$gen_time" );
-unshift( @opt_D, "WML_GEN_CTIME=$gen_ctime" );
-unshift( @opt_D, "WML_GEN_ISOTIME=$gen_isotime" );
-unshift( @opt_D, "WML_GEN_GMT_CTIME=$gen_gmt_ctime" );
-unshift( @opt_D, "WML_GEN_GMT_ISOTIME=$gen_gmt_isotime" );
-unshift( @opt_D, "WML_GEN_USERNAME=$gen_username" );
-unshift( @opt_D, "WML_GEN_REALNAME=$gen_realname" );
-unshift( @opt_D, "WML_GEN_HOSTNAME=$gen_hostname" );
-unshift( @opt_D, 'WML_LOC_PREFIX=@prefix@' );
-unshift( @opt_D, "WML_LOC_BINDIR=$bindir" );
-unshift( @opt_D, "WML_LOC_LIBDIR=$libdir" );
-unshift( @opt_D, 'WML_LOC_MANDIR=@mandir@' );
-unshift( @opt_D, "WML_VERSION=$VERSION" );
-unshift( @opt_D, "WML_TMPDIR=$tmpdir" );
+unshift( @opt_D,
+    "WML_SRC_DIRNAME=$src_dirname",
+    "WML_SRC_FILENAME=$src_filename",
+    "WML_SRC_BASENAME=$src_basename",
+    "WML_SRC_TIME=$src_time",
+    "WML_SRC_CTIME=$src_ctime",
+    "WML_SRC_ISOTIME=$src_isotime",
+    "WML_SRC_GMT_CTIME=$src_gmt_ctime",
+    "WML_SRC_GMT_ISOTIME=$src_gmt_isotime",
+    "WML_SRC_USERNAME=$src_username",
+    "WML_SRC_REALNAME=$src_realname",
+    "WML_GEN_TIME=$gen_time",
+    "WML_GEN_CTIME=$gen_ctime",
+    "WML_GEN_ISOTIME=$gen_isotime",
+    "WML_GEN_GMT_CTIME=$gen_gmt_ctime",
+    "WML_GEN_GMT_ISOTIME=$gen_gmt_isotime",
+    "WML_GEN_USERNAME=$gen_username",
+    "WML_GEN_REALNAME=$gen_realname",
+    "WML_GEN_HOSTNAME=$gen_hostname",
+    'WML_LOC_PREFIX=@prefix@',
+    "WML_LOC_BINDIR=$bindir",
+    "WML_LOC_LIBDIR=$libdir",
+    'WML_LOC_MANDIR=@mandir@',
+    "WML_VERSION=$VERSION",
+    "WML_TMPDIR=$tmpdir" );
 
 #   Create temporary file names as soon as $src_suffix is set
 my @tmp = ( map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 );
