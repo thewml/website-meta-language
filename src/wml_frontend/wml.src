@@ -87,9 +87,7 @@ use IO::All qw/ io /;
 sub _my_cwd
 {
     my $cwd = Cwd::cwd;
-
-    $cwd =~ s|/$||;
-
+    $cwd =~ s#/\z##;
     return $cwd;
 }
 
@@ -1382,7 +1380,6 @@ while ( my ( $i, $str ) = each @_OPT_PASSES )
 my $pcnt  = 0;
 my @prop  = ( "-", "\\", "|", "/" );
 my $last  = '';
-my $final = 0;
 my $pager = ( $ENV{PAGER} || 'more' );
 
 #
@@ -1450,7 +1447,8 @@ if ( $opt_M ne '-' )
 #
 #   MAIN PROCESSING LOOP
 #
-foreach my $pass_idx (@p)
+my $final = 0;
+PASS_IDX: foreach my $pass_idx (@p)
 {
     verbose( 2, "PASS $p:\n" );
     print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $opt_q );
@@ -1531,7 +1529,11 @@ foreach my $pass_idx (@p)
     $to   = $tmp[ $bit ^ 1 ];
     unlink($to);
     ++$cnt;
-    last if $pass_idx == 9;
+
+    if ($final)
+    {
+        last PASS_IDX;
+    }
 }
 
 if ( $last ne '' and $final and $out_istmp )
