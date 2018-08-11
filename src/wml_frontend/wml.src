@@ -1078,7 +1078,7 @@ foreach my $d (@opt_D) {
 my $cnt=0;
 foreach my $o (@opt_o) {
     $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
-    $cnt++;
+    ++$cnt;
 }
 
 my $defeperl = '';
@@ -1292,10 +1292,11 @@ foreach my $p (@p) {
     #   step further
     $last  = $to;
     $final = 1 if $p == 9;
-    $from  = $tmp[$cnt % 2];
-    $to    = $tmp[($cnt+1) % 2];
+    my $bit = ($cnt & 1);
+    $from  = $tmp[$bit];
+    $to    = $tmp[$bit ^ 1];
     unlink($to);
-    $cnt++;
+    ++$cnt;
     last if $p == 9;
 }
 
