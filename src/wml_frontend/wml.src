@@ -1257,7 +1257,6 @@ if ($opt_M ne '-') {
 #
 #   MAIN PROCESSING LOOP
 #
-my @TIMES;
 foreach my $pass_idx (@p) {
     verbose(2, "PASS $p:\n");
     print STDERR $prop[$pcnt++ % 4] . "\b" if (not $opt_q);
@@ -1293,7 +1292,7 @@ foreach my $pass_idx (@p) {
     my $etime = $u + $s + $cu + $cs;
     my $dtime = $etime-$stime;
     $dtime = 0.01 if ($dtime < 0);
-    $TIMES[$pass_idx] = $dtime;
+    $pass_objs[$pass_idx]->time_($dtime);
 
     #   optionally view current result
     if (0) {
@@ -1410,19 +1409,17 @@ my $at = $u + $s + $cu + $cs;
 my $pt = 0;
 my $timestr = '';
 
-{
-    my $i  = 1;
-    foreach my $t (@TIMES[1..9]) {
-        $t //= '';
-        if ( length ($t) )
-        {
-            $pt += $t;
-        }
-        my $cond = ($i == 2 or $i == 3);
-        $timestr .= (($t ne '') ? sprintf($cond ? '%5.2f' : '%4.2f', $t) :
-            $cond ? '   -- ' : '  -- ');
-        ++$i;
+foreach my $i (1..9) {
+    my $t = $pass_objs[$i]->time_;
+    $t //= '';
+    if ( length ($t) )
+    {
+        $pt += $t;
     }
+    my $cond = ($i == 2 or $i == 3);
+    $timestr .= (($t ne '') ? sprintf($cond ? '%5.2f' : '%4.2f', $t) :
+        $cond ? '   -- ' : '  -- ');
+    ++$i;
 }
 
 $timestr = sprintf('%4.2f | ', $at-$pt) . $timestr;
