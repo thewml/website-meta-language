@@ -663,7 +663,7 @@ sub dosource {
     verbose(9, "splitting to argv: ".join("|", @argv)."\n");
 
     verbose(9, "running script\n");
-    eval "no strict; no warnings; \$rc = \&{\$func}(\@argv);";
+    eval "\$rc = &{\$func}(\@argv);";
     if ($@) {
         die $@;
     }
