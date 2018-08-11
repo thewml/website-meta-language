@@ -46,6 +46,7 @@ if (index($ENV{PATH}, $bindir) < 0) {
 }
 
 use Getopt::Long 2.13;
+use File::Basename qw/ basename /;
 use File::Spec;
 use Cwd;
 use Term::ReadKey;
@@ -623,13 +624,12 @@ sub precompile {
 
 sub dosource {
     my ($prog, $args) = @_;
-    my (@argv, $pkgname);
+    my (@argv);
 
     verbose(2, "source: $prog $args\n");
     verbose(9, "loading: $prog\n");
-    $pkgname = $prog;
-    $pkgname =~ s|^.*/([^/]+)$|$1|;
-    if ($prog !~ m|^/|) {
+    my $pkgname = basename($prog);
+    if ($prog !~ m|\A/|) {
         foreach my $p (split(/:/, $ENV{PATH})) {
             if (-f "$p/$prog") {
                 $prog = "$p/$prog";
