@@ -5,6 +5,10 @@ This is the repository for Website Meta Language:
 More info can be found under the [src/](https://github.com/thewml/website-meta-language/tree/master/src)
 sub-directory.
 
+# CI Badges
+
+[![Build Status](https://travis-ci.org/thewml/website-meta-language.svg?branch=master)](https://travis-ci.org/thewml/website-meta-language) - https://travis-ci.org/thewml/website-meta-language
+
 # What is it?
 
 Website Meta Language is an offline HTML preprocessor, which dates back to
