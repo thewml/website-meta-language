@@ -38,6 +38,36 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use strict;
 use warnings;
 
+package WML::WML_F::PassObj;
+
+use Class::XSAccessor (
+    constructor => 'new',
+    accessors   => +{
+        map { $_ => $_ } qw( idx cb opt_pass time_)
+    }
+);
+
+package main;
+
+sub new
+{
+    my $class = shift;
+
+    my $self = bless {}, $class;
+
+    $self->_init(@_);
+
+    return $self;
+}
+
+sub _init
+{
+    my ($self, $args) = @_;
+
+    return;
+}
+
+1;
 our $VERSION = '@WML_VERSION@';
 
 my $bindir = '@bindir@';
@@ -857,7 +887,9 @@ sub pass9 {
     return scalar dosystem("$libdir/exec/wml_p9_slice $opt $from");
 }
 
-my @_PASSES = ('', \&pass1, \&pass2, \&pass3, \&pass4, \&pass5, \&pass6, \&pass7, \&pass8, \&pass9);
+# my @_PASSES = ('', \&pass1, \&pass2, \&pass3, \&pass4, \&pass5, \&pass6, \&pass7, \&pass8, \&pass9);
+my @__PASSES = (\&pass1, \&pass2, \&pass3, \&pass4, \&pass5, \&pass6, \&pass7, \&pass8, \&pass9);
+my @pass_objs = ('', map { WML::WML_F::PassObj->new(idx => ($_+1), cb => $__PASSES[$_]) } keys @__PASSES);
 #
 #   predefine some useful variables
 #
@@ -1240,7 +1272,7 @@ foreach my $pass_idx (@p) {
             $opt_pass .= " $s " if $pp == $pass_idx;
         }
     }
-    my $rc = $_PASSES[$pass_idx]->($opt_passes[$pass_idx] . $opt_pass, $from, $to, $tmp[2]);
+    my $rc = $pass_objs[$pass_idx]->cb()->($opt_passes[$pass_idx] . $opt_pass, $from, $to, $tmp[2]);
     if (!length ($rc))
     {
         $rc = 0;
