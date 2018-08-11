@@ -1185,7 +1185,7 @@ if ($out eq '') {
     $out_istmp = 1;
 }
 
-my @opt_passes = ('',
+my @_OPT_PASSES = (
     "$defipp $verbose -S $libdir/include -n $src $inc $preload $prolog",
     "$defmp4h",
     "$defeperl",
@@ -1197,6 +1197,10 @@ my @opt_passes = ('',
     "$verbose $out",
 );
 
+while (my ($i, $str) = each@_OPT_PASSES)
+{
+    $pass_objs[$i+1]->opt_pass($str);
+}
 
 my $pcnt  = 0;
 my @prop  = ( "-", "\\", "|", "/");
@@ -1237,7 +1241,7 @@ if ($opt_M ne '-') {
         }
         my $rc;
         eval {
-            $rc = pass1($opt_passes[1] . $opt_pass, $src, $o, $tmp[2]);
+            $rc = pass1($pass_objs[1]->opt_pass() . $opt_pass, $src, $o, $tmp[2]);
         };
         if ($rc != 0) {
             if ($rc % 256 != 0) {
@@ -1271,7 +1275,7 @@ foreach my $pass_idx (@p) {
             $opt_pass .= " $s " if $pp == $pass_idx;
         }
     }
-    my $rc = $pass_objs[$pass_idx]->cb()->($opt_passes[$pass_idx] . $opt_pass, $from, $to, $tmp[2]);
+    my $rc = $pass_objs[$pass_idx]->cb()->($pass_objs[$pass_idx]->opt_pass() . $opt_pass, $from, $to, $tmp[2]);
     if (!length ($rc))
     {
         $rc = 0;
