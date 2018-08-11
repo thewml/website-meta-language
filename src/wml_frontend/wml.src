@@ -1418,7 +1418,6 @@ foreach my $i (1..9) {
     my $cond = ($i == 2 or $i == 3);
     $timestr .= (($t ne '') ? sprintf($cond ? '%5.2f' : '%4.2f', $t) :
         $cond ? '   -- ' : '  -- ');
-    ++$i;
 }
 
 $timestr = sprintf('%4.2f | ', $at-$pt) . $timestr;
