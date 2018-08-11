@@ -672,7 +672,7 @@ my %PROTECT_STORAGE;
 my $firstpass = 1;
 sub protect {
     my ($fn, $pass) = @_;
-    my ($prolog, $arg, $body, $key, $p, $pe);
+    my ($prolog, $arg, $body, $key, $pe);
 
     my $data = io->file($fn)->all;
     open my $fp, '>', $fn or error("Unable to write into $fn for protection: $!");
