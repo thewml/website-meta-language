@@ -1410,8 +1410,7 @@ my $pt = 0;
 my $timestr = '';
 
 foreach my $i (1..9) {
-    my $t = $pass_objs[$i]->time_;
-    $t //= '';
+    my $t = $pass_objs[$i]->time_() // '';
     if ( length ($t) )
     {
         $pt += $t;
