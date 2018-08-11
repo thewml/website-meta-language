@@ -623,7 +623,7 @@ sub precompile {
 
 sub dosource {
     my ($prog, $args) = @_;
-    my ($rc, @argv, $pkgname);
+    my (@argv, $pkgname);
     my ($error, $func);
 
     verbose(2, "source: $prog $args\n");
@@ -663,10 +663,7 @@ sub dosource {
     verbose(9, "splitting to argv: ".join("|", @argv)."\n");
 
     verbose(9, "running script\n");
-    eval "\$rc = &{\$func}(\@argv);";
-    if ($@) {
-        die $@;
-    }
+    my $rc = $func->(@argv);
     $rc //= '';
     verbose(9, "running script: rc=$rc\n");
     $rc = 256 if not defined $rc;
