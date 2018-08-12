@@ -176,6 +176,15 @@ sub pass
     return $self->_passes->[$i];
 }
 
+*verbose = \&::verbose;
+
+sub dosystem
+{
+    my ( $self, $cmd ) = @_;
+    verbose( 2, "system: $cmd\n" );
+    return scalar system($cmd);
+}
+
 package main;
 
 my $_pass_mgr = WML::WML_F::PassesManager->new(
@@ -828,13 +837,6 @@ sub error
     exit(1);
 }
 
-sub dosystem
-{
-    my ($cmd) = @_;
-    verbose( 2, "system: $cmd\n" );
-    return scalar system($cmd);
-}
-
 my $PROTECT_COUNTER = 0;
 my %PROTECT_STORAGE;
 
@@ -955,7 +957,8 @@ sub pass2
     my ( $buf, $rc );
 
     my $cwd = _my_cwd;
-    $rc = dosystem("$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
+    $rc = $_pass_mgr->dosystem(
+        "$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -983,7 +986,7 @@ sub pass3
     my ( $opt, $from, $to, $tmp ) = @_;
 
     return
-        scalar dosystem(
+        scalar $_pass_mgr->dosystem(
         "$libdir/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
 }
 
@@ -991,7 +994,7 @@ sub pass4
 {
     my ( $opt, $from, $to, $tmp ) = @_;
 
-    return scalar dosystem("m4 $opt --prefix-builtins <$from >$to");
+    return scalar $_pass_mgr->dosystem("m4 $opt --prefix-builtins <$from >$to");
 }
 
 sub pass5
@@ -1053,7 +1056,7 @@ sub pass9
 
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
-    return scalar dosystem("$libdir/exec/wml_p9_slice $opt $from");
+    return scalar $_pass_mgr->dosystem("$libdir/exec/wml_p9_slice $opt $from");
 }
 
 sub _generic_do
@@ -1062,8 +1065,8 @@ sub _generic_do
     my $prog = "$libdir/exec/$EXE";
     my $args = "$opt -o $to $from";
     return scalar(
-        $opt_s
-        ? dosystem("$prog $args")
+          $opt_s
+        ? $_pass_mgr->dosystem("$prog $args")
         : $_pass_mgr->pass($pass_idx)->dosource( $prog, $args )
     );
 }
