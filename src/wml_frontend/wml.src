@@ -126,10 +126,7 @@ sub dosource
     {
         redo
             if $args =~
-            s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, unquotearg($1)), ''|iges;
-        redo
-            if $args =~
-            s|^\s*(-[a-zA-Z0-9])|push(@argv, unquotearg($1)), ''|iges;
+            s|^\s*(-[a-zA-Z0-9]\S*)|push(@argv, unquotearg($1)), ''|iges;
         redo
             if $args =~
             s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|iges;
