@@ -381,14 +381,14 @@ sub split_argv
         next if $str =~ s#\A"([^"\\]*(?:\\.[^"\\]*)*)"#$r .= $1;''#e;
         next if $str =~ s#\A'([^'\\]*(?:\\.[^'\\]*)*)'#$r .= $1;''#e;
         next if $str =~ s#\A([^\s"']+)#$r .= $1;''#e;
-        if ( $str =~ m|^[\s\n]+| || $str eq '' )
+        if ( $str =~ /\A[\s\n]/ or $str eq '' )
         {
             if ( $r ne '' )
             {
                 push( @argv, $r );
                 $r = '';
             }
-            $str =~ s|^[\s\n]+||;
+            $str =~ s#\A[\s\n]+##;
             last if ( $str eq '' );
         }
         if ( $str eq $prev )
