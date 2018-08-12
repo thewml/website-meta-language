@@ -172,7 +172,7 @@ EOF
 our $opt_h = 0;
 
 #   pre-process argument line for option -r and -v
-our $opt_r = 0;
+my $opt_r = 0;
 our $opt_v = -1;
 my $opt_c = 0;
 
@@ -185,7 +185,7 @@ my $opt_O = '';
 our @opt_o = ();
 our @opt_P = ();
 our @opt_E = ();
-our $opt_t = 0;
+my $opt_t = 0;
 our @opt_p = ();
 our @opt_W = ();
 our $opt_M = '-';
@@ -201,20 +201,20 @@ sub ProcessOptions
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
     my (@list_options) = (
-        "I|include=s@",    "i|includefile=s@",
-        "D|define=s@",     "r|norcfile",
-        "o|outputfile=s@", "P|prolog=s@",
-        "E|epilog=s@",     "t|settime",
-        "p|pass=s@",       "W|passoption=s@",
-        "M|depend:s",      "s|safe",
-        "v|verbose:i",     "q|quiet",
-        "V|version:i",     "h|help"
+        "I|include=s@", "i|includefile=s@",
+        "D|define=s@",  "o|outputfile=s@",
+        "P|prolog=s@",  "E|epilog=s@",
+        "p|pass=s@",    "W|passoption=s@",
+        "M|depend:s",   "s|safe",
+        "v|verbose:i",  "q|quiet",
+        "V|version:i",  "h|help"
     );
     my %lex_options = (
+        "r|norcfile"   => \$opt_r,
         "n|noshebang"  => \$opt_n,
         "c|nocd"       => \$opt_c,
         "O|optimize=i" => \$opt_O,
-
+        "t|settime"    => \$opt_t,
     );
     if ( not Getopt::Long::GetOptions( %lex_options, @list_options ) )
     {
