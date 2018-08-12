@@ -1,3 +1,4 @@
-B
-src/build
-src/cmake/Shlomif_Common.cmake
+/B
+/src/.tidyall.d/
+/src/build
+/src/cmake/Shlomif_Common.cmake
