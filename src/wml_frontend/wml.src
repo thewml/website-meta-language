@@ -213,7 +213,7 @@ use Cwd ();
 use IO::All qw/ io /;
 
 use WML_Frontends::Wml::Util
-    qw/ _my_cwd canon_path ctime error expandrange gmt_ctime gmt_isotime
+    qw/ _my_cwd canonize_path ctime error expandrange gmt_ctime gmt_isotime
     isotime quotearg split_argv usage /;
 
 my $opt_h = 0;
@@ -408,14 +408,7 @@ if ( not $opt_r )
                     my ( $var, $path ) = ( $1, $2 );
                     if ( $path !~ m|^/| )
                     {
-                        if ( $path eq '.' )
-                        {
-                            $path = canon_path("$reldir");
-                        }
-                        else
-                        {
-                            $path = canon_path("$reldir/$path");
-                        }
+                        canonize_path( \$path, $reldir );
                     }
                     $path = '""' if ( $path eq '' );
                     $d = "$var=$path";
@@ -436,14 +429,7 @@ if ( not $opt_r )
             {
                 if ( $path !~ m|^/| )
                 {
-                    if ( $path eq '.' )
-                    {
-                        $path = canon_path("$reldir");
-                    }
-                    else
-                    {
-                        $path = canon_path("$reldir/$path");
-                    }
+                    canonize_path( \$path, $reldir );
                     $path = '.' if ( $path eq '' );
                 }
                 push( @opt_I_NEW, $path );
@@ -585,14 +571,7 @@ foreach my $d (@opt_D_ADD)
     {
         if ( $path !~ m|^/| )
         {
-            if ( $path eq '.' )
-            {
-                $path = canon_path($reldir);
-            }
-            else
-            {
-                $path = canon_path("$reldir/$path");
-            }
+            canonize_path( \$path, $reldir );
         }
         $path = '""' if ( $path eq '' );
         $d = "$var=$path";

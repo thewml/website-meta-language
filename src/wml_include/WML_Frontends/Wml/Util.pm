@@ -40,7 +40,7 @@ use Cwd ();
 
 use parent 'Exporter';
 
-our @EXPORT_OK = qw/ _my_cwd canon_path ctime
+our @EXPORT_OK = qw/ _my_cwd canon_path canonize_path ctime
     error expandrange gmt_ctime gmt_isotime
     isotime quotearg split_argv usage /;
 
@@ -210,6 +210,13 @@ sub canon_path
         $path =~ s|([^/.][^/.]*)/\.\.||;
     }
     return $path;
+}
+
+sub canonize_path
+{
+    my ( $path, $reldir ) = @_;
+    $$path = canon_path( ( $$path eq '.' ) ? "$reldir" : "$reldir/$$path" );
+    return;
 }
 
 1;
