@@ -42,7 +42,7 @@ package WML::WML_F::PassObj;
 
 use Class::XSAccessor (
     constructor => 'new',
-    accessors   => +{ map { $_ => $_ } qw( idx cb opt_pass time_) }
+    accessors   => +{ map { $_ => $_ } qw( idx cb opt_pass time_ src_cb) }
 );
 
 package main;
@@ -761,59 +761,6 @@ sub precompile
     }
 }
 
-sub dosource
-{
-    my ( $prog, $args ) = @_;
-    verbose( 2, "source: $prog $args\n" );
-    verbose( 9, "loading: $prog\n" );
-    my $pkgname = basename($prog);
-    if ( $prog !~ m|\A/| )
-    {
-        $prog = which($prog);
-    }
-    my $src = io->file($prog)->all;
-    verbose( 9,
-        "loading: succeeded with $prog (" . length($src) . " bytes)\n" );
-
-    verbose( 9, "precompiling script: pkgname=$pkgname\n" );
-    my ( $func, $error ) = precompile( $pkgname, $src );
-    if ( $error ne '' )
-    {
-        verbose( 9, "precompiling script: error: $error\n" );
-    }
-    else
-    {
-        verbose( 9, "precompiling script: succeeded\n" );
-    }
-
-    verbose( 9, "splitting from args: $args\n" );
-    my @argv;
-    while ($args)
-    {
-        redo
-            if $args =~
-            s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, unquotearg($1)), ''|iges;
-        redo
-            if $args =~
-            s|^\s*(-[a-zA-Z0-9])|push(@argv, unquotearg($1)), ''|iges;
-        redo
-            if $args =~
-            s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|iges;
-        redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|iges;
-        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|iges;
-        redo if $args =~ s|^\s+$|''|iges;
-    }
-    verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
-
-    verbose( 9, "running script\n" );
-    my $rc = $func->(@argv);
-    $rc //= '';
-    verbose( 9, "running script: rc=$rc\n" );
-    $rc = 256 if not defined $rc;
-
-    return $rc;
-}
-
 my $PROTECT_COUNTER = 0;
 my %PROTECT_STORAGE;
 
@@ -924,18 +871,18 @@ my $libdir = '@libdir@';
 
 sub _generic_do
 {
-    my ( $EXE, $opt, $from, $to ) = @_;
+    my ( $pass_idx, $EXE, $opt, $from, $to ) = @_;
     return scalar(
         $opt_s
         ? dosystem("$libdir/exec/$EXE $opt -o $to $from")
-        : dosource( "$libdir/exec/$EXE", "$opt -o $to $from" )
+        : dosource( $pass_idx, "$libdir/exec/$EXE", "$opt -o $to $from" )
     );
 }
 
 sub pass1
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 'wml_p1_ipp', $opt, $from, $to );
+    return _generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
 }
 
 sub pass2
@@ -986,25 +933,25 @@ sub pass4
 sub pass5
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 'wml_p5_divert', $opt, $from, $to );
+    return _generic_do( 5, 'wml_p5_divert', $opt, $from, $to );
 }
 
 sub pass6
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 'wml_p6_asubst', $opt, $from, $to );
+    return _generic_do( 6, 'wml_p6_asubst', $opt, $from, $to );
 }
 
 sub pass7
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 'wml_p7_htmlfix', $opt, $from, $to );
+    return _generic_do( 7, 'wml_p7_htmlfix', $opt, $from, $to );
 }
 
 sub pass8
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 'wml_p8_htmlstrip', $opt, $from, $to );
+    return _generic_do( 8, 'wml_p8_htmlstrip', $opt, $from, $to );
 }
 
 #   Flag set if some output goes to stdout
@@ -1058,6 +1005,65 @@ my @pass_objs = (
     map { WML::WML_F::PassObj->new( idx => ( $_ + 1 ), cb => $__PASSES[$_] ) }
         keys @__PASSES
 );
+
+sub dosource
+{
+    my ( $pass_idx, $prog, $args ) = @_;
+    verbose( 2, "source: $prog $args\n" );
+    verbose( 9, "loading: $prog\n" );
+    my $pass = $pass_objs[$pass_idx];
+    if ( !defined( $pass->src_cb ) )
+    {
+        my $pkgname = basename($prog);
+        if ( $prog !~ m|\A/| )
+        {
+            $prog = which($prog);
+        }
+        my $src = io->file($prog)->all;
+        verbose( 9,
+            "loading: succeeded with $prog (" . length($src) . " bytes)\n" );
+
+        verbose( 9, "precompiling script: pkgname=$pkgname\n" );
+        my ( $func, $error ) = precompile( $pkgname, $src );
+        if ( $error ne '' )
+        {
+            verbose( 9, "precompiling script: error: $error\n" );
+        }
+        else
+        {
+            verbose( 9, "precompiling script: succeeded\n" );
+        }
+        $pass->src_cb($func);
+    }
+
+    verbose( 9, "splitting from args: $args\n" );
+    my @argv;
+    while ($args)
+    {
+        redo
+            if $args =~
+            s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, unquotearg($1)), ''|iges;
+        redo
+            if $args =~
+            s|^\s*(-[a-zA-Z0-9])|push(@argv, unquotearg($1)), ''|iges;
+        redo
+            if $args =~
+            s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|iges;
+        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s+$|''|iges;
+    }
+    verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
+
+    verbose( 9, "running script\n" );
+    my $rc = $pass->src_cb->(@argv);
+    $rc //= '';
+    verbose( 9, "running script: rc=$rc\n" );
+    $rc = 256 if not defined $rc;
+
+    return $rc;
+}
+
 #
 #   predefine some useful variables
 #
