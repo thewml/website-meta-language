@@ -1,5 +1,5 @@
 [PerlTidy]
-select = wml_frontend/wml.src
+select = wml_frontend/wml.src wml_include/**/*.pm
 argv = -ci=4 -bl -cti=0
 ignore =
 
