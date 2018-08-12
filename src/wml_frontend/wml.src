@@ -643,7 +643,7 @@ if ($opt_V)
 
 #   If the -M was the last option and the user forgot
 #   to put `--' to end options, we adjust it.
-if ( $opt_M !~ m%^(-|[MD]*)$% && $#ARGV == -1 )
+if ( $opt_M !~ m%^(-|[MD]*)$% and ( !@ARGV ) )
 {
     push( @ARGV, $opt_M );
     $opt_M = '';
@@ -1020,7 +1020,7 @@ sub pass9
     #   First check whether a shebang line is found and no
     #   output files were assigned on command line.
     #   This is needed to unprotect output files.
-    if ( $#opt_o == -1 )
+    if ( !@opt_o )
     {
         local @ARGV = ();
         open( my $slice_fh, '<', $from )
@@ -1034,7 +1034,7 @@ sub pass9
         }
         close($slice_fh)
             or error("Unable to close $from: $!");
-        if ( $#ARGV > -1 )
+        if (@ARGV)
         {
             $out_istmp = 0;
             ProcessOptions();
@@ -1201,7 +1201,7 @@ my @tmp = ( map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 );
 #
 
 #   canonicalize -p option(s)
-if ( $#opt_p == -1 )
+if ( !@opt_p )
 {
     #   no option means all passes
     @opt_p = ('1-9');
