@@ -764,8 +764,6 @@ sub precompile
 sub dosource
 {
     my ( $prog, $args ) = @_;
-    my (@argv);
-
     verbose( 2, "source: $prog $args\n" );
     verbose( 9, "loading: $prog\n" );
     my $pkgname = basename($prog);
@@ -789,7 +787,7 @@ sub dosource
     }
 
     verbose( 9, "splitting from args: $args\n" );
-    @argv = ();
+    my @argv;
     while ($args)
     {
         redo
