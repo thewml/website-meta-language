@@ -240,7 +240,7 @@ sub ProcessOptions
     }
 }
 
-our @ARGVLINE = @ARGV;
+my @ARGVLINE = @ARGV;
 ProcessOptions();
 our $src = $ARGV[0];
 @ARGV = @ARGVLINE;
