@@ -66,9 +66,8 @@ use IO::All qw/ io /;
 sub precompile
 {
     my ( $name, $in ) = @_;
-    my ( $error, $func );
 
-    $error = '';
+    my $error = '';
     local $SIG{__WARN__} = sub { $error .= $_[0]; };
     local $SIG{__DIE__};
 
@@ -78,18 +77,10 @@ sub precompile
             . $in
             . "; return 0; }; package main;" );
     $error = "$@" if ($@);
-    eval("no strict; no warnings; \$func = \$${name}::main;");
+    my $func = eval("no strict; no warnings; \$${name}::main");
 
-    if ($error)
-    {
-        $@ = $error;
-        return ( $func, $error );
-    }
-    else
-    {
-        $@ = '';
-        return ( $func, '' );
-    }
+    $@ = $error || '';
+    return ( $func, $@ );
 }
 
 sub dosource
