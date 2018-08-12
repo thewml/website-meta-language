@@ -1021,8 +1021,6 @@ sub pass8
 #   Flag set if some output goes to stdout
 my $out_istmp = 0;
 
-my $out = '';
-
 sub pass9
 {
     my ( $opt, $from, $to, $tmp ) = @_;
@@ -1315,6 +1313,8 @@ foreach my $d (@opt_D)
 }
 
 my @out_filenames;
+
+my $out = '';
 
 sub ProcessOutfiles
 {
