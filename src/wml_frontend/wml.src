@@ -145,16 +145,44 @@ sub dosource
     return $rc;
 }
 
+package WML::WML_F::PassesManager;
+
+use Class::XSAccessor ( accessors => +{ map { $_ => $_ } qw( _passes ) } );
+
+sub new
+{
+    my $self = bless +{}, shift;
+    my $__PASSES = shift;
+    $self->_passes(
+        [
+            '',
+            map {
+                WML::WML_F::PassObj->new(
+                    idx => ( $_ + 1 ),
+                    cb  => $__PASSES->[$_]
+                    )
+                }
+                keys @$__PASSES
+
+        ]
+    );
+    return $self;
+}
+
+sub pass
+{
+    my ( $self, $i ) = @_;
+
+    return $self->_passes->[$i];
+}
+
 package main;
 
-my @__PASSES = (
-    \&pass1, \&pass2, \&pass3, \&pass4, \&pass5,
-    \&pass6, \&pass7, \&pass8, \&pass9
-);
-my @pass_objs = (
-    '',
-    map { WML::WML_F::PassObj->new( idx => ( $_ + 1 ), cb => $__PASSES[$_] ) }
-        keys @__PASSES
+my $_pass_mgr = WML::WML_F::PassesManager->new(
+    [
+        \&pass1, \&pass2, \&pass3, \&pass4, \&pass5,
+        \&pass6, \&pass7, \&pass8, \&pass9
+    ]
 );
 
 my $VERSION = '@WML_VERSION@';
@@ -1039,7 +1067,7 @@ sub _generic_do
     return scalar(
         $opt_s
         ? dosystem("$prog $args")
-        : $pass_objs[$pass_idx]->dosource( $prog, $args )
+        : $_pass_mgr->pass($pass_idx)->dosource( $prog, $args )
     );
 }
 
@@ -1380,7 +1408,7 @@ my @_OPT_PASSES = (
 
 while ( my ( $i, $str ) = each @_OPT_PASSES )
 {
-    $pass_objs[ $i + 1 ]->opt_pass($str);
+    $_pass_mgr->pass( $i + 1 )->opt_pass($str);
 }
 
 my $pcnt  = 0;
@@ -1426,7 +1454,7 @@ if ( $opt_M ne '-' )
         }
         my $rc;
         eval {
-            $rc = pass1( $pass_objs[1]->opt_pass() . $opt_pass,
+            $rc = pass1( $_pass_mgr->pass(1)->opt_pass() . $opt_pass,
                 $src, $o, $tmp[2] );
         };
         if ( $rc != 0 )
@@ -1471,10 +1499,9 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
             $opt_pass .= " $s " if $pp == $pass_idx;
         }
     }
+    my $_pass = $_pass_mgr->pass($pass_idx);
     my $rc =
-        $pass_objs[$pass_idx]->cb()
-        ->( $pass_objs[$pass_idx]->opt_pass() . $opt_pass, $from, $to,
-        $tmp[2] );
+        $_pass->cb()->( $_pass->opt_pass() . $opt_pass, $from, $to, $tmp[2] );
     if ( !length($rc) )
     {
         $rc = 0;
@@ -1502,7 +1529,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     my $etime = $u + $s + $cu + $cs;
     my $dtime = $etime - $stime;
     $dtime = 0.01 if ( $dtime < 0 );
-    $pass_objs[$pass_idx]->time_($dtime);
+    $_pass->time_($dtime);
 
     #   optionally view current result
     if (0)
@@ -1656,7 +1683,7 @@ my $timestr = '';
 
 foreach my $i ( 1 .. 9 )
 {
-    my $t = $pass_objs[$i]->time_() // '';
+    my $t = $_pass_mgr->pass($i)->time_() // '';
     if ( length($t) )
     {
         $pt += $t;
