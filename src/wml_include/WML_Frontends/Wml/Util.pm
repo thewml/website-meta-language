@@ -40,8 +40,9 @@ use Cwd ();
 
 use parent 'Exporter';
 
-our @EXPORT_OK =
-    qw/ _my_cwd ctime error expandrange gmt_ctime gmt_isotime isotime quotearg usage /;
+our @EXPORT_OK = qw/ _my_cwd canon_path ctime
+    error expandrange gmt_ctime gmt_isotime
+    isotime quotearg split_argv usage /;
 
 sub expandrange
 {
@@ -151,6 +152,64 @@ sub quotearg
         $arg =~ s#([\$"`])#\\$1#gs;
     }
     return $arg;
+}
+
+#   helper function to split argument line
+#   the same way Bourne-Shell does:
+#   #1: foo=bar quux   => "foo=bar", "quux"
+#   #2: "foo=bar quux" => "foo=bar quux"
+#   #3: foo="bar quux" => "foo=bar quux"     <-- !!
+sub split_argv
+{
+    my ($str) = @_;
+    my @argv;
+    my $r    = '';
+    my $prev = '';
+
+SPLIT_ARGV: while (1)
+    {
+        $prev = $str;
+        if (   $str =~ s#\A"([^"\\]*(?:\\.[^"\\]*)*)"#$r .= $1;''#e
+            or $str =~ s#\A'([^'\\]*(?:\\.[^'\\]*)*)'#$r .= $1;''#e
+            or $str =~ s#\A([^\s"']+)#$r .= $1;''#e )
+        {
+            next SPLIT_ARGV;
+        }
+        if ( $str =~ /\A[\s\n]/ or $str eq '' )
+        {
+            if ( $r ne '' )
+            {
+                push( @argv, $r );
+                $r = '';
+            }
+            $str =~ s#\A[\s\n]+##;
+            last if ( $str eq '' );
+        }
+        if ( $str eq $prev )
+        {
+            #    breaks an infinite loop
+            print STDERR "** WML:Error: options can not be correctly parsed\n";
+            exit(1);
+        }
+    }
+    return @argv;
+}
+
+sub canon_path
+{
+    my ($path) = @_;
+
+    my $pathL = '';
+    while ( $path ne $pathL )
+    {
+        $pathL = $path;
+        $path =~ s|//|/|g;
+        $path =~ s|/\./|/|g;
+        $path =~ s|/\.$|/|g;
+        $path =~ s|^\./(.)|$1|g;
+        $path =~ s|([^/.][^/.]*)/\.\.||;
+    }
+    return $path;
 }
 
 1;
