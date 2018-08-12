@@ -121,6 +121,11 @@ INSTALL (
     DESTINATION "${WML_LIB_DIR}/WML_Backends"
 )
 
+INSTALL (
+    FILES "WML_Frontends/Wml/Util.pm"
+    DESTINATION "${WML_LIB_DIR}/WML_Frontends/Wml"
+)
+
 ADD_CUSTOM_TARGET(
     "preprocess_perl_includes" ALL
     DEPENDS ${preproc_target_dests}

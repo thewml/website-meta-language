@@ -25,36 +25,13 @@ SET (pod_dests )
 FOREACH (cmd wmk wml wmb wmd wmu)
     set_vars()
     # MESSAGE( FATAL_ERROR "WML_LIB_DIR = ${WML_LIB_DIR}")
-    ADD_CUSTOM_COMMAND(
-        OUTPUT "${dest}"
-        COMMAND "${PERL_EXECUTABLE}"
-        ARGS "${CMAKE_CURRENT_SOURCE_DIR}/preprocess-perl-source.pl"
-            "--input" "${src}"
-            "--output" "${dest}"
-            "--subst" "WML_VERSION=${VERSION}"
-            "--subst" "WML_CONFIG_ARGS="
-            "--subst" "perlprog=${PERL_EXECUTABLE}"
-            "--subst" "perlvers=${PERL_EXECUTABLE}"
-            "--subst" "built_system=${CMAKE_SYSTEM_NAME}"
-            "--subst" "built_user=${username}"
-            "--subst" "built_date=${date}"
-            "--subst" "prefix=${CMAKE_INSTALL_PREFIX}"
-            "--subst" "bindir=${CMAKE_INSTALL_PREFIX}/bin"
-            "--subst" "libdir=${CMAKE_INSTALL_PREFIX}/${WML_LIB_DIR}"
-            "--subst" "mandir=${CMAKE_INSTALL_PREFIX}/share/man"
-            "--subst" "PATH_PERL=${PERL_EXECUTABLE}"
-        DEPENDS "${src}"
-    )
+    PREPROCESS_PATH_PERL_WITH_FULL_NAMES("preprocess_perl_frontend_${cmd}" "${src}" "${dest}")
     INSTALL (
         PROGRAMS "${dest}"
         DESTINATION "bin"
         RENAME "${cmd}"
         )
     INST_POD2MAN("pod_dests" "${srcbase}" "${mannamebase}" "1")
-    ADD_CUSTOM_TARGET(
-        "preprocess_perl_frontend_${cmd}" ALL
-        DEPENDS "${dest}"
-    )
 ENDFOREACH(cmd)
 
 FOREACH(cmd wmd_missing)

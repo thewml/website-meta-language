@@ -38,6 +38,9 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use strict;
 use warnings;
 
+use lib "@INSTALLPRIVLIB@";
+use lib "@INSTALLARCHLIB@";
+
 my $opt_v = -1;
 
 sub verbose
@@ -216,43 +219,7 @@ sub _my_cwd
     return $cwd;
 }
 
-sub ctime
-{
-    my ($time) = @_;
-    return scalar( localtime($time) );
-}
-
-sub isotime
-{
-    my ($time) = @_;
-
-    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
-        localtime($time);
-    return sprintf(
-        "%04d-%02d-%02d %02d:%02d:%02d",
-        $year + 1900,
-        $mon + 1, $mday, $hour, $min, $sec
-    );
-}
-
-sub gmt_ctime
-{
-    my ($time) = @_;
-    return scalar( gmtime($time) );
-}
-
-sub gmt_isotime
-{
-    my ($time) = @_;
-
-    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
-        gmtime($time);
-    return sprintf(
-        "%04d-%02d-%02d %02d:%02d:%02d",
-        $year + 1900,
-        $mon + 1, $mday, $hour, $min, $sec
-    );
-}
+use WML_Frontends::Wml::Util qw/ ctime gmt_ctime gmt_isotime isotime /;
 
 sub usage
 {
