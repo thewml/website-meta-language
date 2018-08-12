@@ -83,6 +83,14 @@ sub precompile
     return ( $func, $@ );
 }
 
+#   remove escape backslashes
+sub unquotearg
+{
+    my ($arg) = @_;
+    $arg =~ s/\\([\$"`])/$1/g;
+    return $arg;
+}
+
 sub dosource
 {
     my ( $pass, $prog, $args ) = @_;
@@ -118,15 +126,15 @@ sub dosource
     {
         redo
             if $args =~
-            s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, ::unquotearg($1)), ''|iges;
+            s|^\s*(-[a-zA-Z0-9]\S+)|push(@argv, unquotearg($1)), ''|iges;
         redo
             if $args =~
-            s|^\s*(-[a-zA-Z0-9])|push(@argv, ::unquotearg($1)), ''|iges;
+            s|^\s*(-[a-zA-Z0-9])|push(@argv, unquotearg($1)), ''|iges;
         redo
             if $args =~
-            s|^\s*"(.*?(?!\\).)"|push(@argv, ::unquotearg($1)), ''|iges;
+            s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|iges;
         redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|iges;
-        redo if $args =~ s|^\s*(\S+)|push(@argv, ::unquotearg($1)), ''|iges;
+        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|iges;
         redo if $args =~ s|^\s+$|''|iges;
     }
     verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
@@ -425,14 +433,6 @@ sub quotearg
             $arg =~ s|([\$"`])|\\$1|sg;
         }
     }
-    return $arg;
-}
-
-#   remove escape backslashes
-sub unquotearg
-{
-    my ($arg) = @_;
-    $arg =~ s/\\([\$"`])/$1/g;
     return $arg;
 }
 
