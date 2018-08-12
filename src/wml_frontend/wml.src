@@ -242,7 +242,7 @@ sub ProcessOptions
 
 my @ARGVLINE = @ARGV;
 ProcessOptions();
-our $src = $ARGV[0];
+my $src = $ARGV[0];
 @ARGV = @ARGVLINE;
 
 #   reset with defaults (except $opt_r and $opt_v)
