@@ -1021,8 +1021,7 @@ sub pass8
 #   Flag set if some output goes to stdout
 my $out_istmp = 0;
 
-my $out     = '';
-my $verbose = '';
+my $out = '';
 
 sub pass9
 {
@@ -1050,7 +1049,7 @@ sub pass9
             $out_istmp = 0;
             ProcessOptions();
             ProcessOutfiles();
-            $opt = "$verbose $out";
+            $opt = $_pass_mgr->pass(9)->opt_pass;
         }
     }
 
@@ -1367,6 +1366,7 @@ sub ProcessOutfiles
 }
 ProcessOutfiles();
 
+my $verbose = '';
 if ( $opt_v >= 3 )
 {
     $verbose = '-v';
