@@ -177,17 +177,17 @@ my $opt_v = -1;
 my $opt_c = 0;
 
 #   reset with defaults (except $opt_r and $opt_v)
-our @opt_I = ();
-our @opt_i = ();
-our @opt_D = ();
+my @opt_I = ();
+my @opt_i = ();
+my @opt_D = ();
 my $opt_n = 0;
 my $opt_O = '';
-our @opt_o = ();
-our @opt_P = ();
-our @opt_E = ();
+my @opt_o = ();
+my @opt_P = ();
+my @opt_E = ();
 my $opt_t = 0;
-our @opt_p = ();
-our @opt_W = ();
+my @opt_p = ();
+my @opt_W = ();
 my $opt_M = '-';
 my $opt_s = 0;
 my $opt_q = 0;
@@ -200,11 +200,15 @@ sub ProcessOptions
     };
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
-    my (@list_options) = (
-        "I|include=s@", "i|includefile=s@",
-        "D|define=s@",  "o|outputfile=s@",
-        "P|prolog=s@",  "E|epilog=s@",
-        "p|pass=s@",    "W|passoption=s@",
+    my %list_options = (
+        "I|include=s@"     => \@opt_I,
+        "i|includefile=s@" => \@opt_i,
+        "D|define=s@"      => \@opt_D,
+        "o|outputfile=s@"  => \@opt_o,
+        "P|prolog=s@"      => \@opt_P,
+        "E|epilog=s@"      => \@opt_E,
+        "p|pass=s@"        => \@opt_p,
+        "W|passoption=s@"  => \@opt_W,
     );
     my %lex_options = (
         "r|norcfile"   => \$opt_r,
@@ -219,26 +223,20 @@ sub ProcessOptions
         "V|version:i"  => \$opt_V,
         "h|help"       => \$opt_h,
     );
-    if ( not Getopt::Long::GetOptions( %lex_options, @list_options ) )
+    if ( not Getopt::Long::GetOptions( %lex_options, %list_options ) )
     {
         warn "Try `$0 --help' for more information.\n";
         exit(0);
     }
     usage($0) if ($opt_h);
-    foreach my $opt (@list_options)
+    while ( my ( $opt, $var ) = each(%list_options) )
     {
-        if ( $opt =~ m|=s| )
+        if ( @$var and $var->[0] =~ m|^=| )
         {
-            $opt =~ s/^(.)\|.*$/opt_$1/;
-            my ($arg) = $1;
-            no strict 'refs';
-            if ( @{$opt} && ${$opt}[0] =~ m|^=| )
-            {
-                warn
-"An equal sign has been detected after the `-$arg' option\n";
-                warn "Try `$0 --help' for more information.\n\n";
-                exit(0);
-            }
+            my $arg = substr( $opt, 0, 1 );
+            warn "An equal sign has been detected after the `-$arg' option\n";
+            warn "Try `$0 --help' for more information.\n\n";
+            exit(0);
         }
     }
 }
