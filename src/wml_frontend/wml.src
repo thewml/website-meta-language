@@ -180,7 +180,7 @@ our $opt_c = 0;
 our @opt_I = ();
 our @opt_i = ();
 our @opt_D = ();
-our $opt_n = 0;
+my $opt_n = 0;
 our $opt_O = '';
 our @opt_o = ();
 our @opt_P = ();
@@ -202,17 +202,17 @@ sub ProcessOptions
     $Getopt::Long::getopt_compat = 0;
     my (@list_options) = (
         "I|include=s@",    "i|includefile=s@",
-        "D|define=s@",     "n|noshebang",
-        "r|norcfile",      "c|nocd",
-        "O|optimize=i",    "o|outputfile=s@",
-        "P|prolog=s@",     "E|epilog=s@",
-        "t|settime",       "p|pass=s@",
-        "W|passoption=s@", "M|depend:s",
-        "s|safe",          "v|verbose:i",
-        "q|quiet",         "V|version:i",
-        "h|help"
+        "D|define=s@",     "r|norcfile",
+        "c|nocd",          "O|optimize=i",
+        "o|outputfile=s@", "P|prolog=s@",
+        "E|epilog=s@",     "t|settime",
+        "p|pass=s@",       "W|passoption=s@",
+        "M|depend:s",      "s|safe",
+        "v|verbose:i",     "q|quiet",
+        "V|version:i",     "h|help"
     );
-    if ( not Getopt::Long::GetOptions(@list_options) )
+    my %lex_options = ( "n|noshebang" => \$opt_n, );
+    if ( not Getopt::Long::GetOptions( %lex_options, @list_options ) )
     {
         warn "Try `$0 --help' for more information.\n";
         exit(0);
