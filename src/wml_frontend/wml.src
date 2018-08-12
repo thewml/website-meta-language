@@ -169,11 +169,11 @@ EOF
     exit(1);
 }
 
-our $opt_h = 0;
+my $opt_h = 0;
 
 #   pre-process argument line for option -r and -v
 my $opt_r = 0;
-our $opt_v = -1;
+my $opt_v = -1;
 my $opt_c = 0;
 
 #   reset with defaults (except $opt_r and $opt_v)
@@ -188,10 +188,10 @@ our @opt_E = ();
 my $opt_t = 0;
 our @opt_p = ();
 our @opt_W = ();
-our $opt_M = '-';
-our $opt_s = 0;
-our $opt_q = 0;
-our $opt_V = -1;
+my $opt_M = '-';
+my $opt_s = 0;
+my $opt_q = 0;
+my $opt_V = -1;
 
 sub ProcessOptions
 {
@@ -205,9 +205,6 @@ sub ProcessOptions
         "D|define=s@",  "o|outputfile=s@",
         "P|prolog=s@",  "E|epilog=s@",
         "p|pass=s@",    "W|passoption=s@",
-        "M|depend:s",   "s|safe",
-        "v|verbose:i",  "q|quiet",
-        "V|version:i",  "h|help"
     );
     my %lex_options = (
         "r|norcfile"   => \$opt_r,
@@ -215,6 +212,12 @@ sub ProcessOptions
         "c|nocd"       => \$opt_c,
         "O|optimize=i" => \$opt_O,
         "t|settime"    => \$opt_t,
+        "M|depend:s"   => \$opt_M,
+        "s|safe"       => \$opt_s,
+        "v|verbose:i"  => \$opt_v,
+        "q|quiet"      => \$opt_q,
+        "V|version:i"  => \$opt_V,
+        "h|help"       => \$opt_h,
     );
     if ( not Getopt::Long::GetOptions( %lex_options, @list_options ) )
     {
