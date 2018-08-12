@@ -1,4 +1,3 @@
-#!@PATH_PERL@
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 ##
@@ -212,54 +211,8 @@ use Cwd ();
 
 use IO::All qw/ io /;
 
-sub _my_cwd
-{
-    my $cwd = Cwd::cwd;
-    $cwd =~ s#/\z##;
-    return $cwd;
-}
-
-use WML_Frontends::Wml::Util qw/ ctime gmt_ctime gmt_isotime isotime /;
-
-sub usage
-{
-    my ($progname) = @_;
-
-    print STDERR <<"EOF";
-Usage: $progname [options] [inputfile]
-
-Input Options:
-  -I, --include=PATH      adds an include directory
-  -i, --includefile=PATH  pre-include a particular include file
-  -D, --define=NAME[=STR] define a variable
-  -D, --define=NAME~PATH  define an auto-adjusted path variable
-  -n, --noshebang         no shebang-line parsing (usually used by WMk)
-  -r, --norcfile          no .wmlrc files are read
-  -c, --nocd              read .wmlrc files without changing to input file directory
-
-Output Options:
-  -O, --optimize=NUM      specify the output optimization level
-  -o, --outputfile=PATH   specify the output file(s)
-  -P, --prolog=PATH       specify one or more prolog filters
-  -E, --epilog=PATH       specify one or more epilog filters
-  -t, --settime           sets mtime of outputfile(s) to mtime+1 of inputfile
-
-Processing Options:
-  -M, --depend[=OPTIONS]  dump dependencies as gcc does
-  -p, --pass=STR          specify which passed should be run
-  -W, --passoption[=PASS,OPTIONS]
-                          set options for a specific pass
-  -s, --safe              don't use precompile/inline hacks to speedup processing
-  -v, --verbose[=NUM]     verbose mode
-  -q, --quiet             quiet mode
-
-Giving Feedback:
-  -V, --version[=NUM]     display version and build information
-  -h, --help              display this usage summary
-
-EOF
-    exit(1);
-}
+use WML_Frontends::Wml::Util
+    qw/ _my_cwd ctime expandrange gmt_ctime gmt_isotime isotime usage /;
 
 my $opt_h = 0;
 
@@ -1185,18 +1138,6 @@ if ( not -s $src )
 }
 my $pass_str = join( '', @opt_p );
 $pass_str =~ s|,||g;
-
-sub expandrange
-{
-    my ( $s, $e ) = @_;
-    my $x = '';
-    for my $i ( $s .. $e )
-    {
-        $x .= $i;
-    }
-    return $x;
-}
-
 $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
 my @passes_indices;
 if ( $pass_str =~ s/!$// )

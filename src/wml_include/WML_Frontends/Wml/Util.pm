@@ -36,10 +36,25 @@ package WML_Frontends::Wml::Util;
 
 use strict;
 use warnings;
+use Cwd ();
 
 use parent 'Exporter';
 
-our @EXPORT_OK = qw/ ctime gmt_ctime gmt_isotime isotime /;
+our @EXPORT_OK =
+    qw/ _my_cwd ctime expandrange gmt_ctime gmt_isotime isotime usage /;
+
+sub expandrange
+{
+    my ( $s, $e ) = @_;
+    return join '', ( $s .. $e );
+}
+
+sub _my_cwd
+{
+    my $cwd = Cwd::cwd;
+    $cwd =~ s#/\z##;
+    return $cwd;
+}
 
 sub ctime
 {
@@ -79,4 +94,43 @@ sub gmt_isotime
     );
 }
 
+sub usage
+{
+    my ($progname) = @_;
+
+    print STDERR <<"EOF";
+Usage: $progname [options] [inputfile]
+
+Input Options:
+  -I, --include=PATH      adds an include directory
+  -i, --includefile=PATH  pre-include a particular include file
+  -D, --define=NAME[=STR] define a variable
+  -D, --define=NAME~PATH  define an auto-adjusted path variable
+  -n, --noshebang         no shebang-line parsing (usually used by WMk)
+  -r, --norcfile          no .wmlrc files are read
+  -c, --nocd              read .wmlrc files without changing to input file directory
+
+Output Options:
+  -O, --optimize=NUM      specify the output optimization level
+  -o, --outputfile=PATH   specify the output file(s)
+  -P, --prolog=PATH       specify one or more prolog filters
+  -E, --epilog=PATH       specify one or more epilog filters
+  -t, --settime           sets mtime of outputfile(s) to mtime+1 of inputfile
+
+Processing Options:
+  -M, --depend[=OPTIONS]  dump dependencies as gcc does
+  -p, --pass=STR          specify which passed should be run
+  -W, --passoption[=PASS,OPTIONS]
+                          set options for a specific pass
+  -s, --safe              don't use precompile/inline hacks to speedup processing
+  -v, --verbose[=NUM]     verbose mode
+  -q, --quiet             quiet mode
+
+Giving Feedback:
+  -V, --version[=NUM]     display version and build information
+  -h, --help              display this usage summary
+
+EOF
+    exit(1);
+}
 1;
