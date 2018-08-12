@@ -126,13 +126,13 @@ sub dosource
     {
         redo
             if $args =~
-            s|^\s*(-[a-zA-Z0-9]\S*)|push(@argv, unquotearg($1)), ''|iges;
+            s|^\s*(-[a-zA-Z0-9]\S*)|push(@argv, unquotearg($1)), ''|egis;
         redo
             if $args =~
-            s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|iges;
-        redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|iges;
-        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|iges;
-        redo if $args =~ s|^\s+$|''|iges;
+            s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|egis;
+        redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|egis;
+        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|egis;
+        redo if $args =~ s|^\s+$|''|egis;
     }
     verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
 
