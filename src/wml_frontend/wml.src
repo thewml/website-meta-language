@@ -203,10 +203,9 @@ if ( index( $ENV{PATH}, $bindir ) < 0 )
 }
 
 use Getopt::Long 2.13;
-use File::Spec;
-use Cwd;
+use File::Spec ();
 use Term::ReadKey;
-use Cwd;
+use Cwd ();
 
 use IO::All qw/ io /;
 
