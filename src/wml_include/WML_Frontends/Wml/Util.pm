@@ -41,7 +41,7 @@ use Cwd ();
 use parent 'Exporter';
 
 our @EXPORT_OK =
-    qw/ _my_cwd ctime expandrange gmt_ctime gmt_isotime isotime usage /;
+    qw/ _my_cwd ctime error expandrange gmt_ctime gmt_isotime isotime quotearg usage /;
 
 sub expandrange
 {
@@ -133,4 +133,24 @@ Giving Feedback:
 EOF
     exit(1);
 }
+
+sub error
+{
+    my ($str) = @_;
+    print STDERR "** WML:Error: $str\n";
+    exit(1);
+}
+
+#   escape options if not quoted but
+#   when shell metachars exists
+sub quotearg
+{
+    my ($arg) = @_;
+    if ( not( $arg =~ /\A'/ and $arg =~ /'\z/ ) )
+    {
+        $arg =~ s#([\$"`])#\\$1#gs;
+    }
+    return $arg;
+}
+
 1;

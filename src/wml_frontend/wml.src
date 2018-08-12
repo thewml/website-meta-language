@@ -212,7 +212,7 @@ use Cwd ();
 use IO::All qw/ io /;
 
 use WML_Frontends::Wml::Util
-    qw/ _my_cwd ctime expandrange gmt_ctime gmt_isotime isotime usage /;
+    qw/ _my_cwd ctime error expandrange gmt_ctime gmt_isotime isotime quotearg usage /;
 
 my $opt_h = 0;
 
@@ -367,21 +367,6 @@ sub CanonPath
         $path =~ s|([^/.][^/.]*)/\.\.||;
     }
     return $path;
-}
-
-#   escape options if not quoted but
-#   when shell metachars exists
-sub quotearg
-{
-    my ($arg) = @_;
-    if ( $arg !~ m|^'.*'$| )
-    {
-        if ( $arg =~ m|[\$"`]| )
-        {
-            $arg =~ s|([\$"`])|\\$1|sg;
-        }
-    }
-    return $arg;
 }
 
 #   1. process options in WMLOPTS variable
@@ -747,13 +732,6 @@ if ( $opt_v == 0 )
 if ( $opt_v == -1 )
 {
     $opt_v = 0;    # we operate with 0 for not set
-}
-
-sub error
-{
-    my ($str) = @_;
-    print STDERR "** WML:Error: $str\n";
-    exit(1);
 }
 
 my $PROTECT_COUNTER = 0;
