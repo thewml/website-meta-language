@@ -1226,18 +1226,18 @@ sub expandrange
 }
 
 $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
-my @p;
+my @passes_indices;
 if ( $pass_str =~ s/!$// )
 {
-    @p = split( '', $pass_str );
+    @passes_indices = split( '', $pass_str );
 }
 else
 {
-    @p = sort { $a <=> $b } ( split( '', $pass_str ) );
+    @passes_indices = sort { $a <=> $b } ( split( '', $pass_str ) );
 }
 
 #   only pre-processing if -M option specified
-@p = ('1') if $opt_M ne '-';
+@passes_indices = ('1') if $opt_M ne '-';
 
 #   determine includes
 my $inc = '';
@@ -1248,7 +1248,7 @@ foreach my $i (@opt_I)
 
 #   determine preloads
 my $preload = '';
-foreach my $pass_idx (@p)
+foreach my $pass_idx (@passes_indices)
 {
     $preload .= " -s 'sys/bootp${pass_idx}.wml'"
         if -f "$libdir/include/sys/bootp${pass_idx}.wml"
@@ -1476,7 +1476,7 @@ if ( $opt_M ne '-' )
 #   MAIN PROCESSING LOOP
 #
 my $final = 0;
-PASS_IDX: foreach my $pass_idx (@p)
+PASS_IDX: foreach my $pass_idx (@passes_indices)
 {
     verbose( 2, "PASS $pass_idx:\n" );
     print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $opt_q );
