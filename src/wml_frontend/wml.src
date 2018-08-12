@@ -616,17 +616,18 @@ if ($opt_V)
 
     if ( $opt_V > 1 )
     {
-        print STDERR "\n";
-        print STDERR "Built Environment:\n";
-        print STDERR "    Host: " . '@built_system@' . "\n";
-        print STDERR "    Perl: " . '@perlvers@ (@perlprog@)' . "\n";
-        print STDERR "    User: " . '@built_user@' . "\n";
-        print STDERR "    Date: " . '@built_date@' . "\n";
-        print STDERR "Built Location:\n";
-        print STDERR "    Prefix: " . '@prefix@' . "\n";
-        print STDERR "    BinDir: " . '@bindir@' . "\n";
-        print STDERR "    LibDir: " . '@libdir@' . "\n";
-        print STDERR "    ManDir: " . '@mandir@' . "\n";
+        print STDERR <<'EOF';
+Built Environment:
+    Host: @built_system@
+    Perl: @perlvers@ (@perlprog@)
+    User: @built_user@
+    Date: @built_date@
+Built Location:
+    Prefix: @prefix@
+    BinDir: @bindir@
+    LibDir: @libdir@
+    ManDir: @mandir@
+EOF
     }
     if ( $opt_V > 2 )
     {
