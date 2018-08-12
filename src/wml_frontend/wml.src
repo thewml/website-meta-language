@@ -291,7 +291,6 @@ sub ProcessOptions
 my @ARGVLINE = @ARGV;
 ProcessOptions();
 my $src = $ARGV[0];
-@ARGV = @ARGVLINE;
 
 #   reset with defaults (except $opt_r and $opt_v)
 @opt_D = ();
@@ -310,9 +309,7 @@ $opt_s = 0;
 $opt_q = 0;
 $opt_V = -1;
 
-#   save argument line
-@ARGVLINE = @ARGV;
-@ARGV     = ();
+@ARGV = ();
 
 #   1. process options in WMLOPTS variable
 if ( my $opts = $ENV{WMLOPTS} )
