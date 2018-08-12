@@ -209,6 +209,7 @@ use Getopt::Long 2.13;
 use File::Spec ();
 use Term::ReadKey qw/ ReadMode ReadKey /;
 use Cwd ();
+use List::Util qw/ max /;
 
 use IO::All qw/ io /;
 
@@ -665,7 +666,6 @@ my $firstpass = 1;
 sub protect
 {
     my ( $fn, $pass ) = @_;
-    my ( $prolog, $arg, $body, $key, $pe );
 
     my $data = io->file($fn)->all;
     open my $fp, '>', $fn
@@ -682,10 +682,10 @@ sub protect
     $firstpass = 0 if $firstpass;
 
     #  This loop must take care of nestable <protect> tags
-    while ( $data =~ s|^(.*)<protect(.*?)>(.*?)</protect>||is )
+    while ( $data =~ s#\A(.*)<protect(.*?)>(.*?)</protect>##is )
     {
+        my ( $prolog, $arg, $body ) = ( $1, $2, $3 );
         my $passes_str = '123456789';
-        ( $prolog, $arg, $body ) = ( $1, $2, $3 );
 
         #    unquote the attribute
         $arg =~ s|(['"])(.*)\1\s*$|$2|;
@@ -697,12 +697,10 @@ sub protect
             $passes_str .= '9' if $passes_str =~ m|-$|;
             $passes_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
         }
-        $pe = join( '', sort { $a <=> $b } ( split( '', $passes_str ) ) );
-        $pe =~ s/^.*([0-9])$/$1/;
-        $key = sprintf( "%06d", $PROTECT_COUNTER++ );
+        my $key = sprintf( "%06d", $PROTECT_COUNTER++ );
         $PROTECT_STORAGE{$key} = {
             SPEC => $passes_str,
-            MAX  => $pe,
+            MAX  => max( split( '', $passes_str ) ),
             ARG  => $arg,
             BODY => $body
         };
@@ -712,7 +710,7 @@ sub protect
     #   And now unprotect passes
     while ( $data =~ s|^(.*?)-=P\[([0-9]+)\]=-||s )
     {
-        $key = $2;
+        my $key = $2;
         $fp->print($1) || error("Unable to write into $fn for protection: $!");
         if ( $PROTECT_STORAGE{$key}->{SPEC} =~ m/$pass/ )
         {
