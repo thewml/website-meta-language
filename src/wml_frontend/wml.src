@@ -1112,10 +1112,10 @@ RESOLV_LOOP:
     }
 }
 my $gen_time        = time();
-my $gen_ctime       = ctime( time() );
-my $gen_isotime     = isotime( time() );
-my $gen_gmt_ctime   = gmt_ctime( time() );
-my $gen_gmt_isotime = gmt_isotime( time() );
+my $gen_ctime       = ctime($gen_time);
+my $gen_isotime     = isotime($gen_time);
+my $gen_gmt_ctime   = gmt_ctime($gen_time);
+my $gen_gmt_isotime = gmt_isotime($gen_time);
 
 my $cwd = _my_cwd;
 my (
