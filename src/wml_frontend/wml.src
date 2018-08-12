@@ -841,24 +841,24 @@ sub protect
     #  This loop must take care of nestable <protect> tags
     while ( $data =~ s|^(.*)<protect(.*?)>(.*?)</protect>||is )
     {
-        my $p = '123456789';
+        my $passes_str = '123456789';
         ( $prolog, $arg, $body ) = ( $1, $2, $3 );
 
         #    unquote the attribute
         $arg =~ s|(['"])(.*)\1\s*$|$2|;
         if ( $arg =~ m|pass=([0-9,-]*)|i )
         {
-            $p = $1;
-            $p =~ s|,||g;
-            $p = "1$p"   if $p =~ m|^-|;
-            $p = "${p}9" if $p =~ m|-$|;
-            $p =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
+            $passes_str = $1;
+            $passes_str =~ s|,||g;
+            $passes_str = "1$passes_str" if $passes_str =~ m|^-|;
+            $passes_str .= '9' if $passes_str =~ m|-$|;
+            $passes_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
         }
-        $pe = join( '', sort { $a <=> $b } ( split( '', $p ) ) );
+        $pe = join( '', sort { $a <=> $b } ( split( '', $passes_str ) ) );
         $pe =~ s/^.*([0-9])$/$1/;
         $key = sprintf( "%06d", $PROTECT_COUNTER++ );
         $PROTECT_STORAGE{$key} = {
-            SPEC => $p,
+            SPEC => $passes_str,
             MAX  => $pe,
             ARG  => $arg,
             BODY => $body
@@ -1211,8 +1211,8 @@ if ( not -s $src )
     #   on empty input optimize to just use pass 9
     @opt_p = ('9');
 }
-my $p = join( '', @opt_p );
-$p =~ s|,||g;
+my $pass_str = join( '', @opt_p );
+$pass_str =~ s|,||g;
 
 sub expandrange
 {
@@ -1225,16 +1225,15 @@ sub expandrange
     return $x;
 }
 
-$p =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
+$pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
 my @p;
-if ( $p =~ m/!$/ )
+if ( $pass_str =~ s/!$// )
 {
-    $p =~ s/!$//;
-    @p = split( '', $p );
+    @p = split( '', $pass_str );
 }
 else
 {
-    @p = sort { $a <=> $b } ( split( '', $p ) );
+    @p = sort { $a <=> $b } ( split( '', $pass_str ) );
 }
 
 #   only pre-processing if -M option specified
@@ -1249,10 +1248,11 @@ foreach my $i (@opt_I)
 
 #   determine preloads
 my $preload = '';
-foreach my $p (@p)
+foreach my $pass_idx (@p)
 {
-    $preload .= " -s 'sys/bootp${p}.wml'"
-        if -f "$libdir/include/sys/bootp${p}.wml" and $p =~ m/^[34]$/;
+    $preload .= " -s 'sys/bootp${pass_idx}.wml'"
+        if -f "$libdir/include/sys/bootp${pass_idx}.wml"
+        and $pass_idx =~ m/^[34]$/;
 }
 foreach my $i (@opt_i)
 {
@@ -1267,12 +1267,7 @@ foreach my $i (@opt_i)
 }
 
 #   determine prologs
-my $prolog = '';
-foreach my $p (@opt_P)
-{
-    $prolog .= ' -P "' . quotearg($p) . '"';
-}
-
+my $prolog = join '', map { ' -P "' . quotearg($_) . '"' } @opt_P;
 my $defipp = '';
 my $dummy;
 foreach my $d (@opt_D)
@@ -1483,7 +1478,7 @@ if ( $opt_M ne '-' )
 my $final = 0;
 PASS_IDX: foreach my $pass_idx (@p)
 {
-    verbose( 2, "PASS $p:\n" );
+    verbose( 2, "PASS $pass_idx:\n" );
     print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $opt_q );
 
     #   run pass
