@@ -65,8 +65,7 @@ sub _init
     return;
 }
 
-1;
-our $VERSION = '@WML_VERSION@';
+my $VERSION = '@WML_VERSION@';
 
 my $bindir = '@bindir@';
 if ( index( $ENV{PATH}, $bindir ) < 0 )
