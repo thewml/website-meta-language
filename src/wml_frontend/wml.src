@@ -210,7 +210,7 @@ sub ProcessOptions
         "p|pass=s@"        => \@opt_p,
         "W|passoption=s@"  => \@opt_W,
     );
-    my %lex_options = (
+    my %scalar_options = (
         "r|norcfile"   => \$opt_r,
         "n|noshebang"  => \$opt_n,
         "c|nocd"       => \$opt_c,
@@ -223,7 +223,7 @@ sub ProcessOptions
         "V|version:i"  => \$opt_V,
         "h|help"       => \$opt_h,
     );
-    if ( not Getopt::Long::GetOptions( %lex_options, %list_options ) )
+    if ( not Getopt::Long::GetOptions( %scalar_options, %list_options ) )
     {
         warn "Try `$0 --help' for more information.\n";
         exit(0);
