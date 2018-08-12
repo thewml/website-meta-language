@@ -174,14 +174,14 @@ our $opt_h = 0;
 #   pre-process argument line for option -r and -v
 our $opt_r = 0;
 our $opt_v = -1;
-our $opt_c = 0;
+my $opt_c = 0;
 
 #   reset with defaults (except $opt_r and $opt_v)
 our @opt_I = ();
 our @opt_i = ();
 our @opt_D = ();
 my $opt_n = 0;
-our $opt_O = '';
+my $opt_O = '';
 our @opt_o = ();
 our @opt_P = ();
 our @opt_E = ();
@@ -203,7 +203,6 @@ sub ProcessOptions
     my (@list_options) = (
         "I|include=s@",    "i|includefile=s@",
         "D|define=s@",     "r|norcfile",
-        "c|nocd",          "O|optimize=i",
         "o|outputfile=s@", "P|prolog=s@",
         "E|epilog=s@",     "t|settime",
         "p|pass=s@",       "W|passoption=s@",
@@ -211,7 +210,12 @@ sub ProcessOptions
         "v|verbose:i",     "q|quiet",
         "V|version:i",     "h|help"
     );
-    my %lex_options = ( "n|noshebang" => \$opt_n, );
+    my %lex_options = (
+        "n|noshebang"  => \$opt_n,
+        "c|nocd"       => \$opt_c,
+        "O|optimize=i" => \$opt_O,
+
+    );
     if ( not Getopt::Long::GetOptions( %lex_options, @list_options ) )
     {
         warn "Try `$0 --help' for more information.\n";
