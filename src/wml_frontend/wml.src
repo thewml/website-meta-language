@@ -922,16 +922,6 @@ sub unprotect
 
 my $libdir = '@libdir@';
 
-sub _generic_do
-{
-    my ( $pass_idx, $EXE, $opt, $from, $to ) = @_;
-    return scalar(
-        $opt_s
-        ? dosystem("$libdir/exec/$EXE $opt -o $to $from")
-        : dosource( $pass_idx, "$libdir/exec/$EXE", "$opt -o $to $from" )
-    );
-}
-
 sub pass1
 {
     my ( $opt, $from, $to, $tmp ) = @_;
@@ -1059,10 +1049,16 @@ my @pass_objs = (
         keys @__PASSES
 );
 
-sub dosource
+sub _generic_do
 {
-    my ( $pass_idx, $prog, $args ) = @_;
-    return $pass_objs[$pass_idx]->dosource( $prog, $args );
+    my ( $pass_idx, $EXE, $opt, $from, $to ) = @_;
+    my $prog = "$libdir/exec/$EXE";
+    my $args = "$opt -o $to $from";
+    return scalar(
+        $opt_s
+        ? dosystem("$prog $args")
+        : $pass_objs[$pass_idx]->dosource( $prog, $args )
+    );
 }
 
 #
