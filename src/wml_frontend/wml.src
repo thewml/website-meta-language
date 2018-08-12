@@ -171,6 +171,28 @@ EOF
 
 our $opt_h = 0;
 
+#   pre-process argument line for option -r and -v
+our $opt_r = 0;
+our $opt_v = -1;
+our $opt_c = 0;
+
+#   reset with defaults (except $opt_r and $opt_v)
+our @opt_I = ();
+our @opt_i = ();
+our @opt_D = ();
+our $opt_n = 0;
+our $opt_O = '';
+our @opt_o = ();
+our @opt_P = ();
+our @opt_E = ();
+our $opt_t = 0;
+our @opt_p = ();
+our @opt_W = ();
+our $opt_M = '-';
+our $opt_s = 0;
+our $opt_q = 0;
+our $opt_V = -1;
+
 sub ProcessOptions
 {
     local $SIG{__WARN__} = sub {
@@ -214,31 +236,27 @@ sub ProcessOptions
     }
 }
 
-#   pre-process argument line for option -r and -v
-our $opt_r    = 0;
-our $opt_v    = -1;
-our $opt_c    = 0;
 our @ARGVLINE = @ARGV;
 ProcessOptions();
 our $src = $ARGV[0];
 @ARGV = @ARGVLINE;
 
 #   reset with defaults (except $opt_r and $opt_v)
-our @opt_I = ();
-our @opt_i = ();
-our @opt_D = ();
-our $opt_n = 0;
-our $opt_O = '';
-our @opt_o = ();
-our @opt_P = ();
-our @opt_E = ();
-our $opt_t = 0;
-our @opt_p = ();
-our @opt_W = ();
-our $opt_M = '-';
-our $opt_s = 0;
-our $opt_q = 0;
-our $opt_V = -1;
+@opt_D = ();
+@opt_i = ();
+@opt_D = ();
+$opt_n = 0;
+$opt_O = '';
+@opt_o = ();
+@opt_P = ();
+@opt_E = ();
+$opt_t = 0;
+@opt_p = ();
+@opt_W = ();
+$opt_M = '-';
+$opt_s = 0;
+$opt_q = 0;
+$opt_V = -1;
 
 #   save argument line
 @ARGVLINE = @ARGV;
@@ -662,14 +680,16 @@ foreach my $opts (@opt_o_OLD)
 my %new_opt_D;
 foreach my $d (@opt_D)
 {
-    my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| );
-    if ( $val eq 'UNDEF' )
+    if ( my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| ) )
     {
-        delete $new_opt_D{$var};
-    }
-    else
-    {
-        $new_opt_D{$var} = $val;
+        if ( $val eq 'UNDEF' )
+        {
+            delete $new_opt_D{$var};
+        }
+        else
+        {
+            $new_opt_D{$var} = $val;
+        }
     }
 }
 @opt_D = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
@@ -1248,8 +1268,10 @@ my $defipp = '';
 my $dummy;
 foreach my $d (@opt_D)
 {
-    my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| );
-    $defipp .= " \"-D$var=$val\"";
+    if ( my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| ) )
+    {
+        $defipp .= " \"-D$var=$val\"";
+    }
 }
 $defipp .= " -M$opt_M" if $opt_M ne '-';
 $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $src_istmp;
@@ -1257,8 +1279,10 @@ $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $src_istmp;
 my $defmp4h = '';
 foreach my $d (@opt_D)
 {
-    my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| );
-    $defmp4h .= " -D $var=\"$val\"";
+    if ( my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| ) )
+    {
+        $defmp4h .= " -D $var=\"$val\"";
+    }
 }
 my $cnt = 0;
 foreach my $o (@opt_o)

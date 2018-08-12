@@ -11,6 +11,7 @@ use autodie;
 
 use Test::More ();
 use File::Temp qw/ tempdir tempfile /;
+use IO::All qw/ io /;
 
 my @files_to_del;
 
@@ -51,9 +52,9 @@ sub generic {
     my $rc = system("$ENV{WML} -p$pass $opt $tmpfile1 >$tmpfile3");
 
     Test::More::ok (!$rc, "generic system wml");
-    $rc = system("cmp $tmpfile2 $tmpfile3");
+    # $rc = system("cmp $tmpfile2 $tmpfile3");
 
-    Test::More::ok (!$rc, "generic cmp");
+    Test::More::is (io()->file($tmpfile3)->all(), io()->file($tmpfile2)->all(), "generic cmp");
 }
 
 sub add_files {
