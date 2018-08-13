@@ -157,6 +157,8 @@ use Class::XSAccessor (
 use WML_Frontends::Wml::Util qw/ _my_cwd error /;
 use IO::All qw/ io /;
 
+my $RESOLV_FN = '/etc/resolv.conf';
+
 sub new
 {
     my $self = bless +{}, shift;
@@ -178,11 +180,11 @@ sub new
     $gen_hostname =~ s|\n$||;
     $gen_hostname ||= 'UNKNOWN-HOSTNAME';
 
-    if ( $gen_hostname =~ m|^[a-zA-Z0-9_-]+$|
-        and -f "/etc/resolv.conf" )
+    if ( $gen_hostname =~ /\A[a-zA-Z0-9_-]+\z/
+        and -f $RESOLV_FN )
     {
-        open( my $tmp_fh, '<', '/etc/resolv.conf' )
-            or error("Unable to load /etc/resolv.conf: $!");
+        open( my $tmp_fh, '<', $RESOLV_FN )
+            or error("Unable to load $RESOLV_FN: $!");
     RESOLV_LOOP:
         while ( my $l = <$tmp_fh> )
         {
@@ -193,7 +195,7 @@ sub new
             }
         }
         close($tmp_fh)
-            or error("Unable to close /etc/resolv.conf: $!");
+            or error("Unable to close $RESOLV_FN: $!");
     }
     $self->gen_hostname($gen_hostname);
     return $self;
@@ -806,7 +808,8 @@ sub protect
     while ( $data =~ s|^(.*?)-=P\[([0-9]+)\]=-||s )
     {
         my $key = $2;
-        $fp->print($1) || error("Unable to write into $fn for protection: $!");
+        $fp->print($1)
+            || error("Unable to write into $fn for protection: $!");
         if ( $PROTECT_STORAGE{$key}->{SPEC} =~ m/$pass/ )
         {
             $fp->print("-=P[$key]=-")
@@ -822,7 +825,8 @@ sub protect
                 . $data;
         }
     }
-    $fp->print($data) || error("Unable to write into $fn for protection: $!");
+    $fp->print($data)
+        || error("Unable to write into $fn for protection: $!");
     $fp->close() || error("Unable to close ${fn}: $!");
 }
 
@@ -997,7 +1001,8 @@ unshift( @opt_D,
     "WML_TMPDIR=$tmpdir" );
 
 #   Create temporary file names as soon as $src_suffix is set
-my @tmp = ( map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 );
+my @tmp =
+    ( map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 );
 
 #
 #   generate options
@@ -1289,8 +1294,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
     }
     my $_pass = $_pass_mgr->pass($pass_idx);
-    my $rc =
-        $_pass->cb()
+    my $rc    = $_pass->cb()
         ->( $_pass_mgr, $_pass->opt_pass() . $opt_pass, $from, $to, $tmp[2] );
     if ( !length($rc) )
     {
