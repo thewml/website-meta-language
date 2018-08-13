@@ -583,8 +583,7 @@ my $protect = sub {
     $fp->close() || error("Unable to close ${fn}: $!");
 };
 
-sub unprotect
-{
+my $unprotect = sub {
     my ( $fn, $pass ) = @_;
     use Carp;
 
@@ -611,7 +610,7 @@ sub unprotect
             $PROTECT_STORAGE{$key} = undef;
         }
     }
-}
+};
 
 #   Flag set if some output goes to stdout
 $_pass_mgr->out_istmp(0);
@@ -1025,7 +1024,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     }
 
     # pass 9 is a special case
-    unprotect( $to, $pass_idx ) if ( $pass_idx < 9 );
+    $unprotect->( $to, $pass_idx ) if ( $pass_idx < 9 );
     ( $u, $s, $cu, $cs ) = times();
     my $etime = $u + $s + $cu + $cs;
     my $dtime = $etime - $stime;
@@ -1072,14 +1071,14 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
 
 if ( $last ne '' and $final and $_pass_mgr->out_istmp )
 {
-    unprotect( $tmp[3], 9 );
+    $unprotect->( $tmp[3], 9 );
 }
 elsif ( $last ne '' and not $final )
 {
     my $i  = 0;
     my @fh = ();
     my $fp;
-    unprotect( $last, 9 );
+    $unprotect->( $last, 9 );
     if (@out_filenames)
     {
         foreach my $o (@out_filenames)
@@ -1108,7 +1107,7 @@ if (@out_filenames)
     #   unprotect all outputfiles
     foreach my $o (@out_filenames)
     {
-        unprotect( $o, 9 );
+        $unprotect->( $o, 9 );
     }
 
     #   optionally set mtime of outputfiles
