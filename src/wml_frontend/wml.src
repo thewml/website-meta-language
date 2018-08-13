@@ -1,3 +1,4 @@
+## Please see file perltidy.ERR
 #!@PATH_PERL@
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
@@ -55,14 +56,12 @@ use WML_Frontends::Wml::Util
     qw/ _my_cwd canonize_path ctime error expandrange gmt_ctime gmt_isotime
     isotime quotearg split_argv usage /;
 
-my $libdir = '@libdir@';
-
 my $_pass_mgr = WML_Frontends::Wml::PassesManager->new(
     {
-        libdir => $libdir,
+        libdir => '@libdir@',
     }
 );
-
+my $libdir = $_pass_mgr->libdir;
 $_pass_mgr->opt_v(-1);
 
 my $VERSION = '@WML_VERSION@';
