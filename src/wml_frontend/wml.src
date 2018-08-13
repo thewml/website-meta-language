@@ -152,7 +152,7 @@ sub dosource
 package WML::WML_F::PassesManager;
 
 use Class::XSAccessor (
-    accessors => +{ map { $_ => $_ } qw( _passes opt_s ) } );
+    accessors => +{ map { $_ => $_ } qw( _passes opt_o opt_s ) } );
 
 use WML_Frontends::Wml::Util qw/ _my_cwd error /;
 use IO::All qw/ io /;
@@ -743,6 +743,7 @@ if ( $opt_v == -1 )
 
 my $PROTECT_COUNTER = 0;
 my %PROTECT_STORAGE;
+$_pass_mgr->opt_o( \@opt_o );
 $_pass_mgr->opt_s($opt_s);
 
 my $firstpass = 1;
@@ -855,7 +856,7 @@ sub pass9
     #   First check whether a shebang line is found and no
     #   output files were assigned on command line.
     #   This is needed to unprotect output files.
-    if ( !@opt_o )
+    if ( !@{ $_pass_mgr->opt_o } )
     {
         local @ARGV = ();
         open( my $slice_fh, '<', $from )
