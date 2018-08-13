@@ -1107,8 +1107,6 @@ my $out = '';
 
 sub ProcessOutfiles
 {
-    my ($o);
-
     $out           = '';
     @out_filenames = ();
     foreach my $o (@opt_o)
