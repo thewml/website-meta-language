@@ -312,6 +312,40 @@ sub _read_slices
     return \@ret;
 }
 
+sub _display_times
+{
+    my ($_pass_mgr) = @_;
+
+    my ( $u, $s, $cu, $cs ) = times();
+    my $at      = $u + $s + $cu + $cs;
+    my $pt      = 0;
+    my $timestr = '';
+
+    foreach my $i ( 1 .. 9 )
+    {
+        my $t = $_pass_mgr->pass($i)->time_() // '';
+        if ( length($t) )
+        {
+            $pt += $t;
+        }
+        my $cond = ( $i == 2 or $i == 3 );
+        $timestr .= (
+              ( $t ne '' ) ? sprintf( $cond ? '%5.2f' : '%4.2f', $t )
+            : $cond        ? '   -- '
+            :                '  -- '
+        );
+    }
+
+    $timestr = sprintf( '%4.2f | ', $at - $pt ) . $timestr;
+    $timestr .= sprintf( '| %6.2f', $at );
+    verbose( 1, "Processing time (seconds):\n" );
+    verbose( 1,
+        "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n" );
+    verbose( 1,
+        "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n" );
+    verbose( 1, "$timestr\n" );
+}
+
 package main;
 
 my $_pass_mgr = WML::WML_F::PassesManager->new(
@@ -1453,41 +1487,9 @@ if ( $_pass_mgr->out_istmp )
 
 unlink_tmp();
 
-sub _display_times
-{
-    my ( $u, $s, $cu, $cs ) = times();
-    my $at      = $u + $s + $cu + $cs;
-    my $pt      = 0;
-    my $timestr = '';
-
-    foreach my $i ( 1 .. 9 )
-    {
-        my $t = $_pass_mgr->pass($i)->time_() // '';
-        if ( length($t) )
-        {
-            $pt += $t;
-        }
-        my $cond = ( $i == 2 or $i == 3 );
-        $timestr .= (
-              ( $t ne '' ) ? sprintf( $cond ? '%5.2f' : '%4.2f', $t )
-            : $cond        ? '   -- '
-            :                '  -- '
-        );
-    }
-
-    $timestr = sprintf( '%4.2f | ', $at - $pt ) . $timestr;
-    $timestr .= sprintf( '| %6.2f', $at );
-    verbose( 1, "Processing time (seconds):\n" );
-    verbose( 1,
-        "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n" );
-    verbose( 1,
-        "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n" );
-    verbose( 1, "$timestr\n" );
-}
-
 if ( $opt_v >= 1 )
 {
-    _display_times;
+    $_pass_mgr->_display_times;
 }
 
 #   exit gracefully
