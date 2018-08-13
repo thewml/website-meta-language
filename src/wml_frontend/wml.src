@@ -221,13 +221,9 @@ sub pass2
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
     my $buf = io()->file($tmp)->all;
-    open( my $to_fh, '>', $to )
-        or error("Unable to write into $to: $!");
     $buf =~ s|<\*?([a-zA-Z][a-zA-Z0-9-_]*)\*?([^a-zA-Z0-9-_])|<$1$2|sg;
     $buf =~ s|<\*?(/[a-zA-Z][a-zA-Z0-9-_]*)\*?>|<$1>|sg;
-    $to_fh->print($buf)
-        or error("Unable to write into $to: $!");
-    close($to_fh) || error("Unable to close $to: $!");
+    io->file($to)->print($buf);
 
     return $rc;
 }
@@ -617,15 +613,7 @@ if ( $src eq '-' )
     $src_istmp = 1;
     $src       = "$tmpdir/wml.input.$$.tmp";
     unlink($src);
-    open( my $tmp_fh, '>', $src )
-        or error("Unable to write into $src: $!");
-    while ( my $l = <STDIN> )
-    {
-        $tmp_fh->print($l)
-            or error("Unable to write into $src: $!");
-    }
-    close($tmp_fh)
-        or error("Unable to close $src: $!");
+    io->stdin() > io->file($src);
 }
 
 if ( not $src_istmp and not -f $src )
