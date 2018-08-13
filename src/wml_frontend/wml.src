@@ -894,24 +894,19 @@ $gen_hostname ||= 'UNKNOWN-HOSTNAME';
 if ( $gen_hostname =~ m|^[a-zA-Z0-9_-]+$|
     and -f "/etc/resolv.conf" )
 {
-    my $domain = '';
     open( my $tmp_fh, '<', '/etc/resolv.conf' )
         or error("Unable to load /etc/resolv.conf: $!");
 RESOLV_LOOP:
     while ( my $l = <$tmp_fh> )
     {
-        if ( my ($new_domain) = $l =~ m|\Adomain\s+\.?(\S+)| )
+        if ( my ($domain) = $l =~ m|\Adomain\s+\.?(\S+)| )
         {
-            $domain = $new_domain;
+            $gen_hostname .= ".$domain";
             last RESOLV_LOOP;
         }
     }
     close($tmp_fh)
         or error("Unable to close /etc/resolv.conf: $!");
-    if ( $domain ne '' )
-    {
-        $gen_hostname = "$gen_hostname.$domain";
-    }
 }
 my $gen_time        = time();
 my $gen_ctime       = ctime($gen_time);
