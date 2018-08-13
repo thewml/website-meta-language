@@ -1386,21 +1386,13 @@ elsif ( $last ne '' and not $final )
         my $o = $tmp[3];
         open $fh[$i], '>', $o or error("Unable to write into $o");
     }
-    open( my $fp_fh, '<', $last )
-        or error("Unable to load $last: $!");
-    while ( my $l = <$fp_fh> )
-    {
-        foreach my $fp (@fh)
-        {
-            $fp->print($l)
-                or error("Unable to write into output file: $!");
-        }
-    }
+    my $buf = io()->file($last)->all;
     foreach my $fp (@fh)
     {
+        $fp->print($buf)
+            or error("Unable to write into output file: $!");
         $fp->close() or error("Unable to close output file: $!");
     }
-    close($fp_fh) || error("Unable to close $last: $!");
 }
 
 #   Unprotect output files and run epilog filters
