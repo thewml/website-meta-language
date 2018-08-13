@@ -202,12 +202,18 @@ sub _generic_do
     );
 }
 
+sub pass1
+{
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
+    return $_pass_mgr->_generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
+}
+
 package main;
 
 my $_pass_mgr = WML::WML_F::PassesManager->new(
     [
-        \&pass1, \&pass2, \&pass3, \&pass4, \&pass5,
-        \&pass6, \&pass7, \&pass8, \&pass9
+        sub { return shift->pass1(@_); },
+        \&pass2, \&pass3, \&pass4, \&pass5, \&pass6, \&pass7, \&pass8, \&pass9
     ]
 );
 
@@ -768,12 +774,6 @@ sub unprotect
     }
 }
 
-sub pass1
-{
-    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
-    return $_pass_mgr->_generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
-}
-
 sub pass2
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
@@ -1247,7 +1247,8 @@ if ( $opt_M ne '-' )
         }
         my $rc;
         eval {
-            $rc = pass1( $_pass_mgr->pass(1)->opt_pass() . $opt_pass,
+            $rc =
+                $_pass_mgr->pass1( $_pass_mgr->pass(1)->opt_pass() . $opt_pass,
                 $src, $o, $tmp[2] );
         };
         if ( $rc != 0 )
