@@ -14,7 +14,8 @@ our $VERSION = '0.0.1';
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
 
-sub usage {
+sub usage
+{
     STDERR->print(<<'EOF');
 Usage: divert [options] [file]
 
@@ -27,24 +28,29 @@ EOF
     exit 1;
 }
 
-sub verbose {
+sub verbose
+{
     my ( $self, $str ) = @_;
-    if ( $self->_opt_v ) {
+    if ( $self->_opt_v )
+    {
         STDERR->print("** Divert:Verbose: $str\n");
     }
 
     return;
 }
 
-sub error {
+sub error
+{
     my ( $self, $str ) = @_;
     STDERR->print("** Divert:Error: $str\n");
     exit 1;
 }
 
-sub warning {
+sub warning
+{
     my ( $self, $filename, $line, $str ) = @_;
-    if ( not $self->_opt_q ) {
+    if ( not $self->_opt_q )
+    {
         STDERR->print("** Divert:Warning: ${filename}:$line: $str\n");
     }
 
@@ -58,12 +64,13 @@ use Class::XSAccessor (
     constructor => '_cons',
     accessors   => +{
         map { $_ => $_ }
-          qw( _BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
-          _opt_o _opt_q _opt_v _OVRWRITE )
+            qw( _BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
+            _opt_o _opt_q _opt_v _OVRWRITE )
     },
 );
 
-sub new {
+sub new
+{
     my $self = shift->_cons;
 
     $self->_init;
@@ -71,7 +78,8 @@ sub new {
     return $self;
 }
 
-sub _init {
+sub _init
+{
     my ($self) = @_;
 
     {
@@ -86,7 +94,7 @@ sub _init {
                 'q|quiet'        => \$opt_q,
                 'o|outputfile=s' => \$opt_o,
             )
-          )
+            )
         {
             usage();
         }
@@ -101,17 +109,20 @@ sub _init {
     {
         my $in;
 
-        if ( ( ( @ARGV == 1 ) && ( $ARGV[0] eq q{-} ) ) || ( !@ARGV ) ) {
+        if ( ( ( @ARGV == 1 ) && ( $ARGV[0] eq q{-} ) ) || ( !@ARGV ) )
+        {
             $in = IO::Handle->new;
             $self->_filename('STDIN');
             $in->fdopen( fileno(STDIN), 'r' )
-              || $self->error("cannot load STDIN: $!");
+                || $self->error("cannot load STDIN: $!");
         }
-        elsif ( @ARGV == 1 ) {
+        elsif ( @ARGV == 1 )
+        {
             open $in, '<', $self->_filename( $ARGV[0] )
-              or $self->error("cannot load @{[$self->_filename]}: $!");
+                or $self->error("cannot load @{[$self->_filename]}: $!");
         }
-        else {
+        else
+        {
             usage();
         }
         $self->_in_fh($in);
@@ -133,8 +144,9 @@ sub _init {
     return;
 }
 
-sub _init_buffer {
-    my ($self, $key) = @_;
+sub _init_buffer
+{
+    my ( $self, $key ) = @_;
 
     if ( not exists( $self->_BUFFER->{$key} ) )
     {
@@ -144,7 +156,8 @@ sub _init_buffer {
     return;
 }
 
-sub _handle_location {
+sub _handle_location
+{
     my ( $self, $m1 ) = @_;
 
     ##
@@ -155,13 +168,15 @@ sub _handle_location {
     $self->_init_buffer($m1);
 
     #   insert location pointer into current location
-    if ( $self->_BUFFER->{ $self->_location } == $self->_BUFFER->{$m1} ) {
+    if ( $self->_BUFFER->{ $self->_location } == $self->_BUFFER->{$m1} )
+    {
         $self->warning( $self->_filename, $self->_line,
-                'self-reference of location ``'
-              . $self->_location
-              . q{'' - ignoring} );
+                  'self-reference of location ``'
+                . $self->_location
+                . q{'' - ignoring} );
     }
-    else {
+    else
+    {
         push( @{ $self->_BUFFER->{ $self->_location } },
             $self->_BUFFER->{$m1} );
     }
@@ -169,7 +184,8 @@ sub _handle_location {
     return;
 }
 
-sub _handle_enter_location {
+sub _handle_enter_location
+{
     my ( $self, $m1 ) = @_;
 
     ##
@@ -185,14 +201,16 @@ sub _handle_enter_location {
     my $rewind_now  = 0;
     my $rewind_next = 0;
 
-    if ( my ($new_loc) = $self->_location =~ m|^\!(.*)$| ) {
+    if ( my ($new_loc) = $self->_location =~ m|^\!(.*)$| )
+    {
 
         #   location should be rewinded now
         $self->_location($new_loc);
         $rewind_now = 1;
     }
 
-    if ( my ($new_loc) = $self->_location =~ m|^(.*)\!$| ) {
+    if ( my ($new_loc) = $self->_location =~ m|^(.*)\!$| )
+    {
 
         #   location should be rewinded next time
         $self->_location($new_loc);
@@ -200,10 +218,11 @@ sub _handle_enter_location {
     }
 
     #   initialize location buffer
-    $self->_init_buffer($self->_location);
+    $self->_init_buffer( $self->_location );
 
     #   is a "rewind now" forced by a "rewind next" from last time?
-    if ( $self->_OVRWRITE->{ $self->_location } ) {
+    if ( $self->_OVRWRITE->{ $self->_location } )
+    {
         $rewind_now = 1;
         $self->_OVRWRITE->{ $self->_location } = 0;
     }
@@ -212,54 +231,66 @@ sub _handle_enter_location {
     $self->_OVRWRITE->{ $self->_location } = 1 if ($rewind_next);
 
     #   execute a "rewind now" by clearing the location buffer
-    if ( $rewind_now == 1 ) {
-        while ( $#{ $self->_BUFFER->{ $self->_location } } > -1 ) {
+    if ( $rewind_now == 1 )
+    {
+        while ( $#{ $self->_BUFFER->{ $self->_location } } > -1 )
+        {
             shift( @{ $self->_BUFFER->{ $self->_location } } );
         }
     }
     return;
 }
 
-sub _handle_leave_location {
+sub _handle_leave_location
+{
     my ( $self, $m1 ) = @_;
 
     ##
     ##  Tag: leave location
     ##
 
-    if ( !@{ $self->_loc_stack } ) {
+    if ( !@{ $self->_loc_stack } )
+    {
         $self->warning( $self->_filename, $self->_line,
             q{already in ``null'' location -- ignoring leave} );
     }
-    else {
+    else
+    {
         my $loc = ( $1 // '' );
-        if ( $loc eq 'null' ) {
+        if ( $loc eq 'null' )
+        {
             $self->warning( $self->_filename, $self->_line,
-                    q{cannot leave ``null'' location }
-                  . q{-- ignoring named leave} );
+                      q{cannot leave ``null'' location }
+                    . q{-- ignoring named leave} );
         }
-        elsif ( $loc ne '' and $loc ne $self->_location ) {
+        elsif ( $loc ne '' and $loc ne $self->_location )
+        {
 
             #   leave the named location and all locations
             #   on the stack above it.
             my $n = -1;
-            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- ) {
-                if ( $self->_loc_stack->[$i] eq $loc ) {
+            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- )
+            {
+                if ( $self->_loc_stack->[$i] eq $loc )
+                {
                     $n = $i;
                     last;
                 }
             }
-            if ( $n == -1 ) {
+            if ( $n == -1 )
+            {
                 $self->warning( $self->_filename, $self->_line,
 qq{no such currently entered location ``$loc'' -- ignoring named leave}
                 );
             }
-            else {
+            else
+            {
                 splice( @{ $self->_loc_stack }, $n );
                 $self->_location( pop( @{ $self->_loc_stack } ) );
             }
         }
-        else {
+        else
+        {
             #   leave just the current location
             $self->_location( pop( @{ $self->_loc_stack } ) );
         }
@@ -268,7 +299,8 @@ qq{no such currently entered location ``$loc'' -- ignoring named leave}
     return;
 }
 
-sub _handle_plain_text {
+sub _handle_plain_text
+{
     my ( $self, $remain_ref ) = @_;
 
     ##
@@ -282,9 +314,10 @@ sub _handle_plain_text {
 
     #   Skip ../ which is often used in URLs
     my $i2 = -1;
-    do {
+    do
+    {
         $i2 = index( ${$remain_ref}, '..', $i2 + 1 );
-      } while ( $i2 > -1
+        } while ( $i2 > -1
         and $i2 + 2 < $l
         and substr( ${$remain_ref}, $i2 + 2, 1 ) eq '/' );
     $i2 = $l if $i2 == -1;
@@ -302,11 +335,13 @@ sub _handle_plain_text {
 
     #   append plain text to remembered data and adjust ${$remain_ref}
     #   variable
-    if ( $i == $l ) {
+    if ( $i == $l )
+    {
         push( @{ $self->_BUFFER->{ $self->_location } }, ${$remain_ref} );
         ${$remain_ref} = '';
     }
-    else {
+    else
+    {
         #   substr with 4 arguments was introduced in perl 5.005
         push(
             @{ $self->_BUFFER->{ $self->_location } },
@@ -318,23 +353,30 @@ sub _handle_plain_text {
     return;
 }
 
-sub _run {
+sub _run
+{
     my ($self) = @_;
 
-    while ( defined( my $remain = $self->_in_fh->getline ) ) {
+    while ( defined( my $remain = $self->_in_fh->getline ) )
+    {
         $self->_line( $self->_line + 1 );
-        while ( length $remain > 0 ) {
+        while ( length $remain > 0 )
+        {
 
-            if ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| ) {
+            if ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| )
+            {
                 $self->_handle_location($1);
             }
-            elsif ( $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}|| ) {
+            elsif ( $remain =~ s|^{#([a-zA-Z][a-zA-Z0-9_]*)#}|| )
+            {
                 $self->_handle_location($1);
             }
-            elsif ( $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|| ) {
+            elsif ( $remain =~ s|^\.\.(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)>>|| )
+            {
                 $self->_handle_enter_location($1);
             }
-            elsif ( $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:|| ) {
+            elsif ( $remain =~ s|^{#(\!?[a-zA-Z][a-zA-Z0-9_]*\!?)#:|| )
+            {
                 $self->_handle_enter_location($1);
             }
             elsif ($remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)?\.\.||
@@ -342,7 +384,8 @@ sub _run {
             {
                 $self->_handle_leave_location($1);
             }
-            else {
+            else
+            {
                 $self->_handle_plain_text( \$remain );
             }
         }
@@ -352,12 +395,14 @@ sub _run {
     return;
 }
 
-sub ExpandDiversion {
+sub ExpandDiversion
+{
     my ( $self, $loc ) = @_;
 
     #   check for recursion by making sure
     #   the current location has not already been seen.
-    if ( any { $_ == $loc } @{ $self->_expand_stack } ) {
+    if ( any { $_ == $loc } @{ $self->_expand_stack } )
+    {
 
         #   find name of location via location pointer
         #   for human readable warning message
@@ -379,7 +424,8 @@ sub ExpandDiversion {
     #   recursively expand the location
     #   by stepping through its list elements
     my $data = '';
-    foreach my $el ( @{$loc} ) {
+    foreach my $el ( @{$loc} )
+    {
         $data .= ref($el) ? $self->ExpandDiversion($el) : $el;
     }
 
@@ -391,7 +437,8 @@ sub ExpandDiversion {
     return $data;
 }
 
-sub calc_result {
+sub calc_result
+{
     my ($self) = @_;
 
     $self->_run;
