@@ -1198,7 +1198,6 @@ while ( my ( $i, $str ) = each @_OPT_PASSES )
     $_pass_mgr->pass( $i + 1 )->opt_pass($str);
 }
 
-my $pcnt  = 0;
 my @prop  = ( "-", "\\", "|", "/" );
 my $last  = '';
 my $pager = ( $ENV{PAGER} || 'more' );
@@ -1219,10 +1218,7 @@ delete @ENV{
 
 sub unlink_tmp
 {
-    unlink( $tmp[0] );
-    unlink( $tmp[1] );
-    unlink( $tmp[2] );
-    unlink( $tmp[3] );
+    unlink( @tmp[ 0 .. 3 ] );
     unlink($src) if ($src_istmp);
 }
 
@@ -1270,6 +1266,7 @@ if ( $opt_M ne '-' )
 #   MAIN PROCESSING LOOP
 #
 my $final = 0;
+my $pcnt  = 0;
 PASS_IDX: foreach my $pass_idx (@passes_indices)
 {
     verbose( 2, "PASS $pass_idx:\n" );
