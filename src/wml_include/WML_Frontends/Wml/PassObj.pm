@@ -46,8 +46,6 @@ use File::Basename qw/ basename /;
 use File::Which qw/ which /;
 use IO::All qw/ io /;
 
-*verbose = \&::verbose;
-
 sub precompile
 {
     my ( $name, $in ) = @_;
@@ -78,9 +76,9 @@ sub unquotearg
 
 sub dosource
 {
-    my ( $pass, $prog, $args ) = @_;
-    verbose( 2, "source: $prog $args\n" );
-    verbose( 9, "loading: $prog\n" );
+    my ( $pass, $_pass_mgr, $prog, $args ) = @_;
+    $_pass_mgr->verbose( 2, "source: $prog $args\n" );
+    $_pass_mgr->verbose( 9, "loading: $prog\n" );
     if ( !defined( $pass->src_cb ) )
     {
         my $pkgname = basename($prog);
@@ -89,23 +87,23 @@ sub dosource
             $prog = which($prog);
         }
         my $src = io->file($prog)->all;
-        verbose( 9,
+        $_pass_mgr->verbose( 9,
             "loading: succeeded with $prog (" . length($src) . " bytes)\n" );
 
-        verbose( 9, "precompiling script: pkgname=$pkgname\n" );
+        $_pass_mgr->verbose( 9, "precompiling script: pkgname=$pkgname\n" );
         my ( $func, $error ) = precompile( $pkgname, $src );
         if ( $error ne '' )
         {
-            verbose( 9, "precompiling script: error: $error\n" );
+            $_pass_mgr->verbose( 9, "precompiling script: error: $error\n" );
         }
         else
         {
-            verbose( 9, "precompiling script: succeeded\n" );
+            $_pass_mgr->verbose( 9, "precompiling script: succeeded\n" );
         }
         $pass->src_cb($func);
     }
 
-    verbose( 9, "splitting from args: $args\n" );
+    $_pass_mgr->verbose( 9, "splitting from args: $args\n" );
     my @argv;
     while ($args)
     {
@@ -119,12 +117,12 @@ sub dosource
         redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|egis;
         redo if $args =~ s|^\s+$|''|egis;
     }
-    verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
+    $_pass_mgr->verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
 
-    verbose( 9, "running script\n" );
+    $_pass_mgr->verbose( 9, "running script\n" );
     my $rc = $pass->src_cb->(@argv);
     $rc //= '';
-    verbose( 9, "running script: rc=$rc\n" );
+    $_pass_mgr->verbose( 9, "running script: rc=$rc\n" );
     $rc = 256 if not defined $rc;
 
     return $rc;

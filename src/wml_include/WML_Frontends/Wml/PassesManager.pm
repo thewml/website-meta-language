@@ -111,12 +111,21 @@ sub pass
     return $self->_passes->[$i];
 }
 
-*verbose = \&::verbose;
+sub verbose
+{
+    my ( $_pass_mgr, $level, $str ) = @_;
+
+    if ( $_pass_mgr->opt_v >= $level )
+    {
+        print STDERR "** WML:Verbose: $str";
+    }
+    return;
+}
 
 sub dosystem
 {
     my ( $self, $cmd ) = @_;
-    verbose( 2, "system: $cmd\n" );
+    $self->verbose( 2, "system: $cmd\n" );
     return scalar system($cmd);
 }
 
@@ -128,7 +137,7 @@ sub _generic_do
     return scalar(
           $self->opt_s
         ? $self->dosystem("$prog $args")
-        : $self->pass($pass_idx)->dosource( $prog, $args )
+        : $self->pass($pass_idx)->dosource( $self, $prog, $args )
     );
 }
 
@@ -266,12 +275,12 @@ sub _display_times
 
     $timestr = sprintf( '%4.2f | ', $at - $pt ) . $timestr;
     $timestr .= sprintf( '| %6.2f', $at );
-    verbose( 1, "Processing time (seconds):\n" );
-    verbose( 1,
+    $_pass_mgr->verbose( 1, "Processing time (seconds):\n" );
+    $_pass_mgr->verbose( 1,
         "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n" );
-    verbose( 1,
+    $_pass_mgr->verbose( 1,
         "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n" );
-    verbose( 1, "$timestr\n" );
+    $_pass_mgr->verbose( 1, "$timestr\n" );
 }
 
 1;

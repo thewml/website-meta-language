@@ -53,16 +53,6 @@ my $_pass_mgr = WML_Frontends::Wml::PassesManager->new(
 
 $_pass_mgr->opt_v(-1);
 
-sub verbose
-{
-    my ( $level, $str ) = @_;
-
-    if ( $_pass_mgr->opt_v >= $level )
-    {
-        print STDERR "** WML:Verbose: $str";
-    }
-}
-
 my $VERSION = '@WML_VERSION@';
 
 my $bindir = '@bindir@';
@@ -183,7 +173,7 @@ $opt_V = -1;
 #   1. process options in WMLOPTS variable
 if ( my $opts = $ENV{WMLOPTS} )
 {
-    verbose( 2, "Reading WMLOPTS variable" );
+    $_pass_mgr->verbose( 2, "Reading WMLOPTS variable" );
     $opts =~ s|^\s+||;
     $opts =~ s|\s+$||;
 
@@ -240,7 +230,7 @@ if ( not $opt_r )
     {
         if ( -f "$dir/.wmlrc" )
         {
-            verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
+            $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
             open( my $wml_rc_fh, '<', "$dir/.wmlrc" )
                 or error("Unable to load $dir/.wmlrc: $!");
             @ARGV = ();
@@ -986,7 +976,7 @@ my $final = 0;
 my $pcnt  = 0;
 PASS_IDX: foreach my $pass_idx (@passes_indices)
 {
-    verbose( 2, "PASS $pass_idx:\n" );
+    $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
     print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $opt_q );
 
     #   run pass
@@ -1150,7 +1140,7 @@ if (@out_filenames)
                 $e = "tidy$1";
                 $e .= ' -m' if ( $1 eq '' );
             }
-            verbose( 2, "EPILOG: $e $o\n" );
+            $_pass_mgr->verbose( 2, "EPILOG: $e $o\n" );
             my $rc = system("$e $o");
 
             #   Tidy returns 1 on warnings and 2 on errors :(
