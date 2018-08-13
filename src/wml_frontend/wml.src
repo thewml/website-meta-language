@@ -782,29 +782,20 @@ sub pass1
 sub pass2
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    my ( $buf, $rc );
-
     my $cwd = _my_cwd;
-    $rc = $_pass_mgr->dosystem(
+    my $rc  = $_pass_mgr->dosystem(
         "$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
-    open( my $tmp_fh, '<', $tmp )
-        or error("Unable to load $tmp: $!");
+    my $buf = io()->file($tmp)->all;
     open( my $to_fh, '>', $to )
         or error("Unable to write into $to: $!");
-    {
-        local $/;
-        $buf = <$tmp_fh>;
-    }
     $buf =~ s|<\*?([a-zA-Z][a-zA-Z0-9-_]*)\*?([^a-zA-Z0-9-_])|<$1$2|sg;
     $buf =~ s|<\*?(/[a-zA-Z][a-zA-Z0-9-_]*)\*?>|<$1>|sg;
     $to_fh->print($buf)
         or error("Unable to write into $to: $!");
-
-    close($tmp_fh) || error("Unable to close $tmp: $!");
-    close($to_fh)  || error("Unable to close $to: $!");
+    close($to_fh) || error("Unable to close $to: $!");
 
     return $rc;
 }
