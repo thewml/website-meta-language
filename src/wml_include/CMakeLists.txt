@@ -111,6 +111,8 @@ FOREACH (base ${myfiles})
     )
 ENDFOREACH(base)
 
+FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/WML_Frontends/Wml/")
+PREPROCESS_PATH_PERL_WITH_FULL_NAMES("preprocess_perl_include_runner" "${CMAKE_CURRENT_SOURCE_DIR}/WML_Frontends/Wml/Runner.pm.src" "${CMAKE_CURRENT_BINARY_DIR}/WML_Frontends/Wml/Runner.pm")
 INSTALL (
     FILES "WML_Backends.pm"
     DESTINATION "${WML_LIB_DIR}"
@@ -125,6 +127,7 @@ INSTALL (
     FILES
         "WML_Frontends/Wml/PassesManager.pm"
         "WML_Frontends/Wml/PassObj.pm"
+        "${CMAKE_CURRENT_BINARY_DIR}/WML_Frontends/Wml/Runner.pm"
         "WML_Frontends/Wml/Util.pm"
     DESTINATION "${WML_LIB_DIR}/WML_Frontends/Wml"
 )
