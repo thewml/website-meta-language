@@ -41,9 +41,21 @@ use warnings;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-my $libdir = '@libdir@';
+use Getopt::Long 2.13;
+use File::Spec ();
+use Cwd        ();
+use List::Util qw/ max /;
+use File::Basename qw/ basename dirname /;
 
-use WML_Frontends::Wml::PassesManager;
+use IO::All qw/ io /;
+use Term::ReadKey qw/ ReadMode ReadKey /;
+
+use WML_Frontends::Wml::PassesManager ();
+use WML_Frontends::Wml::Util
+    qw/ _my_cwd canonize_path ctime error expandrange gmt_ctime gmt_isotime
+    isotime quotearg split_argv usage /;
+
+my $libdir = '@libdir@';
 
 my $_pass_mgr = WML_Frontends::Wml::PassesManager->new(
     {
@@ -60,19 +72,6 @@ if ( index( $ENV{PATH}, $bindir ) < 0 )
 {
     $ENV{PATH} = "$bindir:$ENV{PATH}";
 }
-
-use Getopt::Long 2.13;
-use File::Spec ();
-use Term::ReadKey qw/ ReadMode ReadKey /;
-use Cwd ();
-use List::Util qw/ max /;
-use File::Basename qw/ basename dirname /;
-
-use IO::All qw/ io /;
-
-use WML_Frontends::Wml::Util
-    qw/ _my_cwd canonize_path ctime error expandrange gmt_ctime gmt_isotime
-    isotime quotearg split_argv usage /;
 
 my $opt_h = 0;
 
@@ -579,7 +578,6 @@ my $protect = sub {
 
 my $unprotect = sub {
     my ( $fn, $pass ) = @_;
-    use Carp;
 
     my $data = io->file($fn)->all;
     while ( my ( $prefix, $key, $new ) =
