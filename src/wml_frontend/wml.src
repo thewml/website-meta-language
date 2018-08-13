@@ -1022,14 +1022,11 @@ if ( not -s $src )
 my $pass_str = join( '', @opt_p );
 $pass_str =~ s|,||g;
 $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
-my @passes_indices;
-if ( $pass_str =~ s/!$// )
+my $_SORT = ( $pass_str =~ s/!$// );
+my @passes_indices = split( '', $pass_str );
+if ( !$_SORT )
 {
-    @passes_indices = split( '', $pass_str );
-}
-else
-{
-    @passes_indices = sort { $a <=> $b } ( split( '', $pass_str ) );
+    @passes_indices = sort { $a <=> $b } @passes_indices;
 }
 
 #   only pre-processing if -M option specified
