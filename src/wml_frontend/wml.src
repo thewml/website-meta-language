@@ -514,8 +514,7 @@ $_pass_mgr->opt_s($opt_s);
 
 my $firstpass = 1;
 
-sub protect
-{
+my $protect = sub {
     my ( $fn, $pass ) = @_;
 
     my $data = io->file($fn)->all;
@@ -582,7 +581,7 @@ sub protect
     $fp->print($data)
         || error("Unable to write into $fn for protection: $!");
     $fp->close() || error("Unable to close ${fn}: $!");
-}
+};
 
 sub unprotect
 {
@@ -992,7 +991,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     #   run pass
     my ( $u, $s, $cu, $cs ) = times();
     my $stime = $u + $s + $cu + $cs;
-    protect( $from, $pass_idx );
+    $protect->( $from, $pass_idx );
     my $opt_pass = '';
     foreach my $aa (@opt_W)
     {
