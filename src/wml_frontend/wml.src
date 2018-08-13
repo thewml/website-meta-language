@@ -41,18 +41,7 @@ use warnings;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-my $opt_v  = -1;
 my $libdir = '@libdir@';
-
-sub verbose
-{
-    my ( $level, $str ) = @_;
-
-    if ( $opt_v >= $level )
-    {
-        print STDERR "** WML:Verbose: $str";
-    }
-}
 
 use WML_Frontends::Wml::PassesManager;
 
@@ -61,6 +50,18 @@ my $_pass_mgr = WML_Frontends::Wml::PassesManager->new(
         libdir => $libdir,
     }
 );
+
+$_pass_mgr->opt_v(-1);
+
+sub verbose
+{
+    my ( $level, $str ) = @_;
+
+    if ( $_pass_mgr->opt_v >= $level )
+    {
+        print STDERR "** WML:Verbose: $str";
+    }
+}
 
 my $VERSION = '@WML_VERSION@';
 
@@ -89,7 +90,7 @@ my $opt_h = 0;
 my $opt_r = 0;
 my $opt_c = 0;
 
-#   reset with defaults (except $opt_r and $opt_v)
+#   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
 my @opt_I = ();
 my @opt_i = ();
 my @opt_D = ();
@@ -130,10 +131,13 @@ my $_process_options = sub {
         "t|settime"    => \$opt_t,
         "M|depend:s"   => \$opt_M,
         "s|safe"       => \$opt_s,
-        "v|verbose:i"  => \$opt_v,
-        "q|quiet"      => \$opt_q,
-        "V|version:i"  => \$opt_V,
-        "h|help"       => \$opt_h,
+        "v|verbose:i"  => sub {
+            my ( undef, $v ) = @_;
+            $_pass_mgr->opt_v($v);
+        },
+        "q|quiet"     => \$opt_q,
+        "V|version:i" => \$opt_V,
+        "h|help"      => \$opt_h,
     );
     if ( not Getopt::Long::GetOptions( %scalar_options, %list_options ) )
     {
@@ -157,7 +161,7 @@ my @ARGVLINE = @ARGV;
 $_process_options->();
 my $src = $ARGV[0];
 
-#   reset with defaults (except $opt_r and $opt_v)
+#   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
 @opt_D = ();
 @opt_i = ();
 @opt_D = ();
@@ -498,13 +502,13 @@ foreach my $d (@opt_D)
 @opt_D = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
 
 #   fix the verbose level
-if ( $opt_v == 0 )
+if ( $_pass_mgr->opt_v() == 0 )
 {
-    $opt_v = 1;    # Getopt::Long sets 0 if -v only
+    $_pass_mgr->opt_v(1);    # Getopt::Long sets 0 if -v only
 }
-if ( $opt_v == -1 )
+if ( $_pass_mgr->opt_v() == -1 )
 {
-    $opt_v = 0;    # we operate with 0 for not set
+    $_pass_mgr->opt_v(0);    # we operate with 0 for not set
 }
 
 my $PROTECT_COUNTER = 0;
@@ -868,7 +872,7 @@ $_pass_mgr->_process_argv_cb(
 );
 
 my $verbose = '';
-if ( $opt_v >= 3 )
+if ( $_pass_mgr->opt_v() >= 3 )
 {
     $verbose = '-v';
 }
@@ -1032,7 +1036,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     #   optionally view current result
     if (0)
     {
-        if ( $opt_v >= 3 && $pass_idx < 9 )
+        if ( $_pass_mgr->opt_v() >= 3 && $pass_idx < 9 )
         {
             print STDERR "Want to see result after Pass$pass_idx [yNq]: ";
             ReadMode 4;
@@ -1166,7 +1170,7 @@ if ( $_pass_mgr->out_istmp )
 
 $unlink_tmp->();
 
-if ( $opt_v >= 1 )
+if ( $_pass_mgr->opt_v() >= 1 )
 {
     $_pass_mgr->_display_times;
 }

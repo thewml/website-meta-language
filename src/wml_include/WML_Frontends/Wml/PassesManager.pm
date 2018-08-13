@@ -39,7 +39,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _passes _process_argv_cb gen_hostname libdir out_istmp opt_o opt_s )
+            qw( _passes _process_argv_cb gen_hostname libdir out_istmp opt_v opt_o opt_s )
     }
 );
 
