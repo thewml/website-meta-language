@@ -59,17 +59,6 @@ use WML_Frontends::Wml::PassesManager;
 my $_pass_mgr = WML_Frontends::Wml::PassesManager->new(
     {
         libdir => $libdir,
-        passes => [
-            sub { return shift->pass1(@_); },
-            sub { return shift->pass2(@_); },
-            sub { return shift->pass3(@_); },
-            sub { return shift->pass4(@_); },
-            sub { return shift->pass5(@_); },
-            sub { return shift->pass6(@_); },
-            sub { return shift->pass7(@_); },
-            sub { return shift->pass8(@_); },
-            sub { return shift->pass9(@_); },
-        ]
     }
 );
 

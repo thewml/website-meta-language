@@ -55,7 +55,17 @@ sub new
     my $self = bless +{}, shift;
     my $args = shift;
     $self->libdir( $args->{libdir} );
-    my $__PASSES = $args->{passes};
+    my $__PASSES = [
+        sub { return shift->pass1(@_); },
+        sub { return shift->pass2(@_); },
+        sub { return shift->pass3(@_); },
+        sub { return shift->pass4(@_); },
+        sub { return shift->pass5(@_); },
+        sub { return shift->pass6(@_); },
+        sub { return shift->pass7(@_); },
+        sub { return shift->pass8(@_); },
+        sub { return shift->pass9(@_); },
+    ];
     $self->_passes(
         [
             '',
