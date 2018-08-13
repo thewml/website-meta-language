@@ -154,6 +154,9 @@ package WML::WML_F::PassesManager;
 use Class::XSAccessor (
     accessors => +{ map { $_ => $_ } qw( _passes opt_s ) } );
 
+use WML_Frontends::Wml::Util qw/ _my_cwd error /;
+use IO::All qw/ io /;
+
 sub new
 {
     my $self = bless +{}, shift;
@@ -208,6 +211,27 @@ sub pass1
     return $_pass_mgr->_generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
 }
 
+sub pass2
+{
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
+    my $cwd = _my_cwd;
+    my $rc  = $_pass_mgr->dosystem(
+        "$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
+
+    #   remove asterisks which can be entered
+    #   by the user to avoid tag interpolation
+    my $buf = io()->file($tmp)->all;
+    open( my $to_fh, '>', $to )
+        or error("Unable to write into $to: $!");
+    $buf =~ s|<\*?([a-zA-Z][a-zA-Z0-9-_]*)\*?([^a-zA-Z0-9-_])|<$1$2|sg;
+    $buf =~ s|<\*?(/[a-zA-Z][a-zA-Z0-9-_]*)\*?>|<$1>|sg;
+    $to_fh->print($buf)
+        or error("Unable to write into $to: $!");
+    close($to_fh) || error("Unable to close $to: $!");
+
+    return $rc;
+}
+
 sub pass3
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
@@ -253,7 +277,7 @@ package main;
 my $_pass_mgr = WML::WML_F::PassesManager->new(
     [
         sub { return shift->pass1(@_); },
-        \&pass2,
+        sub { return shift->pass2(@_); },
         sub { return shift->pass3(@_); },
         sub { return shift->pass4(@_); },
         sub { return shift->pass5(@_); },
@@ -819,27 +843,6 @@ sub unprotect
             $PROTECT_STORAGE{$key} = undef;
         }
     }
-}
-
-sub pass2
-{
-    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
-    my $cwd = _my_cwd;
-    my $rc  = $_pass_mgr->dosystem(
-        "$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
-
-    #   remove asterisks which can be entered
-    #   by the user to avoid tag interpolation
-    my $buf = io()->file($tmp)->all;
-    open( my $to_fh, '>', $to )
-        or error("Unable to write into $to: $!");
-    $buf =~ s|<\*?([a-zA-Z][a-zA-Z0-9-_]*)\*?([^a-zA-Z0-9-_])|<$1$2|sg;
-    $buf =~ s|<\*?(/[a-zA-Z][a-zA-Z0-9-_]*)\*?>|<$1>|sg;
-    $to_fh->print($buf)
-        or error("Unable to write into $to: $!");
-    close($to_fh) || error("Unable to close $to: $!");
-
-    return $rc;
 }
 
 #   Flag set if some output goes to stdout
