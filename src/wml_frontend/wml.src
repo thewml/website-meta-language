@@ -614,13 +614,6 @@ my $unprotect = sub {
 
 #   Flag set if some output goes to stdout
 $_pass_mgr->out_istmp(0);
-$_pass_mgr->_process_argv_cb(
-    sub {
-        $_process_options->();
-        ProcessOutfiles();
-        return;
-    }
-);
 
 #
 #   predefine some useful variables
@@ -820,8 +813,7 @@ my @out_filenames;
 
 my $out = '';
 
-sub ProcessOutfiles
-{
+my $ProcessOutfiles = sub {
     $out           = '';
     @out_filenames = ();
     foreach my $o (@opt_o)
@@ -865,8 +857,15 @@ sub ProcessOutfiles
             push( @out_filenames, ( $o ne '-' ? $o : $tmp[3] ) );
         }
     }
-}
-ProcessOutfiles();
+};
+$ProcessOutfiles->();
+$_pass_mgr->_process_argv_cb(
+    sub {
+        $_process_options->();
+        $ProcessOutfiles->();
+        return;
+    }
+);
 
 my $verbose = '';
 if ( $opt_v >= 3 )
