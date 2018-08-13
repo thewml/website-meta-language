@@ -41,7 +41,8 @@ use warnings;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-my $opt_v = -1;
+my $opt_v  = -1;
+my $libdir = '@libdir@';
 
 sub verbose
 {
@@ -150,7 +151,8 @@ sub dosource
 
 package WML::WML_F::PassesManager;
 
-use Class::XSAccessor ( accessors => +{ map { $_ => $_ } qw( _passes ) } );
+use Class::XSAccessor (
+    accessors => +{ map { $_ => $_ } qw( _passes opt_s ) } );
 
 sub new
 {
@@ -186,6 +188,18 @@ sub dosystem
     my ( $self, $cmd ) = @_;
     verbose( 2, "system: $cmd\n" );
     return scalar system($cmd);
+}
+
+sub _generic_do
+{
+    my ( $self, $pass_idx, $EXE, $opt, $from, $to ) = @_;
+    my $prog = "$libdir/exec/$EXE";
+    my $args = "$opt -o $to $from";
+    return scalar(
+          $self->opt_s
+        ? $self->dosystem("$prog $args")
+        : $self->pass($pass_idx)->dosource( $prog, $args )
+    );
 }
 
 package main;
@@ -657,6 +671,7 @@ if ( $opt_v == -1 )
 
 my $PROTECT_COUNTER = 0;
 my %PROTECT_STORAGE;
+$_pass_mgr->opt_s($opt_s);
 
 my $firstpass = 1;
 
@@ -758,12 +773,10 @@ sub unprotect
     }
 }
 
-my $libdir = '@libdir@';
-
 sub pass1
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
+    return $_pass_mgr->_generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
 }
 
 sub pass2
@@ -815,25 +828,25 @@ sub pass4
 sub pass5
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 5, 'wml_p5_divert', $opt, $from, $to );
+    return $_pass_mgr->_generic_do( 5, 'wml_p5_divert', $opt, $from, $to );
 }
 
 sub pass6
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 6, 'wml_p6_asubst', $opt, $from, $to );
+    return $_pass_mgr->_generic_do( 6, 'wml_p6_asubst', $opt, $from, $to );
 }
 
 sub pass7
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 7, 'wml_p7_htmlfix', $opt, $from, $to );
+    return $_pass_mgr->_generic_do( 7, 'wml_p7_htmlfix', $opt, $from, $to );
 }
 
 sub pass8
 {
     my ( $opt, $from, $to, $tmp ) = @_;
-    return _generic_do( 8, 'wml_p8_htmlstrip', $opt, $from, $to );
+    return $_pass_mgr->_generic_do( 8, 'wml_p8_htmlstrip', $opt, $from, $to );
 }
 
 #   Flag set if some output goes to stdout
@@ -872,18 +885,6 @@ sub pass9
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
     return scalar $_pass_mgr->dosystem("$libdir/exec/wml_p9_slice $opt $from");
-}
-
-sub _generic_do
-{
-    my ( $pass_idx, $EXE, $opt, $from, $to ) = @_;
-    my $prog = "$libdir/exec/$EXE";
-    my $args = "$opt -o $to $from";
-    return scalar(
-          $opt_s
-        ? $_pass_mgr->dosystem("$prog $args")
-        : $_pass_mgr->pass($pass_idx)->dosource( $prog, $args )
-    );
 }
 
 #
