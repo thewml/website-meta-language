@@ -155,7 +155,7 @@ use Class::XSAccessor ( accessors =>
         +{ map { $_ => $_ } qw( _passes gen_hostname out_istmp opt_o opt_s ) }
 );
 
-use WML_Frontends::Wml::Util qw/ _my_cwd error /;
+use WML_Frontends::Wml::Util qw/ _my_cwd error split_argv /;
 use IO::All qw/ io /;
 
 my $RESOLV_FN = '/etc/resolv.conf';
@@ -291,6 +291,25 @@ sub pass8
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 8, 'wml_p8_htmlstrip', $opt, $from, $to );
+}
+
+sub _read_slices
+{
+    my ( $self, $from ) = @_;
+
+    my @ret;
+    open( my $slice_fh, '<', $from )
+        or error("Unable to load $from: $!");
+    while ( my $l = <$slice_fh> )
+    {
+        if ( $l =~ m|%!slice\s+(.*)$| )
+        {
+            push( @ret, split_argv($1) );
+        }
+    }
+    close($slice_fh)
+        or error("Unable to close $from: $!");
+    return \@ret;
 }
 
 package main;
@@ -874,18 +893,7 @@ sub pass9
     #   This is needed to unprotect output files.
     if ( !@{ $_pass_mgr->opt_o } )
     {
-        local @ARGV = ();
-        open( my $slice_fh, '<', $from )
-            or error("Unable to load $from: $!");
-        while ( my $l = <$slice_fh> )
-        {
-            if ( $l =~ m|%!slice\s+(.*)$| )
-            {
-                push( @ARGV, split_argv($1) );
-            }
-        }
-        close($slice_fh)
-            or error("Unable to close $from: $!");
+        local @ARGV = @{ $_pass_mgr->_read_slices($from) };
         if (@ARGV)
         {
             $_pass_mgr->out_istmp(0);
