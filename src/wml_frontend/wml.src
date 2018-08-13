@@ -106,8 +106,7 @@ my $opt_s = 0;
 my $opt_q = 0;
 my $opt_V = -1;
 
-sub ProcessOptions
-{
+my $_process_options = sub {
     local $SIG{__WARN__} = sub {
         print STDERR "WML:Error: $_[0]";
     };
@@ -152,10 +151,10 @@ sub ProcessOptions
             exit(0);
         }
     }
-}
+};
 
 my @ARGVLINE = @ARGV;
-ProcessOptions();
+$_process_options->();
 my $src = $ARGV[0];
 
 #   reset with defaults (except $opt_r and $opt_v)
@@ -189,7 +188,7 @@ if ( my $opts = $ENV{WMLOPTS} )
     #   escaped
     $opts =~ s|\$|\\\$|g;
     @ARGV = split_argv($opts);
-    ProcessOptions();
+    $_process_options->();
 }
 
 ##
@@ -258,7 +257,7 @@ if ( not $opt_r )
             my @opt_I_OLD = @opt_I;
             @opt_D = ();
             @opt_I = ();
-            ProcessOptions();
+            $_process_options->();
             my @opt_D_NEW = @opt_D_OLD;
             my @opt_I_NEW = @opt_I_OLD;
 
@@ -310,7 +309,7 @@ if ( not $opt_r )
 @ARGV = @ARGVLINE;
 my @opt_D_OLD = @opt_D;
 @opt_D = ();    # extra remember -D options from command line
-ProcessOptions();
+$_process_options->();
 
 #   quote the characters the shell have escaped
 my @opt_D_ADD = map { quotearg $_} @opt_D;
@@ -455,7 +454,7 @@ SHEBANG:
     {
         #   split opts into arguments and process them
         @ARGV = split_argv($1);
-        ProcessOptions();
+        $_process_options->();
     }
 }
 
@@ -619,8 +618,7 @@ sub unprotect
 $_pass_mgr->out_istmp(0);
 $_pass_mgr->_process_argv_cb(
     sub {
-
-        ProcessOptions();
+        $_process_options->();
         ProcessOutfiles();
         return;
     }
