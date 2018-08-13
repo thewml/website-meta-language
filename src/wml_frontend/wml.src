@@ -152,7 +152,7 @@ sub dosource
 package WML::WML_F::PassesManager;
 
 use Class::XSAccessor (
-    accessors => +{ map { $_ => $_ } qw( _passes opt_o opt_s ) } );
+    accessors => +{ map { $_ => $_ } qw( _passes gen_hostname opt_o opt_s ) } );
 
 use WML_Frontends::Wml::Util qw/ _my_cwd error /;
 use IO::All qw/ io /;
@@ -174,6 +174,28 @@ sub new
 
         ]
     );
+    my $gen_hostname = `hostname`;
+    $gen_hostname =~ s|\n$||;
+    $gen_hostname ||= 'UNKNOWN-HOSTNAME';
+
+    if ( $gen_hostname =~ m|^[a-zA-Z0-9_-]+$|
+        and -f "/etc/resolv.conf" )
+    {
+        open( my $tmp_fh, '<', '/etc/resolv.conf' )
+            or error("Unable to load /etc/resolv.conf: $!");
+    RESOLV_LOOP:
+        while ( my $l = <$tmp_fh> )
+        {
+            if ( my ($domain) = $l =~ m|\Adomain\s+\.?(\S+)| )
+            {
+                $gen_hostname .= ".$domain";
+                last RESOLV_LOOP;
+            }
+        }
+        close($tmp_fh)
+            or error("Unable to close /etc/resolv.conf: $!");
+    }
+    $self->gen_hostname($gen_hostname);
     return $self;
 }
 
@@ -887,27 +909,6 @@ $gen_realname =~ s|^([^\,]+)\,.*$|$1|;
 $gen_realname =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
 $gen_realname ||= 'UNKNOWN-REALNAME';
 
-my $gen_hostname = `hostname`;
-$gen_hostname =~ s|\n$||;
-$gen_hostname ||= 'UNKNOWN-HOSTNAME';
-
-if ( $gen_hostname =~ m|^[a-zA-Z0-9_-]+$|
-    and -f "/etc/resolv.conf" )
-{
-    open( my $tmp_fh, '<', '/etc/resolv.conf' )
-        or error("Unable to load /etc/resolv.conf: $!");
-RESOLV_LOOP:
-    while ( my $l = <$tmp_fh> )
-    {
-        if ( my ($domain) = $l =~ m|\Adomain\s+\.?(\S+)| )
-        {
-            $gen_hostname .= ".$domain";
-            last RESOLV_LOOP;
-        }
-    }
-    close($tmp_fh)
-        or error("Unable to close /etc/resolv.conf: $!");
-}
 my $gen_time        = time();
 my $gen_ctime       = ctime($gen_time);
 my $gen_isotime     = isotime($gen_time);
@@ -987,7 +988,7 @@ unshift( @opt_D,
     "WML_GEN_GMT_ISOTIME=$gen_gmt_isotime",
     "WML_GEN_USERNAME=$gen_username",
     "WML_GEN_REALNAME=$gen_realname",
-    "WML_GEN_HOSTNAME=$gen_hostname",
+    "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
     'WML_LOC_PREFIX=@prefix@',
     "WML_LOC_BINDIR=$bindir",
     "WML_LOC_LIBDIR=$libdir",
