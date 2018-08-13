@@ -122,7 +122,7 @@ INSTALL (
 )
 
 INSTALL (
-    FILES "WML_Frontends/Wml/Util.pm"
+    FILES "WML_Frontends/Wml/PassObj.pm" "WML_Frontends/Wml/Util.pm"
     DESTINATION "${WML_LIB_DIR}/WML_Frontends/Wml"
 )
 

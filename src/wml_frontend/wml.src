@@ -54,100 +54,7 @@ sub verbose
     }
 }
 
-package WML::WML_F::PassObj;
-
-use Class::XSAccessor (
-    constructor => 'new',
-    accessors   => +{ map { $_ => $_ } qw( idx cb opt_pass time_ src_cb) }
-);
-
-use File::Basename qw/ basename /;
-use File::Which qw/ which /;
-use IO::All qw/ io /;
-
-*verbose = \&::verbose;
-
-sub precompile
-{
-    my ( $name, $in ) = @_;
-
-    my $error = '';
-    local $SIG{__WARN__} = sub { $error .= $_[0]; };
-    local $SIG{__DIE__};
-
-    $in =~ s|exit(\s*\(0\))|return$1|sg;
-    $in =~ s|exit(\s*\([^0].*?\))|die$1|sg;
-    eval( "no strict; no warnings; package $name; \$main = sub { \@ARGV = \@_; "
-            . $in
-            . "; return 0; }; package main;" );
-    $error = "$@" if ($@);
-    my $func = eval("no strict; no warnings; \$${name}::main");
-
-    $@ = $error || '';
-    return ( $func, $@ );
-}
-
-#   remove escape backslashes
-sub unquotearg
-{
-    my ($arg) = @_;
-    $arg =~ s/\\([\$"`])/$1/g;
-    return $arg;
-}
-
-sub dosource
-{
-    my ( $pass, $prog, $args ) = @_;
-    verbose( 2, "source: $prog $args\n" );
-    verbose( 9, "loading: $prog\n" );
-    if ( !defined( $pass->src_cb ) )
-    {
-        my $pkgname = basename($prog);
-        if ( $prog !~ m|\A/| )
-        {
-            $prog = which($prog);
-        }
-        my $src = io->file($prog)->all;
-        verbose( 9,
-            "loading: succeeded with $prog (" . length($src) . " bytes)\n" );
-
-        verbose( 9, "precompiling script: pkgname=$pkgname\n" );
-        my ( $func, $error ) = precompile( $pkgname, $src );
-        if ( $error ne '' )
-        {
-            verbose( 9, "precompiling script: error: $error\n" );
-        }
-        else
-        {
-            verbose( 9, "precompiling script: succeeded\n" );
-        }
-        $pass->src_cb($func);
-    }
-
-    verbose( 9, "splitting from args: $args\n" );
-    my @argv;
-    while ($args)
-    {
-        redo
-            if $args =~
-            s|^\s*(-[a-zA-Z0-9]\S*)|push(@argv, unquotearg($1)), ''|egis;
-        redo
-            if $args =~
-            s|^\s*"(.*?(?!\\).)"|push(@argv, unquotearg($1)), ''|egis;
-        redo if $args =~ s|^\s*'([^']*)'|push(@argv, $1), ''|egis;
-        redo if $args =~ s|^\s*(\S+)|push(@argv, unquotearg($1)), ''|egis;
-        redo if $args =~ s|^\s+$|''|egis;
-    }
-    verbose( 9, "splitting to argv: " . join( "|", @argv ) . "\n" );
-
-    verbose( 9, "running script\n" );
-    my $rc = $pass->src_cb->(@argv);
-    $rc //= '';
-    verbose( 9, "running script: rc=$rc\n" );
-    $rc = 256 if not defined $rc;
-
-    return $rc;
-}
+use WML_Frontends::Wml::PassObj;
 
 package WML::WML_F::PassesManager;
 
@@ -168,7 +75,7 @@ sub new
         [
             '',
             map {
-                WML::WML_F::PassObj->new(
+                WML_Frontends::Wml::PassObj->new(
                     idx => ( $_ + 1 ),
                     cb  => $__PASSES->[$_]
                     )
