@@ -151,8 +151,9 @@ sub dosource
 
 package WML::WML_F::PassesManager;
 
-use Class::XSAccessor (
-    accessors => +{ map { $_ => $_ } qw( _passes gen_hostname opt_o opt_s ) } );
+use Class::XSAccessor ( accessors =>
+        +{ map { $_ => $_ } qw( _passes gen_hostname out_istmp opt_o opt_s ) }
+);
 
 use WML_Frontends::Wml::Util qw/ _my_cwd error /;
 use IO::All qw/ io /;
@@ -862,7 +863,7 @@ sub unprotect
 }
 
 #   Flag set if some output goes to stdout
-my $out_istmp = 0;
+$_pass_mgr->out_istmp(0);
 
 sub pass9
 {
@@ -887,7 +888,7 @@ sub pass9
             or error("Unable to close $from: $!");
         if (@ARGV)
         {
-            $out_istmp = 0;
+            $_pass_mgr->out_istmp(0);
             ProcessOptions();
             ProcessOutfiles();
             $opt = $_pass_mgr->pass(9)->opt_pass;
@@ -1110,12 +1111,12 @@ sub ProcessOutfiles
         if ( $o eq '-' )
         {
             $out .= " -o '" . quotearg( $tmp[3] ) . "'";
-            $out_istmp = 1;
+            $_pass_mgr->out_istmp(1);
         }
         elsif ( $o =~ m/(.*):-$/ )
         {
             $out .= " -o '" . quotearg( $1 . ':' . $tmp[3] ) . "'";
-            $out_istmp = 1;
+            $_pass_mgr->out_istmp(1);
         }
         else
         {
@@ -1175,8 +1176,8 @@ else
 
 if ( $out eq '' )
 {
-    $out       = " -o$tmp[3]";
-    $out_istmp = 1;
+    $out = " -o$tmp[3]";
+    $_pass_mgr->out_istmp(1);
 }
 
 my @_OPT_PASSES = (
@@ -1350,7 +1351,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     }
 }
 
-if ( $last ne '' and $final and $out_istmp )
+if ( $last ne '' and $final and $_pass_mgr->out_istmp )
 {
     unprotect( $tmp[3], 9 );
 }
@@ -1442,7 +1443,7 @@ if (@out_filenames)
 }
 
 #   ... and eventually send to stdout
-if ($out_istmp)
+if ( $_pass_mgr->out_istmp )
 {
     io->file( $tmp[3] ) > io('-');
 }
