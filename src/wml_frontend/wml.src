@@ -208,6 +208,15 @@ sub pass1
     return $_pass_mgr->_generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
 }
 
+sub pass3
+{
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
+
+    return
+        scalar $_pass_mgr->dosystem(
+        "$libdir/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
+}
+
 sub pass4
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
@@ -245,7 +254,7 @@ my $_pass_mgr = WML::WML_F::PassesManager->new(
     [
         sub { return shift->pass1(@_); },
         \&pass2,
-        \&pass3,
+        sub { return shift->pass3(@_); },
         sub { return shift->pass4(@_); },
         sub { return shift->pass5(@_); },
         sub { return shift->pass6(@_); },
@@ -831,15 +840,6 @@ sub pass2
     close($to_fh) || error("Unable to close $to: $!");
 
     return $rc;
-}
-
-sub pass3
-{
-    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
-
-    return
-        scalar $_pass_mgr->dosystem(
-        "$libdir/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
 }
 
 #   Flag set if some output goes to stdout
