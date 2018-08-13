@@ -770,13 +770,13 @@ sub unprotect
 
 sub pass1
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 1, 'wml_p1_ipp', $opt, $from, $to );
 }
 
 sub pass2
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     my $cwd = _my_cwd;
     my $rc  = $_pass_mgr->dosystem(
         "$libdir/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
@@ -797,7 +797,7 @@ sub pass2
 
 sub pass3
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
 
     return
         scalar $_pass_mgr->dosystem(
@@ -806,32 +806,32 @@ sub pass3
 
 sub pass4
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
 
     return scalar $_pass_mgr->dosystem("m4 $opt --prefix-builtins <$from >$to");
 }
 
 sub pass5
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 5, 'wml_p5_divert', $opt, $from, $to );
 }
 
 sub pass6
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 6, 'wml_p6_asubst', $opt, $from, $to );
 }
 
 sub pass7
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 7, 'wml_p7_htmlfix', $opt, $from, $to );
 }
 
 sub pass8
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 8, 'wml_p8_htmlstrip', $opt, $from, $to );
 }
 
@@ -840,7 +840,7 @@ my $out_istmp = 0;
 
 sub pass9
 {
-    my ( $opt, $from, $to, $tmp ) = @_;
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
 
     #   First check whether a shebang line is found and no
     #   output files were assigned on command line.
@@ -1294,7 +1294,8 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     }
     my $_pass = $_pass_mgr->pass($pass_idx);
     my $rc =
-        $_pass->cb()->( $_pass->opt_pass() . $opt_pass, $from, $to, $tmp[2] );
+        $_pass->cb()
+        ->( $_pass_mgr, $_pass->opt_pass() . $opt_pass, $from, $to, $tmp[2] );
     if ( !length($rc) )
     {
         $rc = 0;
