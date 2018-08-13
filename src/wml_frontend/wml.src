@@ -68,7 +68,7 @@ my $_pass_mgr = WML_Frontends::Wml::PassesManager->new(
             sub { return shift->pass6(@_); },
             sub { return shift->pass7(@_); },
             sub { return shift->pass8(@_); },
-            \&pass9,
+            sub { return shift->pass9(@_); },
         ]
     }
 );
@@ -628,30 +628,14 @@ sub unprotect
 
 #   Flag set if some output goes to stdout
 $_pass_mgr->out_istmp(0);
+$_pass_mgr->_process_argv_cb(
+    sub {
 
-sub pass9
-{
-    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
-
-    #   First check whether a shebang line is found and no
-    #   output files were assigned on command line.
-    #   This is needed to unprotect output files.
-    if ( !@{ $_pass_mgr->opt_o } )
-    {
-        local @ARGV = @{ $_pass_mgr->_read_slices($from) };
-        if (@ARGV)
-        {
-            $_pass_mgr->out_istmp(0);
-            ProcessOptions();
-            ProcessOutfiles();
-            $opt = $_pass_mgr->pass(9)->opt_pass;
-        }
+        ProcessOptions();
+        ProcessOutfiles();
+        return;
     }
-
-    #   slice contains "package" commands and
-    #   other stuff, so we cannot source it.
-    return scalar $_pass_mgr->dosystem("$libdir/exec/wml_p9_slice $opt $from");
-}
+);
 
 #
 #   predefine some useful variables

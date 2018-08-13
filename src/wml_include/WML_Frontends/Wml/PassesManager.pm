@@ -39,7 +39,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _passes gen_hostname libdir out_istmp opt_o opt_s )
+            qw( _passes _process_argv_cb gen_hostname libdir out_istmp opt_o opt_s )
     }
 );
 
@@ -184,6 +184,31 @@ sub pass8
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do( 8, 'wml_p8_htmlstrip', $opt, $from, $to );
+}
+
+sub pass9
+{
+    my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
+
+    #   First check whether a shebang line is found and no
+    #   output files were assigned on command line.
+    #   This is needed to unprotect output files.
+    if ( !@{ $_pass_mgr->opt_o } )
+    {
+        local @ARGV = @{ $_pass_mgr->_read_slices($from) };
+        if (@ARGV)
+        {
+            $_pass_mgr->out_istmp(0);
+            $_pass_mgr->_process_argv_cb->($_pass_mgr);
+            $opt = $_pass_mgr->pass(9)->opt_pass;
+        }
+    }
+
+    #   slice contains "package" commands and
+    #   other stuff, so we cannot source it.
+    return
+        scalar $_pass_mgr->dosystem(
+        "@{[$_pass_mgr->libdir]}/exec/wml_p9_slice $opt $from");
 }
 
 sub _read_slices
