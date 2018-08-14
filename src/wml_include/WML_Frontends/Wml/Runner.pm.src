@@ -711,6 +711,28 @@ EOF
     return;
 }
 
+sub _process_ENV_WMLOPTS
+{
+    my ( $self, $_process_options ) = @_;
+
+    my $_pass_mgr = $self->_pass_mgr;
+
+    if ( my $opts = $ENV{WMLOPTS} )
+    {
+        $_pass_mgr->verbose( 2, "Reading WMLOPTS variable" );
+        $opts =~ s|^\s+||;
+        $opts =~ s|\s+$||;
+
+        #   arguments are not quoted because shell metacharacters
+        #   have already been expanded, but dollar sign must be
+        #   escaped
+        $opts =~ s|\$|\\\$|g;
+        @ARGV = split_argv($opts);
+        $_process_options->();
+    }
+    return;
+}
+
 sub _process_wmlrc
 {
     my ( $self, $_process_options, $opt_r, $opt_c, $opt_I, $opt_D ) = @_;
@@ -943,25 +965,9 @@ sub run_with_ARGV
     $opt_V = -1;
 
     @ARGV = ();
+    $self->_process_ENV_WMLOPTS($_process_options);
 
-    #   1. process options in WMLOPTS variable
-    if ( my $opts = $ENV{WMLOPTS} )
-    {
-        $_pass_mgr->verbose( 2, "Reading WMLOPTS variable" );
-        $opts =~ s|^\s+||;
-        $opts =~ s|\s+$||;
-
-        #   arguments are not quoted because shell metacharacters
-        #   have already been expanded, but dollar sign must be
-        #   escaped
-        $opts =~ s|\$|\\\$|g;
-        @ARGV = split_argv($opts);
-        $_process_options->();
-    }
-
-##
-##  .wmlrc File Parsing
-##
+    # .wmlrc File Parsing
     $self->_process_wmlrc( $_process_options, $opt_r, $opt_c, \@opt_I,
         \@opt_D );
 
@@ -1101,10 +1107,6 @@ sub run_with_ARGV
 
     #   Flag set if some output goes to stdout
     $_pass_mgr->out_istmp(0);
-
-    #
-    #   predefine some useful variables
-    #
 
     my $cwd = _my_cwd;
     my $src_filename;
