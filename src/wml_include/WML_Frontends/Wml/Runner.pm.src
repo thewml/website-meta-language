@@ -40,7 +40,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out_filenames _pass_mgr _protect_storage _PROTECT_COUNTER)
+            qw( _firstpass _out_filenames _pass_mgr _protect_storage _src_istmp _PROTECT_COUNTER)
     }
 );
 
@@ -101,7 +101,7 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $src, $src_istmp, $opt_t, $opt_E ) = @_;
+    my ( $self, $src, $opt_t, $opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
@@ -119,7 +119,7 @@ sub _handle_output
 
     #   optionally set mtime of outputfiles
     #   to mtime of inputfile if inputfile was not STDIN
-    if ( not $src_istmp and $opt_t )
+    if ( not $self->_src_istmp and $opt_t )
     {
         my (
             $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
@@ -634,16 +634,16 @@ EOF
     my $tmpdir = $ENV{TMPDIR} || '/tmp';
 
     #   if input is stdin we create a temporary file
-    my $src_istmp = 0;
+    $self->_src_istmp(0);
     if ( $src eq '-' )
     {
-        $src_istmp = 1;
-        $src       = "$tmpdir/wml.input.$$.tmp";
+        $self->_src_istmp(1);
+        $src = "$tmpdir/wml.input.$$.tmp";
         unlink($src);
         io->stdin() > io->file($src);
     }
 
-    if ( not $src_istmp and not -f $src )
+    if ( $self->_src_istmp and not -f $src )
     {
         print STDERR "** WML:Error: input file `$src' not found\n";
         exit(1);
@@ -652,7 +652,7 @@ EOF
     #   now adjust -D options from command line
     #   relative to path to source file
     my ($reldir);
-    if ( not $src_istmp )
+    if ( not $self->_src_istmp )
     {
         $reldir = $src;
         $reldir =~ s,(:?/|^)[^/]+$,,;
@@ -794,7 +794,7 @@ EOF
         $src_gmt_isotime, $src_username, $src_realname,
     );
 
-    if ($src_istmp)
+    if ( $self->_src_istmp )
     {
         $src_dirname     = $cwd;
         $src_filename    = 'STDIN';
@@ -929,7 +929,7 @@ EOF
         }
     }
     $defipp .= " -M$opt_M" if $opt_M ne '-';
-    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $src_istmp;
+    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
 
     my $defmp4h = '';
     foreach my $d (@opt_D)
@@ -986,7 +986,7 @@ EOF
     }
 
     my ( $from, $to );
-    if ( not $src_istmp )
+    if ( not $self->_src_istmp )
     {
         io->file( $tmp[0] )->print( io->file($src)->all );
         $from = $tmp[0];
@@ -1038,7 +1038,7 @@ EOF
 
     my $unlink_tmp = sub {
         unlink( @tmp[ 0 .. 3 ] );
-        unlink($src) if ($src_istmp);
+        unlink($src) if ( $self->_src_istmp );
     };
 
     if ( $opt_M ne '-' )
@@ -1208,7 +1208,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
     }
 
-    $self->_handle_output( $src, $src_istmp, $opt_t, \@opt_E );
+    $self->_handle_output( $src, $opt_t, \@opt_E );
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
