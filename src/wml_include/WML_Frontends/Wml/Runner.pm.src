@@ -454,7 +454,7 @@ sub _populate_opt_D
 sub _passes_loop
 {
     my (
-        $self,  $passes_indices, $fromref, $toref, $cnt,
+        $self,  $passes_indices, $fromref, $to, $cnt,
         $final, $last,           $opt_q,   $opt_W
     ) = @_;
 
@@ -482,7 +482,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         my $_pass = $_pass_mgr->pass($pass_idx);
         my $rc    = $_pass->cb()->(
             $_pass_mgr, $_pass->opt_pass() . $opt_pass,
-            $$fromref, $$toref, $self->_tmp->[2]
+            $$fromref, $to, $self->_tmp->[2]
         );
         if ( !length($rc) )
         {
@@ -506,7 +506,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         }
 
         # pass 9 is a special case
-        $self->_unprotect( $$toref, $pass_idx ) if ( $pass_idx < 9 );
+        $self->_unprotect( $to, $pass_idx ) if ( $pass_idx < 9 );
         ( $u, $s, $cu, $cs ) = times();
         my $etime = $u + $s + $cu + $cs;
         my $dtime = $etime - $stime;
@@ -526,7 +526,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
                 if ( $key =~ m|[Yy]| )
                 {
                     my $pager = ( $ENV{PAGER} || 'more' );
-                    system("$pager $$toref");
+                    system("$pager $to");
                 }
                 elsif ( $key =~ m|[qQ]| )
                 {
@@ -538,12 +538,12 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         }
 
         #   step further
-        $$last = $$toref;
+        $$last = $to;
         $$final = 1 if $pass_idx == 9;
         my $bit = ( $cnt & 1 );
         $$fromref = $self->_tmp->[$bit];
-        $$toref   = $self->_tmp->[ $bit ^ 1 ];
-        unlink($$toref);
+        $to       = $self->_tmp->[ $bit ^ 1 ];
+        unlink($to);
         ++$cnt;
 
         if ($$final)
@@ -1219,7 +1219,7 @@ EOF
     #
     my $final = 0;
     $self->_passes_loop( \@passes_indices,
-        \$from, \$to, $cnt, \$final, \$last, $opt_q, \@opt_W );
+        \$from, $to, $cnt, \$final, \$last, $opt_q, \@opt_W );
 
     if ( $last ne '' and $final and $_pass_mgr->out_istmp )
     {
