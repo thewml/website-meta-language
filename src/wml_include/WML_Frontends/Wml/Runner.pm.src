@@ -254,6 +254,28 @@ sub _protect
     $fp->close() || error("Unable to close ${fn}: $!");
 }
 
+sub _calc_out_fn
+{
+    my ( $self, $o, $tmp ) = @_;
+
+    if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
+    {
+        return ( $2 ne '-' ? $2 : $tmp->[3] );
+    }
+    elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
+    {
+        return ( $2 ne '-' ? $2 : $tmp->[3] );
+    }
+    elsif ( $o =~ m|^(.+)\@(.+)$| )
+    {
+        return ( $1 ne '-' ? $1 : $tmp->[3] );
+    }
+    else
+    {
+        return ( $o ne '-' ? $o : $tmp->[3] );
+    }
+}
+
 sub _ProcessOutfiles
 {
     my ( $self, $outref, $tmp, $opt_o ) = @_;
@@ -284,22 +306,7 @@ sub _ProcessOutfiles
         $o =~ s|^(['"])(.*)\1$|$2|;
 
         #   create output file list for epilog filters
-        if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
-        {
-            push( @{ $self->_out_filenames }, ( $2 ne '-' ? $2 : $tmp->[3] ) );
-        }
-        elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
-        {
-            push( @{ $self->_out_filenames }, ( $2 ne '-' ? $2 : $tmp->[3] ) );
-        }
-        elsif ( $o =~ m|^(.+)\@(.+)$| )
-        {
-            push( @{ $self->_out_filenames }, ( $1 ne '-' ? $1 : $tmp->[3] ) );
-        }
-        else
-        {
-            push( @{ $self->_out_filenames }, ( $o ne '-' ? $o : $tmp->[3] ) );
-        }
+        push @{ $self->_out_filenames }, $self->_calc_out_fn( $o, $tmp );
     }
     return;
 }
