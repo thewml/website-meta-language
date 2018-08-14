@@ -454,6 +454,18 @@ sub _populate_opt_D
 sub _calc_passes_idxs
 {
     my ( $self, $opt_p, $opt_M ) = @_;
+
+    #   canonicalize -p option(s)
+    if ( !@$opt_p )
+    {
+        #   no option means all passes
+        @$opt_p = ('1-9');
+    }
+    if ( not -s $self->_src )
+    {
+        #   on empty input optimize to just use pass 9
+        @$opt_p = ('9');
+    }
     my $pass_str = join( '', @$opt_p );
     $pass_str =~ s|,||g;
     $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
@@ -1103,21 +1115,8 @@ sub run_with_ARGV
     $self->_tmp(
         [ map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 ] );
 
-    #
-    #   generate options
-    #
+    # Generate options
 
-    #   canonicalize -p option(s)
-    if ( !@opt_p )
-    {
-        #   no option means all passes
-        @opt_p = ('1-9');
-    }
-    if ( not -s $self->_src )
-    {
-        #   on empty input optimize to just use pass 9
-        @opt_p = ('9');
-    }
     my $passes_indices = $self->_calc_passes_idxs( \@opt_p, $opt_M );
 
     #   determine includes
