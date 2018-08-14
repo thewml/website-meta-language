@@ -37,7 +37,8 @@ package WML_Frontends::Wml::Runner;
 use strict;
 use warnings;
 
-use Class::XSAccessor ( accessors => +{ map { $_ => $_ } qw( _pass_mgr ) } );
+use Class::XSAccessor (
+    accessors => +{ map { $_ => $_ } qw( _pass_mgr _protect_storage ) } );
 
 use Getopt::Long 2.13;
 use File::Spec ();
@@ -593,7 +594,7 @@ EOF
     }
 
     my $PROTECT_COUNTER = 0;
-    my %PROTECT_STORAGE;
+    $self->_protect_storage( +{} );
     $_pass_mgr->opt_o( \@opt_o );
     $_pass_mgr->opt_s($opt_s);
 
@@ -633,7 +634,7 @@ EOF
                 $passes_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
             }
             my $key = sprintf( "%06d", $PROTECT_COUNTER++ );
-            $PROTECT_STORAGE{$key} = {
+            $self->_protect_storage->{$key} = {
                 SPEC => $passes_str,
                 MAX  => max( split( '', $passes_str ) ),
                 ARG  => $arg,
@@ -648,7 +649,7 @@ EOF
             my $key = $2;
             $fp->print($1)
                 || error("Unable to write into $fn for protection: $!");
-            if ( $PROTECT_STORAGE{$key}->{SPEC} =~ m/$pass/ )
+            if ( $self->_protect_storage->{$key}->{SPEC} =~ m/$pass/ )
             {
                 $fp->print("-=P[$key]=-")
                     || error("Unable to write into $fn for protection: $!");
@@ -657,8 +658,8 @@ EOF
             {
                 $data =
                       "<protect"
-                    . $PROTECT_STORAGE{$key}->{ARG} . ">"
-                    . $PROTECT_STORAGE{$key}->{BODY}
+                    . $self->_protect_storage->{$key}->{ARG} . ">"
+                    . $self->_protect_storage->{$key}->{BODY}
                     . "</protect>"
                     . $data;
             }
@@ -676,12 +677,13 @@ EOF
             $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s )
         {
             $data = $new;
-            if ( $pass < 9 and $pass < $PROTECT_STORAGE{$key}->{MAX} )
+            if ( $pass < 9 and $pass < $self->_protect_storage->{$key}->{MAX} )
             {
-                $prefix .= "<protect" . $PROTECT_STORAGE{$key}->{ARG} . ">";
+                $prefix .=
+                    "<protect" . $self->_protect_storage->{$key}->{ARG} . ">";
                 $data = "</protect>" . $data;
             }
-            $data = $prefix . $PROTECT_STORAGE{$key}->{BODY} . $data;
+            $data = $prefix . $self->_protect_storage->{$key}->{BODY} . $data;
         }
 
         #    Remove useless <protect> tags
@@ -689,9 +691,9 @@ EOF
         io->file($fn)->print($data);
         if ( $pass < 9 )
         {
-            foreach my $key ( keys %PROTECT_STORAGE )
+            foreach my $key ( keys %{ $self->_protect_storage } )
             {
-                $PROTECT_STORAGE{$key} = undef;
+                $self->_protect_storage->{$key} = undef;
             }
         }
     };
