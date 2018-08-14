@@ -1182,3 +1182,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
 }
 
 1;
+
+__END__
+
+# vim: ft=perl
