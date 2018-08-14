@@ -40,7 +40,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _pass_mgr _protect_storage _PROTECT_COUNTER)
+            qw( _firstpass _out_filenames _pass_mgr _protect_storage _PROTECT_COUNTER)
     }
 );
 
@@ -101,18 +101,18 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $out_filenames, $src, $src_istmp, $opt_t, $opt_E ) = @_;
+    my ( $self, $src, $src_istmp, $opt_t, $opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
     #   Unprotect output files and run epilog filters
-    if ( !@$out_filenames )
+    if ( !@{ $self->_out_filenames } )
     {
         return;
     }
 
     #   unprotect all outputfiles
-    foreach my $o (@$out_filenames)
+    foreach my $o ( @{ $self->_out_filenames } )
     {
         $self->_unprotect( $o, 9 );
     }
@@ -126,14 +126,14 @@ sub _handle_output
             $size, $atime, $mtime, $ctime, $blksize, $blocks
         ) = stat($src);
         $atime = time();
-        foreach my $o (@$out_filenames)
+        foreach my $o ( @{ $self->_out_filenames } )
         {
             utime( $atime, $mtime + 1, $o );
         }
     }
 
     #   run epilog filters
-    foreach my $o (@$out_filenames)
+    foreach my $o ( @{ $self->_out_filenames } )
     {
         foreach my $e (@$opt_E)
         {
@@ -256,10 +256,10 @@ sub _protect
 
 sub _ProcessOutfiles
 {
-    my ( $self, $outref, $out_filenames, $tmp, $opt_o ) = @_;
+    my ( $self, $outref, $tmp, $opt_o ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    $$outref        = '';
-    @$out_filenames = ();
+    $$outref = '';
+    $self->_out_filenames( [] );
     foreach my $o (@$opt_o)
     {
         next if ( $o =~ m|\*[^:]*$| );
@@ -286,19 +286,19 @@ sub _ProcessOutfiles
         #   create output file list for epilog filters
         if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
         {
-            push( @$out_filenames, ( $2 ne '-' ? $2 : $tmp->[3] ) );
+            push( @{ $self->_out_filenames }, ( $2 ne '-' ? $2 : $tmp->[3] ) );
         }
         elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
         {
-            push( @$out_filenames, ( $2 ne '-' ? $2 : $tmp->[3] ) );
+            push( @{ $self->_out_filenames }, ( $2 ne '-' ? $2 : $tmp->[3] ) );
         }
         elsif ( $o =~ m|^(.+)\@(.+)$| )
         {
-            push( @$out_filenames, ( $1 ne '-' ? $1 : $tmp->[3] ) );
+            push( @{ $self->_out_filenames }, ( $1 ne '-' ? $1 : $tmp->[3] ) );
         }
         else
         {
-            push( @$out_filenames, ( $o ne '-' ? $o : $tmp->[3] ) );
+            push( @{ $self->_out_filenames }, ( $o ne '-' ? $o : $tmp->[3] ) );
         }
     }
     return;
@@ -953,15 +953,15 @@ EOF
         $defgm4 .= " \"-Dm4_$var=$val\"";
     }
 
-    my @out_filenames;
+    $self->_out_filenames( [] );
 
     my $out = '';
 
-    $self->_ProcessOutfiles( \$out, \@out_filenames, \@tmp, \@opt_o );
+    $self->_ProcessOutfiles( \$out, \@tmp, \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
             $_process_options->();
-            $self->_ProcessOutfiles( \$out, \@out_filenames, \@tmp, \@opt_o );
+            $self->_ProcessOutfiles( \$out, \@tmp, \@opt_o );
             return;
         }
     );
@@ -1036,9 +1036,9 @@ EOF
 
     if ( $opt_M ne '-' )
     {
-        if (@out_filenames)
+        if ( @{ $self->_out_filenames } )
         {
-            my $o = '"' . join( ' ', @out_filenames ) . '"';
+            my $o = '"' . join( ' ', @{ $self->_out_filenames } ) . '"';
             my $opt_pass = '';
             foreach my $aa (@opt_W)
             {
@@ -1179,9 +1179,9 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         my @fh = ();
         my $fp;
         $self->_unprotect( $last, 9 );
-        if (@out_filenames)
+        if ( @{ $self->_out_filenames } )
         {
-            foreach my $o (@out_filenames)
+            foreach my $o ( @{ $self->_out_filenames } )
             {
                 open $fh[$i], '>', $o or error("Unable to write into $o");
                 ++$i;
@@ -1201,7 +1201,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
     }
 
-    $self->_handle_output( \@out_filenames, $src, $src_istmp, $opt_t, \@opt_E );
+    $self->_handle_output( $src, $src_istmp, $opt_t, \@opt_E );
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
