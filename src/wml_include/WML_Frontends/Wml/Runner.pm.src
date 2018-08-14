@@ -1,4 +1,4 @@
-##
+#
 ##  WML -- Website META Language
 ##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
@@ -454,8 +454,8 @@ sub _populate_opt_D
 sub _passes_loop
 {
     my (
-        $self,  $passes_indices, $fromref, $to, $cnt,
-        $final, $last,           $opt_q,   $opt_W
+        $self,  $passes_indices, $from,  $to, $cnt,
+        $final, $last,           $opt_q, $opt_W
     ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
@@ -470,7 +470,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         #   run pass
         my ( $u, $s, $cu, $cs ) = times();
         my $stime = $u + $s + $cu + $cs;
-        $self->_protect( $$fromref, $pass_idx );
+        $self->_protect( $from, $pass_idx );
         my $opt_pass = '';
         foreach my $aa (@$opt_W)
         {
@@ -482,7 +482,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         my $_pass = $_pass_mgr->pass($pass_idx);
         my $rc    = $_pass->cb()->(
             $_pass_mgr, $_pass->opt_pass() . $opt_pass,
-            $$fromref, $to, $self->_tmp->[2]
+            $from, $to, $self->_tmp->[2]
         );
         if ( !length($rc) )
         {
@@ -541,8 +541,8 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         $$last = $to;
         $$final = 1 if $pass_idx == 9;
         my $bit = ( $cnt & 1 );
-        $$fromref = $self->_tmp->[$bit];
-        $to       = $self->_tmp->[ $bit ^ 1 ];
+        $from = $self->_tmp->[$bit];
+        $to   = $self->_tmp->[ $bit ^ 1 ];
         unlink($to);
         ++$cnt;
 
@@ -1219,7 +1219,7 @@ EOF
     #
     my $final = 0;
     $self->_passes_loop( \@passes_indices,
-        \$from, $to, $cnt, \$final, \$last, $opt_q, \@opt_W );
+        $from, $to, $cnt, \$final, \$last, $opt_q, \@opt_W );
 
     if ( $last ne '' and $final and $_pass_mgr->out_istmp )
     {
