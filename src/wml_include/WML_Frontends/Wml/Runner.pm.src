@@ -97,8 +97,7 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $out_filenames, $unprotect, $src, $src_istmp, $opt_t, $opt_E )
-        = @_;
+    my ( $self, $out_filenames, $src, $src_istmp, $opt_t, $opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
@@ -111,7 +110,7 @@ sub _handle_output
     #   unprotect all outputfiles
     foreach my $o (@$out_filenames)
     {
-        $unprotect->( $o, 9 );
+        $self->_unprotect( $o, 9 );
     }
 
     #   optionally set mtime of outputfiles
@@ -145,6 +144,38 @@ sub _handle_output
             error("epilog failed: $e_prog $o") if $rc != 0;
         }
     }
+    return;
+}
+
+sub _unprotect
+{
+    my ( $self, $fn, $pass ) = @_;
+
+    my $data = io->file($fn)->all;
+    while ( my ( $prefix, $key, $new ) =
+        $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s )
+    {
+        $data = $new;
+        if ( $pass < 9 and $pass < $self->_protect_storage->{$key}->{MAX} )
+        {
+            $prefix .=
+                "<protect" . $self->_protect_storage->{$key}->{ARG} . ">";
+            $data = "</protect>" . $data;
+        }
+        $data = $prefix . $self->_protect_storage->{$key}->{BODY} . $data;
+    }
+
+    #    Remove useless <protect> tags
+    $data =~ s|</?protect.*?>||gs if $pass == 9;
+    io->file($fn)->print($data);
+    if ( $pass < 9 )
+    {
+        foreach my $key ( keys %{ $self->_protect_storage } )
+        {
+            $self->_protect_storage->{$key} = undef;
+        }
+    }
+
     return;
 }
 
@@ -669,35 +700,6 @@ EOF
         $fp->close() || error("Unable to close ${fn}: $!");
     };
 
-    my $unprotect = sub {
-        my ( $fn, $pass ) = @_;
-
-        my $data = io->file($fn)->all;
-        while ( my ( $prefix, $key, $new ) =
-            $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s )
-        {
-            $data = $new;
-            if ( $pass < 9 and $pass < $self->_protect_storage->{$key}->{MAX} )
-            {
-                $prefix .=
-                    "<protect" . $self->_protect_storage->{$key}->{ARG} . ">";
-                $data = "</protect>" . $data;
-            }
-            $data = $prefix . $self->_protect_storage->{$key}->{BODY} . $data;
-        }
-
-        #    Remove useless <protect> tags
-        $data =~ s|</?protect.*?>||gs if $pass == 9;
-        io->file($fn)->print($data);
-        if ( $pass < 9 )
-        {
-            foreach my $key ( keys %{ $self->_protect_storage } )
-            {
-                $self->_protect_storage->{$key} = undef;
-            }
-        }
-    };
-
     #   Flag set if some output goes to stdout
     $_pass_mgr->out_istmp(0);
 
@@ -1111,7 +1113,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
 
         # pass 9 is a special case
-        $unprotect->( $to, $pass_idx ) if ( $pass_idx < 9 );
+        $self->_unprotect( $to, $pass_idx ) if ( $pass_idx < 9 );
         ( $u, $s, $cu, $cs ) = times();
         my $etime = $u + $s + $cu + $cs;
         my $dtime = $etime - $stime;
@@ -1158,14 +1160,14 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
 
     if ( $last ne '' and $final and $_pass_mgr->out_istmp )
     {
-        $unprotect->( $tmp[3], 9 );
+        $self->_unprotect( $tmp[3], 9 );
     }
     elsif ( $last ne '' and not $final )
     {
         my $i  = 0;
         my @fh = ();
         my $fp;
-        $unprotect->( $last, 9 );
+        $self->_unprotect( $last, 9 );
         if (@out_filenames)
         {
             foreach my $o (@out_filenames)
@@ -1188,8 +1190,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
     }
 
-    $self->_handle_output( \@out_filenames, $unprotect, $src, $src_istmp,
-        $opt_t, \@opt_E );
+    $self->_handle_output( \@out_filenames, $src, $src_istmp, $opt_t, \@opt_E );
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
