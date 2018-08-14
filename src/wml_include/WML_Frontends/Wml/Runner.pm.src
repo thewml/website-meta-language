@@ -40,7 +40,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out_filenames _pass_mgr _protect_storage _src_istmp _PROTECT_COUNTER)
+            qw( _firstpass _out_filenames _pass_mgr _protect_storage _src_istmp _tmp _PROTECT_COUNTER)
     }
 );
 
@@ -256,29 +256,29 @@ sub _protect
 
 sub _calc_out_fn
 {
-    my ( $self, $o, $tmp ) = @_;
+    my ( $self, $o ) = @_;
 
     if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
     {
-        return ( $2 ne '-' ? $2 : $tmp->[3] );
+        return ( $2 ne '-' ? $2 : $self->_tmp->[3] );
     }
     elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
     {
-        return ( $2 ne '-' ? $2 : $tmp->[3] );
+        return ( $2 ne '-' ? $2 : $self->_tmp->[3] );
     }
     elsif ( $o =~ m|^(.+)\@(.+)$| )
     {
-        return ( $1 ne '-' ? $1 : $tmp->[3] );
+        return ( $1 ne '-' ? $1 : $self->_tmp->[3] );
     }
     else
     {
-        return ( $o ne '-' ? $o : $tmp->[3] );
+        return ( $o ne '-' ? $o : $self->_tmp->[3] );
     }
 }
 
 sub _ProcessOutfiles
 {
-    my ( $self, $outref, $tmp, $opt_o ) = @_;
+    my ( $self, $outref, $opt_o ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     $$outref = '';
     $self->_out_filenames( [] );
@@ -289,12 +289,12 @@ sub _ProcessOutfiles
         #   create option
         if ( $o eq '-' )
         {
-            $$outref .= " -o '" . quotearg( $tmp->[3] ) . "'";
+            $$outref .= " -o '" . quotearg( $self->_tmp->[3] ) . "'";
             $_pass_mgr->out_istmp(1);
         }
         elsif ( $o =~ m/(.*):-$/ )
         {
-            $$outref .= " -o '" . quotearg( $1 . ':' . $tmp->[3] ) . "'";
+            $$outref .= " -o '" . quotearg( $1 . ':' . $self->_tmp->[3] ) . "'";
             $_pass_mgr->out_istmp(1);
         }
         else
@@ -306,7 +306,7 @@ sub _ProcessOutfiles
         $o =~ s|^(['"])(.*)\1$|$2|;
 
         #   create output file list for epilog filters
-        push @{ $self->_out_filenames }, $self->_calc_out_fn( $o, $tmp );
+        push @{ $self->_out_filenames }, $self->_calc_out_fn($o);
     }
     return;
 }
@@ -859,8 +859,8 @@ EOF
         "WML_TMPDIR=$tmpdir" );
 
     #   Create temporary file names as soon as $src_suffix is set
-    my @tmp =
-        ( map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 );
+    $self->_tmp(
+        [ map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 ] );
 
     #
     #   generate options
@@ -964,11 +964,11 @@ EOF
 
     my $out = '';
 
-    $self->_ProcessOutfiles( \$out, \@tmp, \@opt_o );
+    $self->_ProcessOutfiles( \$out, \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
             $_process_options->();
-            $self->_ProcessOutfiles( \$out, \@tmp, \@opt_o );
+            $self->_ProcessOutfiles( \$out, \@opt_o );
             return;
         }
     );
@@ -988,21 +988,21 @@ EOF
     my ( $from, $to );
     if ( not $self->_src_istmp )
     {
-        io->file( $tmp[0] )->print( io->file($src)->all );
-        $from = $tmp[0];
-        $to   = $tmp[1];
+        io->file( $self->_tmp->[0] )->print( io->file($src)->all );
+        $from = $self->_tmp->[0];
+        $to   = $self->_tmp->[1];
         $cnt  = 1;
     }
     else
     {
         $from = $src;
-        $to   = $tmp[0];
+        $to   = $self->_tmp->[0];
         $cnt  = 0;
     }
 
     if ( $out eq '' )
     {
-        $out = " -o$tmp[3]";
+        $out = " -o" . $self->_tmp->[3];
         $_pass_mgr->out_istmp(1);
     }
 
@@ -1037,7 +1037,7 @@ EOF
     };
 
     my $unlink_tmp = sub {
-        unlink( @tmp[ 0 .. 3 ] );
+        unlink( @{ $self->_tmp }[ 0 .. 3 ] );
         unlink($src) if ( $self->_src_istmp );
     };
 
@@ -1059,7 +1059,7 @@ EOF
                 $rc =
                     $_pass_mgr->pass1(
                     $_pass_mgr->pass(1)->opt_pass() . $opt_pass,
-                    $src, $o, $tmp[2] );
+                    $src, $o, $self->_tmp->[2] );
             };
             if ( $rc != 0 )
             {
@@ -1107,7 +1107,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         my $_pass = $_pass_mgr->pass($pass_idx);
         my $rc    = $_pass->cb()->(
             $_pass_mgr, $_pass->opt_pass() . $opt_pass,
-            $from, $to, $tmp[2]
+            $from, $to, $self->_tmp->[2]
         );
         if ( !length($rc) )
         {
@@ -1165,8 +1165,8 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         $last = $to;
         $final = 1 if $pass_idx == 9;
         my $bit = ( $cnt & 1 );
-        $from = $tmp[$bit];
-        $to   = $tmp[ $bit ^ 1 ];
+        $from = $self->_tmp->[$bit];
+        $to   = $self->_tmp->[ $bit ^ 1 ];
         unlink($to);
         ++$cnt;
 
@@ -1178,7 +1178,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
 
     if ( $last ne '' and $final and $_pass_mgr->out_istmp )
     {
-        $self->_unprotect( $tmp[3], 9 );
+        $self->_unprotect( $self->_tmp->[3], 9 );
     }
     elsif ( $last ne '' and not $final )
     {
@@ -1196,7 +1196,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
         else
         {
-            my $o = $tmp[3];
+            my $o = $self->_tmp->[3];
             open $fh[$i], '>', $o or error("Unable to write into $o");
         }
         my $buf = io()->file($last)->all;
@@ -1213,7 +1213,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
     {
-        io->file( $tmp[3] ) > io('-');
+        io->file( $self->_tmp->[3] ) > io('-');
     }
 
     $unlink_tmp->();
