@@ -730,8 +730,7 @@ sub _process_ENV_WMLOPTS
         #   have already been expanded, but dollar sign must be
         #   escaped
         $opts =~ s|\$|\\\$|g;
-        @ARGV = split_argv($opts);
-        $_process_options->();
+        $_process_options->( [ split_argv($opts) ] );
     }
     return;
 }
@@ -789,7 +788,7 @@ sub _process_wmlrc
             $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
             open( my $wml_rc_fh, '<', "$dir/.wmlrc" )
                 or error("Unable to load $dir/.wmlrc: $!");
-            @ARGV = ();
+            my @aa;
         WMLRC_LINES:
             while ( my $l = <$wml_rc_fh> )
             {
@@ -800,14 +799,14 @@ sub _process_wmlrc
                 $l =~ s|\A\s+||;
                 $l =~ s|\s+\z||;
                 $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-                push( @ARGV, split_argv($l) );
+                push( @aa, split_argv($l) );
             }
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
             my @opt_D_OLD = @$opt_D;
             my @opt_I_OLD = @$opt_I;
             @$opt_D = ();
             @$opt_I = ();
-            $_process_options->();
+            $_process_options->( \@aa );
             my @opt_D_NEW = @opt_D_OLD;
             my @opt_I_NEW = @opt_I_OLD;
 
@@ -907,8 +906,7 @@ SHEBANG:
     if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
     {
         #   split opts into arguments and process them
-        @ARGV = split_argv($1);
-        $_process_options->();
+        $_process_options->( [ split_argv($1) ] );
     }
 }
 
@@ -953,6 +951,7 @@ sub run_with_ARGV
     my $opt_V = -1;
 
     my $_process_options = sub {
+        my $my_argv = shift;
         local $SIG{__WARN__} = sub {
             print STDERR "WML:Error: $_[0]";
         };
@@ -984,7 +983,11 @@ sub run_with_ARGV
             "V|version:i" => \$opt_V,
             "h|help"      => \$opt_h,
         );
-        if ( not Getopt::Long::GetOptions( %scalar_options, %list_options ) )
+        if (
+            not Getopt::Long::GetOptionsFromArray(
+                $my_argv, %scalar_options, %list_options
+            )
+            )
         {
             warn "Try `$0 --help' for more information.\n";
             exit(0);
@@ -1004,7 +1007,7 @@ sub run_with_ARGV
     };
 
     my @ARGVLINE = @ARGV;
-    $_process_options->();
+    $_process_options->( \@ARGV );
     $self->_src( $ARGV[0] );
 
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
@@ -1023,18 +1026,17 @@ sub run_with_ARGV
     $opt_q = 0;
     $opt_V = -1;
 
-    @ARGV = ();
     $self->_process_ENV_WMLOPTS($_process_options);
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc( $_process_options, $opt_r, $opt_c, \@opt_I,
-        \@opt_D );
+    $self->_process_wmlrc( $_process_options,
+        $opt_r, $opt_c, \@opt_I, \@opt_D );
 
     #   4. process the command line options
     @ARGV = @ARGVLINE;
     my @opt_D_OLD = @opt_D;
     @opt_D = ();    # extra remember -D options from command line
-    $_process_options->();
+    $_process_options->( \@ARGV );
 
     #   quote the characters the shell have escaped
     my @opt_D_ADD = map { quotearg $_} @opt_D;
@@ -1192,7 +1194,7 @@ sub run_with_ARGV
     $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
-            $_process_options->();
+            $_process_options->( \@ARGV );
             $self->_ProcessOutfiles( \@opt_o );
             return;
         }
