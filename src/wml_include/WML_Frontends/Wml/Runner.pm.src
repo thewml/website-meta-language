@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out_filenames _pass_mgr _protect_storage _src _src_istmp _tmp _PROTECT_COUNTER)
+            qw( _firstpass _out _out_filenames _pass_mgr _protect_storage _src _src_istmp _tmp _PROTECT_COUNTER)
     }
 );
 
@@ -276,28 +276,33 @@ sub _calc_out_fn
 
 sub _ProcessOutfiles
 {
-    my ( $self, $outref, $opt_o ) = @_;
+    my ( $self, $opt_o ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    $$outref = '';
+    $self->_out('');
     $self->_out_filenames( [] );
     foreach my $o (@$opt_o)
     {
         next if ( $o =~ m|\*[^:]*$| );
 
+        my $append = sub {
+            $self->_out( $self->_out . shift );
+        };
+
         #   create option
         if ( $o eq '-' )
         {
-            $$outref .= " -o '" . quotearg( $self->_tmp->[3] ) . "'";
+            $append->( " -o '" . quotearg( $self->_tmp->[3] ) . "'" );
             $_pass_mgr->out_istmp(1);
         }
         elsif ( $o =~ m/(.*):-$/ )
         {
-            $$outref .= " -o '" . quotearg( $1 . ':' . $self->_tmp->[3] ) . "'";
+            $append->(
+                " -o '" . quotearg( $1 . ':' . $self->_tmp->[3] ) . "'" );
             $_pass_mgr->out_istmp(1);
         }
         else
         {
-            $$outref .= " -o '" . quotearg($o) . "'";
+            $append->( " -o '" . quotearg($o) . "'" );
         }
 
         #   unquote the filename
@@ -1190,14 +1195,11 @@ sub run_with_ARGV
     }
 
     $self->_out_filenames( [] );
-
-    my $out = '';
-
-    $self->_ProcessOutfiles( \$out, \@opt_o );
+    $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
             $_process_options->();
-            $self->_ProcessOutfiles( \$out, \@opt_o );
+            $self->_ProcessOutfiles( \@opt_o );
             return;
         }
     );
@@ -1213,9 +1215,9 @@ sub run_with_ARGV
         io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
     }
 
-    if ( $out eq '' )
+    if ( $self->_out eq '' )
     {
-        $out = " -o" . $self->_tmp->[3];
+        $self->_out( " -o" . $self->_tmp->[3] );
         $_pass_mgr->out_istmp(1);
     }
 
@@ -1229,7 +1231,7 @@ sub run_with_ARGV
         $verbose,
         $verbose,
         "$verbose $optimize",
-        "$verbose $out",
+        "$verbose " . $self->_out,
     );
 
     while ( my ( $i, $str ) = each @_OPT_PASSES )
