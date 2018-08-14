@@ -908,17 +908,17 @@ sub run_with_ARGV
     my $opt_c = 0;
 
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
-    my @opt_I = ();
-    my @opt_i = ();
-    my @opt_D = ();
+    my @opt_I;
+    my @opt_i;
+    my @opt_D;
     my $opt_n = 0;
     my $opt_O = '';
-    my @opt_o = ();
-    my @opt_P = ();
-    my @opt_E = ();
+    my @opt_o;
+    my @opt_P;
+    my @opt_E;
     my $opt_t = 0;
-    my @opt_p = ();
-    my @opt_W = ();
+    my @opt_p;
+    my @opt_W;
     my $opt_M = '-';
     my $opt_s = 0;
     my $opt_q = 0;
