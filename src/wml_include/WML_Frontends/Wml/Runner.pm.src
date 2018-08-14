@@ -1166,13 +1166,11 @@ sub run_with_ARGV
     }
 
     #   determine preloads
-    my $preload = '';
-    foreach my $pass_idx (@$passes_indices)
-    {
-        $preload .= " -s 'sys/bootp${pass_idx}.wml'"
-            if -f "$libdir/include/sys/bootp${pass_idx}.wml"
-            and $pass_idx =~ m/^[34]$/;
-    }
+    my $preload = join '', map {
+        ( -f "$libdir/include/sys/bootp$_.wml" and /\A[34]\z/ )
+            ? " -s 'sys/bootp$_.wml'"
+            : ''
+    } @$passes_indices;
     $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @opt_i;
 
     #   determine prologs
