@@ -479,19 +479,11 @@ sub _passes_loop
     my $last      = '';
     my $_pass_mgr = $self->_pass_mgr;
     my @prop      = ( "-", "\\", "|", "/" );
-    my ( $from, $to, $cnt );
-    if ( not $self->_src_istmp )
-    {
-        $from = $self->_tmp->[0];
-        $to   = $self->_tmp->[1];
-        $cnt  = 1;
-    }
-    else
-    {
-        $from = $self->_src;
-        $to   = $self->_tmp->[0];
-        $cnt  = 0;
-    }
+    my ( $from, $to, $cnt ) = (
+          ( not $self->_src_istmp )
+        ? ( $self->_tmp->[0], $self->_tmp->[1], 1, )
+        : ( $self->_src, $self->_tmp->[0], 0, )
+    );
 
     my $pcnt = 0;
 PASS_IDX: foreach my $pass_idx (@$passes_indices)
