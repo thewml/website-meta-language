@@ -470,6 +470,7 @@ sub _calc_passes_idxs
     return \@passes_indices;
 }
 
+# MAIN PROCESSING LOOP
 sub _passes_loop
 {
     my ( $self, $passes_indices, $cnt, $opt_q, $opt_W ) = @_;
@@ -628,6 +629,25 @@ sub _do_output
     }
 
     return;
+}
+
+sub _map_opt_o
+{
+    my ( $self, $opts ) = @_;
+    my ( $dir, $base );
+
+    if ( $self->_src =~ m#\A(.+)/([^/]+)\z# )
+    {
+        ( $dir, $base ) = ( $1, $2 );
+    }
+    else
+    {
+        ( $dir, $base ) = ( '.', $self->_src );
+    }
+    $base =~ s#\.[a-zA-Z0-9]+\z##;
+    $opts =~ s|%DIR|$dir|sg;
+    $opts =~ s|%BASE|$base|sg;
+    return $opts;
 }
 
 # A god method: https://en.wikipedia.org/wiki/God_object
@@ -1027,25 +1047,7 @@ EOF
     }
 
     #   6. expand %DIR and %BASE in the -o flags
-    my @opt_o_OLD = @opt_o;
-    @opt_o = ();
-    foreach my $opts (@opt_o_OLD)
-    {
-        my ( $dir, $base );
-
-        if ( $self->_src =~ m#\A(.+)/([^/]+)\z# )
-        {
-            ( $dir, $base ) = ( $1, $2 );
-        }
-        else
-        {
-            ( $dir, $base ) = ( '.', $self->_src );
-        }
-        $base =~ s#\.[a-zA-Z0-9]+\z##;
-        $opts =~ s|%DIR|$dir|sg;
-        $opts =~ s|%BASE|$base|sg;
-        push( @opt_o, $opts );
-    }
+    @opt_o = ( map { $self->_map_opt_o($_) } @opt_o );
 
     #   7. Undefine variables when requested
     my %new_opt_D;
@@ -1253,11 +1255,6 @@ EOF
         $self->_unlink_tmp;
         exit(0);
     }
-
-    #
-    #   MAIN PROCESSING LOOP
-    #
-
     $self->_do_output(
         $self->_passes_loop( $passes_indices, $cnt, $opt_q, \@opt_W ) );
 
