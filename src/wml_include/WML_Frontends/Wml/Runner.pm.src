@@ -40,7 +40,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out_filenames _pass_mgr _protect_storage _src_istmp _tmp _PROTECT_COUNTER)
+            qw( _firstpass _out_filenames _pass_mgr _protect_storage _src _src_istmp _tmp _PROTECT_COUNTER)
     }
 );
 
@@ -101,7 +101,7 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $src, $opt_t, $opt_E ) = @_;
+    my ( $self, $opt_t, $opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
@@ -124,7 +124,7 @@ sub _handle_output
         my (
             $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
             $size, $atime, $mtime, $ctime, $blksize, $blocks
-        ) = stat($src);
+        ) = stat( $self->_src );
         $atime = time();
         foreach my $o ( @{ $self->_out_filenames } )
         {
@@ -313,7 +313,7 @@ sub _ProcessOutfiles
 
 sub _handle_opt_M_stdin
 {
-    my ( $self, $unlink_tmp, $src, $opt_W ) = @_;
+    my ( $self, $unlink_tmp, $opt_W ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -333,7 +333,7 @@ sub _handle_opt_M_stdin
     my $rc;
     eval {
         $rc = $_pass_mgr->pass1( $_pass_mgr->pass(1)->opt_pass() . $opt_pass,
-            $src, $o, $self->_tmp->[2] );
+            $self->_src, $o, $self->_tmp->[2] );
     };
     if ( $rc != 0 )
     {
@@ -355,7 +355,7 @@ sub _handle_opt_M_stdin
 
 sub _populate_opt_D
 {
-    my ( $self, $opt_D, $src, $src_filename, $bindir, $tmpdir, $VERSION ) = @_;
+    my ( $self, $opt_D, $src_filename, $bindir, $tmpdir, $VERSION ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
@@ -398,14 +398,17 @@ sub _populate_opt_D
     }
     else
     {
-        $src_dirname =
-            ( ( $src =~ m#/# ) ? Cwd::abs_path( dirname($src) ) : $cwd );
-        $src_basename = $$src_filename = basename($src);
+        $src_dirname = (
+            ( $self->_src =~ m#/# )
+            ? Cwd::abs_path( dirname( $self->_src ) )
+            : $cwd
+        );
+        $src_basename = $$src_filename = basename( $self->_src );
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
         my (
             $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
             $size, $atime, $mtime, $ctime, $blksize, $blocks
-        ) = stat($src);
+        ) = stat( $self->_src );
         $src_time        = $mtime;
         $src_ctime       = ctime($mtime);
         $src_isotime     = isotime($mtime);
@@ -541,7 +544,7 @@ sub run_with_ARGV
 
     my @ARGVLINE = @ARGV;
     $_process_options->();
-    my $src = $ARGV[0];
+    $self->_src( $ARGV[0] );
 
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
     @opt_D = ();
@@ -586,16 +589,16 @@ sub run_with_ARGV
         my @DIR     = ();
 
         #   First save current directory and go to input file directory
-        if ( not $opt_c and $src =~ m|/| )
+        if ( not $opt_c and $self->_src =~ m|/| )
         {
-            $src = dirname($src);
-            if ( -d $src )
+            $self->_src( dirname( $self->_src ) );
+            if ( -d $self->_src )
             {
                 $savedir = Cwd::cwd;
-                chdir($src);
+                chdir( $self->_src );
             }
         }
-        $src = '' if not $savedir;
+        $self->_src('') if not $savedir;
 
         #   2. add all parent dirs .wmlrc files for options
         my $cwd = _my_cwd;
@@ -648,7 +651,7 @@ sub run_with_ARGV
                 my @opt_I_NEW = @opt_I_OLD;
 
                 #   adjust -D options
-                my $reldir = File::Spec->abs2rel( "$dir", "$src" );
+                my $reldir = File::Spec->abs2rel( "$dir", $self->_src );
                 $reldir = "." if $reldir eq '';
                 foreach my $d (@opt_D)
                 {
@@ -758,13 +761,13 @@ EOF
     }
 
     #   set the input file
-    $src = $ARGV[0];
+    $self->_src( $ARGV[0] );
 
     #   if no inputfile is given, WML reads from stdin
     #   and forces quiet mode
-    if ( $src eq '' )
+    if ( $self->_src eq '' )
     {
-        $src   = '-';
+        $self->_src('-');
         $opt_q = 1;
     }
 
@@ -772,17 +775,17 @@ EOF
 
     #   if input is stdin we create a temporary file
     $self->_src_istmp(0);
-    if ( $src eq '-' )
+    if ( $self->_src eq '-' )
     {
         $self->_src_istmp(1);
-        $src = "$tmpdir/wml.input.$$.tmp";
-        unlink($src);
-        io->stdin() > io->file($src);
+        $self->_src("$tmpdir/wml.input.$$.tmp");
+        unlink( $self->_src );
+        io->stdin() > io->file( $self->_src );
     }
 
-    if ( $self->_src_istmp and not -f $src )
+    if ( $self->_src_istmp and not -f $self->_src )
     {
-        print STDERR "** WML:Error: input file `$src' not found\n";
+        print STDERR "** WML:Error: input file `@{[$self->_src]}' not found\n";
         exit(1);
     }
 
@@ -791,7 +794,7 @@ EOF
     my ($reldir);
     if ( not $self->_src_istmp )
     {
-        $reldir = $src;
+        $reldir = $self->_src;
         $reldir =~ s,(:?/|^)[^/]+$,,;
         my $cwd = _my_cwd;
         $reldir = File::Spec->abs2rel( $cwd, "$cwd/$reldir" );
@@ -822,8 +825,8 @@ EOF
     #   5. process the options from the pseudo-shebang line
     if ( not $opt_n )
     {
-        open( my $tmp_fh, '<', $src )
-            or error("Unable to load $src: $!");
+        open( my $tmp_fh, '<', $self->_src )
+            or error("Unable to load @{[$self->_src]}: $!");
         my $shebang = '';
     SHEBANG:
         while ( my $l = <$tmp_fh> )
@@ -835,7 +838,7 @@ EOF
             }
         }
         close($tmp_fh)
-            or error("Unable to close $src: $!");
+            or error("Unable to close @{[$self->_src]}:: $!");
         if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
         {
             #   split opts into arguments and process them
@@ -851,13 +854,13 @@ EOF
     {
         my ( $dir, $base );
 
-        if ( $src =~ m#\A(.+)/([^/]+)\z# )
+        if ( $self->_src =~ m#\A(.+)/([^/]+)\z# )
         {
             ( $dir, $base ) = ( $1, $2 );
         }
         else
         {
-            ( $dir, $base ) = ( '.', $src );
+            ( $dir, $base ) = ( '.', $self->_src );
         }
         $base =~ s#\.[a-zA-Z0-9]+\z##;
         $opts =~ s|%DIR|$dir|sg;
@@ -909,7 +912,7 @@ EOF
 
     my $cwd = _my_cwd;
     my $src_filename;
-    $self->_populate_opt_D( \@opt_D, $src, \$src_filename, $bindir, $tmpdir,
+    $self->_populate_opt_D( \@opt_D, \$src_filename, $bindir, $tmpdir,
         $VERSION );
 
     #   Create temporary file names
@@ -926,7 +929,7 @@ EOF
         #   no option means all passes
         @opt_p = ('1-9');
     }
-    if ( not -s $src )
+    if ( not -s $self->_src )
     {
         #   on empty input optimize to just use pass 9
         @opt_p = ('9');
@@ -1042,14 +1045,14 @@ EOF
     my ( $from, $to );
     if ( not $self->_src_istmp )
     {
-        io->file( $self->_tmp->[0] )->print( io->file($src)->all );
+        io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
         $from = $self->_tmp->[0];
         $to   = $self->_tmp->[1];
         $cnt  = 1;
     }
     else
     {
-        $from = $src;
+        $from = $self->_src;
         $to   = $self->_tmp->[0];
         $cnt  = 0;
     }
@@ -1061,8 +1064,13 @@ EOF
     }
 
     my @_OPT_PASSES = (
-        "$defipp $verbose -S $libdir/include -n $src $inc $preload $prolog",
-        "$defmp4h", "$defeperl", "$defgm4", "$verbose", "$verbose", "$verbose",
+"$defipp $verbose -S $libdir/include -n @{[$self->_src]} $inc $preload $prolog",
+        "$defmp4h",
+        "$defeperl",
+        "$defgm4",
+        "$verbose",
+        "$verbose",
+        "$verbose",
         "$verbose $optimize",
         "$verbose $out",
     );
@@ -1092,12 +1100,12 @@ EOF
 
     my $unlink_tmp = sub {
         unlink( @{ $self->_tmp }[ 0 .. 3 ] );
-        unlink($src) if ( $self->_src_istmp );
+        unlink( $self->_src ) if ( $self->_src_istmp );
     };
 
     if ( $opt_M ne '-' )
     {
-        $self->_handle_opt_M_stdin( $unlink_tmp, $src, \@opt_W );
+        $self->_handle_opt_M_stdin( $unlink_tmp, \@opt_W );
         $unlink_tmp->();
         exit(0);
     }
@@ -1228,7 +1236,7 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
     }
 
-    $self->_handle_output( $src, $opt_t, \@opt_E );
+    $self->_handle_output( $opt_t, \@opt_E );
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
