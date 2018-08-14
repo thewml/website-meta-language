@@ -1173,17 +1173,7 @@ sub run_with_ARGV
             if -f "$libdir/include/sys/bootp${pass_idx}.wml"
             and $pass_idx =~ m/^[34]$/;
     }
-    foreach my $i (@opt_i)
-    {
-        if ( $i =~ m|^<(.+)>$| )
-        {
-            $preload .= " -s '$1'";
-        }
-        else
-        {
-            $preload .= " -i '$i'";
-        }
-    }
+    $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @opt_i;
 
     #   determine prologs
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
