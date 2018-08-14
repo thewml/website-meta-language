@@ -352,7 +352,7 @@ sub _handle_opt_M_stdin
                 1, $rc / 256 );
         }
         $self->_unlink_tmp;
-        exit(1);
+        die;
     }
 }
 
@@ -541,7 +541,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
                     $pass_idx, $rc / 256 );
             }
             $self->_unlink_tmp;
-            exit(1);
+            die;
         }
 
         # pass 9 is a special case
@@ -571,7 +571,7 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
                 {
                     printf( STDERR "** WML:Break: Manual Stop.\n" );
                     $self->_unlink_tmp;
-                    exit(1);
+                    die;
                 }
             }
         }
@@ -1076,7 +1076,7 @@ sub run_with_ARGV
     if ( $self->_src_istmp and not -f $self->_src )
     {
         print STDERR "** WML:Error: input file `@{[$self->_src]}' not found\n";
-        exit(1);
+        return 1;
     }
 
     #   now adjust -D options from command line
@@ -1249,7 +1249,7 @@ sub run_with_ARGV
     {
         $self->_handle_opt_M_stdin( \@opt_W );
         $self->_unlink_tmp;
-        exit(0);
+        return 0;
     }
     $self->_do_output(
         $self->_passes_loop( $passes_indices, $opt_q, \@opt_W ) );
