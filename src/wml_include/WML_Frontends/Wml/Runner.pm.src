@@ -294,7 +294,7 @@ sub _ProcessOutfiles
             $append->( " -o '" . quotearg( $self->_tmp->[3] ) . "'" );
             $_pass_mgr->out_istmp(1);
         }
-        elsif ( $o =~ m/(.*):-$/ )
+        elsif ( $o =~ /(.*):-\z/ )
         {
             $append->(
                 " -o '" . quotearg( $1 . ':' . $self->_tmp->[3] ) . "'" );
@@ -1173,11 +1173,9 @@ sub run_with_ARGV
             $defmp4h .= " -D $var=\"$val\"";
         }
     }
-    my $cnt = 0;
-    foreach my $o (@opt_o)
+    while (my ($cnt, $o) = each@opt_o)
     {
         $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
-        ++$cnt;
     }
 
     my $defeperl = '';
