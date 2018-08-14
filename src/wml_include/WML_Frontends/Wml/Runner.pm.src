@@ -453,10 +453,12 @@ sub _populate_opt_D
 
 sub _passes_loop
 {
-    my ( $self, $passes_indices, $cnt, $final, $last, $opt_q, $opt_W ) = @_;
+    my ( $self, $passes_indices, $cnt, $opt_q, $opt_W ) = @_;
 
+    my $final     = 0;
+    my $last      = '';
     my $_pass_mgr = $self->_pass_mgr;
-    my @prop = ( "-", "\\", "|", "/" );
+    my @prop      = ( "-", "\\", "|", "/" );
     my ( $from, $to );
     if ( not $self->_src_istmp )
     {
@@ -546,20 +548,20 @@ PASS_IDX: foreach my $pass_idx (@$passes_indices)
         }
 
         #   step further
-        $$last = $to;
-        $$final = 1 if $pass_idx == 9;
+        $last = $to;
+        $final = 1 if $pass_idx == 9;
         my $bit = ( $cnt & 1 );
         $from = $self->_tmp->[$bit];
         $to   = $self->_tmp->[ $bit ^ 1 ];
         unlink($to);
         ++$cnt;
 
-        if ($$final)
+        if ($final)
         {
             last PASS_IDX;
         }
     }
-    return;
+    return ( $final, $last );
 }
 
 sub _unlink_tmp
@@ -1223,8 +1225,6 @@ EOF
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
     }
 
-    my $last = '';
-
     #
     #   clear out any existing CGI environments because some of our
     #   passes (currently Pass 2 and 3) get totally confused by these
@@ -1249,11 +1249,9 @@ EOF
     #
     #   MAIN PROCESSING LOOP
     #
-    my $final = 0;
-    $self->_passes_loop( \@passes_indices,
-        $cnt, \$final, \$last, $opt_q, \@opt_W );
 
-    $self->_do_output( $final, $last );
+    $self->_do_output(
+        $self->_passes_loop( \@passes_indices, $cnt, $opt_q, \@opt_W ) );
 
     $self->_handle_output( $opt_t, \@opt_E );
 
