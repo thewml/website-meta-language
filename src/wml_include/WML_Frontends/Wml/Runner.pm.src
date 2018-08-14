@@ -254,6 +254,56 @@ sub _protect
     $fp->close() || error("Unable to close ${fn}: $!");
 }
 
+sub _ProcessOutfiles
+{
+    my ( $self, $outref, $out_filenames, $tmp, $opt_o ) = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+    $$outref        = '';
+    @$out_filenames = ();
+    foreach my $o (@$opt_o)
+    {
+        next if ( $o =~ m|\*[^:]*$| );
+
+        #   create option
+        if ( $o eq '-' )
+        {
+            $$outref .= " -o '" . quotearg( $tmp->[3] ) . "'";
+            $_pass_mgr->out_istmp(1);
+        }
+        elsif ( $o =~ m/(.*):-$/ )
+        {
+            $$outref .= " -o '" . quotearg( $1 . ':' . $tmp->[3] ) . "'";
+            $_pass_mgr->out_istmp(1);
+        }
+        else
+        {
+            $$outref .= " -o '" . quotearg($o) . "'";
+        }
+
+        #   unquote the filename
+        $o =~ s|^(['"])(.*)\1$|$2|;
+
+        #   create output file list for epilog filters
+        if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
+        {
+            push( @$out_filenames, ( $2 ne '-' ? $2 : $tmp->[3] ) );
+        }
+        elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
+        {
+            push( @$out_filenames, ( $2 ne '-' ? $2 : $tmp->[3] ) );
+        }
+        elsif ( $o =~ m|^(.+)\@(.+)$| )
+        {
+            push( @$out_filenames, ( $1 ne '-' ? $1 : $tmp->[3] ) );
+        }
+        else
+        {
+            push( @$out_filenames, ( $o ne '-' ? $o : $tmp->[3] ) );
+        }
+    }
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -907,56 +957,11 @@ EOF
 
     my $out = '';
 
-    my $ProcessOutfiles = sub {
-        $out           = '';
-        @out_filenames = ();
-        foreach my $o (@opt_o)
-        {
-            next if ( $o =~ m|\*[^:]*$| );
-
-            #   create option
-            if ( $o eq '-' )
-            {
-                $out .= " -o '" . quotearg( $tmp[3] ) . "'";
-                $_pass_mgr->out_istmp(1);
-            }
-            elsif ( $o =~ m/(.*):-$/ )
-            {
-                $out .= " -o '" . quotearg( $1 . ':' . $tmp[3] ) . "'";
-                $_pass_mgr->out_istmp(1);
-            }
-            else
-            {
-                $out .= " -o '" . quotearg($o) . "'";
-            }
-
-            #   unquote the filename
-            $o =~ s|^(['"])(.*)\1$|$2|;
-
-            #   create output file list for epilog filters
-            if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
-            {
-                push( @out_filenames, ( $2 ne '-' ? $2 : $tmp[3] ) );
-            }
-            elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
-            {
-                push( @out_filenames, ( $2 ne '-' ? $2 : $tmp[3] ) );
-            }
-            elsif ( $o =~ m|^(.+)\@(.+)$| )
-            {
-                push( @out_filenames, ( $1 ne '-' ? $1 : $tmp[3] ) );
-            }
-            else
-            {
-                push( @out_filenames, ( $o ne '-' ? $o : $tmp[3] ) );
-            }
-        }
-    };
-    $ProcessOutfiles->();
+    $self->_ProcessOutfiles( \$out, \@out_filenames, \@tmp, \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
             $_process_options->();
-            $ProcessOutfiles->();
+            $self->_ProcessOutfiles( \$out, \@out_filenames, \@tmp, \@opt_o );
             return;
         }
     );
