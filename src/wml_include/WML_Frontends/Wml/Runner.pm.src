@@ -705,6 +705,125 @@ EOF
     return;
 }
 
+sub _process_wmlrc
+{
+    my ( $self, $_process_options, $opt_r, $opt_c, $opt_I, $opt_D ) = @_;
+
+    my $_pass_mgr = $self->_pass_mgr;
+
+    if ($opt_r)
+    {
+        return;
+    }
+    my $savedir = '';
+    my @DIR     = ();
+
+    #   First save current directory and go to input file directory
+    if ( not $opt_c and $self->_src =~ m|/| )
+    {
+        $self->_src( dirname( $self->_src ) );
+        if ( -d $self->_src )
+        {
+            $savedir = Cwd::cwd;
+            chdir( $self->_src );
+        }
+    }
+    $self->_src('') if not $savedir;
+
+    #   2. add all parent dirs .wmlrc files for options
+    my $cwd = _my_cwd;
+    while ($cwd)
+    {
+        push( @DIR, $cwd );
+        $cwd =~ s#/[^/]+\z##;
+    }
+
+    #   Restore directory
+    chdir($savedir) if $savedir;
+
+    #   3. add ~/.wmlrc file for options
+    my @pwinfo = getpwuid($<);
+    my $home   = $pwinfo[7];
+    $home =~ s#/\z##;
+    if ( -f "$home/.wmlrc" )
+    {
+        push( @DIR, $home );
+    }
+
+    #   now parse these RC files
+    foreach my $dir ( reverse(@DIR) )
+    {
+        if ( -f "$dir/.wmlrc" )
+        {
+            $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
+            open( my $wml_rc_fh, '<', "$dir/.wmlrc" )
+                or error("Unable to load $dir/.wmlrc: $!");
+            @ARGV = ();
+        WMLRC_LINES:
+            while ( my $l = <$wml_rc_fh> )
+            {
+                if ( $l =~ m|\A\s*\n?\z| or $l =~ m|\A\s*#[#\s]*.*\z| )
+                {
+                    next WMLRC_LINES;
+                }
+                $l =~ s|\A\s+||;
+                $l =~ s|\s+\z||;
+                $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
+                push( @ARGV, split_argv($l) );
+            }
+            close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
+            my @opt_D_OLD = @$opt_D;
+            my @opt_I_OLD = @$opt_I;
+            @$opt_D = ();
+            @$opt_I = ();
+            $_process_options->();
+            my @opt_D_NEW = @opt_D_OLD;
+            my @opt_I_NEW = @opt_I_OLD;
+
+            #   adjust -D options
+            my $reldir = File::Spec->abs2rel( "$dir", $self->_src );
+            $reldir = "." if $reldir eq '';
+            foreach my $d (@$opt_D)
+            {
+                if ( $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
+                {
+                    my ( $var, $path ) = ( $1, $2 );
+                    if ( $path !~ m#\A/# )
+                    {
+                        canonize_path( \$path, $reldir );
+                    }
+                    $path = '""' if ( $path eq '' );
+                    $d = "$var=$path";
+                    push( @opt_D_NEW, $d );
+                    next;
+                }
+                elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
+                {
+                    $d = $d . '=1';
+                }
+                push( @opt_D_NEW, $d );
+            }
+
+            #   adjust -I options
+            $reldir = File::Spec->abs2rel("$dir");
+            $reldir = "." if $reldir eq '';
+            foreach my $path (@$opt_I)
+            {
+                if ( $path !~ m#\A/# )
+                {
+                    canonize_path( \$path, $reldir );
+                    $path = '.' if ( $path eq '' );
+                }
+                push( @opt_I_NEW, $path );
+            }
+
+            @$opt_D = @opt_D_NEW;
+            @$opt_I = @opt_I_NEW;
+        }
+    }
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -837,116 +956,8 @@ sub run_with_ARGV
 ##
 ##  .wmlrc File Parsing
 ##
-    if ( not $opt_r )
-    {
-        my $savedir = '';
-        my @DIR     = ();
-
-        #   First save current directory and go to input file directory
-        if ( not $opt_c and $self->_src =~ m|/| )
-        {
-            $self->_src( dirname( $self->_src ) );
-            if ( -d $self->_src )
-            {
-                $savedir = Cwd::cwd;
-                chdir( $self->_src );
-            }
-        }
-        $self->_src('') if not $savedir;
-
-        #   2. add all parent dirs .wmlrc files for options
-        my $cwd = _my_cwd;
-        while ($cwd)
-        {
-            push( @DIR, $cwd );
-            $cwd =~ s#/[^/]+\z##;
-        }
-
-        #   Restore directory
-        chdir($savedir) if $savedir;
-
-        #   3. add ~/.wmlrc file for options
-        my @pwinfo = getpwuid($<);
-        my $home   = $pwinfo[7];
-        $home =~ s#/\z##;
-        if ( -f "$home/.wmlrc" )
-        {
-            push( @DIR, $home );
-        }
-
-        #   now parse these RC files
-        foreach my $dir ( reverse(@DIR) )
-        {
-            if ( -f "$dir/.wmlrc" )
-            {
-                $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
-                open( my $wml_rc_fh, '<', "$dir/.wmlrc" )
-                    or error("Unable to load $dir/.wmlrc: $!");
-                @ARGV = ();
-            WMLRC_LINES:
-                while ( my $l = <$wml_rc_fh> )
-                {
-                    if ( $l =~ m|\A\s*\n?\z| or $l =~ m|\A\s*#[#\s]*.*\z| )
-                    {
-                        next WMLRC_LINES;
-                    }
-                    $l =~ s|\A\s+||;
-                    $l =~ s|\s+\z||;
-                    $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-                    push( @ARGV, split_argv($l) );
-                }
-                close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-                my @opt_D_OLD = @opt_D;
-                my @opt_I_OLD = @opt_I;
-                @opt_D = ();
-                @opt_I = ();
-                $_process_options->();
-                my @opt_D_NEW = @opt_D_OLD;
-                my @opt_I_NEW = @opt_I_OLD;
-
-                #   adjust -D options
-                my $reldir = File::Spec->abs2rel( "$dir", $self->_src );
-                $reldir = "." if $reldir eq '';
-                foreach my $d (@opt_D)
-                {
-                    if ( $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
-                    {
-                        my ( $var, $path ) = ( $1, $2 );
-                        if ( $path !~ m#\A/# )
-                        {
-                            canonize_path( \$path, $reldir );
-                        }
-                        $path = '""' if ( $path eq '' );
-                        $d = "$var=$path";
-                        push( @opt_D_NEW, $d );
-                        next;
-                    }
-                    elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
-                    {
-                        $d = $d . '=1';
-                    }
-                    push( @opt_D_NEW, $d );
-                }
-
-                #   adjust -I options
-                $reldir = File::Spec->abs2rel("$dir");
-                $reldir = "." if $reldir eq '';
-                foreach my $path (@opt_I)
-                {
-                    if ( $path !~ m#\A/# )
-                    {
-                        canonize_path( \$path, $reldir );
-                        $path = '.' if ( $path eq '' );
-                    }
-                    push( @opt_I_NEW, $path );
-                }
-
-                @opt_D = @opt_D_NEW;
-                @opt_I = @opt_I_NEW;
-            }
-        }
-
-    }
+    $self->_process_wmlrc( $_process_options, $opt_r, $opt_c, \@opt_I,
+        \@opt_D );
 
     #   4. process the command line options
     @ARGV = @ARGVLINE;
