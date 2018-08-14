@@ -1198,12 +1198,6 @@ sub run_with_ARGV
         }
     );
 
-    my $optimize = '';
-    if ( $opt_O ne '' )
-    {
-        $optimize = "-O$opt_O";
-    }
-
     if ( not $self->_src_istmp )
     {
         io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
@@ -1224,7 +1218,7 @@ sub run_with_ARGV
         $defmp4h,
         $defeperl,
         $defgm4, $verbose, $verbose, $verbose,
-        "$verbose $optimize",
+        ( "$verbose " . ( ( $opt_O ne '' ) ? "-O$opt_O" : '' ) ),
         "$verbose " . $self->_out,
     );
 
