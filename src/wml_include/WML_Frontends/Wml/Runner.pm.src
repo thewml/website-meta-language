@@ -1004,17 +1004,7 @@ EOF
         }
     }
     @opt_D = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
-
-    #   fix the verbose level
-    if ( $_pass_mgr->opt_v() == 0 )
-    {
-        $_pass_mgr->opt_v(1);    # Getopt::Long sets 0 if -v only
-    }
-    if ( $_pass_mgr->opt_v() == -1 )
-    {
-        $_pass_mgr->opt_v(0);    # we operate with 0 for not set
-    }
-
+    $_pass_mgr->_fix_verbose_level;
     $self->_PROTECT_COUNTER(0);
     $self->_protect_storage( +{} );
     $_pass_mgr->opt_o( \@opt_o );

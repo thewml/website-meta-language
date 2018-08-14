@@ -283,4 +283,19 @@ sub _display_times
     $_pass_mgr->verbose( 1, "$timestr\n" );
 }
 
+sub _fix_verbose_level
+{
+    my ($_pass_mgr) = @_;
+
+    if ( $_pass_mgr->opt_v() == 0 )
+    {
+        $_pass_mgr->opt_v(1);    # Getopt::Long sets 0 if -v only
+    }
+    if ( $_pass_mgr->opt_v() == -1 )
+    {
+        $_pass_mgr->opt_v(0);    # we operate with 0 for not set
+    }
+    return;
+}
+
 1;
