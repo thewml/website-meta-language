@@ -1151,7 +1151,6 @@ sub run_with_ARGV
     }
 
     #   determine prologs
-    my $prolog   = join '', map { ' -P "' . quotearg($_) . '"' } @opt_P;
     my $defipp   = '';
     my $defgm4   = '';
     my $defmp4h  = '';
@@ -1202,13 +1201,14 @@ sub run_with_ARGV
 
     my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
     my @_OPT_PASSES = (
-"$defipp $verbose -S $libdir/include -n @{[$self->_src]} $inc $preload $prolog",
+        (
+"$defipp $verbose -S $libdir/include -n @{[$self->_src]} $inc $preload "
+                . ( join '', map { ' -P "' . quotearg($_) . '"' } @opt_P )
+        ),
         "$defmp4h",
         "$defeperl",
         "$defgm4",
-        $verbose,
-        $verbose,
-        $verbose,
+        $verbose, $verbose, $verbose,
         "$verbose $optimize",
         "$verbose " . $self->_out,
     );
