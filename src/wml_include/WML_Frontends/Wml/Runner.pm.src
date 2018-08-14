@@ -953,7 +953,6 @@ sub run_with_ARGV
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
     @opt_D = ();
     @opt_i = ();
-    @opt_D = ();
     $opt_n = 0;
     $opt_O = '';
     @opt_o = ();
@@ -1154,10 +1153,9 @@ sub run_with_ARGV
     #   determine prologs
     my $prolog = join '', map { ' -P "' . quotearg($_) . '"' } @opt_P;
     my $defipp = '';
-    my $dummy;
     foreach my $d (@opt_D)
     {
-        if ( my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| ) )
+        if ( my ( $var, undef, $val ) = ( $d =~ m#\A(.+?)=("?)(.*)\2\n*\z# ) )
         {
             $defipp .= " \"-D$var=$val\"";
         }
@@ -1165,31 +1163,21 @@ sub run_with_ARGV
     $defipp .= " -M$opt_M" if $opt_M ne '-';
     $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
 
-    my $defmp4h = '';
-    foreach my $d (@opt_D)
-    {
-        if ( my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| ) )
-        {
-            $defmp4h .= " -D $var=\"$val\"";
-        }
-    }
-    while (my ($cnt, $o) = each@opt_o)
+    my $defgm4   = '';
+    my $defmp4h  = '';
+    my $defeperl = '';
+    while ( my ( $cnt, $o ) = each @opt_o )
     {
         $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
     }
-
-    my $defeperl = '';
     foreach my $d (@opt_D)
     {
-        my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| );
-        $defeperl .= " \"-d$var=$val\"";
-    }
-
-    my $defgm4 = '';
-    foreach my $d (@opt_D)
-    {
-        my ( $var, $dummy, $val ) = ( $d =~ m|^(.+?)=("?)(.*)\2\n*$| );
-        $defgm4 .= " \"-Dm4_$var=$val\"";
+        if ( my ( $var, undef, $val ) = ( $d =~ m#\A(.+?)=("?)(.*)\2\n*\z# ) )
+        {
+            $defgm4   .= " \"-Dm4_$var=$val\"";
+            $defmp4h  .= " -D $var=\"$val\"";
+            $defeperl .= " \"-d$var=$val\"";
+        }
     }
 
     $self->_out_filenames( [] );
