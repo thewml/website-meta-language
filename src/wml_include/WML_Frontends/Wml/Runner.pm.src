@@ -650,6 +650,61 @@ sub _map_opt_o
     return $opts;
 }
 
+sub _print_version
+{
+    my ( $self, $opt_V, $VERSION ) = @_;
+
+    #   fix the version level
+    if ( $opt_V == 0 )
+    {
+        $opt_V = 1;    # Getopt::Long sets 0 if -V only
+    }
+    if ( $opt_V == -1 )
+    {
+        $opt_V = 0;    # we operate with 0 for not set
+    }
+    if ($opt_V)
+    {
+        print STDERR "This is WML Version $VERSION\n";
+        print STDERR "Copyright (c) 1996-2001 Ralf S. Engelschall.\n";
+        print STDERR "Copyright (c) 1999-2001 Denis Barbier.\n";
+        print STDERR "\n";
+        print STDERR
+            "This program is distributed in the hope that it will be useful,\n";
+        print STDERR
+            "but WITHOUT ANY WARRANTY; without even the implied warranty of\n";
+        print STDERR
+            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n";
+        print STDERR "GNU General Public License for more details.\n";
+
+        if ( $opt_V > 1 )
+        {
+            print STDERR <<'EOF';
+Built Environment:
+    Host: @built_system@
+    Perl: @perlvers@ (@perlprog@)
+    User: @built_user@
+    Date: @built_date@
+Built Location:
+    Prefix: @prefix@
+    BinDir: @bindir@
+    LibDir: @libdir@
+    ManDir: @mandir@
+EOF
+        }
+        if ( $opt_V > 2 )
+        {
+            print STDERR "\n";
+            print STDERR "Used Perl System:\n";
+            my $perlprog = '@perlprog@';
+            print STDERR `$perlprog -V`;
+        }
+        exit(0);
+    }
+
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -902,54 +957,7 @@ sub run_with_ARGV
     #   quote the characters the shell have escaped
     my @opt_D_ADD = map { quotearg $_} @opt_D;
     @opt_D = @opt_D_OLD;
-
-    #   fix the version level
-    if ( $opt_V == 0 )
-    {
-        $opt_V = 1;    # Getopt::Long sets 0 if -V only
-    }
-    if ( $opt_V == -1 )
-    {
-        $opt_V = 0;    # we operate with 0 for not set
-    }
-    if ($opt_V)
-    {
-        print STDERR "This is WML Version $VERSION\n";
-        print STDERR "Copyright (c) 1996-2001 Ralf S. Engelschall.\n";
-        print STDERR "Copyright (c) 1999-2001 Denis Barbier.\n";
-        print STDERR "\n";
-        print STDERR
-            "This program is distributed in the hope that it will be useful,\n";
-        print STDERR
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of\n";
-        print STDERR
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n";
-        print STDERR "GNU General Public License for more details.\n";
-
-        if ( $opt_V > 1 )
-        {
-            print STDERR <<'EOF';
-Built Environment:
-    Host: @built_system@
-    Perl: @perlvers@ (@perlprog@)
-    User: @built_user@
-    Date: @built_date@
-Built Location:
-    Prefix: @prefix@
-    BinDir: @bindir@
-    LibDir: @libdir@
-    ManDir: @mandir@
-EOF
-        }
-        if ( $opt_V > 2 )
-        {
-            print STDERR "\n";
-            print STDERR "Used Perl System:\n";
-            my $perlprog = '@perlprog@';
-            print STDERR `$perlprog -V`;
-        }
-        exit(0);
-    }
+    $self->_print_version( $opt_V, $VERSION );
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
