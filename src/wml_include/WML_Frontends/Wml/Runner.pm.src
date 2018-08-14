@@ -1151,18 +1151,8 @@ sub run_with_ARGV
     }
 
     #   determine prologs
-    my $prolog = join '', map { ' -P "' . quotearg($_) . '"' } @opt_P;
-    my $defipp = '';
-    foreach my $d (@opt_D)
-    {
-        if ( my ( $var, undef, $val ) = ( $d =~ m#\A(.+?)=("?)(.*)\2\n*\z# ) )
-        {
-            $defipp .= " \"-D$var=$val\"";
-        }
-    }
-    $defipp .= " -M$opt_M" if $opt_M ne '-';
-    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
-
+    my $prolog   = join '', map { ' -P "' . quotearg($_) . '"' } @opt_P;
+    my $defipp   = '';
     my $defgm4   = '';
     my $defmp4h  = '';
     my $defeperl = '';
@@ -1177,8 +1167,11 @@ sub run_with_ARGV
             $defgm4   .= " \"-Dm4_$var=$val\"";
             $defmp4h  .= " -D $var=\"$val\"";
             $defeperl .= " \"-d$var=$val\"";
+            $defipp   .= " \"-D$var=$val\"";
         }
     }
+    $defipp .= " -M$opt_M" if $opt_M ne '-';
+    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
 
     $self->_out_filenames( [] );
     $self->_ProcessOutfiles( \@opt_o );
