@@ -252,26 +252,35 @@ sub _protect
     $fp->close() || error("Unable to close ${fn}: $!");
 }
 
-sub _calc_out_fn
+sub _calc_out_fn_helper
 {
     my ( $self, $o ) = @_;
 
     if ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)\@(.+)$| )
     {
-        return ( $2 ne '-' ? $2 : $self->_tmp->[3] );
+        return $2;
     }
     elsif ( $o =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
     {
-        return ( $2 ne '-' ? $2 : $self->_tmp->[3] );
+        return $2;
     }
     elsif ( $o =~ m|^(.+)\@(.+)$| )
     {
-        return ( $1 ne '-' ? $1 : $self->_tmp->[3] );
+        return $1;
     }
     else
     {
-        return ( $o ne '-' ? $o : $self->_tmp->[3] );
+        return $o;
     }
+}
+
+sub _calc_out_fn
+{
+    my ( $self, $o ) = @_;
+
+    my $ret = $self->_calc_out_fn_helper($o);
+
+    return ( $ret ne '-' ? $ret : $self->_tmp->[3] );
 }
 
 sub _ProcessOutfiles
