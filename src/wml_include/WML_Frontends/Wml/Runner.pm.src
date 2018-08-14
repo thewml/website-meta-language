@@ -926,29 +926,13 @@ sub run_with_ARGV
         $ENV{PATH} = "$bindir:$ENV{PATH}";
     }
 
-    my $opt_h = 0;
+    my (
+        $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, @opt_D,
+        $opt_n, $opt_O, @opt_o, @opt_P, @opt_E, $opt_t,
+        @opt_p, @opt_W, $opt_s, $opt_q, $opt_V,
+    );
 
-    #   pre-process argument line for option -r and -v
-    my $opt_r = 0;
-    my $opt_c = 0;
-
-    #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
-    my @opt_I;
-    my @opt_i;
-    my @opt_D;
-    my $opt_n = 0;
-    my $opt_O = '';
-    my @opt_o;
-    my @opt_P;
-    my @opt_E;
-    my $opt_t = 0;
-    my @opt_p;
-    my @opt_W;
-    my $opt_M = '-';
-    my $opt_s = 0;
-    my $opt_q = 0;
-    my $opt_V = -1;
-
+    my $opt_M            = '-';
     my $_process_options = sub {
         my $my_argv = shift;
         local $SIG{__WARN__} = sub {
