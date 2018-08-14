@@ -570,6 +570,45 @@ sub _unlink_tmp
     return;
 }
 
+sub _do_output
+{
+    my ( $self, $final, $last ) = @_;
+
+    my $_pass_mgr = $self->_pass_mgr;
+
+    if ( $last ne '' and $final and $_pass_mgr->out_istmp )
+    {
+        $self->_unprotect( $self->_tmp->[3], 9 );
+    }
+    elsif ( $last ne '' and not $final )
+    {
+        my @fh = ();
+        $self->_unprotect( $last, 9 );
+        if ( @{ $self->_out_filenames } )
+        {
+            foreach my $o ( @{ $self->_out_filenames } )
+            {
+                open my $fp, '>', $o or error("Unable to write into $o");
+                push @fh, $fp;
+            }
+        }
+        else
+        {
+            my $o = $self->_tmp->[3];
+            open $fh[0], '>', $o or error("Unable to write into $o");
+        }
+        my $buf = io()->file($last)->all;
+        foreach my $fp (@fh)
+        {
+            $fp->print($buf)
+                or error("Unable to write into output file: $!");
+            $fp->close() or error("Unable to close output file: $!");
+        }
+    }
+
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1214,37 +1253,7 @@ EOF
     $self->_passes_loop( \@passes_indices,
         $cnt, \$final, \$last, $opt_q, \@opt_W );
 
-    if ( $last ne '' and $final and $_pass_mgr->out_istmp )
-    {
-        $self->_unprotect( $self->_tmp->[3], 9 );
-    }
-    elsif ( $last ne '' and not $final )
-    {
-        my $i  = 0;
-        my @fh = ();
-        my $fp;
-        $self->_unprotect( $last, 9 );
-        if ( @{ $self->_out_filenames } )
-        {
-            foreach my $o ( @{ $self->_out_filenames } )
-            {
-                open $fh[$i], '>', $o or error("Unable to write into $o");
-                ++$i;
-            }
-        }
-        else
-        {
-            my $o = $self->_tmp->[3];
-            open $fh[$i], '>', $o or error("Unable to write into $o");
-        }
-        my $buf = io()->file($last)->all;
-        foreach my $fp (@fh)
-        {
-            $fp->print($buf)
-                or error("Unable to write into output file: $!");
-            $fp->close() or error("Unable to close output file: $!");
-        }
-    }
+    $self->_do_output( $final, $last );
 
     $self->_handle_output( $opt_t, \@opt_E );
 
