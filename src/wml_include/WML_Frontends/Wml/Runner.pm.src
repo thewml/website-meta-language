@@ -915,7 +915,7 @@ sub run_with_ARGV
 {
     my ( $self, $args ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    my @aa        = @{ $args->{ARGV} };
+    my @argv      = @{ $args->{ARGV} };
     my $libdir    = $_pass_mgr->libdir;
     $_pass_mgr->opt_v(-1);
 
@@ -1006,9 +1006,9 @@ sub run_with_ARGV
         }
     };
 
-    my @aaa = @aa;
-    $_process_options->( \@aaa );
-    $self->_src( $aaa[0] );
+    my @temp_argv = @argv;
+    $_process_options->( \@temp_argv );
+    $self->_src( $temp_argv[0] );
 
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
     @opt_D = ();
@@ -1035,7 +1035,7 @@ sub run_with_ARGV
     #   4. process the command line options
     my @opt_D_OLD = @opt_D;
     @opt_D = ();    # extra remember -D options from command line
-    $_process_options->( \@aa );
+    $_process_options->( \@argv );
 
     #   quote the characters the shell have escaped
     my @opt_D_ADD = map { quotearg $_} @opt_D;
@@ -1044,14 +1044,14 @@ sub run_with_ARGV
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
-    if ( $opt_M !~ m%^(-|[MD]*)$% and ( !@aa ) )
+    if ( $opt_M !~ m%^(-|[MD]*)$% and ( !@argv ) )
     {
-        push( @aa, $opt_M );
+        push( @argv, $opt_M );
         $opt_M = '';
     }
 
     #   set the input file
-    $self->_src( $aa[0] );
+    $self->_src( $argv[0] );
 
     #   if no inputfile is given, WML reads from stdin
     #   and forces quiet mode
@@ -1193,7 +1193,7 @@ sub run_with_ARGV
     $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
-            $_process_options->( \@aa );
+            $_process_options->( \@argv );
             $self->_ProcessOutfiles( \@opt_o );
             return;
         }
