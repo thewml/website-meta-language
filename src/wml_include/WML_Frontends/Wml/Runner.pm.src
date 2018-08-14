@@ -473,22 +473,24 @@ sub _calc_passes_idxs
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
-    my ( $self, $passes_indices, $cnt, $opt_q, $opt_W ) = @_;
+    my ( $self, $passes_indices, $opt_q, $opt_W ) = @_;
 
     my $final     = 0;
     my $last      = '';
     my $_pass_mgr = $self->_pass_mgr;
     my @prop      = ( "-", "\\", "|", "/" );
-    my ( $from, $to );
+    my ( $from, $to, $cnt );
     if ( not $self->_src_istmp )
     {
         $from = $self->_tmp->[0];
         $to   = $self->_tmp->[1];
+        $cnt  = 1;
     }
     else
     {
         $from = $self->_src;
         $to   = $self->_tmp->[0];
+        $cnt  = 0;
     }
 
     my $pcnt = 0;
@@ -1224,11 +1226,6 @@ sub run_with_ARGV
     if ( not $self->_src_istmp )
     {
         io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
-        $cnt = 1;
-    }
-    else
-    {
-        $cnt = 0;
     }
 
     if ( $out eq '' )
@@ -1254,11 +1251,8 @@ sub run_with_ARGV
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
     }
 
-    #
-    #   clear out any existing CGI environments because some of our
-    #   passes (currently Pass 2 and 3) get totally confused by these
-    #   variables.
-    #
+    # Clear out any existing CGI environments because some of our passes
+    # (currently Pass 2 and 3) get totally confused by these variables.
     delete @ENV{
         qw(
             SERVER_SOFTWARE SERVER_NAME GATEWAY_INTERFACE SERVER_PROTOCOL
@@ -1275,7 +1269,7 @@ sub run_with_ARGV
         exit(0);
     }
     $self->_do_output(
-        $self->_passes_loop( $passes_indices, $cnt, $opt_q, \@opt_W ) );
+        $self->_passes_loop( $passes_indices, $opt_q, \@opt_W ) );
 
     $self->_handle_output( $opt_t, \@opt_E );
 
