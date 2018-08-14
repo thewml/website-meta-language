@@ -66,6 +66,76 @@ sub new
     return $self;
 }
 
+sub _handle_output
+{
+    my ( $self, $out_filenames, $unprotect, $src, $src_istmp, $opt_t, $opt_E )
+        = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+    my $libdir    = $_pass_mgr->libdir;
+
+    #   Unprotect output files and run epilog filters
+    if ( !@$out_filenames )
+    {
+        return;
+    }
+
+    #   unprotect all outputfiles
+    foreach my $o (@$out_filenames)
+    {
+        $unprotect->( $o, 9 );
+    }
+
+    #   optionally set mtime of outputfiles
+    #   to mtime of inputfile if inputfile was not STDIN
+    if ( not $src_istmp and $opt_t )
+    {
+        my (
+            $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
+            $size, $atime, $mtime, $ctime, $blksize, $blocks
+        ) = stat($src);
+        $atime = time();
+        foreach my $o (@$out_filenames)
+        {
+            utime( $atime, $mtime + 1, $o );
+        }
+    }
+
+    #   run epilog filters
+    foreach my $o (@$out_filenames)
+    {
+        foreach my $e (@$opt_E)
+        {
+            if ( $e =~ m|^htmlinfo(.*)| )
+            {
+                $e = "$libdir/exec/wml_aux_htmlinfo$1";
+            }
+            elsif ( $e =~ m|^linklint(.*)| )
+            {
+                $e = "$libdir/exec/wml_aux_linklint$1";
+                $e .= " -nocache -one -summary" if ( $1 eq '' );
+            }
+            elsif ( $e =~ m|^weblint(.*)| )
+            {
+                $e = "$libdir/exec/wml_aux_weblint$1";
+            }
+            elsif ( $e =~ m|^tidy(.*)| )
+            {
+                $e = "tidy$1";
+                $e .= ' -m' if ( $1 eq '' );
+            }
+            $_pass_mgr->verbose( 2, "EPILOG: $e $o\n" );
+            my $rc = system("$e $o");
+
+            #   Tidy returns 1 on warnings and 2 on errors :(
+            $rc = 0
+                if ( $rc == 256
+                and index( $e, "$libdir/exec/wml_aux_tidy" ) >= 0 );
+            error("epilog failed: $e $o") if $rc != 0;
+        }
+    }
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1105,65 +1175,8 @@ PASS_IDX: foreach my $pass_idx (@passes_indices)
         }
     }
 
-    #   Unprotect output files and run epilog filters
-    if (@out_filenames)
-    {
-        #   unprotect all outputfiles
-        foreach my $o (@out_filenames)
-        {
-            $unprotect->( $o, 9 );
-        }
-
-        #   optionally set mtime of outputfiles
-        #   to mtime of inputfile if inputfile was not STDIN
-        if ( not $src_istmp and $opt_t )
-        {
-            my (
-                $dev,   $ino,     $mode, $nlink, $uid,
-                $gid,   $rdev,    $size, $atime, $mtime,
-                $ctime, $blksize, $blocks
-            ) = stat($src);
-            $atime = time();
-            foreach my $o (@out_filenames)
-            {
-                utime( $atime, $mtime + 1, $o );
-            }
-        }
-
-        #   run epilog filters
-        foreach my $o (@out_filenames)
-        {
-            foreach my $e (@opt_E)
-            {
-                if ( $e =~ m|^htmlinfo(.*)| )
-                {
-                    $e = "$libdir/exec/wml_aux_htmlinfo$1";
-                }
-                elsif ( $e =~ m|^linklint(.*)| )
-                {
-                    $e = "$libdir/exec/wml_aux_linklint$1";
-                    $e .= " -nocache -one -summary" if ( $1 eq '' );
-                }
-                elsif ( $e =~ m|^weblint(.*)| )
-                {
-                    $e = "$libdir/exec/wml_aux_weblint$1";
-                }
-                elsif ( $e =~ m|^tidy(.*)| )
-                {
-                    $e = "tidy$1";
-                    $e .= ' -m' if ( $1 eq '' );
-                }
-                $_pass_mgr->verbose( 2, "EPILOG: $e $o\n" );
-                my $rc = system("$e $o");
-
-                #   Tidy returns 1 on warnings and 2 on errors :(
-                $rc = 0
-                    if ( $rc == 256
-                    and index( $e, "$libdir/exec/wml_aux_tidy" ) >= 0 );
-                error("epilog failed: $e $o") if $rc != 0;
-            }
-        }
-    }
+    $self->_handle_output( \@out_filenames, $unprotect, $src, $src_istmp,
+        $opt_t, \@opt_E );
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
