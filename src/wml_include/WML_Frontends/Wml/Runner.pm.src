@@ -1,4 +1,3 @@
-#
 ##  WML -- Website META Language
 ##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
@@ -30,7 +29,6 @@
 ##
 ##  The author reserves the right to distribute following releases of
 ##  this program under different conditions or license agreements.
-##
 
 package WML_Frontends::Wml::Runner;
 
@@ -1204,12 +1202,6 @@ sub run_with_ARGV
         }
     );
 
-    my $verbose = '';
-    if ( $_pass_mgr->opt_v() >= 3 )
-    {
-        $verbose = '-v';
-    }
-
     my $optimize = '';
     if ( $opt_O ne '' )
     {
@@ -1227,14 +1219,15 @@ sub run_with_ARGV
         $_pass_mgr->out_istmp(1);
     }
 
+    my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
     my @_OPT_PASSES = (
 "$defipp $verbose -S $libdir/include -n @{[$self->_src]} $inc $preload $prolog",
         "$defmp4h",
         "$defeperl",
         "$defgm4",
-        "$verbose",
-        "$verbose",
-        "$verbose",
+        $verbose,
+        $verbose,
+        $verbose,
         "$verbose $optimize",
         "$verbose $out",
     );
