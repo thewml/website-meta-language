@@ -1,3 +1,4 @@
+## Please see file perltidy.ERR
 ##  WML -- Website META Language
 ##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
@@ -855,6 +856,34 @@ sub _process_wmlrc
     return;
 }
 
+sub _calc_default_opts
+{
+    my ( $self, $src_filename, $opt_D, $opt_o, $opt_M ) = @_;
+
+    my $defipp   = '';
+    my $defgm4   = '';
+    my $defmp4h  = '';
+    my $defeperl = '';
+    while ( my ( $cnt, $o ) = each @$opt_o )
+    {
+        $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
+    }
+    foreach my $d (@$opt_D)
+    {
+        if ( my ( $var, undef, $val ) = ( $d =~ m#\A(.+?)=("?)(.*)\2\n*\z# ) )
+        {
+            $defgm4   .= " \"-Dm4_$var=$val\"";
+            $defmp4h  .= " -D $var=\"$val\"";
+            $defeperl .= " \"-d$var=$val\"";
+            $defipp   .= " \"-D$var=$val\"";
+        }
+    }
+    $defipp .= " -M$opt_M" if $opt_M ne '-';
+    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
+
+    return ( $defipp, $defmp4h, $defeperl, $defgm4 );
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1151,27 +1180,8 @@ sub run_with_ARGV
     }
 
     #   determine prologs
-    my $defipp   = '';
-    my $defgm4   = '';
-    my $defmp4h  = '';
-    my $defeperl = '';
-    while ( my ( $cnt, $o ) = each @opt_o )
-    {
-        $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
-    }
-    foreach my $d (@opt_D)
-    {
-        if ( my ( $var, undef, $val ) = ( $d =~ m#\A(.+?)=("?)(.*)\2\n*\z# ) )
-        {
-            $defgm4   .= " \"-Dm4_$var=$val\"";
-            $defmp4h  .= " -D $var=\"$val\"";
-            $defeperl .= " \"-d$var=$val\"";
-            $defipp   .= " \"-D$var=$val\"";
-        }
-    }
-    $defipp .= " -M$opt_M" if $opt_M ne '-';
-    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
-
+    my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
+        $self->_calc_default_opts( $src_filename, \@opt_D, \@opt_o, $opt_M );
     $self->_out_filenames( [] );
     $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
@@ -1205,10 +1215,9 @@ sub run_with_ARGV
 "$defipp $verbose -S $libdir/include -n @{[$self->_src]} $inc $preload "
                 . ( join '', map { ' -P "' . quotearg($_) . '"' } @opt_P )
         ),
-        "$defmp4h",
-        "$defeperl",
-        "$defgm4",
-        $verbose, $verbose, $verbose,
+        $defmp4h,
+        $defeperl,
+        $defgm4, $verbose, $verbose, $verbose,
         "$verbose $optimize",
         "$verbose " . $self->_out,
     );
