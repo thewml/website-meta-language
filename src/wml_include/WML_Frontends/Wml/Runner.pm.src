@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out _out_filenames _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _PROTECT_COUNTER)
+            qw( _firstpass _out _out_filenames _passes_indices _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _PROTECT_COUNTER)
     }
 );
 
@@ -485,22 +485,22 @@ sub _calc_passes_idxs
     $pass_str =~ s|,||g;
     $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
     my $_SORT = ( $pass_str =~ s/!$// );
-    my @passes_indices = split( '', $pass_str );
+    my @_passes_indices = split( '', $pass_str );
     if ( !$_SORT )
     {
-        @passes_indices = sort { $a <=> $b } @passes_indices;
+        @_passes_indices = sort { $a <=> $b } @_passes_indices;
     }
 
     #   only pre-processing if -M option specified
-    @passes_indices = ('1') if $opt_M ne '-';
+    @_passes_indices = ('1') if $opt_M ne '-';
 
-    return \@passes_indices;
+    $self->_passes_indices( \@_passes_indices );
 }
 
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
-    my ( $self, $passes_indices, $opt_q, $opt_W ) = @_;
+    my ( $self, $opt_q, $opt_W ) = @_;
 
     my $final     = 0;
     my $last      = '';
@@ -513,7 +513,7 @@ sub _passes_loop
     );
 
     my $pcnt = 0;
-PASS_IDX: foreach my $pass_idx (@$passes_indices)
+PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_indices } )
     {
         $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
         print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $opt_q );
@@ -925,10 +925,7 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my (
-        $self,  $passes_indices, $opt_D, $opt_o, $opt_M,
-        $opt_i, $opt_I,          $opt_P, $opt_O
-    ) = @_;
+    my ( $self, $opt_D, $opt_o, $opt_M, $opt_i, $opt_I, $opt_P, $opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
@@ -939,7 +936,7 @@ sub _calc_passes_options
         ( -f "$libdir/include/sys/bootp$_.wml" and /\A[34]\z/ )
             ? " -s 'sys/bootp$_.wml'"
             : ''
-    } @$passes_indices;
+    } @{ $self->_passes_indices };
     $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @$opt_i;
     my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
 
@@ -1185,9 +1182,7 @@ sub run_with_ARGV
     $self->_tmp(
         [ map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 ] );
 
-    # Generate options
-
-    my $passes_indices = $self->_calc_passes_idxs( \@opt_p, $opt_M );
+    $self->_calc_passes_idxs( \@opt_p, $opt_M );
 
     #   determine prologs
     $self->_out_filenames( [] );
@@ -1211,8 +1206,9 @@ sub run_with_ARGV
         $_pass_mgr->out_istmp(1);
     }
 
-    my $_OPT_PASSES = $self->_calc_passes_options( $passes_indices,
-        \@opt_D, \@opt_o, $opt_M, \@opt_i, \@opt_I, \@opt_P, $opt_O, );
+    my $_OPT_PASSES =
+        $self->_calc_passes_options( \@opt_D, \@opt_o, $opt_M, \@opt_i,
+        \@opt_I, \@opt_P, $opt_O, );
     while ( my ( $i, $str ) = each @$_OPT_PASSES )
     {
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
@@ -1224,8 +1220,7 @@ sub run_with_ARGV
         $self->_unlink_tmp;
         return 0;
     }
-    $self->_do_output(
-        $self->_passes_loop( $passes_indices, $opt_q, \@opt_W ) );
+    $self->_do_output( $self->_passes_loop( $opt_q, \@opt_W ) );
 
     $self->_handle_output( $opt_t, \@opt_E );
 
