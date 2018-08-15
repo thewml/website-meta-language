@@ -1076,9 +1076,6 @@ sub run_with_ARGV
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( \@argv );
-
-    #   quote the characters the shell have escaped
-    my @opt_D_ADD = map { quotearg $_} @$dnew;
     $self->_print_version( $opt_V, $VERSION );
 
     #   If the -M was the last option and the user forgot
@@ -1121,7 +1118,7 @@ sub run_with_ARGV
     #   now adjust -D options from command line
     #   relative to path to source file
     my $reldir = $self->_calc_reldir;
-    foreach my $d (@opt_D_ADD)
+    foreach my $d ( map { quotearg $_} @$dnew )
     {
         if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
         {
