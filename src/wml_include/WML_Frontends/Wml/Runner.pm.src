@@ -955,6 +955,22 @@ sub _calc_passes_options
     ];
 }
 
+sub _calc_reldir
+{
+    my ($self) = @_;
+
+    if ( $self->_src_istmp )
+    {
+        return '.';
+    }
+    my $reldir = $self->_src;
+    $reldir =~ s,(:?/|^)[^/]+$,,;
+    my $cwd = _my_cwd;
+    $reldir = File::Spec->abs2rel( $cwd, "$cwd/$reldir" );
+    $reldir = "." if $reldir eq '';
+    return $reldir;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1110,19 +1126,7 @@ sub run_with_ARGV
 
     #   now adjust -D options from command line
     #   relative to path to source file
-    my ($reldir);
-    if ( not $self->_src_istmp )
-    {
-        $reldir = $self->_src;
-        $reldir =~ s,(:?/|^)[^/]+$,,;
-        my $cwd = _my_cwd;
-        $reldir = File::Spec->abs2rel( $cwd, "$cwd/$reldir" );
-        $reldir = "." if $reldir eq '';
-    }
-    else
-    {
-        $reldir = '.';
-    }
+    my $reldir = $self->_calc_reldir;
     foreach my $d (@opt_D_ADD)
     {
         if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
