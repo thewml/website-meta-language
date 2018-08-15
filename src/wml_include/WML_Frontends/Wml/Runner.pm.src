@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out _out_filenames _pass_mgr _protect_storage _src _src_istmp _tmp _PROTECT_COUNTER)
+            qw( _firstpass _out _out_filenames _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _PROTECT_COUNTER)
     }
 );
 
@@ -370,7 +370,7 @@ sub _handle_opt_M_stdin
 
 sub _populate_opt_D
 {
-    my ( $self, $opt_D, $src_filename, $bindir, $tmpdir, $VERSION ) = @_;
+    my ( $self, $opt_D, $bindir, $tmpdir, $VERSION ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
@@ -400,8 +400,8 @@ sub _populate_opt_D
 
     if ( $self->_src_istmp )
     {
-        $src_dirname     = $cwd;
-        $$src_filename   = 'STDIN';
+        $src_dirname = $cwd;
+        $self->_src_filename('STDIN');
         $src_basename    = 'STDIN';
         $src_time        = $gen_time;
         $src_ctime       = $gen_ctime;
@@ -418,7 +418,7 @@ sub _populate_opt_D
             ? Cwd::abs_path( dirname( $self->_src ) )
             : $cwd
         );
-        $src_basename = $$src_filename = basename( $self->_src );
+        $src_basename = $self->_src_filename( basename( $self->_src ) );
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
         my (
             $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
@@ -439,7 +439,7 @@ sub _populate_opt_D
 
     unshift( @$opt_D,
         "WML_SRC_DIRNAME=$src_dirname",
-        "WML_SRC_FILENAME=$$src_filename",
+        "WML_SRC_FILENAME=" . $self->_src_filename,
         "WML_SRC_BASENAME=$src_basename",
         "WML_SRC_TIME=$src_time",
         "WML_SRC_CTIME=$src_ctime",
@@ -868,7 +868,7 @@ sub _process_wmlrc
 
 sub _calc_default_opts
 {
-    my ( $self, $src_filename, $opt_D, $opt_o, $opt_M ) = @_;
+    my ( $self, $opt_D, $opt_o, $opt_M ) = @_;
 
     my $defipp   = '';
     my $defgm4   = '';
@@ -889,7 +889,8 @@ sub _calc_default_opts
         }
     }
     $defipp .= " -M$opt_M" if $opt_M ne '-';
-    $defipp .= " -DIPP_SRC_REALNAME=$src_filename" if not $self->_src_istmp;
+    $defipp .= " -DIPP_SRC_REALNAME=" . $self->_src_filename
+        if not $self->_src_istmp;
 
     return ( $defipp, $defmp4h, $defeperl, $defgm4 );
 }
@@ -925,14 +926,13 @@ SHEBANG:
 sub _calc_passes_options
 {
     my (
-        $self,  $src_filename, $passes_indices, $opt_D,
-        $opt_o, $opt_M,        $opt_i,          $opt_I,
-        $opt_P, $opt_O
+        $self,  $passes_indices, $opt_D, $opt_o, $opt_M,
+        $opt_i, $opt_I,          $opt_P, $opt_O
     ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
-        $self->_calc_default_opts( $src_filename, $opt_D, $opt_o, $opt_M );
+        $self->_calc_default_opts( $opt_D, $opt_o, $opt_M );
 
     #   determine preloads
     my $preload = join '', map {
@@ -1179,9 +1179,7 @@ sub run_with_ARGV
     $_pass_mgr->out_istmp(0);
 
     my $cwd = _my_cwd;
-    my $src_filename;
-    $self->_populate_opt_D( \@opt_D, \$src_filename, $bindir, $tmpdir,
-        $VERSION );
+    $self->_populate_opt_D( \@opt_D, $bindir, $tmpdir, $VERSION );
 
     #   Create temporary file names
     $self->_tmp(
@@ -1213,11 +1211,8 @@ sub run_with_ARGV
         $_pass_mgr->out_istmp(1);
     }
 
-    my $_OPT_PASSES = $self->_calc_passes_options(
-        $src_filename, $passes_indices, \@opt_D,
-        \@opt_o,       $opt_M,          \@opt_i,
-        \@opt_I,       \@opt_P,         $opt_O,
-    );
+    my $_OPT_PASSES = $self->_calc_passes_options( $passes_indices,
+        \@opt_D, \@opt_o, $opt_M, \@opt_i, \@opt_I, \@opt_P, $opt_O, );
     while ( my ( $i, $str ) = each @$_OPT_PASSES )
     {
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
