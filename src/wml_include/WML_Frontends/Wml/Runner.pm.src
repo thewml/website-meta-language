@@ -1012,8 +1012,7 @@ sub run_with_ARGV
 
     my $opt_M            = '-';
     my $_process_options = sub {
-        my $my_argv = shift;
-        my $opt_D   = shift;
+        my ( $my_argv, $opt_D ) = @_;
         local $SIG{__WARN__} = sub {
             print STDERR "WML:Error: $_[0]";
         };
