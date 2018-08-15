@@ -728,7 +728,7 @@ EOF
 
 sub _process_ENV_WMLOPTS
 {
-    my ( $self, $_process_options ) = @_;
+    my ( $self, $_process_options, $opt_D ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -742,7 +742,8 @@ sub _process_ENV_WMLOPTS
         #   have already been expanded, but dollar sign must be
         #   escaped
         $opts =~ s|\$|\\\$|g;
-        $_process_options->( [ split_argv($opts) ] );
+        my ($dnew) = $_process_options->( [ split_argv($opts) ] );
+        push @$opt_D, @$dnew;
     }
     return;
 }
@@ -814,18 +815,16 @@ sub _process_wmlrc
                 push( @aa, split_argv($l) );
             }
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-            my @opt_D_OLD = @$opt_D;
             my @opt_I_OLD = @$opt_I;
-            @$opt_D = ();
             @$opt_I = ();
-            $_process_options->( \@aa );
-            my @opt_D_NEW = @opt_D_OLD;
+            my $dnew = $_process_options->( \@aa );
+            my @opt_D_NEW;
             my @opt_I_NEW = @opt_I_OLD;
 
             #   adjust -D options
             my $reldir = File::Spec->abs2rel( "$dir", $self->_src );
             $reldir = "." if $reldir eq '';
-            foreach my $d (@$opt_D)
+            foreach my $d (@$dnew)
             {
                 if ( $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
                 {
@@ -859,7 +858,7 @@ sub _process_wmlrc
                 push( @opt_I_NEW, $path );
             }
 
-            @$opt_D = @opt_D_NEW;
+            push @$opt_D, @opt_D_NEW;
             @$opt_I = @opt_I_NEW;
         }
     }
@@ -989,14 +988,14 @@ sub run_with_ARGV
     }
 
     my (
-        $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, @opt_D,
-        $opt_n, $opt_O, @opt_o, @opt_P, @opt_E, $opt_t,
-        @opt_p, @opt_W, $opt_s, $opt_q, $opt_V,
+        $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O, @opt_o,
+        @opt_P, @opt_E, $opt_t, @opt_p, @opt_W, $opt_s, $opt_q, $opt_V,
     );
 
     my $opt_M            = '-';
     my $_process_options = sub {
         my $my_argv = shift;
+        my @opt_D;
         local $SIG{__WARN__} = sub {
             print STDERR "WML:Error: $_[0]";
         };
@@ -1049,6 +1048,7 @@ sub run_with_ARGV
                 exit(0);
             }
         }
+        return ( \@opt_D );
     };
 
     my @temp_argv = @argv;
@@ -1056,7 +1056,6 @@ sub run_with_ARGV
     $self->_src( $temp_argv[0] );
 
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
-    @opt_D = ();
     @opt_i = ();
     $opt_n = 0;
     $opt_O = '';
@@ -1071,20 +1070,18 @@ sub run_with_ARGV
     $opt_q = 0;
     $opt_V = -1;
 
-    $self->_process_ENV_WMLOPTS($_process_options);
+    my @opt_D;
+    $self->_process_ENV_WMLOPTS( $_process_options, \@opt_D );
 
     # .wmlrc File Parsing
     $self->_process_wmlrc( $_process_options,
         $opt_r, $opt_c, \@opt_I, \@opt_D );
 
     #   4. process the command line options
-    my @opt_D_OLD = @opt_D;
-    @opt_D = ();    # extra remember -D options from command line
-    $_process_options->( \@argv );
+    my ($dnew) = $_process_options->( \@argv );
 
     #   quote the characters the shell have escaped
-    my @opt_D_ADD = map { quotearg $_} @opt_D;
-    @opt_D = @opt_D_OLD;
+    my @opt_D_ADD = map { quotearg $_} @$dnew;
     $self->_print_version( $opt_V, $VERSION );
 
     #   If the -M was the last option and the user forgot
