@@ -59,6 +59,7 @@ use WML_Frontends::Wml::Util
 sub new
 {
     my $self = bless +{}, shift;
+
     $self->_pass_mgr(
         WML_Frontends::Wml::PassesManager->new(
             {
@@ -66,6 +67,18 @@ sub new
             }
         )
     );
+
+    # Clear out any existing CGI environments because some of our passes
+    # (currently Pass 2 and 3) get totally confused by these variables.
+    delete @ENV{
+        qw(
+            SERVER_SOFTWARE SERVER_NAME GATEWAY_INTERFACE SERVER_PROTOCOL
+            SERVER_PORT REQUEST_METHOD PATH_INFO PATH_TRANSLATED SCRIPT_NAME
+            QUERY_STRING REMOTE_HOST REMOTE_ADDR AUTH_TYPE REMOTE_USER REMOTE_IDENT
+            CONTENT_TYPE CONTENT_LENGTH HTTP_ACCEPT HTTP_USER_AGENT
+            )
+    };
+
     return $self;
 }
 
@@ -1198,17 +1211,6 @@ sub run_with_ARGV
     {
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
     }
-
-    # Clear out any existing CGI environments because some of our passes
-    # (currently Pass 2 and 3) get totally confused by these variables.
-    delete @ENV{
-        qw(
-            SERVER_SOFTWARE SERVER_NAME GATEWAY_INTERFACE SERVER_PROTOCOL
-            SERVER_PORT REQUEST_METHOD PATH_INFO PATH_TRANSLATED SCRIPT_NAME
-            QUERY_STRING REMOTE_HOST REMOTE_ADDR AUTH_TYPE REMOTE_USER REMOTE_IDENT
-            CONTENT_TYPE CONTENT_LENGTH HTTP_ACCEPT HTTP_USER_AGENT
-            )
-    };
 
     if ( $opt_M ne '-' )
     {
