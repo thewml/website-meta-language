@@ -741,8 +741,7 @@ sub _process_ENV_WMLOPTS
     #   have already been expanded, but dollar sign must be
     #   escaped
     $opts =~ s|\$|\\\$|g;
-    my ($dnew) = $_process_options->( [ split_argv($opts) ] );
-    push @$opt_D, @$dnew;
+    $_process_options->( [ split_argv($opts) ], $opt_D );
     return;
 }
 
@@ -815,7 +814,7 @@ sub _process_wmlrc
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
             my @opt_I_OLD = @$opt_I;
             @$opt_I = ();
-            my $dnew      = $_process_options->( \@aa );
+            my $dnew = $_process_options->( \@aa, [] );
             my @opt_I_NEW = @opt_I_OLD;
 
             #   adjust -D options
@@ -913,8 +912,7 @@ SHEBANG:
     if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
     {
         #   split opts into arguments and process them
-        my ($dnew) = $_process_options->( [ split_argv($1) ] );
-        push @$opt_D, @$dnew;
+        $_process_options->( [ split_argv($1) ], $opt_D );
     }
 }
 
@@ -1015,7 +1013,7 @@ sub run_with_ARGV
     my $opt_M            = '-';
     my $_process_options = sub {
         my $my_argv = shift;
-        my @opt_D;
+        my $opt_D   = shift;
         local $SIG{__WARN__} = sub {
             print STDERR "WML:Error: $_[0]";
         };
@@ -1024,7 +1022,7 @@ sub run_with_ARGV
         my %list_options = (
             "I|include=s@"     => \@opt_I,
             "i|includefile=s@" => \@opt_i,
-            "D|define=s@"      => \@opt_D,
+            "D|define=s@"      => $opt_D,
             "o|outputfile=s@"  => \@opt_o,
             "P|prolog=s@"      => \@opt_P,
             "E|epilog=s@"      => \@opt_E,
@@ -1068,11 +1066,11 @@ sub run_with_ARGV
                 exit(0);
             }
         }
-        return ( \@opt_D );
+        return ($opt_D);
     };
 
     my @temp_argv = @argv;
-    $_process_options->( \@temp_argv );
+    $_process_options->( \@temp_argv, [] );
     $self->_src( $temp_argv[0] );
 
     #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
@@ -1098,7 +1096,7 @@ sub run_with_ARGV
         $opt_r, $opt_c, \@opt_I, \@opt_D );
 
     #   4. process the command line options
-    my ($dnew) = $_process_options->( \@argv );
+    my ($dnew) = $_process_options->( \@argv, [] );
     $self->_print_version( $opt_V, $VERSION );
 
     #   If the -M was the last option and the user forgot
@@ -1190,8 +1188,7 @@ sub run_with_ARGV
     $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
-            my ($dnew) = $_process_options->( \@argv );
-            push @opt_D, @$dnew;
+            $_process_options->( \@argv, \@opt_D );
             $self->_ProcessOutfiles( \@opt_o );
             return;
         }
