@@ -817,8 +817,7 @@ sub _process_wmlrc
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
             my @opt_I_OLD = @$opt_I;
             @$opt_I = ();
-            my $dnew = $_process_options->( \@aa );
-            my @opt_D_NEW;
+            my $dnew      = $_process_options->( \@aa );
             my @opt_I_NEW = @opt_I_OLD;
 
             #   adjust -D options
@@ -835,14 +834,14 @@ sub _process_wmlrc
                     }
                     $path = '""' if ( $path eq '' );
                     $d = "$var=$path";
-                    push( @opt_D_NEW, $d );
+                    push( @$opt_D, $d );
                     next;
                 }
                 elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
                 {
                     $d = $d . '=1';
                 }
-                push( @opt_D_NEW, $d );
+                push( @$opt_D, $d );
             }
 
             #   adjust -I options
@@ -857,8 +856,6 @@ sub _process_wmlrc
                 }
                 push( @opt_I_NEW, $path );
             }
-
-            push @$opt_D, @opt_D_NEW;
             @$opt_I = @opt_I_NEW;
         }
     }
