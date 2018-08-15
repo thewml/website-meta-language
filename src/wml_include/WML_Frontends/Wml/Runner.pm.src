@@ -922,6 +922,42 @@ SHEBANG:
     }
 }
 
+sub _calc_passes_options
+{
+    my (
+        $self,  $src_filename, $passes_indices, $opt_D,
+        $opt_o, $opt_M,        $opt_i,          $opt_I,
+        $opt_P, $opt_O
+    ) = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+    my $libdir    = $_pass_mgr->libdir;
+    my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
+        $self->_calc_default_opts( $src_filename, $opt_D, $opt_o, $opt_M );
+
+    #   determine preloads
+    my $preload = join '', map {
+        ( -f "$libdir/include/sys/bootp$_.wml" and /\A[34]\z/ )
+            ? " -s 'sys/bootp$_.wml'"
+            : ''
+    } @$passes_indices;
+    $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @$opt_i;
+    my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
+
+    return [
+        (
+                  "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
+                . ( join '', map { " -I $_" } @$opt_I )
+                . " $preload "
+                . ( join '', map { ' -P "' . quotearg($_) . '"' } @$opt_P )
+        ),
+        $defmp4h,
+        $defeperl,
+        $defgm4, $verbose, $verbose, $verbose,
+        ( "$verbose " . ( ( $opt_O ne '' ) ? "-O$opt_O" : '' ) ),
+        "$verbose " . $self->_out,
+    ];
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1155,17 +1191,7 @@ sub run_with_ARGV
 
     my $passes_indices = $self->_calc_passes_idxs( \@opt_p, $opt_M );
 
-    #   determine preloads
-    my $preload = join '', map {
-        ( -f "$libdir/include/sys/bootp$_.wml" and /\A[34]\z/ )
-            ? " -s 'sys/bootp$_.wml'"
-            : ''
-    } @$passes_indices;
-    $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @opt_i;
-
     #   determine prologs
-    my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
-        $self->_calc_default_opts( $src_filename, \@opt_D, \@opt_o, $opt_M );
     $self->_out_filenames( [] );
     $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
@@ -1187,22 +1213,12 @@ sub run_with_ARGV
         $_pass_mgr->out_istmp(1);
     }
 
-    my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
-    my @_OPT_PASSES = (
-        (
-                  "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
-                . ( join '', map { " -I $_" } @opt_I )
-                . " $preload "
-                . ( join '', map { ' -P "' . quotearg($_) . '"' } @opt_P )
-        ),
-        $defmp4h,
-        $defeperl,
-        $defgm4, $verbose, $verbose, $verbose,
-        ( "$verbose " . ( ( $opt_O ne '' ) ? "-O$opt_O" : '' ) ),
-        "$verbose " . $self->_out,
+    my $_OPT_PASSES = $self->_calc_passes_options(
+        $src_filename, $passes_indices, \@opt_D,
+        \@opt_o,       $opt_M,          \@opt_i,
+        \@opt_I,       \@opt_P,         $opt_O,
     );
-
-    while ( my ( $i, $str ) = each @_OPT_PASSES )
+    while ( my ( $i, $str ) = each @$_OPT_PASSES )
     {
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
     }
