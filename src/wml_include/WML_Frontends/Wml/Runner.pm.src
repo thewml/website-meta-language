@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _opt_o _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
+            qw( bindir _firstpass _opt_o _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
     }
 );
 
@@ -80,6 +80,12 @@ sub new
             CONTENT_TYPE CONTENT_LENGTH HTTP_ACCEPT HTTP_USER_AGENT
             )
     };
+
+    my $bindir = $self->bindir('@bindir@');
+    if ( index( $ENV{PATH}, $bindir ) < 0 )
+    {
+        $ENV{PATH} = "$bindir:$ENV{PATH}";
+    }
 
     return $self;
 }
@@ -372,7 +378,7 @@ sub _handle_opt_M_stdin
 
 sub _populate_opt_D
 {
-    my ( $self, $opt_D, $bindir, $VERSION ) = @_;
+    my ( $self, $opt_D, $VERSION ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
@@ -459,7 +465,7 @@ sub _populate_opt_D
         "WML_GEN_REALNAME=$gen_realname",
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
         'WML_LOC_PREFIX=@prefix@',
-        "WML_LOC_BINDIR=$bindir",
+        "WML_LOC_BINDIR=" . $self->bindir,
         "WML_LOC_LIBDIR=$libdir",
         'WML_LOC_MANDIR=@mandir@',
         "WML_VERSION=$VERSION",
@@ -1088,12 +1094,6 @@ sub run_with_ARGV
 
     my $VERSION = '@WML_VERSION@';
 
-    my $bindir = '@bindir@';
-    if ( index( $ENV{PATH}, $bindir ) < 0 )
-    {
-        $ENV{PATH} = "$bindir:$ENV{PATH}";
-    }
-
     my (
         $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O, @opt_P,
         @opt_E, $opt_t, @opt_p, @opt_W, $opt_s, $opt_q, $opt_V,
@@ -1222,7 +1222,7 @@ sub run_with_ARGV
     $_pass_mgr->out_istmp(0);
 
     my $cwd = _my_cwd;
-    $self->_populate_opt_D( \@opt_D, $bindir, $VERSION );
+    $self->_populate_opt_D( \@opt_D, $VERSION );
 
     #   Create temporary file names
     $self->_tmp(
