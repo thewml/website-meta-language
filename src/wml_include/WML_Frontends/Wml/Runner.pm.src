@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
+            qw( _firstpass _opt_o _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
     }
 );
 
@@ -290,11 +290,11 @@ sub _calc_out_fn
 
 sub _ProcessOutfiles
 {
-    my ( $self, $opt_o ) = @_;
+    my ($self) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     $self->_out('');
     $self->_out_filenames( [] );
-    foreach my $o (@$opt_o)
+    foreach my $o ( @{ $self->_opt_o } )
     {
         next if ( $o =~ m|\*[^:]*$| );
 
@@ -863,13 +863,13 @@ sub _process_wmlrc
 
 sub _calc_default_opts
 {
-    my ( $self, $opt_D, $opt_o, $opt_M ) = @_;
+    my ( $self, $opt_D, $opt_M ) = @_;
 
     my $defipp   = '';
     my $defgm4   = '';
     my $defmp4h  = '';
     my $defeperl = '';
-    while ( my ( $cnt, $o ) = each @$opt_o )
+    while ( my ( $cnt, $o ) = each @{ $self->_opt_o } )
     {
         $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
     }
@@ -920,11 +920,11 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self, $opt_D, $opt_o, $opt_M, $opt_i, $opt_I, $opt_P, $opt_O ) = @_;
+    my ( $self, $opt_D, $opt_M, $opt_i, $opt_I, $opt_P, $opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
-        $self->_calc_default_opts( $opt_D, $opt_o, $opt_M );
+        $self->_calc_default_opts( $opt_D, $opt_M );
 
     #   determine preloads
     my $preload = join '', map {
@@ -1095,11 +1095,12 @@ sub run_with_ARGV
     }
 
     my (
-        $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O, @opt_o,
-        @opt_P, @opt_E, $opt_t, @opt_p, @opt_W, $opt_s, $opt_q, $opt_V,
+        $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O, @opt_P,
+        @opt_E, $opt_t, @opt_p, @opt_W, $opt_s, $opt_q, $opt_V,
     );
 
-    my $opt_M            = '-';
+    my $opt_M = '-';
+    $self->_opt_o( [] );
     my $_process_options = sub {
         my ( $my_argv, $opt_D ) = @_;
         local $SIG{__WARN__} = sub {
@@ -1111,13 +1112,16 @@ sub run_with_ARGV
             "I|include=s@"     => \@opt_I,
             "i|includefile=s@" => \@opt_i,
             "D|define=s@"      => $opt_D,
-            "o|outputfile=s@"  => \@opt_o,
             "P|prolog=s@"      => \@opt_P,
             "E|epilog=s@"      => \@opt_E,
             "p|pass=s@"        => \@opt_p,
             "W|passoption=s@"  => \@opt_W,
         );
         my %scalar_options = (
+            "o|outputfile=s@" => sub {
+                my ( undef, $v ) = @_;
+                push @{ $self->_opt_o }, $v;
+            },
             "r|norcfile"   => \$opt_r,
             "n|noshebang"  => \$opt_n,
             "c|nocd"       => \$opt_c,
@@ -1165,7 +1169,7 @@ sub run_with_ARGV
     @opt_i = ();
     $opt_n = 0;
     $opt_O = '';
-    @opt_o = ();
+    $self->_opt_o( [] );
     @opt_P = ();
     @opt_E = ();
     $opt_t = 0;
@@ -1204,12 +1208,12 @@ sub run_with_ARGV
     $self->_process_shebang( $_process_options, $opt_n, \@opt_D );
 
     #   6. expand %DIR and %BASE in the -o flags
-    @opt_o = ( map { $self->_map_opt_o($_) } @opt_o );
+    $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
     $self->_process_opt_D( \@opt_D );
     $_pass_mgr->_fix_verbose_level;
     $self->_PROTECT_COUNTER(0);
     $self->_protect_storage( +{} );
-    $_pass_mgr->opt_o( \@opt_o );
+    $_pass_mgr->_opt_o( $self->_opt_o );
     $_pass_mgr->opt_s($opt_s);
 
     $self->_firstpass(1);
@@ -1232,11 +1236,11 @@ sub run_with_ARGV
 
     #   determine prologs
     $self->_out_filenames( [] );
-    $self->_ProcessOutfiles( \@opt_o );
+    $self->_ProcessOutfiles;
     $_pass_mgr->_process_argv_cb(
         sub {
             $_process_options->( \@argv, \@opt_D );
-            $self->_ProcessOutfiles( \@opt_o );
+            $self->_ProcessOutfiles;
             return;
         }
     );
@@ -1252,8 +1256,8 @@ sub run_with_ARGV
         $_pass_mgr->out_istmp(1);
     }
 
-    $self->_calc_passes_options( \@opt_D, \@opt_o, $opt_M, \@opt_i, \@opt_I,
-        \@opt_P, $opt_O, );
+    $self->_calc_passes_options( \@opt_D, $opt_M, \@opt_i, \@opt_I, \@opt_P,
+        $opt_O, );
 
     if ( $opt_M ne '-' )
     {

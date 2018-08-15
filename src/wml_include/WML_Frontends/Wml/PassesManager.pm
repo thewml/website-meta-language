@@ -39,7 +39,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _passes _process_argv_cb gen_hostname libdir out_istmp opt_v opt_o opt_s )
+            qw( _passes _process_argv_cb gen_hostname libdir out_istmp opt_v _opt_o opt_s )
     }
 );
 
@@ -212,7 +212,7 @@ sub pass9
     #   First check whether a shebang line is found and no
     #   output files were assigned on command line.
     #   This is needed to unprotect output files.
-    if ( !@{ $_pass_mgr->opt_o } )
+    if ( !@{ $_pass_mgr->_opt_o } )
     {
         local @ARGV = @{ $_pass_mgr->_read_slices($from) };
         if (@ARGV)
