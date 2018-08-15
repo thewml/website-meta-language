@@ -1013,6 +1013,39 @@ sub _adjust_opt_D
     return;
 }
 
+sub _set_src
+{
+    my ( $self, $tmpdir, $argv, $opt_q ) = @_;
+
+    #   set the input file
+    $self->_src( $argv->[0] );
+
+    #   if no inputfile is given, WML reads from stdin
+    #   and forces quiet mode
+    if ( $self->_src eq '' )
+    {
+        $self->_src('-');
+        $$opt_q = 1;
+    }
+
+    #   if input is stdin we create a temporary file
+    $self->_src_istmp(0);
+    if ( $self->_src eq '-' )
+    {
+        $self->_src_istmp(1);
+        $self->_src("$tmpdir/wml.input.$$.tmp");
+        unlink( $self->_src );
+        io->stdin() > io->file( $self->_src );
+    }
+
+    if ( $self->_src_istmp and not -f $self->_src )
+    {
+        print STDERR "** WML:Error: input file `@{[$self->_src]}' not found\n";
+        die;
+    }
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1131,34 +1164,8 @@ sub run_with_ARGV
         $opt_M = '';
     }
 
-    #   set the input file
-    $self->_src( $argv[0] );
-
-    #   if no inputfile is given, WML reads from stdin
-    #   and forces quiet mode
-    if ( $self->_src eq '' )
-    {
-        $self->_src('-');
-        $opt_q = 1;
-    }
-
     my $tmpdir = $ENV{TMPDIR} || '/tmp';
-
-    #   if input is stdin we create a temporary file
-    $self->_src_istmp(0);
-    if ( $self->_src eq '-' )
-    {
-        $self->_src_istmp(1);
-        $self->_src("$tmpdir/wml.input.$$.tmp");
-        unlink( $self->_src );
-        io->stdin() > io->file( $self->_src );
-    }
-
-    if ( $self->_src_istmp and not -f $self->_src )
-    {
-        print STDERR "** WML:Error: input file `@{[$self->_src]}' not found\n";
-        return 1;
-    }
+    $self->_set_src( $tmpdir, \@argv, \$opt_q );
 
     # now adjust -D options from command line relative to path to source file
     $self->_adjust_opt_D( $dnew, \@opt_D );
