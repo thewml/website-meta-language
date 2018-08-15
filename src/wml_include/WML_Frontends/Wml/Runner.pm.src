@@ -731,20 +731,18 @@ sub _process_ENV_WMLOPTS
     my ( $self, $_process_options, $opt_D ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
+    my $opts      = $ENV{WMLOPTS};
+    return if not $opts;
+    $_pass_mgr->verbose( 2, "Reading WMLOPTS variable" );
+    $opts =~ s|^\s+||;
+    $opts =~ s|\s+$||;
 
-    if ( my $opts = $ENV{WMLOPTS} )
-    {
-        $_pass_mgr->verbose( 2, "Reading WMLOPTS variable" );
-        $opts =~ s|^\s+||;
-        $opts =~ s|\s+$||;
-
-        #   arguments are not quoted because shell metacharacters
-        #   have already been expanded, but dollar sign must be
-        #   escaped
-        $opts =~ s|\$|\\\$|g;
-        my ($dnew) = $_process_options->( [ split_argv($opts) ] );
-        push @$opt_D, @$dnew;
-    }
+    #   arguments are not quoted because shell metacharacters
+    #   have already been expanded, but dollar sign must be
+    #   escaped
+    $opts =~ s|\$|\\\$|g;
+    my ($dnew) = $_process_options->( [ split_argv($opts) ] );
+    push @$opt_D, @$dnew;
     return;
 }
 
