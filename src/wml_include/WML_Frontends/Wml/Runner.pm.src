@@ -1243,7 +1243,7 @@ sub run_with_ARGV
 
     if ( not $self->_src_istmp )
     {
-        io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
+        io->file( $self->_src ) > io->file( $self->_tmp->[0] );
     }
 
     if ( $self->_out eq '' )
