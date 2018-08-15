@@ -1088,6 +1088,23 @@ sub _VERSION
     return '@WML_VERSION@';
 }
 
+sub _handle_out_tmp
+{
+    my ($self) = @_;
+
+    if ( not $self->_src_istmp )
+    {
+        io->file( $self->_src ) > io->file( $self->_tmp->[0] );
+    }
+
+    if ( $self->_out eq '' )
+    {
+        $self->_out( " -o" . $self->_tmp->[3] );
+        $self->_pass_mgr->out_istmp(1);
+    }
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1248,17 +1265,7 @@ sub run_with_ARGV
         }
     );
 
-    if ( not $self->_src_istmp )
-    {
-        io->file( $self->_src ) > io->file( $self->_tmp->[0] );
-    }
-
-    if ( $self->_out eq '' )
-    {
-        $self->_out( " -o" . $self->_tmp->[3] );
-        $_pass_mgr->out_istmp(1);
-    }
-
+    $self->_handle_out_tmp;
     $self->_calc_passes_options( \@opt_D, $opt_M, \@opt_i, \@opt_I, \@opt_P,
         $opt_O, );
 
