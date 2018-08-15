@@ -1155,13 +1155,6 @@ sub run_with_ARGV
 
     my $passes_indices = $self->_calc_passes_idxs( \@opt_p, $opt_M );
 
-    #   determine includes
-    my $inc = '';
-    foreach my $i (@opt_I)
-    {
-        $inc .= " -I $i";
-    }
-
     #   determine preloads
     my $preload = join '', map {
         ( -f "$libdir/include/sys/bootp$_.wml" and /\A[34]\z/ )
@@ -1197,7 +1190,9 @@ sub run_with_ARGV
     my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
     my @_OPT_PASSES = (
         (
-"$defipp $verbose -S $libdir/include -n @{[$self->_src]} $inc $preload "
+                  "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
+                . ( join '', map { " -I $_" } @opt_I )
+                . " $preload "
                 . ( join '', map { ' -P "' . quotearg($_) . '"' } @opt_P )
         ),
         $defmp4h,
