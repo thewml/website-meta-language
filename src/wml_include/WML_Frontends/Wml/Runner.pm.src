@@ -378,7 +378,7 @@ sub _handle_opt_M_stdin
 
 sub _populate_opt_D
 {
-    my ( $self, $opt_D, $VERSION ) = @_;
+    my ( $self, $opt_D ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
@@ -468,7 +468,7 @@ sub _populate_opt_D
         "WML_LOC_BINDIR=" . $self->bindir,
         "WML_LOC_LIBDIR=$libdir",
         'WML_LOC_MANDIR=@mandir@',
-        "WML_VERSION=$VERSION",
+        "WML_VERSION=@{[$self->_VERSION]}",
         "WML_TMPDIR=" . $self->_tmpdir );
 
     return;
@@ -681,7 +681,7 @@ sub _map_opt_o
 
 sub _print_version
 {
-    my ( $self, $opt_V, $VERSION ) = @_;
+    my ( $self, $opt_V ) = @_;
 
     #   fix the version level
     if ( $opt_V == 0 )
@@ -694,7 +694,7 @@ sub _print_version
     }
     if ($opt_V)
     {
-        print STDERR "This is WML Version $VERSION\n";
+        print STDERR "This is WML Version @{[$self->_VERSION]}\n";
         print STDERR "Copyright (c) 1996-2001 Ralf S. Engelschall.\n";
         print STDERR "Copyright (c) 1999-2001 Denis Barbier.\n";
         print STDERR "\n";
@@ -1083,6 +1083,11 @@ sub _output_and_cleanup
     return 0;
 }
 
+sub _VERSION
+{
+    return '@WML_VERSION@';
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1091,8 +1096,6 @@ sub run_with_ARGV
     my @argv      = @{ $args->{ARGV} };
     my $libdir    = $_pass_mgr->libdir;
     $_pass_mgr->opt_v(-1);
-
-    my $VERSION = '@WML_VERSION@';
 
     my (
         $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O, @opt_P,
@@ -1189,7 +1192,7 @@ sub run_with_ARGV
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( \@argv, [] );
-    $self->_print_version( $opt_V, $VERSION );
+    $self->_print_version($opt_V);
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
@@ -1222,7 +1225,7 @@ sub run_with_ARGV
     $_pass_mgr->out_istmp(0);
 
     my $cwd = _my_cwd;
-    $self->_populate_opt_D( \@opt_D, $VERSION );
+    $self->_populate_opt_D( \@opt_D );
 
     #   Create temporary file names
     $self->_tmp(
