@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _firstpass _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _PROTECT_COUNTER)
+            qw( _firstpass _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
     }
 );
 
@@ -67,6 +67,8 @@ sub new
             }
         )
     );
+
+    $self->_tmpdir( $ENV{TMPDIR} || '/tmp' );
 
     # Clear out any existing CGI environments because some of our passes
     # (currently Pass 2 and 3) get totally confused by these variables.
@@ -370,7 +372,7 @@ sub _handle_opt_M_stdin
 
 sub _populate_opt_D
 {
-    my ( $self, $opt_D, $bindir, $tmpdir, $VERSION ) = @_;
+    my ( $self, $opt_D, $bindir, $VERSION ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
@@ -461,7 +463,7 @@ sub _populate_opt_D
         "WML_LOC_LIBDIR=$libdir",
         'WML_LOC_MANDIR=@mandir@',
         "WML_VERSION=$VERSION",
-        "WML_TMPDIR=$tmpdir" );
+        "WML_TMPDIR=" . $self->_tmpdir );
 
     return;
 }
@@ -1015,7 +1017,7 @@ sub _adjust_opt_D
 
 sub _set_src
 {
-    my ( $self, $tmpdir, $argv, $opt_q ) = @_;
+    my ( $self, $argv, $opt_q ) = @_;
 
     #   set the input file
     $self->_src( $argv->[0] );
@@ -1033,7 +1035,7 @@ sub _set_src
     if ( $self->_src eq '-' )
     {
         $self->_src_istmp(1);
-        $self->_src("$tmpdir/wml.input.$$.tmp");
+        $self->_src( $self->_tmpdir . "/wml.input.$$.tmp" );
         unlink( $self->_src );
         io->stdin() > io->file( $self->_src );
     }
@@ -1164,8 +1166,7 @@ sub run_with_ARGV
         $opt_M = '';
     }
 
-    my $tmpdir = $ENV{TMPDIR} || '/tmp';
-    $self->_set_src( $tmpdir, \@argv, \$opt_q );
+    $self->_set_src( \@argv, \$opt_q );
 
     # now adjust -D options from command line relative to path to source file
     $self->_adjust_opt_D( $dnew, \@opt_D );
@@ -1188,11 +1189,15 @@ sub run_with_ARGV
     $_pass_mgr->out_istmp(0);
 
     my $cwd = _my_cwd;
-    $self->_populate_opt_D( \@opt_D, $bindir, $tmpdir, $VERSION );
+    $self->_populate_opt_D( \@opt_D, $bindir, $VERSION );
 
     #   Create temporary file names
     $self->_tmp(
-        [ map { sprintf( "%s/wml.%s.tmp%d", $tmpdir, $$, $_ + 1 ) } 0 .. 3 ] );
+        [
+            map { sprintf( "%s/wml.%s.tmp%d", $self->_tmpdir, $$, $_ + 1 ) }
+                0 .. 3
+        ]
+    );
 
     $self->_calc_passes_idxs( \@opt_p, $opt_M );
 
