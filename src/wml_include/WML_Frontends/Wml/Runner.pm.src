@@ -965,6 +965,30 @@ sub _calc_reldir
     return $reldir;
 }
 
+sub _process_opt_D
+{
+    my ( $self, $opt_D ) = @_;
+
+    #   7. Undefine variables when requested
+    my %new_opt_D;
+    foreach my $d (@$opt_D)
+    {
+        if ( my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| ) )
+        {
+            if ( $val eq 'UNDEF' )
+            {
+                delete $new_opt_D{$var};
+            }
+            else
+            {
+                $new_opt_D{$var} = $val;
+            }
+        }
+    }
+    @$opt_D = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1139,24 +1163,7 @@ sub run_with_ARGV
 
     #   6. expand %DIR and %BASE in the -o flags
     @opt_o = ( map { $self->_map_opt_o($_) } @opt_o );
-
-    #   7. Undefine variables when requested
-    my %new_opt_D;
-    foreach my $d (@opt_D)
-    {
-        if ( my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| ) )
-        {
-            if ( $val eq 'UNDEF' )
-            {
-                delete $new_opt_D{$var};
-            }
-            else
-            {
-                $new_opt_D{$var} = $val;
-            }
-        }
-    }
-    @opt_D = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
+    $self->_process_opt_D( \@opt_D );
     $_pass_mgr->_fix_verbose_level;
     $self->_PROTECT_COUNTER(0);
     $self->_protect_storage( +{} );
