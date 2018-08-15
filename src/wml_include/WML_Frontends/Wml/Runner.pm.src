@@ -1111,7 +1111,6 @@ sub run_with_ARGV
     my ( $self, $args ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my @argv      = @{ $args->{ARGV} };
-    my $libdir    = $_pass_mgr->libdir;
     $_pass_mgr->opt_v(-1);
 
     my (
