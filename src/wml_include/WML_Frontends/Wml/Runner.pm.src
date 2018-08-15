@@ -891,7 +891,7 @@ sub _calc_default_opts
 
 sub _process_shebang
 {
-    my ( $self, $_process_options, $opt_n ) = @_;
+    my ( $self, $_process_options, $opt_n, $opt_D ) = @_;
     if ($opt_n)
     {
         return;
@@ -913,7 +913,8 @@ SHEBANG:
     if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
     {
         #   split opts into arguments and process them
-        $_process_options->( [ split_argv($1) ] );
+        my ($dnew) = $_process_options->( [ split_argv($1) ] );
+        push @$opt_D, @$dnew;
     }
 }
 
@@ -1159,7 +1160,7 @@ sub run_with_ARGV
     }
 
     #   5. process the options from the pseudo-shebang line
-    $self->_process_shebang( $_process_options, $opt_n );
+    $self->_process_shebang( $_process_options, $opt_n, \@opt_D );
 
     #   6. expand %DIR and %BASE in the -o flags
     @opt_o = ( map { $self->_map_opt_o($_) } @opt_o );
@@ -1189,7 +1190,8 @@ sub run_with_ARGV
     $self->_ProcessOutfiles( \@opt_o );
     $_pass_mgr->_process_argv_cb(
         sub {
-            $_process_options->( \@argv );
+            my ($dnew) = $_process_options->( \@argv );
+            push @opt_D, @$dnew;
             $self->_ProcessOutfiles( \@opt_o );
             return;
         }
