@@ -1048,6 +1048,31 @@ sub _set_src
     return;
 }
 
+sub _output_and_cleanup
+{
+    my ( $self, $opt_q, $opt_W, $opt_t, $opt_E ) = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+
+    $self->_do_output( $self->_passes_loop( $opt_q, $opt_W ) );
+
+    $self->_handle_output( $opt_t, $opt_E );
+
+    #   ... and eventually send to stdout
+    if ( $_pass_mgr->out_istmp )
+    {
+        io->file( $self->_tmp->[3] ) > io('-');
+    }
+
+    $self->_unlink_tmp;
+
+    if ( $_pass_mgr->opt_v() >= 1 )
+    {
+        $_pass_mgr->_display_times;
+    }
+
+    return 0;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1237,24 +1262,7 @@ sub run_with_ARGV
         $self->_unlink_tmp;
         return 0;
     }
-    $self->_do_output( $self->_passes_loop( $opt_q, \@opt_W ) );
-
-    $self->_handle_output( $opt_t, \@opt_E );
-
-    #   ... and eventually send to stdout
-    if ( $_pass_mgr->out_istmp )
-    {
-        io->file( $self->_tmp->[3] ) > io('-');
-    }
-
-    $self->_unlink_tmp;
-
-    if ( $_pass_mgr->opt_v() >= 1 )
-    {
-        $_pass_mgr->_display_times;
-    }
-
-    return 0;
+    return $self->_output_and_cleanup( $opt_q, \@opt_W, $opt_t, \@opt_E );
 }
 
 1;
