@@ -988,6 +988,31 @@ sub _process_opt_D
     return;
 }
 
+sub _adjust_opt_D
+{
+    my ( $self, $dnew, $opt_D ) = @_;
+
+    my $reldir = $self->_calc_reldir;
+    foreach my $d ( map { quotearg $_} @$dnew )
+    {
+        if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
+        {
+            if ( $path !~ m|^/| )
+            {
+                canonize_path( \$path, $reldir );
+            }
+            $path = '""' if ( $path eq '' );
+            $d = "$var=$path";
+        }
+        elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
+        {
+            $d .= '=1';
+        }
+        push( @$opt_D, $d );
+    }
+    return;
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1135,26 +1160,8 @@ sub run_with_ARGV
         return 1;
     }
 
-    #   now adjust -D options from command line
-    #   relative to path to source file
-    my $reldir = $self->_calc_reldir;
-    foreach my $d ( map { quotearg $_} @$dnew )
-    {
-        if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
-        {
-            if ( $path !~ m|^/| )
-            {
-                canonize_path( \$path, $reldir );
-            }
-            $path = '""' if ( $path eq '' );
-            $d = "$var=$path";
-        }
-        elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
-        {
-            $d .= '=1';
-        }
-        push( @opt_D, $d );
-    }
+    # now adjust -D options from command line relative to path to source file
+    $self->_adjust_opt_D( $dnew, \@opt_D );
 
     #   5. process the options from the pseudo-shebang line
     $self->_process_shebang( $_process_options, $opt_n, \@opt_D );
