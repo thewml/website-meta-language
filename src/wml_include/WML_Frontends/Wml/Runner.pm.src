@@ -845,21 +845,18 @@ sub _process_wmlrc
             $reldir = "." if $reldir eq '';
             foreach my $d (@$dnew)
             {
-                if ( $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
+                if ( my ( $var, $path ) = $d =~ m#\A([A-Za-z0-9_]+)~(.+)\z# )
                 {
-                    my ( $var, $path ) = ( $1, $2 );
                     if ( $path !~ m#\A/# )
                     {
                         canonize_path( \$path, $reldir );
                     }
                     $path = '""' if ( $path eq '' );
                     $d = "$var=$path";
-                    push( @{ $self->_opt_D }, $d );
-                    next;
                 }
                 elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
                 {
-                    $d = $d . '=1';
+                    $d .= '=1';
                 }
                 push( @{ $self->_opt_D }, $d );
             }
