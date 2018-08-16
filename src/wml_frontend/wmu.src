@@ -37,7 +37,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 
 require 5.003;
 
-BEGIN { $^W = 0; } # get rid of nasty warnings
+BEGIN { $^W = 0; }    # get rid of nasty warnings
 
 $VERSION = "@WML_VERSION@";
 
@@ -45,34 +45,36 @@ use Getopt::Long 2.13;
 use IO::Socket::INET;
 use Term::ReadKey;
 
-
 ##
 ##  INIT
 ##
 
-if ($ENV{'PATH'} !~ m|@bindir@|) {
-    $ENV{'PATH'} = '@bindir@:'.$ENV{'PATH'};
+if ( $ENV{'PATH'} !~ m|@bindir@| )
+{
+    $ENV{'PATH'} = '@bindir@:' . $ENV{'PATH'};
 }
-
 
 ##
 ##  PROCESS ARGUMENT LINE
 ##
 
-sub usage {
+sub usage
+{
     my ($progname) = @_;
     my ($o);
 
     print STDERR "Usage: $progname [options] [path ...]\n";
     print STDERR "\n";
     print STDERR "Giving Feedback:\n";
-    print STDERR "  -V, --version[=NUM]    display version and build information\n";
+    print STDERR
+        "  -V, --version[=NUM]    display version and build information\n";
     print STDERR "  -h, --help             display this usage summary\n";
     print STDERR "\n";
     exit(1);
 }
 
-sub version {
+sub version
+{
     system("wml -V$opt_V");
     exit(0);
 }
@@ -81,16 +83,15 @@ sub version {
 $opt_V = -1;
 $opt_h = 0;
 
-sub ProcessOptions {
-    $Getopt::Long::bundling = 1;
+sub ProcessOptions
+{
+    $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
-    $SIG{'__WARN__'} = sub {
+    $SIG{'__WARN__'}             = sub {
         print STDERR "WMu:Error: $_[0]";
     };
-    if (not Getopt::Long::GetOptions(
-            "V|version:i",
-            "h|help"
-    )) {
+    if ( not Getopt::Long::GetOptions( "V|version:i", "h|help" ) )
+    {
         print STDERR "Try `$0 --help' for more information.\n";
         exit(0);
     }
@@ -100,34 +101,41 @@ sub ProcessOptions {
 &ProcessOptions();
 
 #   fix the version level
-if ($opt_V == 0) {
-    $opt_V = 1; # Getopt::Long sets 0 if -V only
+if ( $opt_V == 0 )
+{
+    $opt_V = 1;    # Getopt::Long sets 0 if -V only
 }
-if ($opt_V == -1) {
-    $opt_V = 0; # we operate with 0 for not set
+if ( $opt_V == -1 )
+{
+    $opt_V = 0;    # we operate with 0 for not set
 }
 &version if ($opt_V);
 
-sub GetTermKey {
+sub GetTermKey
+{
     my ($prompt) = @_;
-    my ($rc, $key);
+    my ( $rc, $key );
 
     print STDERR "$prompt: [Ynq]";
-    while (1) {
+    while (1)
+    {
         ReadMode 4;
         $key = ReadKey(0);
         ReadMode 0;
-        if ($key =~ m|[qQ]|) {
+        if ( $key =~ m|[qQ]| )
+        {
             print STDERR "\r$prompt  (Quiet)\n";
             print STDERR "WMu:Break: User cancelled operation\n";
             exit(0);
         }
-        elsif ($key =~ m|[\nYy]|) {
+        elsif ( $key =~ m|[\nYy]| )
+        {
             print STDERR "\r$prompt  (Yes)\n";
             $rc = 'y';
             last;
         }
-        elsif ($key =~ m|[nN]|) {
+        elsif ( $key =~ m|[nN]| )
+        {
             print STDERR "\r$prompt  (No) \n";
             $rc = 'n';
             last;
@@ -144,10 +152,12 @@ print STDERR "\n";
 ##  Find latest version
 ##
 
-sub GetURL {
-    my ($method, $url, $display, $prefix) = @_;
+sub GetURL
+{
+    my ( $method, $url, $display, $prefix ) = @_;
 
-    my ($host, $port, $path) = ($url =~ m/^http:\/\/([^\/:]+)(?::(\d)|)(\/.*)$/);
+    my ( $host, $port, $path ) =
+        ( $url =~ m/^http:\/\/([^\/:]+)(?::(\d)|)(\/.*)$/ );
     $port = 80 if $port eq '';
 
     my $s = IO::Socket::INET->new(
@@ -155,71 +165,87 @@ sub GetURL {
         PeerPort => $port,
         Proto    => 'tcp'
     );
-    if (not defined $s) {
-        print STDERR sprintf("Unable to get %s%s\n", $prefix, $url);
+    if ( not defined $s )
+    {
+        print STDERR sprintf( "Unable to get %s%s\n", $prefix, $url );
         exit(1);
     }
     $s->autoflush(1);
-    $s->send("$method $path HTTP/1.0\n" .
-             "Host: $host\n" .
-             "User-Agent: WML-wmu/$VERSION\n" .
-             "\n");
-    my $r = '';
-    my $b = 0;
+    $s->send( "$method $path HTTP/1.0\n"
+            . "Host: $host\n"
+            . "User-Agent: WML-wmu/$VERSION\n"
+            . "\n" );
+    my $r   = '';
+    my $b   = 0;
     my $max = '';
-    print STDERR sprintf("%s%s\n", $prefix, $url) if $display;
-    while (<$s>) {
+    print STDERR sprintf( "%s%s\n", $prefix, $url ) if $display;
+    while (<$s>)
+    {
         $r .= $_;
         $b += length($_);
-        if ($max eq '' and $r =~ m|^Content-Length:\s+(\d+)\s*$|im) {
+        if ( $max eq '' and $r =~ m|^Content-Length:\s+(\d+)\s*$|im )
+        {
             $max = $1;
         }
-        if ($max eq '') {
-            print STDERR sprintf("%sRetrieved: %9d bytes\r", $prefix, $b) if $display;
+        if ( $max eq '' )
+        {
+            print STDERR sprintf( "%sRetrieved: %9d bytes\r", $prefix, $b )
+                if $display;
         }
-        else {
-            print STDERR sprintf("%sRetrieved: %9d/%d bytes\r", $prefix, $b, $max) if $display;
+        else
+        {
+            print STDERR
+                sprintf( "%sRetrieved: %9d/%d bytes\r", $prefix, $b, $max )
+                if $display;
         }
     }
     $s->close;
-    print STDERR sprintf("%s                         \r", $prefix) if $display;
+    print STDERR sprintf( "%s                         \r", $prefix )
+        if $display;
 
-    my ($response, $headers, $body) = ($r =~ m|^(.+?)\r?\n(.+?)\r?\n\r?\n(.*)$|s);
-    my ($rc) = ($response =~ m|^HTTP/1\.\d\s+(\d+)|s);
+    my ( $response, $headers, $body ) =
+        ( $r =~ m|^(.+?)\r?\n(.+?)\r?\n\r?\n(.*)$|s );
+    my ($rc) = ( $response =~ m|^HTTP/1\.\d\s+(\d+)|s );
 
-    if ($rc == 302 or $rc == 301) {
-        ($url) = ($headers =~ m|^Location:\s+(.+?)$|im);
-        return &GetURL($method, $url, $display, $prefix);
+    if ( $rc == 302 or $rc == 301 )
+    {
+        ($url) = ( $headers =~ m|^Location:\s+(.+?)$|im );
+        return &GetURL( $method, $url, $display, $prefix );
     }
-    else {
-        return ($response, $headers, $body);
+    else
+    {
+        return ( $response, $headers, $body );
     }
 }
 
 $url = "http://www.engelschall.com/sw/wml/distrib";
 
 print STDERR "1. Determine latest version:\n";
-($x, $x, $d) = &GetURL("GET", "$url/index.current", 0, '');
+( $x, $x, $d ) = &GetURL( "GET", "$url/index.current", 0, '' );
 $d =~ s|^\s+||;
 $d =~ s|\s+$||;
-($v) = ($d =~ m|^wml-(.+).tar.gz$|);
+($v) = ( $d =~ m|^wml-(.+).tar.gz$| );
 $f = $d;
 print STDERR "   Website META Language, Version $v\n";
 
-if ($VERSION eq $v) {
+if ( $VERSION eq $v )
+{
     print STDERR "\n";
-    print STDERR "No need to upgrade, you are still running the latest version.\n";
+    print STDERR
+        "No need to upgrade, you are still running the latest version.\n";
     exit(0);
 }
 
 print STDERR "2. Determine distribution details:\n";
-($x, $h, $x) = &GetURL("HEAD", "$url/$d", 0, '');
+( $x, $h, $x ) = &GetURL( "HEAD", "$url/$d", 0, '' );
 $l = "UNKNOWN";
-if ($h =~ m|^Content-Length:\s+(\d+)\s*$|im) {
+if ( $h =~ m|^Content-Length:\s+(\d+)\s*$|im )
+{
     $l = $1;
 }
 $t = "UNKNOWN";
-if ($h =~ m|^Last-Modified:\s+(.+?)\s*$|im) {
+if ( $h =~ m|^Last-Modified:\s+(.+?)\s*$|im )
+{
     $t = $1;
 }
 print STDERR "   $f, $l bytes, $t\n";
@@ -228,19 +254,23 @@ print STDERR "   $f, $l bytes, $t\n";
 ##  Fetch latest distribution tarball
 ##
 
-if (! -f $d) {
+if ( !-f $d )
+{
     $rc = &GetTermKey("3. Retrieving distribution tarball");
-    if ($rc eq 'y') {
-        $tarball = &GetURL("GET", "$url/$d", 1, "   ");
-        open(TB, ">$d");
+    if ( $rc eq 'y' )
+    {
+        $tarball = &GetURL( "GET", "$url/$d", 1, "   " );
+        open( TB, ">$d" );
         print TB $tarball;
         close(TB);
     }
-    else {
+    else
+    {
         print "   [skipped]\n";
     }
 }
-else {
+else
+{
     print STDERR "3. Retrieving distribution tarball\n";
     print STDERR "   [tarball already exists]\n";
 }
@@ -251,16 +281,20 @@ else {
 
 $x = $d;
 $x =~ s|\.tar\.gz$||;
-if (! -d $x) {
+if ( !-d $x )
+{
     $rc = &GetTermKey("4. Extracting distribution tarball");
-    if ($rc eq 'y') {
+    if ( $rc eq 'y' )
+    {
         print STDERR "   ";
-        system("gunzip <$d | tar xvf - | " .
-               "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'");
+        system(   "gunzip <$d | tar xvf - | "
+                . "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'"
+        );
         print STDERR "\n";
     }
 }
-else {
+else
+{
     print STDERR "4. Extracting distribution tarball\n";
     print STDERR "   [source tree already exists]\n";
 }
@@ -283,19 +317,24 @@ print STDERR "   $x\n";
 
 $rc = &GetTermKey("6. Building Website META Language");
 $d =~ s|\.tar\.gz$||;
-if ($rc eq 'y') {
+if ( $rc eq 'y' )
+{
     print STDERR "   ";
-    $rc = system("(cd $d; ./configure $args; make) 2>&1 | tee $d.log |" .
-                 "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'");
-    if ($rc != 0) {
+    $rc =
+        system( "(cd $d; ./configure $args; make) 2>&1 | tee $d.log |"
+            . "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'"
+        );
+    if ( $rc != 0 )
+    {
         print STDERR "**WMu:Error: Build failed:\n";
         print STDERR `tail $d.log`;
         print STDERR "\n";
         exit(1);
     }
 }
-else {
-        print STDERR "   [skipped]\n";
+else
+{
+    print STDERR "   [skipped]\n";
 }
 
 ##
@@ -303,19 +342,24 @@ else {
 ##
 
 $rc = &GetTermKey("7. Installing Website META Language");
-if ($rc eq 'y') {
+if ( $rc eq 'y' )
+{
     print STDERR "   ";
-    $rc = system("(cd $d; make install) 2>&1 | tee $d.log |" .
-                 "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'");
-    if ($rc != 0) {
+    $rc =
+        system( "(cd $d; make install) 2>&1 | tee $d.log |"
+            . "$^X -n -e 's/^.*\$/./s; print STDERR \$_; \$i++; print STDERR \"\\n   \" if (\$i % 60 == 0);'"
+        );
+    if ( $rc != 0 )
+    {
         print STDERR "**WMu:Error: Install failed:\n";
         print STDERR `tail $d.log`;
         print STDERR "\n";
         exit(1);
     }
 }
-else {
-        print STDERR "   [skipped]\n";
+else
+{
+    print STDERR "   [skipped]\n";
 }
 
 ##
@@ -323,13 +367,14 @@ else {
 ##
 
 $rc = &GetTermKey("8. Cleaning up");
-if ($rc eq 'y') {
+if ( $rc eq 'y' )
+{
     system("rm -rf $d $d.log");
 }
-else {
-        print STDERR "   [skipped]\n";
+else
+{
+    print STDERR "   [skipped]\n";
 }
-
 
 #   exit gracefully
 exit(0);
@@ -384,4 +429,4 @@ Prints the usage summary page.
 wml(1)
 
 =cut
-
+# vim: ft=perl
