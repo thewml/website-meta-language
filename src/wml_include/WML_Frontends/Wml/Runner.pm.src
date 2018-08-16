@@ -38,7 +38,23 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( bindir _firstpass _opt_D _opt_o _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
+            qw(
+            _PROTECT_COUNTER
+            _firstpass
+            _opt_D
+            _opt_o
+            _out
+            _out_filenames
+            _pass_mgr
+            _passes_idxs
+            _protect_storage
+            _src
+            _src_filename
+            _src_istmp
+            _tmp
+            _tmpdir
+            bindir
+            )
     }
 );
 
