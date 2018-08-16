@@ -43,6 +43,7 @@ use Class::XSAccessor (
             _firstpass
             _opt_D
             _opt_o
+            _opt_t
             _out
             _out_filenames
             _pass_mgr
@@ -136,7 +137,7 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $opt_t, $opt_E ) = @_;
+    my ( $self, $opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
@@ -154,7 +155,7 @@ sub _handle_output
 
     #   optionally set mtime of outputfiles
     #   to mtime of inputfile if inputfile was not STDIN
-    if ( not $self->_src_istmp and $opt_t )
+    if ( not $self->_src_istmp and $self->_opt_t )
     {
         my (
             $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
@@ -1077,12 +1078,12 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self, $opt_q, $opt_W, $opt_t, $opt_E ) = @_;
+    my ( $self, $opt_q, $opt_W, $opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
     $self->_do_output( $self->_passes_loop( $opt_q, $opt_W ) );
 
-    $self->_handle_output( $opt_t, $opt_E );
+    $self->_handle_output($opt_E);
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
@@ -1132,7 +1133,7 @@ sub run_with_ARGV
 
     my (
         $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O,
-        @opt_P, @opt_E, $opt_t, @opt_p, @opt_W, $opt_q, $opt_V,
+        @opt_P, @opt_E, @opt_p, @opt_W, $opt_q, $opt_V,
     );
 
     my $opt_M = '-';
@@ -1162,9 +1163,12 @@ sub run_with_ARGV
             "n|noshebang"  => \$opt_n,
             "c|nocd"       => \$opt_c,
             "O|optimize=i" => \$opt_O,
-            "t|settime"    => \$opt_t,
-            "M|depend:s"   => \$opt_M,
-            "s|safe"       => sub {
+            "t|settime"    => sub {
+                my ( undef, $v ) = @_;
+                $self->_opt_t($v);
+            },
+            "M|depend:s" => \$opt_M,
+            "s|safe"     => sub {
                 my ( undef, $v ) = @_;
                 $_pass_mgr->opt_s($v);
             },
@@ -1211,7 +1215,7 @@ sub run_with_ARGV
     $self->_opt_o( [] );
     @opt_P = ();
     @opt_E = ();
-    $opt_t = 0;
+    $self->_opt_t(0);
     @opt_p = ();
     @opt_W = ();
     $opt_M = '-';
@@ -1291,7 +1295,7 @@ sub run_with_ARGV
         $self->_unlink_tmp;
         return 0;
     }
-    return $self->_output_and_cleanup( $opt_q, \@opt_W, $opt_t, \@opt_E );
+    return $self->_output_and_cleanup( $opt_q, \@opt_W, \@opt_E );
 }
 
 1;
