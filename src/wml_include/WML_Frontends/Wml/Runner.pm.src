@@ -40,6 +40,7 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             _PROTECT_COUNTER
+            _argv
             _firstpass
             _opt_D
             _opt_o
@@ -1041,10 +1042,10 @@ sub _adjust_opt_D
 
 sub _set_src
 {
-    my ( $self, $argv, $opt_q ) = @_;
+    my ( $self, $opt_q ) = @_;
 
     # set the input file
-    $self->_src( $argv->[0] );
+    $self->_src( $self->_argv->[0] );
 
     # if no inputfile is given, WML reads from stdin and forces quiet mode
     if ( $self->_src eq '' )
@@ -1123,7 +1124,7 @@ sub run_with_ARGV
 {
     my ( $self, $args ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    my @argv      = @{ $args->{ARGV} };
+    $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->opt_v(-1);
 
     my (
@@ -1199,7 +1200,7 @@ sub run_with_ARGV
         return ($_opt_D);
     };
 
-    my @temp_argv = @argv;
+    my @temp_argv = @{ $self->_argv };
     $_process_options->( \@temp_argv, [] );
     $self->_src( $temp_argv[0] );
 
@@ -1225,18 +1226,18 @@ sub run_with_ARGV
     $self->_process_wmlrc( $_process_options, $opt_r, $opt_c, \@opt_I );
 
     #   4. process the command line options
-    my ($dnew) = $_process_options->( \@argv, [] );
+    my ($dnew) = $_process_options->( $self->_argv, [] );
     $self->_print_version($opt_V);
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
-    if ( $opt_M !~ m%^(-|[MD]*)$% and ( !@argv ) )
+    if ( $opt_M !~ m%^(-|[MD]*)$% and ( !@{ $self->_argv } ) )
     {
-        push( @argv, $opt_M );
+        push( @{ $self->_argv }, $opt_M );
         $opt_M = '';
     }
 
-    $self->_set_src( \@argv, \$opt_q );
+    $self->_set_src( \$opt_q );
 
     # now adjust -D options from command line relative to path to source file
     $self->_adjust_opt_D($dnew);
@@ -1275,7 +1276,7 @@ sub run_with_ARGV
     $self->_ProcessOutfiles;
     $_pass_mgr->_process_argv_cb(
         sub {
-            $_process_options->( \@argv, $self->_opt_D );
+            $_process_options->( $self->_argv, $self->_opt_D );
             $self->_ProcessOutfiles;
             return;
         }
