@@ -713,18 +713,16 @@ sub _print_version
     }
     if ($opt_V)
     {
-        print STDERR "This is WML Version @{[$self->_VERSION]}\n";
-        print STDERR "Copyright (c) 1996-2001 Ralf S. Engelschall.\n";
-        print STDERR "Copyright (c) 1999-2001 Denis Barbier.\n";
-        print STDERR "\n";
-        print STDERR
-            "This program is distributed in the hope that it will be useful,\n";
-        print STDERR
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of\n";
-        print STDERR
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n";
-        print STDERR "GNU General Public License for more details.\n";
+        print STDERR <<"EOF";
+This is WML Version @{[$self->_VERSION]}
+Copyright (c) 1996-2001 Ralf S. Engelschall.
+Copyright (c) 1999-2001 Denis Barbier.
 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+EOF
         if ( $opt_V > 1 )
         {
             print STDERR <<'EOF';
@@ -742,10 +740,7 @@ EOF
         }
         if ( $opt_V > 2 )
         {
-            print STDERR "\n";
-            print STDERR "Used Perl System:\n";
-            my $perlprog = '@perlprog@';
-            print STDERR `$perlprog -V`;
+            print STDERR "\nUsed Perl System:\n", `@perlprog@ -V`;
         }
         exit(0);
     }
