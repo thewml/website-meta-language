@@ -38,7 +38,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( bindir _firstpass _opt_o _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
+            qw( bindir _firstpass _opt_D _opt_o _out _out_filenames _passes_idxs _pass_mgr _protect_storage _src _src_filename _src_istmp _tmp _tmpdir _PROTECT_COUNTER)
     }
 );
 
@@ -378,7 +378,7 @@ sub _handle_opt_M_stdin
 
 sub _populate_opt_D
 {
-    my ( $self, $opt_D ) = @_;
+    my ($self) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
@@ -445,7 +445,8 @@ sub _populate_opt_D
         $src_realname =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
     }
 
-    unshift( @$opt_D,
+    unshift(
+        @{ $self->_opt_D },
         "WML_SRC_DIRNAME=$src_dirname",
         "WML_SRC_FILENAME=" . $self->_src_filename,
         "WML_SRC_BASENAME=$src_basename",
@@ -469,7 +470,8 @@ sub _populate_opt_D
         "WML_LOC_LIBDIR=$libdir",
         'WML_LOC_MANDIR=@mandir@',
         "WML_VERSION=@{[$self->_VERSION]}",
-        "WML_TMPDIR=" . $self->_tmpdir );
+        "WML_TMPDIR=" . $self->_tmpdir
+    );
 
     return;
 }
@@ -736,7 +738,7 @@ EOF
 
 sub _process_ENV_WMLOPTS
 {
-    my ( $self, $_process_options, $opt_D ) = @_;
+    my ( $self, $_process_options ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $opts      = $ENV{WMLOPTS};
@@ -749,13 +751,13 @@ sub _process_ENV_WMLOPTS
     #   have already been expanded, but dollar sign must be
     #   escaped
     $opts =~ s|\$|\\\$|g;
-    $_process_options->( [ split_argv($opts) ], $opt_D );
+    $_process_options->( [ split_argv($opts) ], $self->_opt_D );
     return;
 }
 
 sub _process_wmlrc
 {
-    my ( $self, $_process_options, $opt_r, $opt_c, $opt_I, $opt_D ) = @_;
+    my ( $self, $_process_options, $opt_r, $opt_c, $opt_I ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -839,14 +841,14 @@ sub _process_wmlrc
                     }
                     $path = '""' if ( $path eq '' );
                     $d = "$var=$path";
-                    push( @$opt_D, $d );
+                    push( @{ $self->_opt_D }, $d );
                     next;
                 }
                 elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
                 {
                     $d = $d . '=1';
                 }
-                push( @$opt_D, $d );
+                push( @{ $self->_opt_D }, $d );
             }
 
             #   adjust -I options
@@ -869,7 +871,7 @@ sub _process_wmlrc
 
 sub _calc_default_opts
 {
-    my ( $self, $opt_D, $opt_M ) = @_;
+    my ( $self, $opt_M ) = @_;
 
     my $defipp   = '';
     my $defgm4   = '';
@@ -879,7 +881,7 @@ sub _calc_default_opts
     {
         $defmp4h .= " -D SLICE_OUTPUT_FILENAME[$cnt]=\"$o\"" if $o =~ m|\*|;
     }
-    foreach my $d (@$opt_D)
+    foreach my $d ( @{ $self->_opt_D } )
     {
         if ( my ( $var, undef, $val ) = ( $d =~ m#\A(.+?)=("?)(.*)\2\n*\z# ) )
         {
@@ -898,7 +900,7 @@ sub _calc_default_opts
 
 sub _process_shebang
 {
-    my ( $self, $_process_options, $opt_n, $opt_D ) = @_;
+    my ( $self, $_process_options, $opt_n ) = @_;
     if ($opt_n)
     {
         return;
@@ -920,17 +922,17 @@ SHEBANG:
     if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
     {
         #   split opts into arguments and process them
-        $_process_options->( [ split_argv($1) ], $opt_D );
+        $_process_options->( [ split_argv($1) ], $self->_opt_D );
     }
 }
 
 sub _calc_passes_options
 {
-    my ( $self, $opt_D, $opt_M, $opt_i, $opt_I, $opt_P, $opt_O ) = @_;
+    my ( $self, $opt_M, $opt_i, $opt_I, $opt_P, $opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
-        $self->_calc_default_opts( $opt_D, $opt_M );
+        $self->_calc_default_opts($opt_M);
 
     #   determine preloads
     my $preload = join '', map {
@@ -978,11 +980,11 @@ sub _calc_reldir
 
 sub _process_opt_D
 {
-    my ( $self, $opt_D ) = @_;
+    my ($self) = @_;
 
     #   7. Undefine variables when requested
     my %new_opt_D;
-    foreach my $d (@$opt_D)
+    foreach my $d ( @{ $self->_opt_D } )
     {
         if ( my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| ) )
         {
@@ -996,13 +998,13 @@ sub _process_opt_D
             }
         }
     }
-    @$opt_D = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
+    @{ $self->_opt_D } = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
     return;
 }
 
 sub _adjust_opt_D
 {
-    my ( $self, $dnew, $opt_D ) = @_;
+    my ( $self, $dnew ) = @_;
 
     my $reldir = $self->_calc_reldir;
     foreach my $d ( map { quotearg $_} @$dnew )
@@ -1020,7 +1022,7 @@ sub _adjust_opt_D
         {
             $d .= '=1';
         }
-        push( @$opt_D, $d );
+        push( @{ $self->_opt_D }, $d );
     }
     return;
 }
@@ -1120,7 +1122,7 @@ sub run_with_ARGV
     my $opt_M = '-';
     $self->_opt_o( [] );
     my $_process_options = sub {
-        my ( $my_argv, $opt_D ) = @_;
+        my ( $my_argv, $_opt_D ) = @_;
         local $SIG{__WARN__} = sub {
             print STDERR "WML:Error: $_[0]";
         };
@@ -1129,7 +1131,7 @@ sub run_with_ARGV
         my %list_options = (
             "I|include=s@"     => \@opt_I,
             "i|includefile=s@" => \@opt_i,
-            "D|define=s@"      => $opt_D,
+            "D|define=s@"      => $_opt_D,
             "P|prolog=s@"      => \@opt_P,
             "E|epilog=s@"      => \@opt_E,
             "p|pass=s@"        => \@opt_p,
@@ -1179,7 +1181,7 @@ sub run_with_ARGV
                 exit(0);
             }
         }
-        return ($opt_D);
+        return ($_opt_D);
     };
 
     my @temp_argv = @argv;
@@ -1201,12 +1203,11 @@ sub run_with_ARGV
     $opt_q = 0;
     $opt_V = -1;
 
-    my @opt_D;
-    $self->_process_ENV_WMLOPTS( $_process_options, \@opt_D );
+    $self->_opt_D( [] );
+    $self->_process_ENV_WMLOPTS($_process_options);
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc( $_process_options,
-        $opt_r, $opt_c, \@opt_I, \@opt_D );
+    $self->_process_wmlrc( $_process_options, $opt_r, $opt_c, \@opt_I );
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( \@argv, [] );
@@ -1223,14 +1224,14 @@ sub run_with_ARGV
     $self->_set_src( \@argv, \$opt_q );
 
     # now adjust -D options from command line relative to path to source file
-    $self->_adjust_opt_D( $dnew, \@opt_D );
+    $self->_adjust_opt_D($dnew);
 
     #   5. process the options from the pseudo-shebang line
-    $self->_process_shebang( $_process_options, $opt_n, \@opt_D );
+    $self->_process_shebang( $_process_options, $opt_n, );
 
     #   6. expand %DIR and %BASE in the -o flags
     $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
-    $self->_process_opt_D( \@opt_D );
+    $self->_process_opt_D;
     $_pass_mgr->_fix_verbose_level;
     $self->_PROTECT_COUNTER(0);
     $self->_protect_storage( +{} );
@@ -1242,7 +1243,7 @@ sub run_with_ARGV
     $_pass_mgr->out_istmp(0);
 
     my $cwd = _my_cwd;
-    $self->_populate_opt_D( \@opt_D );
+    $self->_populate_opt_D;
 
     #   Create temporary file names
     $self->_tmp(
@@ -1259,15 +1260,14 @@ sub run_with_ARGV
     $self->_ProcessOutfiles;
     $_pass_mgr->_process_argv_cb(
         sub {
-            $_process_options->( \@argv, \@opt_D );
+            $_process_options->( \@argv, $self->_opt_D );
             $self->_ProcessOutfiles;
             return;
         }
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( \@opt_D, $opt_M, \@opt_i, \@opt_I, \@opt_P,
-        $opt_O, );
+    $self->_calc_passes_options( $opt_M, \@opt_i, \@opt_I, \@opt_P, $opt_O, );
 
     if ( $opt_M ne '-' )
     {
