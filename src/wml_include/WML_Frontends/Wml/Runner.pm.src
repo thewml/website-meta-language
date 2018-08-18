@@ -46,6 +46,7 @@ use Class::XSAccessor (
             _opt_E
             _opt_I
             _opt_M
+            _opt_O
             _opt_P
             _opt_V
             _opt_W
@@ -954,9 +955,9 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self,, $_opt_O ) = @_;
-    my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = $_pass_mgr->libdir;
+    my ( $self,, ) = @_;
+    my $_pass_mgr  = $self->_pass_mgr;
+    my $libdir     = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) = $self->_calc_default_opts();
 
     #   determine preloads
@@ -981,7 +982,10 @@ sub _calc_passes_options
         $defmp4h,
         $defeperl,
         $defgm4, $verbose, $verbose, $verbose,
-        ( "$verbose " . ( ( $_opt_O ne '' ) ? "-O$_opt_O" : '' ) ),
+        (
+            "$verbose "
+                . ( ( $self->_opt_O ne '' ) ? "-O" . $self->_opt_O : '' )
+        ),
         "$verbose " . $self->_out,
     ];
     while ( my ( $i, $str ) = each @$arr )
@@ -1142,10 +1146,11 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my ( $_opt_h, $_opt_O, );
+    my ( $_opt_h, );
 
     $self->_opt_n(0);
     $self->_opt_M('-');
+    $self->_opt_O('');
     $self->_opt_o( [] );
     $self->_opt_E( [ () ] );
     $self->_opt_I( [ () ] );
@@ -1174,10 +1179,10 @@ sub run_with_ARGV
                 my ( undef, $v ) = @_;
                 push @{ $self->_opt_o }, $v;
             },
-            "r|norcfile"  => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
-            "n|noshebang" => sub { my ( undef, $v ) = @_; $self->_opt_n($v); },
-            "c|nocd"      => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
-            "O|optimize=i" => \$_opt_O,
+            "r|norcfile"   => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
+            "n|noshebang"  => sub { my ( undef, $v ) = @_; $self->_opt_n($v); },
+            "c|nocd"       => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
+            "O|optimize=i" => sub { my ( undef, $v ) = @_; $self->_opt_O($v); },
             "t|settime"    => sub {
                 my ( undef, $v ) = @_;
                 $self->_opt_t($v);
@@ -1226,7 +1231,7 @@ sub run_with_ARGV
     #   reset with defaults (except $self->_opt_r and $_pass_mgr->_opt_v())
     $self->_opt_i( [ () ] );
     $self->_opt_n(0);
-    $_opt_O = '';
+    $self->_opt_O('');
     $self->_opt_o( [] );
     $self->_opt_P( [ () ] );
     $self->_opt_t(0);
@@ -1301,7 +1306,7 @@ sub run_with_ARGV
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( $_opt_O, );
+    $self->_calc_passes_options;
 
     if ( $self->_opt_M ne '-' )
     {
