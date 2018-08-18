@@ -424,9 +424,9 @@ sub _populate_opt_D
     my $gen_gmt_isotime = gmt_isotime($gen_time);
 
     my (
-        $src_dirname,, $src_basename, $src_time,
-        $src_ctime,    $src_isotime, $src_gmt_ctime, $src_gmt_isotime,
-        $src_username, $src_realname,
+        $src_dirname,     $src_basename, $src_time,
+        $src_ctime,       $src_isotime,  $src_gmt_ctime,
+        $src_gmt_isotime, $src_username, $src_realname,
     );
     my $cwd = _my_cwd;
 
@@ -502,7 +502,7 @@ sub _populate_opt_D
 
 sub _calc_passes_idxs
 {
-    my ( $self,, $_opt_M ) = @_;
+    my ( $self, $_opt_M ) = @_;
 
     #   canonicalize -p option(s)
     if ( !@{ $self->_opt_p } )
@@ -529,6 +529,8 @@ sub _calc_passes_idxs
     @_passes_idxs = ('1') if $_opt_M ne '-';
 
     $self->_passes_idxs( \@_passes_idxs );
+
+    return;
 }
 
 # MAIN PROCESSING LOOP
@@ -944,7 +946,7 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self, $_opt_M,,,, $_opt_O ) = @_;
+    my ( $self, $_opt_M, $_opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
@@ -1080,7 +1082,7 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self, $_opt_q,, ) = @_;
+    my ( $self, $_opt_q, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
     $self->_do_output( $self->_passes_loop( $_opt_q, ) );
@@ -1291,7 +1293,7 @@ sub run_with_ARGV
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( $_opt_M,,, $_opt_O, );
+    $self->_calc_passes_options( $_opt_M, $_opt_O, );
 
     if ( $_opt_M ne '-' )
     {
@@ -1299,7 +1301,7 @@ sub run_with_ARGV
         $self->_unlink_tmp;
         return 0;
     }
-    return $self->_output_and_cleanup( $_opt_q,, );
+    return $self->_output_and_cleanup( $_opt_q, );
 }
 
 1;
