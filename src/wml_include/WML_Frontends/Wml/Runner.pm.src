@@ -45,6 +45,7 @@ use Class::XSAccessor (
             _opt_D
             _opt_E
             _opt_I
+            _opt_P
             _opt_i
             _opt_o
             _opt_t
@@ -941,7 +942,7 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self, $_opt_M,,, $_opt_P, $_opt_O ) = @_;
+    my ( $self, $_opt_M,,,, $_opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
@@ -962,7 +963,9 @@ sub _calc_passes_options
                   "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
                 . ( join '', map { " -I $_" } @{ $self->_opt_I } )
                 . " $preload "
-                . ( join '', map { ' -P "' . quotearg($_) . '"' } @$_opt_P )
+                . (
+                join '', map { ' -P "' . quotearg($_) . '"' } @{ $self->_opt_P }
+                )
         ),
         $defmp4h,
         $defeperl,
@@ -1130,7 +1133,7 @@ sub run_with_ARGV
 
     my (
         $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O,
-        @_opt_P, @_opt_p, @_opt_W, $_opt_q, $_opt_V,
+        @_opt_p, @_opt_W, $_opt_q, $_opt_V,
     );
 
     my $_opt_M = '-';
@@ -1138,6 +1141,7 @@ sub run_with_ARGV
     $self->_opt_E( [ () ] );
     $self->_opt_I( [ () ] );
     $self->_opt_i( [ () ] );
+    $self->_opt_P( [ () ] );
     my $_process_options = sub {
         my ( $my_argv, $_opt_D ) = @_;
         local $SIG{__WARN__} = sub {
@@ -1149,7 +1153,7 @@ sub run_with_ARGV
             "I|include=s@"     => $self->_opt_I,
             "i|includefile=s@" => $self->_opt_i,
             "D|define=s@"      => $_opt_D,
-            "P|prolog=s@"      => \@_opt_P,
+            "P|prolog=s@"      => $self->_opt_P,
             "E|epilog=s@"      => $self->_opt_E,
             "p|pass=s@"        => \@_opt_p,
             "W|passoption=s@"  => \@_opt_W,
@@ -1213,7 +1217,7 @@ sub run_with_ARGV
     $_opt_n = 0;
     $_opt_O = '';
     $self->_opt_o( [] );
-    @_opt_P = ();
+    $self->_opt_P( [ () ] );
     $self->_opt_t(0);
     @_opt_p = ();
     @_opt_W = ();
@@ -1286,7 +1290,7 @@ sub run_with_ARGV
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( $_opt_M,, \@_opt_P, $_opt_O, );
+    $self->_calc_passes_options( $_opt_M,,, $_opt_O, );
 
     if ( $_opt_M ne '-' )
     {
