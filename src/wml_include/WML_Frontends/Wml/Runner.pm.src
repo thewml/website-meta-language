@@ -47,6 +47,7 @@ use Class::XSAccessor (
             _opt_I
             _opt_M
             _opt_P
+            _opt_V
             _opt_W
             _opt_i
             _opt_o
@@ -711,18 +712,20 @@ sub _map_opt_o
 
 sub _print_version
 {
-    my ( $self, $_opt_V ) = @_;
+    my ( $self, ) = @_;
 
     #   fix the version level
-    if ( $_opt_V == 0 )
+    if ( $self->_opt_V == 0 )
     {
-        $_opt_V = 1;    # Getopt::Long sets 0 if -V only
+        # Getopt::Long sets 0 if -V only
+        $self->_opt_V(1);
     }
-    if ( $_opt_V == -1 )
+    if ( $self->_opt_V == -1 )
     {
-        $_opt_V = 0;    # we operate with 0 for not set
+        # we operate with 0 for not set
+        $self->_opt_V(0);
     }
-    if ($_opt_V)
+    if ( $self->_opt_V )
     {
         print STDERR <<"EOF";
 This is WML Version @{[$self->_VERSION]}
@@ -734,7 +737,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 EOF
-        if ( $_opt_V > 1 )
+        if ( $self->_opt_V > 1 )
         {
             print STDERR <<'EOF';
 Built Environment:
@@ -749,7 +752,7 @@ Built Location:
     ManDir: @mandir@
 EOF
         }
-        if ( $_opt_V > 2 )
+        if ( $self->_opt_V > 2 )
         {
             print STDERR "\nUsed Perl System:\n", `@perlprog@ -V`;
         }
@@ -1136,7 +1139,7 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, $_opt_V, );
+    my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, );
 
     $self->_opt_M('-');
     $self->_opt_o( [] );
@@ -1185,7 +1188,7 @@ sub run_with_ARGV
                 $_pass_mgr->_opt_v($v);
             },
             "q|quiet"     => sub { my ( undef, $v ) = @_; $self->_opt_q($v); },
-            "V|version:i" => \$_opt_V,
+            "V|version:i" => sub { my ( undef, $v ) = @_; $self->_opt_V($v); },
             "h|help"      => \$_opt_h,
         );
         if (
@@ -1228,7 +1231,7 @@ sub run_with_ARGV
     $self->_opt_M('-');
     $_pass_mgr->_opt_s(0);
     $self->_opt_q(0);
-    $_opt_V = -1;
+    $self->_opt_V(-1);
 
     $self->_opt_D( [] );
     $self->_process_ENV_WMLOPTS($_process_options);
@@ -1238,7 +1241,7 @@ sub run_with_ARGV
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( $self->_argv, [] );
-    $self->_print_version($_opt_V);
+    $self->_print_version();
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
