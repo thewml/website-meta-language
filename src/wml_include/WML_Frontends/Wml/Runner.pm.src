@@ -51,6 +51,7 @@ use Class::XSAccessor (
             _opt_W
             _opt_c
             _opt_i
+            _opt_n
             _opt_o
             _opt_p
             _opt_q
@@ -925,8 +926,8 @@ sub _calc_default_opts
 
 sub _process_shebang
 {
-    my ( $self, $_process_options, $_opt_n ) = @_;
-    if ($_opt_n)
+    my ( $self, $_process_options, ) = @_;
+    if ( $self->_opt_n )
     {
         return;
     }
@@ -1141,8 +1142,9 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my ( $_opt_h, $_opt_n, $_opt_O, );
+    my ( $_opt_h, $_opt_O, );
 
+    $self->_opt_n(0);
     $self->_opt_M('-');
     $self->_opt_o( [] );
     $self->_opt_E( [ () ] );
@@ -1172,9 +1174,9 @@ sub run_with_ARGV
                 my ( undef, $v ) = @_;
                 push @{ $self->_opt_o }, $v;
             },
-            "r|norcfile"   => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
-            "n|noshebang"  => \$_opt_n,
-            "c|nocd"       => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
+            "r|norcfile"  => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
+            "n|noshebang" => sub { my ( undef, $v ) = @_; $self->_opt_n($v); },
+            "c|nocd"      => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
             "O|optimize=i" => \$_opt_O,
             "t|settime"    => sub {
                 my ( undef, $v ) = @_;
@@ -1223,7 +1225,7 @@ sub run_with_ARGV
 
     #   reset with defaults (except $self->_opt_r and $_pass_mgr->_opt_v())
     $self->_opt_i( [ () ] );
-    $_opt_n = 0;
+    $self->_opt_n(0);
     $_opt_O = '';
     $self->_opt_o( [] );
     $self->_opt_P( [ () ] );
@@ -1259,7 +1261,7 @@ sub run_with_ARGV
     $self->_adjust_opt_D($dnew);
 
     #   5. process the options from the pseudo-shebang line
-    $self->_process_shebang( $_process_options, $_opt_n, );
+    $self->_process_shebang( $_process_options,, );
 
     #   6. expand %DIR and %BASE in the -o flags
     $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
