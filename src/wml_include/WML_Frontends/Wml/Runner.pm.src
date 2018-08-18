@@ -51,6 +51,7 @@ use Class::XSAccessor (
             _opt_V
             _opt_W
             _opt_c
+            _opt_h
             _opt_i
             _opt_n
             _opt_o
@@ -1146,8 +1147,7 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my ( $_opt_h, );
-
+    $self->_opt_h(0);
     $self->_opt_n(0);
     $self->_opt_M('-');
     $self->_opt_O('');
@@ -1198,7 +1198,7 @@ sub run_with_ARGV
             },
             "q|quiet"     => sub { my ( undef, $v ) = @_; $self->_opt_q($v); },
             "V|version:i" => sub { my ( undef, $v ) = @_; $self->_opt_V($v); },
-            "h|help"      => \$_opt_h,
+            "h|help"      => sub { my ( undef, $v ) = @_; $self->_opt_h($v); },
         );
         if (
             not Getopt::Long::GetOptionsFromArray(
@@ -1209,7 +1209,7 @@ sub run_with_ARGV
             warn "Try `$0 --help' for more information.\n";
             exit(0);
         }
-        usage($0) if ($_opt_h);
+        usage($0) if ( $self->_opt_h );
         while ( my ( $opt, $var ) = each(%list_options) )
         {
             if ( @$var and $var->[0] =~ m|^=| )
