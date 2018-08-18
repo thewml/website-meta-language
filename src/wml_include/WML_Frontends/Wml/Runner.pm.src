@@ -48,6 +48,7 @@ use Class::XSAccessor (
             _opt_P
             _opt_i
             _opt_o
+            _opt_p
             _opt_t
             _out
             _out_filenames
@@ -500,20 +501,20 @@ sub _populate_opt_D
 
 sub _calc_passes_idxs
 {
-    my ( $self, $_opt_p, $_opt_M ) = @_;
+    my ( $self,, $_opt_M ) = @_;
 
     #   canonicalize -p option(s)
-    if ( !@$_opt_p )
+    if ( !@{ $self->_opt_p } )
     {
         #   no option means all passes
-        @$_opt_p = ('1-9');
+        $self->_opt_p( [ ('1-9') ] );
     }
     if ( not -s $self->_src )
     {
         #   on empty input optimize to just use pass 9
-        @$_opt_p = ('9');
+        $self->_opt_p( [ ('9') ] );
     }
-    my $pass_str = join( '', @$_opt_p );
+    my $pass_str = join( '', @{ $self->_opt_p } );
     $pass_str =~ s|,||g;
     $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
     my $_SORT = ( $pass_str =~ s/!$// );
@@ -1132,8 +1133,8 @@ sub run_with_ARGV
     $_pass_mgr->_opt_v(-1);
 
     my (
-        $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O,
-        @_opt_p, @_opt_W, $_opt_q, $_opt_V,
+        $_opt_h, $_opt_r, $_opt_c, $_opt_n,
+        $_opt_O, @_opt_W, $_opt_q, $_opt_V,
     );
 
     my $_opt_M = '-';
@@ -1142,6 +1143,7 @@ sub run_with_ARGV
     $self->_opt_I( [ () ] );
     $self->_opt_i( [ () ] );
     $self->_opt_P( [ () ] );
+    $self->_opt_p( [ () ] );
     my $_process_options = sub {
         my ( $my_argv, $_opt_D ) = @_;
         local $SIG{__WARN__} = sub {
@@ -1155,7 +1157,7 @@ sub run_with_ARGV
             "D|define=s@"      => $_opt_D,
             "P|prolog=s@"      => $self->_opt_P,
             "E|epilog=s@"      => $self->_opt_E,
-            "p|pass=s@"        => \@_opt_p,
+            "p|pass=s@"        => $self->_opt_p,
             "W|passoption=s@"  => \@_opt_W,
         );
         my %scalar_options = (
@@ -1219,7 +1221,7 @@ sub run_with_ARGV
     $self->_opt_o( [] );
     $self->_opt_P( [ () ] );
     $self->_opt_t(0);
-    @_opt_p = ();
+    $self->_opt_p( [ () ] );
     @_opt_W = ();
     $_opt_M = '-';
     $_pass_mgr->_opt_s(0);
@@ -1276,7 +1278,7 @@ sub run_with_ARGV
         ]
     );
 
-    $self->_calc_passes_idxs( \@_opt_p, $_opt_M );
+    $self->_calc_passes_idxs($_opt_M);
 
     #   determine prologs
     $self->_out_filenames( [] );
