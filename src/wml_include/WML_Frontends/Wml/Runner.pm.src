@@ -45,6 +45,7 @@ use Class::XSAccessor (
             _opt_D
             _opt_E
             _opt_I
+            _opt_M
             _opt_P
             _opt_W
             _opt_i
@@ -502,7 +503,7 @@ sub _populate_opt_D
 
 sub _calc_passes_idxs
 {
-    my ( $self, $_opt_M ) = @_;
+    my ( $self, ) = @_;
 
     #   canonicalize -p option(s)
     if ( !@{ $self->_opt_p } )
@@ -526,7 +527,7 @@ sub _calc_passes_idxs
     }
 
     #   only pre-processing if -M option specified
-    @_passes_idxs = ('1') if $_opt_M ne '-';
+    @_passes_idxs = ('1') if $self->_opt_M ne '-';
 
     $self->_passes_idxs( \@_passes_idxs );
 
@@ -889,7 +890,7 @@ sub _process_wmlrc
 
 sub _calc_default_opts
 {
-    my ( $self, $_opt_M ) = @_;
+    my ( $self, ) = @_;
 
     my $defipp   = '';
     my $defgm4   = '';
@@ -909,7 +910,7 @@ sub _calc_default_opts
             $defipp   .= " \"-D$var=$val\"";
         }
     }
-    $defipp .= " -M$_opt_M" if $_opt_M ne '-';
+    $defipp .= " -M" . $self->_opt_M if $self->_opt_M ne '-';
     $defipp .= " -DIPP_SRC_REALNAME=" . $self->_src_filename
         if not $self->_src_istmp;
 
@@ -946,11 +947,10 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self, $_opt_M, $_opt_O ) = @_;
+    my ( $self,, $_opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
-    my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
-        $self->_calc_default_opts($_opt_M);
+    my ( $defipp, $defmp4h, $defeperl, $defgm4 ) = $self->_calc_default_opts();
 
     #   determine preloads
     my $preload = join '', map {
@@ -1137,7 +1137,7 @@ sub run_with_ARGV
 
     my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, $_opt_q, $_opt_V, );
 
-    my $_opt_M = '-';
+    $self->_opt_M('-');
     $self->_opt_o( [] );
     $self->_opt_E( [ () ] );
     $self->_opt_I( [ () ] );
@@ -1174,7 +1174,7 @@ sub run_with_ARGV
                 my ( undef, $v ) = @_;
                 $self->_opt_t($v);
             },
-            "M|depend:s" => \$_opt_M,
+            "M|depend:s" => sub { my ( undef, $v ) = @_; $self->_opt_M($v); },
             "s|safe"     => sub {
                 my ( undef, $v ) = @_;
                 $_pass_mgr->_opt_s($v);
@@ -1224,7 +1224,7 @@ sub run_with_ARGV
     $self->_opt_t(0);
     $self->_opt_p( [ () ] );
     $self->_opt_W( [ () ] );
-    $_opt_M = '-';
+    $self->_opt_M('-');
     $_pass_mgr->_opt_s(0);
     $_opt_q = 0;
     $_opt_V = -1;
@@ -1241,10 +1241,10 @@ sub run_with_ARGV
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
-    if ( $_opt_M !~ m%^(-|[MD]*)$% and ( !@{ $self->_argv } ) )
+    if ( $self->_opt_M !~ m%^(-|[MD]*)$% and ( !@{ $self->_argv } ) )
     {
-        push( @{ $self->_argv }, $_opt_M );
-        $_opt_M = '';
+        push( @{ $self->_argv }, $self->_opt_M );
+        $self->_opt_M('');
     }
 
     $self->_set_src( \$_opt_q );
@@ -1279,7 +1279,7 @@ sub run_with_ARGV
         ]
     );
 
-    $self->_calc_passes_idxs($_opt_M);
+    $self->_calc_passes_idxs();
 
     #   determine prologs
     $self->_out_filenames( [] );
@@ -1293,9 +1293,9 @@ sub run_with_ARGV
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( $_opt_M, $_opt_O, );
+    $self->_calc_passes_options( $_opt_O, );
 
-    if ( $_opt_M ne '-' )
+    if ( $self->_opt_M ne '-' )
     {
         $self->_handle_opt_M_stdin();
         $self->_unlink_tmp;
