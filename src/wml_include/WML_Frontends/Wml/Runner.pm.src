@@ -43,6 +43,7 @@ use Class::XSAccessor (
             _argv
             _firstpass
             _opt_D
+            _opt_E
             _opt_o
             _opt_t
             _out
@@ -138,7 +139,7 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $_opt_E ) = @_;
+    my ( $self, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
@@ -172,7 +173,7 @@ sub _handle_output
     #   run epilog filters
     foreach my $o ( @{ $self->_out_filenames } )
     {
-        foreach my $e (@$_opt_E)
+        foreach my $e ( @{ $self->_opt_E } )
         {
             my $e_prog = $self->_calc_epilogue_program($e);
             $_pass_mgr->verbose( 2, "EPILOG: $e_prog $o\n" );
@@ -1071,12 +1072,12 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self, $_opt_q, $_opt_W, $_opt_E ) = @_;
+    my ( $self, $_opt_q, $_opt_W, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
     $self->_do_output( $self->_passes_loop( $_opt_q, $_opt_W ) );
 
-    $self->_handle_output($_opt_E);
+    $self->_handle_output();
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
@@ -1125,12 +1126,13 @@ sub run_with_ARGV
     $_pass_mgr->_opt_v(-1);
 
     my (
-        $_opt_h, $_opt_r, $_opt_c, @_opt_I, @_opt_i, $_opt_n, $_opt_O,
-        @_opt_P, @_opt_E, @_opt_p, @_opt_W, $_opt_q, $_opt_V,
+        $_opt_h, $_opt_r, $_opt_c, @_opt_I, @_opt_i, $_opt_n,
+        $_opt_O, @_opt_P, @_opt_p, @_opt_W, $_opt_q, $_opt_V,
     );
 
     my $_opt_M = '-';
     $self->_opt_o( [] );
+    $self->_opt_E( [ () ] );
     my $_process_options = sub {
         my ( $my_argv, $_opt_D ) = @_;
         local $SIG{__WARN__} = sub {
@@ -1143,7 +1145,7 @@ sub run_with_ARGV
             "i|includefile=s@" => \@_opt_i,
             "D|define=s@"      => $_opt_D,
             "P|prolog=s@"      => \@_opt_P,
-            "E|epilog=s@"      => \@_opt_E,
+            "E|epilog=s@"      => $self->_opt_E,
             "p|pass=s@"        => \@_opt_p,
             "W|passoption=s@"  => \@_opt_W,
         );
@@ -1207,7 +1209,6 @@ sub run_with_ARGV
     $_opt_O = '';
     $self->_opt_o( [] );
     @_opt_P = ();
-    @_opt_E = ();
     $self->_opt_t(0);
     @_opt_p = ();
     @_opt_W = ();
@@ -1289,7 +1290,7 @@ sub run_with_ARGV
         $self->_unlink_tmp;
         return 0;
     }
-    return $self->_output_and_cleanup( $_opt_q, \@_opt_W, \@_opt_E );
+    return $self->_output_and_cleanup( $_opt_q, \@_opt_W, );
 }
 
 1;
