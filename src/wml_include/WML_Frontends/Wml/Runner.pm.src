@@ -138,7 +138,7 @@ sub _calc_epilogue_program
 
 sub _handle_output
 {
-    my ( $self, $opt_E ) = @_;
+    my ( $self, $_opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
@@ -172,7 +172,7 @@ sub _handle_output
     #   run epilog filters
     foreach my $o ( @{ $self->_out_filenames } )
     {
-        foreach my $e (@$opt_E)
+        foreach my $e (@$_opt_E)
         {
             my $e_prog = $self->_calc_epilogue_program($e);
             $_pass_mgr->verbose( 2, "EPILOG: $e_prog $o\n" );
@@ -354,7 +354,7 @@ sub _ProcessOutfiles
 
 sub _handle_opt_M_stdin
 {
-    my ( $self, $opt_W ) = @_;
+    my ( $self, $_opt_W ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -364,7 +364,7 @@ sub _handle_opt_M_stdin
     }
     my $o = '"' . join( ' ', @{ $self->_out_filenames } ) . '"';
     my $opt_pass = '';
-    foreach my $aa (@$opt_W)
+    foreach my $aa (@$_opt_W)
     {
         if ( $aa =~ m|^([0-9]),(.*)$| )
         {
@@ -496,20 +496,20 @@ sub _populate_opt_D
 
 sub _calc_passes_idxs
 {
-    my ( $self, $opt_p, $opt_M ) = @_;
+    my ( $self, $_opt_p, $_opt_M ) = @_;
 
     #   canonicalize -p option(s)
-    if ( !@$opt_p )
+    if ( !@$_opt_p )
     {
         #   no option means all passes
-        @$opt_p = ('1-9');
+        @$_opt_p = ('1-9');
     }
     if ( not -s $self->_src )
     {
         #   on empty input optimize to just use pass 9
-        @$opt_p = ('9');
+        @$_opt_p = ('9');
     }
-    my $pass_str = join( '', @$opt_p );
+    my $pass_str = join( '', @$_opt_p );
     $pass_str =~ s|,||g;
     $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
     my $_SORT = ( $pass_str =~ s/!$// );
@@ -520,7 +520,7 @@ sub _calc_passes_idxs
     }
 
     #   only pre-processing if -M option specified
-    @_passes_idxs = ('1') if $opt_M ne '-';
+    @_passes_idxs = ('1') if $_opt_M ne '-';
 
     $self->_passes_idxs( \@_passes_idxs );
 }
@@ -528,7 +528,7 @@ sub _calc_passes_idxs
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
-    my ( $self, $opt_q, $opt_W ) = @_;
+    my ( $self, $_opt_q, $_opt_W ) = @_;
 
     my $final     = 0;
     my $last      = '';
@@ -544,14 +544,14 @@ sub _passes_loop
 PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_idxs } )
     {
         $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
-        print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $opt_q );
+        print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $_opt_q );
 
         #   run pass
         my ( $u, $s, $cu, $cs ) = times();
         my $stime = $u + $s + $cu + $cs;
         $self->_protect( $from, $pass_idx );
         my $opt_pass = '';
-        foreach my $aa (@$opt_W)
+        foreach my $aa (@$_opt_W)
         {
             if ( my ( $pp, $s ) = $aa =~ m|\A([0-9]),(.*)\z| )
             {
@@ -595,7 +595,7 @@ PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_idxs } )
         #   optionally view current result
         if (0)
         {
-            if ( $_pass_mgr->opt_v() >= 3 && $pass_idx < 9 )
+            if ( $_pass_mgr->_opt_v() >= 3 && $pass_idx < 9 )
             {
                 print STDERR "Want to see result after Pass$pass_idx [yNq]: ";
                 ReadMode 4;
@@ -701,18 +701,18 @@ sub _map_opt_o
 
 sub _print_version
 {
-    my ( $self, $opt_V ) = @_;
+    my ( $self, $_opt_V ) = @_;
 
     #   fix the version level
-    if ( $opt_V == 0 )
+    if ( $_opt_V == 0 )
     {
-        $opt_V = 1;    # Getopt::Long sets 0 if -V only
+        $_opt_V = 1;    # Getopt::Long sets 0 if -V only
     }
-    if ( $opt_V == -1 )
+    if ( $_opt_V == -1 )
     {
-        $opt_V = 0;    # we operate with 0 for not set
+        $_opt_V = 0;    # we operate with 0 for not set
     }
-    if ($opt_V)
+    if ($_opt_V)
     {
         print STDERR <<"EOF";
 This is WML Version @{[$self->_VERSION]}
@@ -724,7 +724,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 EOF
-        if ( $opt_V > 1 )
+        if ( $_opt_V > 1 )
         {
             print STDERR <<'EOF';
 Built Environment:
@@ -739,7 +739,7 @@ Built Location:
     ManDir: @mandir@
 EOF
         }
-        if ( $opt_V > 2 )
+        if ( $_opt_V > 2 )
         {
             print STDERR "\nUsed Perl System:\n", `@perlprog@ -V`;
         }
@@ -770,11 +770,11 @@ sub _process_ENV_WMLOPTS
 
 sub _process_wmlrc
 {
-    my ( $self, $_process_options, $opt_r, $opt_c, $opt_I ) = @_;
+    my ( $self, $_process_options, $_opt_r, $_opt_c, $_opt_I ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
-    if ($opt_r)
+    if ($_opt_r)
     {
         return;
     }
@@ -782,7 +782,7 @@ sub _process_wmlrc
     my @DIR     = ();
 
     #   First save current directory and go to input file directory
-    if ( not $opt_c and $self->_src =~ m|/| )
+    if ( not $_opt_c and $self->_src =~ m|/| )
     {
         $self->_src( dirname( $self->_src ) );
         if ( -d $self->_src )
@@ -835,8 +835,8 @@ sub _process_wmlrc
                 push( @aa, split_argv($l) );
             }
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-            my @opt_I_OLD = @$opt_I;
-            @$opt_I = ();
+            my @opt_I_OLD = @$_opt_I;
+            @$_opt_I = ();
             my $dnew = $_process_options->( \@aa, [] );
             my @opt_I_NEW = @opt_I_OLD;
 
@@ -864,7 +864,7 @@ sub _process_wmlrc
             #   adjust -I options
             $reldir = File::Spec->abs2rel("$dir");
             $reldir = "." if $reldir eq '';
-            foreach my $path (@$opt_I)
+            foreach my $path (@$_opt_I)
             {
                 if ( $path !~ m#\A/# )
                 {
@@ -873,7 +873,7 @@ sub _process_wmlrc
                 }
                 push( @opt_I_NEW, $path );
             }
-            @$opt_I = @opt_I_NEW;
+            @$_opt_I = @opt_I_NEW;
         }
     }
     return;
@@ -881,7 +881,7 @@ sub _process_wmlrc
 
 sub _calc_default_opts
 {
-    my ( $self, $opt_M ) = @_;
+    my ( $self, $_opt_M ) = @_;
 
     my $defipp   = '';
     my $defgm4   = '';
@@ -901,7 +901,7 @@ sub _calc_default_opts
             $defipp   .= " \"-D$var=$val\"";
         }
     }
-    $defipp .= " -M$opt_M" if $opt_M ne '-';
+    $defipp .= " -M$_opt_M" if $_opt_M ne '-';
     $defipp .= " -DIPP_SRC_REALNAME=" . $self->_src_filename
         if not $self->_src_istmp;
 
@@ -910,8 +910,8 @@ sub _calc_default_opts
 
 sub _process_shebang
 {
-    my ( $self, $_process_options, $opt_n ) = @_;
-    if ($opt_n)
+    my ( $self, $_process_options, $_opt_n ) = @_;
+    if ($_opt_n)
     {
         return;
     }
@@ -938,11 +938,11 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self, $opt_M, $opt_i, $opt_I, $opt_P, $opt_O ) = @_;
+    my ( $self, $_opt_M, $_opt_i, $_opt_I, $_opt_P, $_opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
-        $self->_calc_default_opts($opt_M);
+        $self->_calc_default_opts($_opt_M);
 
     #   determine preloads
     my $preload = join '', map {
@@ -950,20 +950,20 @@ sub _calc_passes_options
             ? " -s 'sys/bootp$_.wml'"
             : ''
     } @{ $self->_passes_idxs };
-    $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @$opt_i;
-    my $verbose = ( ( $_pass_mgr->opt_v() >= 3 ) ? '-v' : '' );
+    $preload .= join '', map { m|^<(.+)>$| ? " -s '$1'" : " -i '$_'" } @$_opt_i;
+    my $verbose = ( ( $_pass_mgr->_opt_v() >= 3 ) ? '-v' : '' );
 
     my $arr = [
         (
                   "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
-                . ( join '', map { " -I $_" } @$opt_I )
+                . ( join '', map { " -I $_" } @$_opt_I )
                 . " $preload "
-                . ( join '', map { ' -P "' . quotearg($_) . '"' } @$opt_P )
+                . ( join '', map { ' -P "' . quotearg($_) . '"' } @$_opt_P )
         ),
         $defmp4h,
         $defeperl,
         $defgm4, $verbose, $verbose, $verbose,
-        ( "$verbose " . ( ( $opt_O ne '' ) ? "-O$opt_O" : '' ) ),
+        ( "$verbose " . ( ( $_opt_O ne '' ) ? "-O$_opt_O" : '' ) ),
         "$verbose " . $self->_out,
     ];
     while ( my ( $i, $str ) = each @$arr )
@@ -1039,7 +1039,7 @@ sub _adjust_opt_D
 
 sub _set_src
 {
-    my ( $self, $opt_q ) = @_;
+    my ( $self, $_opt_q ) = @_;
 
     # set the input file
     $self->_src( $self->_argv->[0] );
@@ -1048,7 +1048,7 @@ sub _set_src
     if ( $self->_src eq '' )
     {
         $self->_src('-');
-        $$opt_q = 1;
+        $$_opt_q = 1;
     }
 
     # if input is stdin we create a temporary file
@@ -1071,12 +1071,12 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self, $opt_q, $opt_W, $opt_E ) = @_;
+    my ( $self, $_opt_q, $_opt_W, $_opt_E ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
-    $self->_do_output( $self->_passes_loop( $opt_q, $opt_W ) );
+    $self->_do_output( $self->_passes_loop( $_opt_q, $_opt_W ) );
 
-    $self->_handle_output($opt_E);
+    $self->_handle_output($_opt_E);
 
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
@@ -1086,7 +1086,7 @@ sub _output_and_cleanup
 
     $self->_unlink_tmp;
 
-    if ( $_pass_mgr->opt_v() >= 1 )
+    if ( $_pass_mgr->_opt_v() >= 1 )
     {
         $_pass_mgr->_display_times;
     }
@@ -1122,14 +1122,14 @@ sub run_with_ARGV
     my ( $self, $args ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     $self->_argv( [ @{ $args->{ARGV} } ] );
-    $_pass_mgr->opt_v(-1);
+    $_pass_mgr->_opt_v(-1);
 
     my (
-        $opt_h, $opt_r, $opt_c, @opt_I, @opt_i, $opt_n, $opt_O,
-        @opt_P, @opt_E, @opt_p, @opt_W, $opt_q, $opt_V,
+        $_opt_h, $_opt_r, $_opt_c, @_opt_I, @_opt_i, $_opt_n, $_opt_O,
+        @_opt_P, @_opt_E, @_opt_p, @_opt_W, $_opt_q, $_opt_V,
     );
 
-    my $opt_M = '-';
+    my $_opt_M = '-';
     $self->_opt_o( [] );
     my $_process_options = sub {
         my ( $my_argv, $_opt_D ) = @_;
@@ -1139,39 +1139,39 @@ sub run_with_ARGV
         $Getopt::Long::bundling      = 1;
         $Getopt::Long::getopt_compat = 0;
         my %list_options = (
-            "I|include=s@"     => \@opt_I,
-            "i|includefile=s@" => \@opt_i,
+            "I|include=s@"     => \@_opt_I,
+            "i|includefile=s@" => \@_opt_i,
             "D|define=s@"      => $_opt_D,
-            "P|prolog=s@"      => \@opt_P,
-            "E|epilog=s@"      => \@opt_E,
-            "p|pass=s@"        => \@opt_p,
-            "W|passoption=s@"  => \@opt_W,
+            "P|prolog=s@"      => \@_opt_P,
+            "E|epilog=s@"      => \@_opt_E,
+            "p|pass=s@"        => \@_opt_p,
+            "W|passoption=s@"  => \@_opt_W,
         );
         my %scalar_options = (
             "o|outputfile=s@" => sub {
                 my ( undef, $v ) = @_;
                 push @{ $self->_opt_o }, $v;
             },
-            "r|norcfile"   => \$opt_r,
-            "n|noshebang"  => \$opt_n,
-            "c|nocd"       => \$opt_c,
-            "O|optimize=i" => \$opt_O,
+            "r|norcfile"   => \$_opt_r,
+            "n|noshebang"  => \$_opt_n,
+            "c|nocd"       => \$_opt_c,
+            "O|optimize=i" => \$_opt_O,
             "t|settime"    => sub {
                 my ( undef, $v ) = @_;
                 $self->_opt_t($v);
             },
-            "M|depend:s" => \$opt_M,
+            "M|depend:s" => \$_opt_M,
             "s|safe"     => sub {
                 my ( undef, $v ) = @_;
-                $_pass_mgr->opt_s($v);
+                $_pass_mgr->_opt_s($v);
             },
             "v|verbose:i" => sub {
                 my ( undef, $v ) = @_;
-                $_pass_mgr->opt_v($v);
+                $_pass_mgr->_opt_v($v);
             },
-            "q|quiet"     => \$opt_q,
-            "V|version:i" => \$opt_V,
-            "h|help"      => \$opt_h,
+            "q|quiet"     => \$_opt_q,
+            "V|version:i" => \$_opt_V,
+            "h|help"      => \$_opt_h,
         );
         if (
             not Getopt::Long::GetOptionsFromArray(
@@ -1182,7 +1182,7 @@ sub run_with_ARGV
             warn "Try `$0 --help' for more information.\n";
             exit(0);
         }
-        usage($0) if ($opt_h);
+        usage($0) if ($_opt_h);
         while ( my ( $opt, $var ) = each(%list_options) )
         {
             if ( @$var and $var->[0] =~ m|^=| )
@@ -1201,46 +1201,46 @@ sub run_with_ARGV
     $_process_options->( \@temp_argv, [] );
     $self->_src( $temp_argv[0] );
 
-    #   reset with defaults (except $opt_r and $_pass_mgr->opt_v())
-    @opt_i = ();
-    $opt_n = 0;
-    $opt_O = '';
+    #   reset with defaults (except $_opt_r and $_pass_mgr->_opt_v())
+    @_opt_i = ();
+    $_opt_n = 0;
+    $_opt_O = '';
     $self->_opt_o( [] );
-    @opt_P = ();
-    @opt_E = ();
+    @_opt_P = ();
+    @_opt_E = ();
     $self->_opt_t(0);
-    @opt_p = ();
-    @opt_W = ();
-    $opt_M = '-';
-    $_pass_mgr->opt_s(0);
-    $opt_q = 0;
-    $opt_V = -1;
+    @_opt_p = ();
+    @_opt_W = ();
+    $_opt_M = '-';
+    $_pass_mgr->_opt_s(0);
+    $_opt_q = 0;
+    $_opt_V = -1;
 
     $self->_opt_D( [] );
     $self->_process_ENV_WMLOPTS($_process_options);
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc( $_process_options, $opt_r, $opt_c, \@opt_I );
+    $self->_process_wmlrc( $_process_options, $_opt_r, $_opt_c, \@_opt_I );
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( $self->_argv, [] );
-    $self->_print_version($opt_V);
+    $self->_print_version($_opt_V);
 
     #   If the -M was the last option and the user forgot
     #   to put `--' to end options, we adjust it.
-    if ( $opt_M !~ m%^(-|[MD]*)$% and ( !@{ $self->_argv } ) )
+    if ( $_opt_M !~ m%^(-|[MD]*)$% and ( !@{ $self->_argv } ) )
     {
-        push( @{ $self->_argv }, $opt_M );
-        $opt_M = '';
+        push( @{ $self->_argv }, $_opt_M );
+        $_opt_M = '';
     }
 
-    $self->_set_src( \$opt_q );
+    $self->_set_src( \$_opt_q );
 
     # now adjust -D options from command line relative to path to source file
     $self->_adjust_opt_D($dnew);
 
     #   5. process the options from the pseudo-shebang line
-    $self->_process_shebang( $_process_options, $opt_n, );
+    $self->_process_shebang( $_process_options, $_opt_n, );
 
     #   6. expand %DIR and %BASE in the -o flags
     $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
@@ -1266,7 +1266,7 @@ sub run_with_ARGV
         ]
     );
 
-    $self->_calc_passes_idxs( \@opt_p, $opt_M );
+    $self->_calc_passes_idxs( \@_opt_p, $_opt_M );
 
     #   determine prologs
     $self->_out_filenames( [] );
@@ -1280,15 +1280,16 @@ sub run_with_ARGV
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( $opt_M, \@opt_i, \@opt_I, \@opt_P, $opt_O, );
+    $self->_calc_passes_options( $_opt_M, \@_opt_i, \@_opt_I, \@_opt_P,
+        $_opt_O, );
 
-    if ( $opt_M ne '-' )
+    if ( $_opt_M ne '-' )
     {
-        $self->_handle_opt_M_stdin( \@opt_W );
+        $self->_handle_opt_M_stdin( \@_opt_W );
         $self->_unlink_tmp;
         return 0;
     }
-    return $self->_output_and_cleanup( $opt_q, \@opt_W, \@opt_E );
+    return $self->_output_and_cleanup( $_opt_q, \@_opt_W, \@_opt_E );
 }
 
 1;

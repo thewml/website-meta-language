@@ -39,7 +39,7 @@ use warnings;
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _passes _process_argv_cb gen_hostname libdir out_istmp opt_v _opt_o opt_s )
+            qw( _passes _process_argv_cb gen_hostname libdir out_istmp _opt_v _opt_o _opt_s )
     }
 );
 
@@ -115,7 +115,7 @@ sub verbose
 {
     my ( $_pass_mgr, $level, $str ) = @_;
 
-    if ( $_pass_mgr->opt_v >= $level )
+    if ( $_pass_mgr->_opt_v >= $level )
     {
         print STDERR "** WML:Verbose: $str";
     }
@@ -135,7 +135,7 @@ sub _generic_do
     my $prog = "@{[$self->libdir]}/exec/$EXE";
     my $args = "$opt -o $to $from";
     return scalar(
-          $self->opt_s
+          $self->_opt_s
         ? $self->dosystem("$prog $args")
         : $self->pass($pass_idx)->dosource( $self, $prog, $args )
     );
@@ -287,13 +287,13 @@ sub _fix_verbose_level
 {
     my ($_pass_mgr) = @_;
 
-    if ( $_pass_mgr->opt_v() == 0 )
+    if ( $_pass_mgr->_opt_v() == 0 )
     {
-        $_pass_mgr->opt_v(1);    # Getopt::Long sets 0 if -v only
+        $_pass_mgr->_opt_v(1);    # Getopt::Long sets 0 if -v only
     }
-    if ( $_pass_mgr->opt_v() == -1 )
+    if ( $_pass_mgr->_opt_v() == -1 )
     {
-        $_pass_mgr->opt_v(0);    # we operate with 0 for not set
+        $_pass_mgr->_opt_v(0);    # we operate with 0 for not set
     }
     return;
 }
