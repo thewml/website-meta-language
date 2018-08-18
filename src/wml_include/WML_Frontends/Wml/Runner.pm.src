@@ -53,6 +53,7 @@ use Class::XSAccessor (
             _opt_o
             _opt_p
             _opt_q
+            _opt_r
             _opt_t
             _out
             _out_filenames
@@ -783,11 +784,11 @@ sub _process_ENV_WMLOPTS
 
 sub _process_wmlrc
 {
-    my ( $self, $_process_options, $_opt_r, $_opt_c, ) = @_;
+    my ( $self, $_process_options,, $_opt_c, ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
-    if ($_opt_r)
+    if ( $self->_opt_r )
     {
         return;
     }
@@ -1139,7 +1140,7 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, );
+    my ( $_opt_h, $_opt_c, $_opt_n, $_opt_O, );
 
     $self->_opt_M('-');
     $self->_opt_o( [] );
@@ -1170,7 +1171,7 @@ sub run_with_ARGV
                 my ( undef, $v ) = @_;
                 push @{ $self->_opt_o }, $v;
             },
-            "r|norcfile"   => \$_opt_r,
+            "r|norcfile"   => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
             "n|noshebang"  => \$_opt_n,
             "c|nocd"       => \$_opt_c,
             "O|optimize=i" => \$_opt_O,
@@ -1219,7 +1220,7 @@ sub run_with_ARGV
     $_process_options->( \@temp_argv, [] );
     $self->_src( $temp_argv[0] );
 
-    #   reset with defaults (except $_opt_r and $_pass_mgr->_opt_v())
+    #   reset with defaults (except $self->_opt_r and $_pass_mgr->_opt_v())
     $self->_opt_i( [ () ] );
     $_opt_n = 0;
     $_opt_O = '';
@@ -1237,7 +1238,7 @@ sub run_with_ARGV
     $self->_process_ENV_WMLOPTS($_process_options);
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc( $_process_options, $_opt_r, $_opt_c, );
+    $self->_process_wmlrc( $_process_options,, $_opt_c, );
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( $self->_argv, [] );
