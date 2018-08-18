@@ -46,6 +46,7 @@ use Class::XSAccessor (
             _opt_E
             _opt_I
             _opt_P
+            _opt_W
             _opt_i
             _opt_o
             _opt_p
@@ -359,7 +360,7 @@ sub _ProcessOutfiles
 
 sub _handle_opt_M_stdin
 {
-    my ( $self, $_opt_W ) = @_;
+    my ( $self, ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -369,7 +370,7 @@ sub _handle_opt_M_stdin
     }
     my $o = '"' . join( ' ', @{ $self->_out_filenames } ) . '"';
     my $opt_pass = '';
-    foreach my $aa (@$_opt_W)
+    foreach my $aa ( @{ $self->_opt_W } )
     {
         if ( $aa =~ m|^([0-9]),(.*)$| )
         {
@@ -533,7 +534,7 @@ sub _calc_passes_idxs
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
-    my ( $self, $_opt_q, $_opt_W ) = @_;
+    my ( $self, $_opt_q, ) = @_;
 
     my $final     = 0;
     my $last      = '';
@@ -556,7 +557,7 @@ PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_idxs } )
         my $stime = $u + $s + $cu + $cs;
         $self->_protect( $from, $pass_idx );
         my $opt_pass = '';
-        foreach my $aa (@$_opt_W)
+        foreach my $aa ( @{ $self->_opt_W } )
         {
             if ( my ( $pp, $s ) = $aa =~ m|\A([0-9]),(.*)\z| )
             {
@@ -1079,10 +1080,10 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self, $_opt_q, $_opt_W, ) = @_;
+    my ( $self, $_opt_q,, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
-    $self->_do_output( $self->_passes_loop( $_opt_q, $_opt_W ) );
+    $self->_do_output( $self->_passes_loop( $_opt_q, ) );
 
     $self->_handle_output();
 
@@ -1132,10 +1133,7 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my (
-        $_opt_h, $_opt_r, $_opt_c, $_opt_n,
-        $_opt_O, @_opt_W, $_opt_q, $_opt_V,
-    );
+    my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, $_opt_q, $_opt_V, );
 
     my $_opt_M = '-';
     $self->_opt_o( [] );
@@ -1144,6 +1142,7 @@ sub run_with_ARGV
     $self->_opt_i( [ () ] );
     $self->_opt_P( [ () ] );
     $self->_opt_p( [ () ] );
+    $self->_opt_W( [ () ] );
     my $_process_options = sub {
         my ( $my_argv, $_opt_D ) = @_;
         local $SIG{__WARN__} = sub {
@@ -1158,7 +1157,7 @@ sub run_with_ARGV
             "P|prolog=s@"      => $self->_opt_P,
             "E|epilog=s@"      => $self->_opt_E,
             "p|pass=s@"        => $self->_opt_p,
-            "W|passoption=s@"  => \@_opt_W,
+            "W|passoption=s@"  => $self->_opt_W,
         );
         my %scalar_options = (
             "o|outputfile=s@" => sub {
@@ -1222,7 +1221,7 @@ sub run_with_ARGV
     $self->_opt_P( [ () ] );
     $self->_opt_t(0);
     $self->_opt_p( [ () ] );
-    @_opt_W = ();
+    $self->_opt_W( [ () ] );
     $_opt_M = '-';
     $_pass_mgr->_opt_s(0);
     $_opt_q = 0;
@@ -1296,11 +1295,11 @@ sub run_with_ARGV
 
     if ( $_opt_M ne '-' )
     {
-        $self->_handle_opt_M_stdin( \@_opt_W );
+        $self->_handle_opt_M_stdin();
         $self->_unlink_tmp;
         return 0;
     }
-    return $self->_output_and_cleanup( $_opt_q, \@_opt_W, );
+    return $self->_output_and_cleanup( $_opt_q,, );
 }
 
 1;
