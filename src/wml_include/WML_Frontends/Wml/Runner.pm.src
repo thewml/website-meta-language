@@ -44,6 +44,7 @@ use Class::XSAccessor (
             _firstpass
             _opt_D
             _opt_E
+            _opt_I
             _opt_o
             _opt_t
             _out
@@ -771,7 +772,7 @@ sub _process_ENV_WMLOPTS
 
 sub _process_wmlrc
 {
-    my ( $self, $_process_options, $_opt_r, $_opt_c, $_opt_I ) = @_;
+    my ( $self, $_process_options, $_opt_r, $_opt_c, ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -836,8 +837,8 @@ sub _process_wmlrc
                 push( @aa, split_argv($l) );
             }
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-            my @opt_I_OLD = @$_opt_I;
-            @$_opt_I = ();
+            my @opt_I_OLD = @{ $self->_opt_I };
+            $self->_opt_I( [ () ] );
             my $dnew = $_process_options->( \@aa, [] );
             my @opt_I_NEW = @opt_I_OLD;
 
@@ -865,7 +866,7 @@ sub _process_wmlrc
             #   adjust -I options
             $reldir = File::Spec->abs2rel("$dir");
             $reldir = "." if $reldir eq '';
-            foreach my $path (@$_opt_I)
+            foreach my $path ( @{ $self->_opt_I } )
             {
                 if ( $path !~ m#\A/# )
                 {
@@ -874,7 +875,7 @@ sub _process_wmlrc
                 }
                 push( @opt_I_NEW, $path );
             }
-            @$_opt_I = @opt_I_NEW;
+            $self->_opt_I( [@opt_I_NEW] );
         }
     }
     return;
@@ -939,7 +940,7 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self, $_opt_M, $_opt_i, $_opt_I, $_opt_P, $_opt_O ) = @_;
+    my ( $self, $_opt_M, $_opt_i,, $_opt_P, $_opt_O ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) =
@@ -957,7 +958,7 @@ sub _calc_passes_options
     my $arr = [
         (
                   "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
-                . ( join '', map { " -I $_" } @$_opt_I )
+                . ( join '', map { " -I $_" } @{ $self->_opt_I } )
                 . " $preload "
                 . ( join '', map { ' -P "' . quotearg($_) . '"' } @$_opt_P )
         ),
@@ -1126,13 +1127,14 @@ sub run_with_ARGV
     $_pass_mgr->_opt_v(-1);
 
     my (
-        $_opt_h, $_opt_r, $_opt_c, @_opt_I, @_opt_i, $_opt_n,
-        $_opt_O, @_opt_P, @_opt_p, @_opt_W, $_opt_q, $_opt_V,
+        $_opt_h, $_opt_r, $_opt_c, @_opt_i, $_opt_n, $_opt_O,
+        @_opt_P, @_opt_p, @_opt_W, $_opt_q, $_opt_V,
     );
 
     my $_opt_M = '-';
     $self->_opt_o( [] );
     $self->_opt_E( [ () ] );
+    $self->_opt_I( [ () ] );
     my $_process_options = sub {
         my ( $my_argv, $_opt_D ) = @_;
         local $SIG{__WARN__} = sub {
@@ -1141,7 +1143,7 @@ sub run_with_ARGV
         $Getopt::Long::bundling      = 1;
         $Getopt::Long::getopt_compat = 0;
         my %list_options = (
-            "I|include=s@"     => \@_opt_I,
+            "I|include=s@"     => $self->_opt_I,
             "i|includefile=s@" => \@_opt_i,
             "D|define=s@"      => $_opt_D,
             "P|prolog=s@"      => \@_opt_P,
@@ -1221,7 +1223,7 @@ sub run_with_ARGV
     $self->_process_ENV_WMLOPTS($_process_options);
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc( $_process_options, $_opt_r, $_opt_c, \@_opt_I );
+    $self->_process_wmlrc( $_process_options, $_opt_r, $_opt_c, );
 
     #   4. process the command line options
     my ($dnew) = $_process_options->( $self->_argv, [] );
@@ -1281,8 +1283,7 @@ sub run_with_ARGV
     );
 
     $self->_handle_out_tmp;
-    $self->_calc_passes_options( $_opt_M, \@_opt_i, \@_opt_I, \@_opt_P,
-        $_opt_O, );
+    $self->_calc_passes_options( $_opt_M, \@_opt_i, \@_opt_P, $_opt_O, );
 
     if ( $_opt_M ne '-' )
     {
