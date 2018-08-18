@@ -51,6 +51,7 @@ use Class::XSAccessor (
             _opt_i
             _opt_o
             _opt_p
+            _opt_q
             _opt_t
             _out
             _out_filenames
@@ -537,7 +538,7 @@ sub _calc_passes_idxs
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
-    my ( $self, $_opt_q, ) = @_;
+    my ( $self,, ) = @_;
 
     my $final     = 0;
     my $last      = '';
@@ -553,7 +554,7 @@ sub _passes_loop
 PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_idxs } )
     {
         $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
-        print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $_opt_q );
+        print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $self->_opt_q );
 
         #   run pass
         my ( $u, $s, $cu, $cs ) = times();
@@ -1050,7 +1051,7 @@ sub _adjust_opt_D
 
 sub _set_src
 {
-    my ( $self, $_opt_q ) = @_;
+    my ( $self, ) = @_;
 
     # set the input file
     $self->_src( $self->_argv->[0] );
@@ -1059,7 +1060,7 @@ sub _set_src
     if ( $self->_src eq '' )
     {
         $self->_src('-');
-        $$_opt_q = 1;
+        $self->_opt_q(1);
     }
 
     # if input is stdin we create a temporary file
@@ -1082,10 +1083,10 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self, $_opt_q, ) = @_;
+    my ( $self,, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
-    $self->_do_output( $self->_passes_loop( $_opt_q, ) );
+    $self->_do_output( $self->_passes_loop() );
 
     $self->_handle_output();
 
@@ -1135,7 +1136,7 @@ sub run_with_ARGV
     $self->_argv( [ @{ $args->{ARGV} } ] );
     $_pass_mgr->_opt_v(-1);
 
-    my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, $_opt_q, $_opt_V, );
+    my ( $_opt_h, $_opt_r, $_opt_c, $_opt_n, $_opt_O, $_opt_V, );
 
     $self->_opt_M('-');
     $self->_opt_o( [] );
@@ -1183,7 +1184,7 @@ sub run_with_ARGV
                 my ( undef, $v ) = @_;
                 $_pass_mgr->_opt_v($v);
             },
-            "q|quiet"     => \$_opt_q,
+            "q|quiet"     => sub { my ( undef, $v ) = @_; $self->_opt_q($v); },
             "V|version:i" => \$_opt_V,
             "h|help"      => \$_opt_h,
         );
@@ -1226,7 +1227,7 @@ sub run_with_ARGV
     $self->_opt_W( [ () ] );
     $self->_opt_M('-');
     $_pass_mgr->_opt_s(0);
-    $_opt_q = 0;
+    $self->_opt_q(0);
     $_opt_V = -1;
 
     $self->_opt_D( [] );
@@ -1247,7 +1248,7 @@ sub run_with_ARGV
         $self->_opt_M('');
     }
 
-    $self->_set_src( \$_opt_q );
+    $self->_set_src();
 
     # now adjust -D options from command line relative to path to source file
     $self->_adjust_opt_D($dnew);
@@ -1301,7 +1302,7 @@ sub run_with_ARGV
         $self->_unlink_tmp;
         return 0;
     }
-    return $self->_output_and_cleanup( $_opt_q, );
+    return $self->_output_and_cleanup();
 }
 
 1;
