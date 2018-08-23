@@ -22,7 +22,7 @@ ENDMACRO(set_vars)
 
 SET (pod_dests )
 
-FOREACH (cmd wmk wml wmb wmd wmu)
+FOREACH (cmd wmk wml wmb wmd wmu wml-params-conf)
     set_vars()
     # MESSAGE( FATAL_ERROR "WML_LIB_DIR = ${WML_LIB_DIR}")
     PREPROCESS_PATH_PERL_WITH_FULL_NAMES("preprocess_perl_frontend_${cmd}" "${src}" "${dest}")
