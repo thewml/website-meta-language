@@ -19,6 +19,15 @@ my $is_interactive;
 
 GetOptions( 'interactive!' => \$is_interactive, );
 
+my $IS_WIN = ( $^O eq "MSWin32" );
+my $SEP    = $IS_WIN ? "\\" : '/';
+my $MAKE   = $IS_WIN ? 'gmake' : 'make';
+
+my $cmake_gen;
+if ($IS_WIN)
+{
+    $cmake_gen = 'MSYS Makefiles';
+}
 my $script_dir = File::Spec->rel2abs( dirname(__FILE__) );
 
 my $myprefix = Cwd::getcwd() . "/tests/installation";
@@ -30,9 +39,9 @@ if ( !-e $myprefix )
     rmtree( [$build_dir] );
     if (
         system(
-                  "mkdir $build_dir && cd $build_dir && $^X ..${SEP}Tatzer "
+"mkdir $build_dir && cd $build_dir && $^X ..${SEP}..${SEP}src${SEP}Tatzer "
                 . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
-                . " --prefix=$myprefix .. && make && make install"
+                . " --prefix=$myprefix && $MAKE && $MAKE install"
         )
         )
     {
