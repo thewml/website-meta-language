@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -17,32 +17,36 @@ use File::Path qw / rmtree /;
 
 my $is_interactive;
 
-GetOptions(
-    'interactive!' => \$is_interactive,
-);
+GetOptions( 'interactive!' => \$is_interactive, );
 
-my $script_dir = File::Spec->rel2abs(dirname(__FILE__));
+my $script_dir = File::Spec->rel2abs( dirname(__FILE__) );
 
 my $myprefix = Cwd::getcwd() . "/tests/installation";
 
 my $build_dir = "FOO";
 
-if (! -e $myprefix)
+if ( !-e $myprefix )
 {
-    rmtree ([$build_dir]);
-    if (system("mkdir $build_dir && cd $build_dir && cmake -DCMAKE_INSTALL_PREFIX=$myprefix $script_dir/.. && make && make install"))
+    rmtree( [$build_dir] );
+    if (
+        system(
+                  "mkdir $build_dir && cd $build_dir && $^X ..${SEP}Tatzer "
+                . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
+                . " --prefix=$myprefix .. && make && make install"
+        )
+        )
     {
-        rmtree ([$myprefix]);
+        rmtree( [$myprefix] );
         die "cmake Failed";
     }
 }
 
-my $P5L = $ENV{PERL5LIB} ? $ENV{PERL5LIB}.':' : ':';
-$ENV{PERL5LIB} = "$myprefix/lib/perl5:$P5L$script_dir";
+my $P5L = $ENV{PERL5LIB} ? $ENV{PERL5LIB} . ':' : ':';
+$ENV{PERL5LIB}              = "$myprefix/lib/perl5:$P5L$script_dir";
 $ENV{QUAD_PRES_NO_HOME_LIB} = 1;
-$ENV{PATH} = "$myprefix/bin:$ENV{PATH}";
-$ENV{WML} = "$myprefix/bin/wml -q -W1-N";
-$ENV{LANG} = $ENV{LC_ALL} = 'C';
+$ENV{PATH}                  = "$myprefix/bin:$ENV{PATH}";
+$ENV{WML}                   = "$myprefix/bin/wml -q -W1-N";
+$ENV{LANG}                  = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
 
@@ -52,7 +56,9 @@ if ($is_interactive)
 }
 else
 {
-    exec {'prove' } ('prove', '-v', glob('t/{{02,03,05,06,07,08,09,10,des,std}-,tidyall}*.t'));
+    exec {'prove'} (
+        'prove', '-v', glob('t/{{02,03,05,06,07,08,09,10,des,std}-,tidyall}*.t')
+    );
 }
 
 =head1 COPYRIGHT & LICENSE
