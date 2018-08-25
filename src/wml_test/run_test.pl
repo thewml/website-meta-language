@@ -15,6 +15,17 @@ use IO::All qw / io /;
 
 use File::Path qw / rmtree /;
 
+sub do_system
+{
+    my ($args) = @_;
+
+    my $cmd = $args->{cmd};
+    print "Running [@$cmd]\n";
+    if ( system(@$cmd) )
+    {
+        die "Running [@$cmd] failed!";
+    }
+}
 my $is_interactive;
 
 GetOptions( 'interactive!' => \$is_interactive, );
@@ -38,10 +49,14 @@ if ( !-e $myprefix )
 {
     rmtree( [$build_dir] );
     if (
-        system(
-"mkdir $build_dir && cd $build_dir && $^X ..${SEP}..${SEP}src${SEP}Tatzer "
-                . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
-                . " --prefix=$myprefix && $MAKE && $MAKE install"
+        do_system(
+            {
+                cmd => [
+"cd . && mkdir $build_dir && cd $build_dir && $^X ..${SEP}..${SEP}src${SEP}Tatzer "
+                        . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
+                        . " --prefix=$myprefix && $MAKE && $MAKE install"
+                ]
+            }
         )
         )
     {
