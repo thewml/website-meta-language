@@ -31,8 +31,11 @@ my $is_interactive;
 GetOptions( 'interactive!' => \$is_interactive, );
 
 my $IS_WIN = ( $^O eq "MSWin32" );
-my $SEP    = $IS_WIN ? "\\" : '/';
-my $MAKE   = $IS_WIN ? 'gmake' : 'make';
+my $SEP = $IS_WIN ? "\\" : '/';
+
+# %ENV path separator
+my $P    = $IS_WIN ? ';'     : ':';
+my $MAKE = $IS_WIN ? 'gmake' : 'make';
 
 my $cmake_gen;
 if ($IS_WIN)
@@ -65,10 +68,10 @@ if ( !-e $myprefix )
     }
 }
 
-my $P5L = $ENV{PERL5LIB} ? $ENV{PERL5LIB} . ':' : ':';
-$ENV{PERL5LIB}              = "$myprefix/lib/perl5:$P5L$script_dir";
+my $P5L = $ENV{PERL5LIB} ? $ENV{PERL5LIB} . $P : $P;
+$ENV{PERL5LIB}              = "$myprefix/lib/perl5$P$P5L$script_dir";
 $ENV{QUAD_PRES_NO_HOME_LIB} = 1;
-$ENV{PATH}                  = "$myprefix/bin:$ENV{PATH}";
+$ENV{PATH}                  = "$myprefix/bin$P$ENV{PATH}";
 $ENV{WML}                   = "$myprefix/bin/wml -q -W1-N";
 $ENV{LANG}                  = $ENV{LC_ALL} = 'C';
 
