@@ -83,8 +83,17 @@ if ($is_interactive)
 }
 else
 {
-    exec {'prove'} (
-        'prove', '-v', glob('t/{{02,03,05,06,07,08,09,10,des,std}-,tidyall}*.t')
+    do_system(
+        {
+            cmd => [
+                'prove', '-v',
+                glob(
+                          't'
+                        . $SEP
+                        . '{{02,03,05,06,07,08,09,10,des,std}-,tidyall}*.t'
+                ),
+            ],
+        }
     );
 }
 
