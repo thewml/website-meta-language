@@ -625,13 +625,11 @@ s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.$str/e;
     return $out;
 }
 
-#
 #   create initial argument vector
-#
 my %arg = ();
 foreach my $str (@opt_D)
 {
-    $str =~ s|^(['"])(.*)\1$|$2|;
+    $str =~ s=\A(['"])(.*)\1\z=$2=;
     if ( $str =~ m|^([a-zA-Z][a-zA-Z0-9_]*)="(.*)"$| )
     {
         $arg{$1} = $2;
