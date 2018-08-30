@@ -1031,12 +1031,19 @@ int main(int argc, char **argv, char **env)
     }
     fclose(fp); fp = NULL;
 
+#ifdef __CYGWIN__
+#define USE_stderr
+#endif
     /* in Debug mode output the script to the console */
     if (fDebug) {
+#ifdef USE_stderr
+        fp = stderr;
+#else
         if ((fp = fopen("/dev/tty", "w")) == NULL) {
             PrintError(mode, source, NULL, NULL, "Cannot open /dev/tty for debugging message");
             CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
         }
+#endif
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
@@ -1048,7 +1055,10 @@ int main(int argc, char **argv, char **env)
         else
             fprintf(fp, "%c\n", cpScript[strlen(cpScript)-1]);
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
-        fclose(fp); fp = NULL;
+#ifndef USE_stderr
+        fclose(fp);
+#endif
+        fp = NULL;
     }
 
     /* temporary filename for Perl's STDOUT channel */
