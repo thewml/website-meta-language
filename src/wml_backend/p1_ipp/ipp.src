@@ -724,32 +724,6 @@ foreach my $fn (@ARGV)
 
 if ( $opt_M ne '-' && $opt_o ne '-' )
 {
-    #   Write dependencies
-    my ( $depout, $depfile );
-    if ( $opt_M =~ m|D| )
-    {
-        if ( $opt_o =~ m|(.*?)\.| )
-        {
-            $depfile = $1 . '.d';
-        }
-        else
-        {
-            $depfile = $opt_o . '.d';
-        }
-        open $depout, '>', $depfile
-            or error("cannot write into $depfile: $!");
-    }
-    else
-    {
-        $depfile = 'STDOUT';
-        open $depout, '>&STODUT'
-            or error("cannot write into $depfile: $!");
-    }
-
-    #    Write the target
-    $depout->print( $opt_o . ": \\\n" )
-        || error("cannot write into $depfile: $!");
-
     my @deps = @ARGV;
     foreach my $inc ( keys(%INCLUDES) )
     {
@@ -759,10 +733,15 @@ if ( $opt_M ne '-' && $opt_o ne '-' )
         }
     }
 
-    #    and its dependencies
-    $depout->print( "\t" . join( " \\\n\t", @deps ) . "\n" )
-        || error("cannot write into $depfile: $!");
-    $depout->close() || error("cannot close $depfile: $!");
+    WML_Backends->out(
+        ( $opt_M =~ /D/ ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' ) : '-' ),
+        \&error,
+        [
+            $opt_o . ": \\\n",
+            "\t" . join( " \\\n\t", @deps ) . "\n",
+
+        ]
+    );
 }
 else
 {
