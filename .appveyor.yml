@@ -31,6 +31,5 @@ test_script:
     - set FCS_USE_TEST_RUN=1
     - mkdir build
     - cd build
-    - c:\cygwin64\bin\bash
-    - perl ../src/wml_test/run_test.pl
+    - c:\cygwin64\bin\bash -c "perl ../src/wml_test/run_test.pl"
 shallow_clone: true
