@@ -769,7 +769,7 @@ EOF
 
 sub _process_ENV_WMLOPTS
 {
-    my ( $self, $_process_options ) = @_;
+    my ($self) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
     my $opts      = $ENV{WMLOPTS};
@@ -782,13 +782,13 @@ sub _process_ENV_WMLOPTS
     #   have already been expanded, but dollar sign must be
     #   escaped
     $opts =~ s|\$|\\\$|g;
-    $_process_options->( [ split_argv($opts) ], $self->_opt_D );
+    $self->_process_options( [ split_argv($opts) ], $self->_opt_D );
     return;
 }
 
 sub _process_wmlrc
 {
-    my ( $self, $_process_options,,, ) = @_;
+    my ($self) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
@@ -855,7 +855,7 @@ sub _process_wmlrc
             close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
             my @opt_I_OLD = @{ $self->_opt_I };
             $self->_opt_I( [] );
-            my $dnew = $_process_options->( \@aa, [] );
+            my $dnew = $self->_process_options( \@aa, [] );
             my @opt_I_NEW = @opt_I_OLD;
 
             #   adjust -D options
@@ -928,7 +928,7 @@ sub _calc_default_opts
 
 sub _process_shebang
 {
-    my ( $self, $_process_options, ) = @_;
+    my ($self) = @_;
     if ( $self->_opt_n )
     {
         return;
@@ -950,7 +950,7 @@ SHEBANG:
     if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
     {
         #   split opts into arguments and process them
-        $_process_options->( [ split_argv($1) ], $self->_opt_D );
+        $self->_process_options( [ split_argv($1) ], $self->_opt_D );
     }
 }
 
@@ -1139,6 +1139,73 @@ sub _handle_out_tmp
     return;
 }
 
+sub _process_options
+{
+    my ( $self, $my_argv, $_opt_D ) = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+    local $SIG{__WARN__} = sub {
+        print STDERR "WML:Error: $_[0]";
+    };
+    $Getopt::Long::bundling      = 1;
+    $Getopt::Long::getopt_compat = 0;
+    my %list_options = (
+        "I|include=s@"     => $self->_opt_I,
+        "i|includefile=s@" => $self->_opt_i,
+        "D|define=s@"      => $_opt_D,
+        "P|prolog=s@"      => $self->_opt_P,
+        "E|epilog=s@"      => $self->_opt_E,
+        "p|pass=s@"        => $self->_opt_p,
+        "W|passoption=s@"  => $self->_opt_W,
+    );
+    my %scalar_options = (
+        "o|outputfile=s@" => sub {
+            my ( undef, $v ) = @_;
+            push @{ $self->_opt_o }, $v;
+        },
+        "r|norcfile"   => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
+        "n|noshebang"  => sub { my ( undef, $v ) = @_; $self->_opt_n($v); },
+        "c|nocd"       => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
+        "O|optimize=i" => sub { my ( undef, $v ) = @_; $self->_opt_O($v); },
+        "t|settime"    => sub {
+            my ( undef, $v ) = @_;
+            $self->_opt_t($v);
+        },
+        "M|depend:s" => sub { my ( undef, $v ) = @_; $self->_opt_M($v); },
+        "s|safe"     => sub {
+            my ( undef, $v ) = @_;
+            $_pass_mgr->_opt_s($v);
+        },
+        "v|verbose:i" => sub {
+            my ( undef, $v ) = @_;
+            $_pass_mgr->_opt_v($v);
+        },
+        "q|quiet"     => sub { my ( undef, $v ) = @_; $self->_opt_q($v); },
+        "V|version:i" => sub { my ( undef, $v ) = @_; $self->_opt_V($v); },
+        "h|help"      => sub { my ( undef, $v ) = @_; $self->_opt_h($v); },
+    );
+    if (
+        not Getopt::Long::GetOptionsFromArray(
+            $my_argv, %scalar_options, %list_options
+        )
+        )
+    {
+        warn "Try `$0 --help' for more information.\n";
+        exit(0);
+    }
+    usage($0) if ( $self->_opt_h );
+    while ( my ( $opt, $var ) = each(%list_options) )
+    {
+        if ( @$var and $var->[0] =~ m|^=| )
+        {
+            my $arg = substr( $opt, 0, 1 );
+            warn "An equal sign has been detected after the `-$arg' option\n";
+            warn "Try `$0 --help' for more information.\n\n";
+            exit(0);
+        }
+    }
+    return ($_opt_D);
+}
+
 # A god method: https://en.wikipedia.org/wiki/God_object
 sub run_with_ARGV
 {
@@ -1157,74 +1224,9 @@ sub run_with_ARGV
     $self->_opt_n(0);
     $self->_opt_o( [] );
     $self->_opt_p( [] );
-    my $_process_options = sub {
-        my ( $my_argv, $_opt_D ) = @_;
-        local $SIG{__WARN__} = sub {
-            print STDERR "WML:Error: $_[0]";
-        };
-        $Getopt::Long::bundling      = 1;
-        $Getopt::Long::getopt_compat = 0;
-        my %list_options = (
-            "I|include=s@"     => $self->_opt_I,
-            "i|includefile=s@" => $self->_opt_i,
-            "D|define=s@"      => $_opt_D,
-            "P|prolog=s@"      => $self->_opt_P,
-            "E|epilog=s@"      => $self->_opt_E,
-            "p|pass=s@"        => $self->_opt_p,
-            "W|passoption=s@"  => $self->_opt_W,
-        );
-        my %scalar_options = (
-            "o|outputfile=s@" => sub {
-                my ( undef, $v ) = @_;
-                push @{ $self->_opt_o }, $v;
-            },
-            "r|norcfile"   => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
-            "n|noshebang"  => sub { my ( undef, $v ) = @_; $self->_opt_n($v); },
-            "c|nocd"       => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
-            "O|optimize=i" => sub { my ( undef, $v ) = @_; $self->_opt_O($v); },
-            "t|settime"    => sub {
-                my ( undef, $v ) = @_;
-                $self->_opt_t($v);
-            },
-            "M|depend:s" => sub { my ( undef, $v ) = @_; $self->_opt_M($v); },
-            "s|safe"     => sub {
-                my ( undef, $v ) = @_;
-                $_pass_mgr->_opt_s($v);
-            },
-            "v|verbose:i" => sub {
-                my ( undef, $v ) = @_;
-                $_pass_mgr->_opt_v($v);
-            },
-            "q|quiet"     => sub { my ( undef, $v ) = @_; $self->_opt_q($v); },
-            "V|version:i" => sub { my ( undef, $v ) = @_; $self->_opt_V($v); },
-            "h|help"      => sub { my ( undef, $v ) = @_; $self->_opt_h($v); },
-        );
-        if (
-            not Getopt::Long::GetOptionsFromArray(
-                $my_argv, %scalar_options, %list_options
-            )
-            )
-        {
-            warn "Try `$0 --help' for more information.\n";
-            exit(0);
-        }
-        usage($0) if ( $self->_opt_h );
-        while ( my ( $opt, $var ) = each(%list_options) )
-        {
-            if ( @$var and $var->[0] =~ m|^=| )
-            {
-                my $arg = substr( $opt, 0, 1 );
-                warn
-"An equal sign has been detected after the `-$arg' option\n";
-                warn "Try `$0 --help' for more information.\n\n";
-                exit(0);
-            }
-        }
-        return ($_opt_D);
-    };
 
     my @temp_argv = @{ $self->_argv };
-    $_process_options->( \@temp_argv, [] );
+    $self->_process_options( \@temp_argv, [] );
     $self->_src( $temp_argv[0] );
 
     #   reset with defaults (except $self->_opt_r and $_pass_mgr->_opt_v())
@@ -1241,13 +1243,13 @@ sub run_with_ARGV
     $self->_opt_p( [] );
     $self->_opt_q(0);
     $self->_opt_t(0);
-    $self->_process_ENV_WMLOPTS($_process_options);
+    $self->_process_ENV_WMLOPTS;
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc( $_process_options,,, );
+    $self->_process_wmlrc;
 
     #   4. process the command line options
-    my ($dnew) = $_process_options->( $self->_argv, [] );
+    my ($dnew) = $self->_process_options( $self->_argv, [] );
     $self->_print_version();
 
     #   If the -M was the last option and the user forgot
@@ -1264,7 +1266,7 @@ sub run_with_ARGV
     $self->_adjust_opt_D($dnew);
 
     #   5. process the options from the pseudo-shebang line
-    $self->_process_shebang( $_process_options,, );
+    $self->_process_shebang;
 
     #   6. expand %DIR and %BASE in the -o flags
     $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
@@ -1297,7 +1299,7 @@ sub run_with_ARGV
     $self->_ProcessOutfiles;
     $_pass_mgr->_process_argv_cb(
         sub {
-            $_process_options->( $self->_argv, $self->_opt_D );
+            $self->_process_options( $self->_argv, $self->_opt_D );
             $self->_ProcessOutfiles;
             return;
         }
