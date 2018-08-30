@@ -17,10 +17,10 @@ install:
     # - SET PERL_MM_OPT=INSTALL_BASE=C:/_P5
     # - perl -v
     # - cpanm --notest Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Tidy Test::Code::TidyAll Term::ReadKey
-    - set CMAKE_MAKE_PROGRAM=C:\strawberry\c\bin\gmake.exe
+    # - set CMAKE_MAKE_PROGRAM=C:\strawberry\c\bin\gmake.exe
     - echo %PATH%
     - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -s http://cygwin.mirror.constant.com -P perl -P perl-CPAN -P perl-devel
-    - c:\cygwin64\bin\bash -e -l -c "cpan -i Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Tidy Test::Code::TidyAll Term::ReadKey"
+    - c:\cygwin64\bin\bash -e -l -c "export PERL_MM_USE_DEFAULT=1; cpan -i App::cpanminus; cpanm Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Tidy Test::Code::TidyAll Term::ReadKey"
 build: off
 test_script:
     - set CMAKE_MAKE_PROGRAM=C:\strawberry\c\bin\gmake.exe
