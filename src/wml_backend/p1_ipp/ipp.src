@@ -23,6 +23,7 @@ use IO::All qw/ io /;
 
 use Carp qw( cluck );
 use WML_Backends ();
+use WML_Frontends::Wml::Util qw/ canon_path /;
 
 #
 #   help functions
@@ -217,23 +218,6 @@ sub mapfile
     return $file;
 }
 
-sub CanonPath
-{
-    my ($path) = @_;
-
-    my $pathL = '';
-    while ( $path ne $pathL )
-    {
-        $pathL = $path;
-        $path =~ s|//|/|g;
-        $path =~ s|/\./|/|g;
-        $path =~ s|/\.$|/|g;
-        $path =~ s|^\./(.)|$1|g;
-        $path =~ s|([^/.][^/.]*)/\.\.||;
-    }
-    return $path;
-}
-
 sub PatternProcess
 {
     my ( $mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, %arg ) =
@@ -420,7 +404,7 @@ sub ProcessFile
     #
     if ( not $noid )
     {
-        my $id = CanonPath($file);
+        my $id = canon_path($file);
         if ( $mode eq 'use' )
         {
             return '' if ( exists $INCLUDES{$id} );
