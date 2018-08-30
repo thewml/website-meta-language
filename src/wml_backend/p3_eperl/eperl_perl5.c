@@ -218,7 +218,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
         }
         else {
             fclose(er); er = NULL;
-            PrintError(mode, source, perlscript, perlstderr, "Perl parsing error (interpreter rc=%d)", rc);
+            PrintError(mode, source, perlscript, perlstderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
             CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
         }
     }
