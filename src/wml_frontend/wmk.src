@@ -35,7 +35,11 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  this program under different conditions or license agreements.
 ##
 
-require 5.003;
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
+use WML_Frontends::Wml::Util qw/ canon_path /;
+
+use 5.014;
 
 BEGIN { $^W = 0; }    # get rid of nasty warnings
 
@@ -324,27 +328,6 @@ if ( -f "$home/.wmkrc" )
     chdir($cwd);
 }
 
-##
-##   FILESYSTEM PROCESSING
-##
-
-sub CanonPath
-{
-    my ($path) = @_;
-
-    $pathL = '';
-    while ( $path ne $pathL )
-    {
-        $pathL = $path;
-        $path =~ s|//|/|g;
-        $path =~ s|/\./|/|g;
-        $path =~ s|/\.$|/|g;
-        $path =~ s|^\./(.)|$1|g;
-        $path =~ s|([^/.][^/.]*)/\.\.||;
-    }
-    return $path;
-}
-
 #    this variable is defined in read_rcfile
 $matchF = '';
 
@@ -393,7 +376,7 @@ foreach $p (@P)
                     if ( $dirC ne $dir )
                     {
                         $dirC   = $dir;
-                        $dirtxt = &CanonPath($dir);
+                        $dirtxt = canon_path($dir);
                         if ( $dirtxt ne '.' )
                         {
                             print STDERR "${bold}[$dirtxt]${norm}\n";

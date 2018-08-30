@@ -464,7 +464,7 @@ sub navbar_render_<get-var __nbcount /><lang:current /> {
         for ($i = 0; $i <= $#img; $i++) {
             $img[$i] = "$imgbase/$img[$i]" if ($imgbase ne '' and
                                                $img[$i] !~ m;^([.+\-\w]+:)?/;);
-            $img[$i] = &canonpath($img[$i]) if ($img[$i] !~ m;^[.+\-\w]+:/;);
+            $img[$i] = canonpath($img[$i]) if ($img[$i] !~ m;^[.+\-\w]+:/;);
         }
 
         #   cleanup url information
@@ -473,7 +473,7 @@ sub navbar_render_<get-var __nbcount /><lang:current /> {
         }
         if ($url ne '') {
             $url  = "$urlbase/$url" if ($urlbase ne '' and $url !~ m;^([.+\-\w]+:)?/;);
-            $url  = &canonpath($url) if ($url !~ m;^[.+\-\w]+:/;);
+            $url  = canonpath($url) if ($url !~ m;^[.+\-\w]+:/;);
         }
 
         #   cleanup target information

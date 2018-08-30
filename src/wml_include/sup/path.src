@@ -59,10 +59,10 @@ sub canonurl {
     my ($url) = @_;
 
     if ($url =~ m|^(.+?://)(.+)|) {
-        $url = $1.&canonpath($2);
+        $url = $1.canonpath($2);
     }
     else {
-        $url = &canonpath($url);
+        $url = canonpath($url);
     }
     return $url;
 }
@@ -80,9 +80,9 @@ wml::sup::path - Filesystem Path Manipulation
 
  #use wml::sup::path
 
- <: $relpath = &relpath($from, $to); :>
- <: $path    = &canonpath($path);    :>
- <: $url     = &canonurl($url);      :>
+ <: $relpath = relpath($from, $to); :>
+ <: $path    = canonpath($path);    :>
+ <: $url     = canonurl($url);      :>
 
 =head1 DESCRIPTION
 

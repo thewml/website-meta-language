@@ -92,7 +92,7 @@ Last modified by <get-var WML_GEN_REALNAME /> (<get-var WML_GEN_USERNAME />) on 
     #   determine base directory
     $basedir = '<get-var <get-var basedirvar /> />'
         || '<get-var WML_SRC_DIRNAME />';
-    $basedir = &canonpath("$cwd/$basedir") if ($basedir !~ m|^/|);
+    $basedir = canonpath("$cwd/$basedir") if ($basedir !~ m|^/|);
 
     #   determine subdir from base dir to current working dir
     $subdir = &relpath($basedir, $cwd);
