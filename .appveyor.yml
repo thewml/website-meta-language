@@ -20,7 +20,7 @@ install:
     - set CMAKE_MAKE_PROGRAM=C:\strawberry\c\bin\gmake.exe
     - echo %PATH%
     - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -s http://cygwin.mirror.constant.com -P perl -P perl-devel
-    - c:\cygwin64\bin\cpan -i Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Tidy Test::Code::TidyAll Term::ReadKey
+    - c:\cygwin64\bin\bash -c "cpan -i Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Tidy Test::Code::TidyAll Term::ReadKey"
 build: off
 test_script:
     - set CMAKE_MAKE_PROGRAM=C:\strawberry\c\bin\gmake.exe
