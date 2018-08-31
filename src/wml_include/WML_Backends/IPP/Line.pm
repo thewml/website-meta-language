@@ -33,7 +33,8 @@ sub _delim
 
 sub _line_Continuation_Support
 {
-    my ( $line, $l, $store ) = @_;
+    my ( $line, $store ) = @_;
+    my $l = $line->l;
 
     #   Line-Continuation Support
     $$l =~ s|^\s+|| if $$store ne '';
@@ -54,7 +55,8 @@ sub _line_Continuation_Support
 
 sub _line_perform_Substitutions
 {
-    my ( $line, $l, $arg ) = @_;
+    my ( $line, $arg ) = @_;
+    my $l = $line->l;
 
     #       Substitutions are performed from left to right and from
     #       inner to outer, all operators have same precedence.
@@ -126,16 +128,16 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
 
 sub _process_line
 {
-    my ( $line, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
-        @_;
+    my ( $line, $line_idx, $arg, $store, $level, $out, $fn, $realname ) = @_;
+    my $l = $line->l;
 
     #   EOL-comments
     return if $$l =~ m/^\s*#(?!use|include|depends)/;
 
-    return if !$line->_line_Continuation_Support( $l, $store );
+    return if !$line->_line_Continuation_Support($store);
 
     # Variable Interpolation
-    if ( my $ret = $line->_line_perform_Substitutions( $l, $arg ) )
+    if ( my $ret = $line->_line_perform_Substitutions($arg) )
     {
         return $ret;
     }
@@ -159,11 +161,8 @@ sub _process_line
     #   remove one preceding backslash
     $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
 
-    if (
-        my $ret =
-        $line->_line_do_includes( $l, $arg, $out, $line_idx, $realname, $level,
-        )
-        )
+    if ( my $ret =
+        $line->_line_do_includes( $arg, $out, $line_idx, $realname, $level, ) )
     {
         return $ret;
     }
@@ -173,7 +172,8 @@ sub _process_line
 
 sub _line_do_includes
 {
-    my ( $line, $l, $arg, $out, $line_idx, $realname, $level, ) = @_;
+    my ( $line, $arg, $out, $line_idx, $realname, $level, ) = @_;
+    my $l = $line->l;
 
     #   ``#include'', ``#use'' and ``#depends'' directives
     if ( my ( $cmd, $incfile, $args ) =

@@ -251,8 +251,8 @@ sub _process_line
     my ( $self, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
         @_;
 
-    return WML_Backends::IPP::Line->new( self => $self )
-        ->_process_line( $l, $line_idx, $arg, $store, $level, $out, $fn,
+    return WML_Backends::IPP::Line->new( self => $self, l => $l, )
+        ->_process_line( $line_idx, $arg, $store, $level, $out, $fn,
         $realname, );
 }
 
