@@ -588,26 +588,17 @@ sub _create_initial_argument_vector
     foreach my $str (@$opt_D)
     {
         $str =~ s=\A(['"])(.*)\1\z=$2=;
-        if ( $str =~ m|^($IDENT_RE)="(.*)"$| )
-        {
-            $arg->{$1} = $2;
-        }
-        elsif ( $str =~ m|^($IDENT_RE)=(['"]['"])?$| )
-        {
-            $arg->{$1} = '';
-        }
-        elsif ( $str =~ m|^($IDENT_RE)=(.+)$| )
-        {
-            $arg->{$1} = $2;
-        }
-        elsif ( $str =~ m|^($IDENT_RE)$| )
-        {
-            $arg->{$1} = 1;
-        }
-        else
+        if ( $str !~ s/\A($IDENT_RE)// )
         {
             error("Bad argument to option `D': $str");
         }
+        my $id = $1;
+        $arg->{$id} =
+              +( $str =~ m|^="(.*)"$| )       ? $1
+            : ( $str =~ m|^=(?:['"]['"])?$| ) ? ''
+            : ( $str =~ m|^=(.+)$| )          ? $1
+            : ( $str eq '' )                  ? 1
+            :   error("Bad argument to option `D': $str");
     }
     return;
 }
