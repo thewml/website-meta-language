@@ -18,6 +18,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            _del
             _main
             mode
             )
@@ -30,10 +31,8 @@ use WML_Backends::IPP::Line ();
 
 sub _PatternProcess_helper
 {
-    my (
-        $self,    $test, $out,   $_del,  $dirname,
-        $pattern, $ext,  $level, $no_id, $arg
-    ) = @_;
+    my ( $self, $test, $out, $dirname, $pattern, $ext, $level, $no_id, $arg ) =
+        @_;
     if ( not -d $dirname )
     {
         return;
@@ -78,8 +77,8 @@ LS:
         next LS if $arg->{'IPP_THIS'} eq '';
 
         $$out .=
-            $self->_main->ProcessFile( $self->mode, $_del, $arg->{'IPP_THIS'},
-            "", $level, $no_id, $arg );
+            $self->_main->ProcessFile( $self->mode, $self->_del,
+            $arg->{'IPP_THIS'}, "", $level, $no_id, $arg );
     }
     delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
     return;
@@ -87,7 +86,7 @@ LS:
 
 sub PatternProcess
 {
-    my ( $self, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg ) = @_;
+    my ( $self,, $dirname, $pattern, $ext, $level, $no_id, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -109,7 +108,7 @@ sub PatternProcess
             {
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .=
-                    $self->_main->ProcessFile( $self->mode, $_del,
+                    $self->_main->ProcessFile( $self->mode, $self->_del,
                     "$dirname/$_$ext", "", $level, $no_id, $arg );
                 $found = 1;
             }
@@ -120,27 +119,25 @@ sub PatternProcess
 
     };
 
-    if ( $_del->is_ang )
+    if ( $self->_del->is_ang )
     {
         $process_dirs->( $self->_main->opt_S );
     }
-    if ( $_del->is_quote )
+    if ( $self->_del->is_quote )
     {
         $process_dirs->( $self->_main->opt_I );
     }
-    if ( $_del->is_quote_all )
+    if ( $self->_del->is_quote_all )
     {
-        $self->_PatternProcess_helper(
-            $test, \$out,  $_del,  $dirname, $pattern,
-            $ext,  $level, $no_id, $arg
-        );
+        $self->_PatternProcess_helper( $test, \$out, $dirname, $pattern,
+            $ext, $level, $no_id, $arg );
     }
     return $out;
 }
 
 sub _expand_pattern
 {
-    my ( $self, $dirname, $pattern, $ext, $_del, $level, $no_id, $arg ) = @_;
+    my ( $self, $dirname, $pattern, $ext,, $level, $no_id, $arg ) = @_;
     if ( $dirname =~ m|^(.*)/(.*?)$| )
     {
         $dirname = $1;
@@ -166,13 +163,13 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->PatternProcess( $_del, $dirname, $pattern,
+    return $self->PatternProcess( $dirname, $pattern,
         $ext, $level, $no_id, +{%$arg} );
 }
 
 sub _find_file
 {
-    my ( $self, $_del, $fn ) = @_;
+    my ( $self,, $fn ) = @_;
 
     #    this is a regular file
     my $found = 0;
@@ -191,15 +188,15 @@ sub _find_file
         return;
     };
 
-    if ( $_del->is_ang )
+    if ( $self->_del->is_ang )
     {
         $process_dirs->( $self->_main->opt_S );
     }
-    if ( $_del->is_quote )
+    if ( $self->_del->is_quote )
     {
         $process_dirs->( $self->_main->opt_I );
     }
-    if ( $_del->is_quote_all )
+    if ( $self->_del->is_quote_all )
     {
         if ( -f $$fn )
         {
@@ -211,7 +208,7 @@ sub _find_file
 
 sub ProcessFile
 {
-    my ( $self, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
+    my ( $self,, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -221,9 +218,9 @@ sub ProcessFile
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
         return $self->_expand_pattern( $dirname, $pattern, $ext,
-            $_del, $level, $no_id, $arg );
+            $level, $no_id, $arg );
     }
-    if ( not $self->_find_file( $_del, \$fn ) )
+    if ( not $self->_find_file( \$fn ) )
     {
         error("file not found: $fn");
     }
@@ -236,7 +233,7 @@ sub ProcessFile
         {
             return '' if ( exists $self->_main->INCLUDES->{$id} );
         }
-        $self->_main->INCLUDES->{$id} = $_del->is_ang ? 1 : 2;
+        $self->_main->INCLUDES->{$id} = $self->_del->is_ang ? 1 : 2;
     }
 
     # Stop if just want to check dependency
