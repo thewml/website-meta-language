@@ -10,7 +10,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
-require 5.006;
+use 5.014;
 
 use strict;
 use warnings;
