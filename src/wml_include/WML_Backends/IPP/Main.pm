@@ -14,7 +14,8 @@ use warnings;
 use parent 'WML_Frontends::Wml::Base';
 
 use Class::XSAccessor (
-    accessors => +{
+    constructor => 'new',
+    accessors   => +{
         map { $_ => $_ }
             qw(
             INCLUDES
@@ -29,24 +30,6 @@ use Class::XSAccessor (
             )
     },
 );
-
-sub new
-{
-    my $class = shift;
-
-    my $self = bless {}, $class;
-
-    $self->_init(@_);
-
-    return $self;
-}
-
-sub _init
-{
-    my ( $self, $args ) = @_;
-
-    return;
-}
 
 use Getopt::Long 2.13;
 use File::Temp qw/tempdir/;
