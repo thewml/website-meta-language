@@ -580,6 +580,13 @@ sub _create_initial_argument_vector
     return;
 }
 
+sub _del_temp
+{
+    my $self = shift;
+
+    return unlink( $self->temp_fn );
+}
+
 sub main
 {
     my ( $self, ) = @_;
@@ -643,11 +650,11 @@ sub main
         or die "Unable to create temporary directory: $!\n";
     $self->temp_fn( File::Spec->catfile( $tmpdir, "ipp.$$.tmp" ) );
 
-    unlink( $self->temp_fn );
+    $self->_del_temp;
     $self->_write_includes( \@opt_s, \@opt_i );
     $outbuf .=
         $self->ProcessFile( 'include', _sq(), $self->temp_fn, "", 0, 1, \%arg );
-    unlink( $self->temp_fn );
+    $self->_del_temp;
 
     #   process real files
     foreach my $fn (@ARGV)
@@ -671,7 +678,7 @@ sub main
             0, 1, \%arg );
 
         #   cleanup
-        unlink( $self->temp_fn );
+        $self->_del_temp;
     }
     $self->_do_output( $opt_o, \$outbuf );
 }
