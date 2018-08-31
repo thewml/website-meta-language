@@ -18,6 +18,7 @@ use Class::XSAccessor (
             INCLUDES
             opt_I
             opt_M
+            opt_N
             opt_S
             _map
             )
@@ -112,9 +113,6 @@ Options:
 EOF
     exit(1);
 }
-
-my $opt_N = 0;
-my $opt_n = '';
 
 sub PatternProcess
 {
@@ -398,7 +396,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
         $$out .=
             $self->ProcessFile( $cmd, _delim($type),
             $incfile, "", $level + 1, 0, $arg );
-        if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+        if ( not $self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {
             $$out .=
                   "<__file__ $realname /><__line__ $line_idx />"
@@ -494,7 +492,7 @@ sub ProcessFile
     my $in       = io()->file($fn);
     my $line_idx = 0;
     my $out      = '';
-    if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+    if ( not $self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
     {
         $out .=
               "<__file__ $realname /><__line__ 0 />"
@@ -531,8 +529,7 @@ sub main
     $self->opt_M('-');
     $self->opt_I( [ () ] );
     $self->opt_S( [ () ] );
-    $opt_N                       = 0;
-    $opt_n                       = '';
+    $self->opt_N(0);
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
 
@@ -542,12 +539,13 @@ sub main
     my @opt_P;
     my @opt_m;
     my $opt_o = '-';
+    my $opt_n = '';
     if (
         not Getopt::Long::GetOptions(
             "D|define=s@"     => \@opt_D,
             "I|includedir=s@" => $self->opt_I,
             "M|depend:s"    => sub { my ( undef, $v ) = @_; $self->opt_M($v); },
-            "N|nosynclines" => \$opt_N,
+            "N|nosynclines" => sub { my ( undef, $v ) = @_; $self->opt_N($v); },
             "P|prolog=s@"   => \@opt_P,
             "S|sysincludedir=s@"  => $self->opt_S,
             "i|includefile=s@"    => \@opt_i,
@@ -606,9 +604,7 @@ sub main
         }
     }
 
-    #
     #   process the pre-loaded include files
-    #
     my $tmpdir = tempdir( 'ipp.XXXXXXXX', 'CLEANUP' => 1, )
         or die "Unable to create temporary directory: $!\n";
     my $tmpfile = File::Spec->catfile( $tmpdir, "ipp.$$.tmp" );
