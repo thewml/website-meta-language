@@ -85,6 +85,7 @@ use File::Basename qw/ basename dirname /;
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
+use WmlConfig qw//;
 use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::Util
     qw/ _my_cwd canonize_path ctime error expandrange gmt_ctime gmt_isotime
@@ -97,7 +98,7 @@ sub new
     $self->_pass_mgr(
         WML_Frontends::Wml::PassesManager->new(
             {
-                libdir => '@libdir@',
+                libdir => WmlConfig::libdir(),
             }
         )
     );
@@ -115,7 +116,7 @@ sub new
             )
     };
 
-    my $bindir = $self->bindir('@bindir@');
+    my $bindir = $self->bindir( WmlConfig::bindir() );
     if ( index( $ENV{PATH}, $bindir ) < 0 )
     {
         $ENV{PATH} = "$bindir:$ENV{PATH}";
@@ -499,10 +500,10 @@ sub _populate_opt_D
         "WML_GEN_USERNAME=$gen_username",
         "WML_GEN_REALNAME=$gen_realname",
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
-        'WML_LOC_PREFIX=@prefix@',
+        'WML_LOC_PREFIX=' . WmlConfig::prefix(),
         "WML_LOC_BINDIR=" . $self->bindir,
         "WML_LOC_LIBDIR=$libdir",
-        'WML_LOC_MANDIR=@mandir@',
+        'WML_LOC_MANDIR=' . WmlConfig::mandir(),
         "WML_VERSION=@{[$self->_VERSION]}",
         "WML_TMPDIR=" . $self->_tmpdir
     );
@@ -746,22 +747,12 @@ GNU General Public License for more details.
 EOF
         if ( $self->_opt_V > 1 )
         {
-            print STDERR <<'EOF';
-Built Environment:
-    Host: @built_system@
-    Perl: @perlvers@ (@perlprog@)
-    User: @built_user@
-    Date: @built_date@
-Built Location:
-    Prefix: @prefix@
-    BinDir: @bindir@
-    LibDir: @libdir@
-    ManDir: @mandir@
-EOF
+            print STDERR WmlConfig::build_info();
         }
         if ( $self->_opt_V > 2 )
         {
-            print STDERR "\nUsed Perl System:\n", `@perlprog@ -V`;
+            print STDERR "\nUsed Perl System:\n",
+                `@{[WmlConfig::perlprog()]} -V`;
         }
         exit(0);
     }
@@ -1121,7 +1112,7 @@ sub _output_and_cleanup
 
 sub _VERSION
 {
-    return '@WML_VERSION@';
+    return WmlConfig::_VERSION;
 }
 
 sub _handle_out_tmp
