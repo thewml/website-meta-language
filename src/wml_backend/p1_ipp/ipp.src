@@ -26,6 +26,7 @@ use IO::All qw/ io /;
 use Carp qw( cluck );
 use WML_Backends               ();
 use WML_Backends::IPP::Delimit ();
+use WML_Backends::IPP::Map     ();
 use WML_Frontends::Wml::Util qw/ canon_path /;
 
 #
@@ -120,39 +121,12 @@ push( @opt_I, '.' );
 #
 #   read mapfiles
 #
-my $MAP = {};
-
-sub read_mapfile
-{
-    my ( $MAP, $mapfile ) = @_;
-
-    my $fp = io->file($mapfile);
-
-LINES:
-    while ( my $l = $fp->getline )
-    {
-        if ( $l =~ m|^\s*$| or m|^\s*#.*$| )
-        {
-            next LINES;
-        }
-        if ( my ( $given, $replace, $actiontype, $actiontext ) =
-            $l =~ m|^(\S+)\s+(\S+)\s+\[\s*([SWE])\s*:\s*(.+?)\s*\].*$| )
-        {
-            foreach my $g ( split( /,/, $given ) )
-            {
-                $MAP->{$g} = {
-                    REPLACE    => $replace,
-                    ACTIONTYPE => $actiontype,
-                    ACTIONTEXT => $actiontext,
-                };
-            }
-        }
-    }
-}
+our $MAP = WML_Backends::IPP::Map->new;
+die if not defined $MAP;
 
 foreach my $fn (@opt_m)
 {
-    read_mapfile( $MAP, $fn );
+    $MAP->read_mapfile($fn);
 }
 
 #
@@ -195,32 +169,6 @@ STR:
     }
 
     return;
-}
-
-sub mapfile
-{
-    my ($fn) = @_;
-
-    my $rec = $MAP->{$fn};
-    if ( my $replace = $rec->{REPLACE} )
-    {
-        my $type = $rec->{ACTIONTYPE};
-        my $text = $rec->{ACTIONTEXT};
-        if ( $type eq 'S' )
-        {
-            $fn = $replace;
-        }
-        elsif ( $type eq 'W' )
-        {
-            warning("$fn: $text");
-            $fn = $replace;
-        }
-        else
-        {
-            error("$fn: $text");
-        }
-    }
-    return $fn;
 }
 
 sub PatternProcess
@@ -475,7 +423,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
         setargs( $arg, $args );
 
         #   do possible argument mapping
-        $incfile = mapfile($incfile);
+        $incfile = $MAP->mapfile($incfile);
 
         my $type;
 
@@ -586,14 +534,11 @@ sub ProcessFile
         }
         $INCLUDES{$id} = $_del->is_ang ? 1 : 2;
     }
-    #
-    #   stop if just want to check dependency
-    #
+
+    # Stop if just want to check dependency
     return '' if $mode eq 'depends';
 
-    #
-    #   process the file
-    #
+    # Process the file
     $realname = $fn if $realname eq '';
     verbose( $level, "|" );
     verbose( $level, "+-- $fn" );
