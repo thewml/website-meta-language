@@ -285,12 +285,12 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
         return 'redo';
     }
 
-    my $subst = qr#((?!\\).|^)\$\(\Q$name$op\E(?:[^()]*)\)#;
+    my $subst = qr#(?:(?!\\).|^)\K\$\(\Q$name$op\E(?:[^()]*)\)#;
 
     if ( $op eq '=' )
     {
         #   Assign
-        $$l =~ s/$subst/$1/;
+        $$l =~ s/$subst//;
         if ( $str eq '' )
         {
             delete $arg->{$name} if exists $arg->{$name};
@@ -303,18 +303,17 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
     elsif ( $op eq ':?' )
     {
         #   Indicate Error if Unset
-        $$l =~
-            s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
+        $$l =~ s/$subst/exists $arg->{$name} ? $arg->{$name} : error($str)/e;
     }
     elsif ( $op eq ':-' )
     {
         #   Use Default Values
-        $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+        $$l =~ s/$subst/exists $arg->{$name} ? $arg->{$name} : $str/e;
     }
     elsif ( $op eq ':=' )
     {
         #   Use Default Values And Assign
-        $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+        $$l =~ s/$subst/exists $arg->{$name} ? $arg->{$name} : $str/e;
         if ( $str eq '' )
         {
             delete $arg->{$name} if exists $arg->{$name};
@@ -327,12 +326,12 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
     elsif ( $op eq ':+' )
     {
         #   Use Alternative Value
-        $$l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
+        $$l =~ s/$subst/exists $arg->{$name} ? $str : ''/e;
     }
     elsif ( $op eq ':*' )
     {
         #   Use Negative Alternative Value
-        $$l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
+        $$l =~ s/$subst/exists $arg->{$name} ? '' : $str/e;
     }
     else
     {
