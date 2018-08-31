@@ -135,8 +135,7 @@ LINES:
         if ( my ( $given, $replace, $actiontype, $actiontext ) =
             $l =~ m|^(\S+)\s+(\S+)\s+\[\s*([SWE])\s*:\s*(.+?)\s*\].*$| )
         {
-            my @given = split( /,/, $given );
-            foreach my $g (@given)
+            foreach my $g ( split( /,/, $given ) )
             {
                 $MAP->{$g} = {
                     REPLACE    => $replace,
