@@ -51,6 +51,16 @@ use WML_Backends::IPP::Delimit ();
 use WML_Backends::IPP::Map     ();
 use WML_Frontends::Wml::Util qw/ canon_path /;
 
+sub _delim
+{
+    return WML_Backends::IPP::Delimit->new( delimiter => shift );
+}
+
+sub _sq
+{
+    return _delim(q/'/);
+}
+
 # helper functions
 my $opt_v = 0;
 
@@ -393,8 +403,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
 
         #   now recurse down
         $$out .=
-            $self->ProcessFile( $cmd,
-            WML_Backends::IPP::Delimit->new( delimiter => $type ),
+            $self->ProcessFile( $cmd, _delim($type),
             $incfile, "", $level + 1, 0, $arg );
         if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {
@@ -632,14 +641,10 @@ sub main
         }
     }
     $outbuf .=
-        $self->ProcessFile( 'include',
-        WML_Backends::IPP::Delimit->new( delimiter => q/'/ ),
-        $tmpfile, "", 0, 1, \%arg );
+        $self->ProcessFile( 'include', _sq(), $tmpfile, "", 0, 1, \%arg );
     unlink($tmpfile);
 
-    #
     #   process real files
-    #
     foreach my $fn (@ARGV)
     {
         #   create temporary working file
@@ -655,11 +660,10 @@ sub main
         }
 
         #   process file via IPP filter
-        $outbuf .= $self->ProcessFile(
-            'include', WML_Backends::IPP::Delimit->new( delimiter => q/'/ ),
+        $outbuf .=
+            $self->ProcessFile( 'include', _sq(),
             $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
-            0, 1, \%arg
-        );
+            0, 1, \%arg );
 
         #   cleanup
         unlink($tmpfile);
