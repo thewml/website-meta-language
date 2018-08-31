@@ -319,6 +319,38 @@ sub PatternProcess
     return $out;
 }
 
+sub _expand_pattern
+{
+    my ( $dirname, $pattern, $ext, $mode, $_del, $level, $no_id, $arg ) = @_;
+    if ( $dirname =~ m|^(.*)/(.*?)$| )
+    {
+        $dirname = $1;
+        $pattern = $2 . $pattern;
+    }
+    else
+    {
+        $pattern = $dirname . $pattern;
+        $dirname = '.';
+    }
+    if ( $ext =~ m|^(.*?)(/.*)$| )
+    {
+        $pattern .= $1;
+        $ext = $2;
+    }
+    else
+    {
+        $pattern .= $ext;
+        $ext = '';
+    }
+
+    #   replace filename patterns by regular expressions
+    $pattern =~ s/\./\\./g;
+    $pattern =~ s/\*/.*/g;
+    $pattern =~ s/\?/./g;
+    return PatternProcess( $mode, $_del, $dirname, $pattern, $ext,
+        $level, $no_id, +{%$arg} );
+}
+
 sub ProcessFile
 {
     my ( $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
@@ -330,33 +362,8 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        if ( $dirname =~ m|^(.*)/(.*?)$| )
-        {
-            $dirname = $1;
-            $pattern = $2 . $pattern;
-        }
-        else
-        {
-            $pattern = $dirname . $pattern;
-            $dirname = '.';
-        }
-        if ( $ext =~ m|^(.*?)(/.*)$| )
-        {
-            $pattern .= $1;
-            $ext = $2;
-        }
-        else
-        {
-            $pattern .= $ext;
-            $ext = '';
-        }
-
-        #   replace filename patterns by regular expressions
-        $pattern =~ s/\./\\./g;
-        $pattern =~ s/\*/.*/g;
-        $pattern =~ s/\?/./g;
-        return PatternProcess( $mode, $_del, $dirname, $pattern, $ext,
-            $level, $no_id, +{%$arg} );
+        return _expand_pattern( $dirname, $pattern, $ext, $mode, $_del, $level,
+            $no_id, $arg );
     }
 
     #    this is a regular file
@@ -405,14 +412,7 @@ sub ProcessFile
         {
             return '' if ( exists $INCLUDES{$id} );
         }
-        if ( $_del->is_ang )
-        {
-            $INCLUDES{$id} = 1;
-        }
-        else
-        {
-            $INCLUDES{$id} = 2;
-        }
+        $INCLUDES{$id} = $_del->is_ang ? 1 : 2;
     }
     #
     #   stop if just want to check dependency
