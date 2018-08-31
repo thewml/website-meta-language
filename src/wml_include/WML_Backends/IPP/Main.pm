@@ -609,11 +609,11 @@ sub main
     #   process the pre-loaded include files
     my $tmpdir = tempdir( 'ipp.XXXXXXXX', 'CLEANUP' => 1, )
         or die "Unable to create temporary directory: $!\n";
-    my $tmpfile = File::Spec->catfile( $tmpdir, "ipp.$$.tmp" );
+    my $temp_fn = File::Spec->catfile( $tmpdir, "ipp.$$.tmp" );
 
-    unlink($tmpfile);
+    unlink($temp_fn);
     {
-        my $tmp = io()->file($tmpfile)->open('>');
+        my $tmp = io()->file($temp_fn)->open('>');
         foreach my $fn (@opt_s)
         {
             if ( $fn =~ m#\A(\S+?)::(\S+).*\n\z# )
@@ -632,20 +632,20 @@ sub main
         }
     }
     $outbuf .=
-        $self->ProcessFile( 'include', _sq(), $tmpfile, "", 0, 1, \%arg );
-    unlink($tmpfile);
+        $self->ProcessFile( 'include', _sq(), $temp_fn, "", 0, 1, \%arg );
+    unlink($temp_fn);
 
     #   process real files
     foreach my $fn (@ARGV)
     {
         #   create temporary working file
-        io()->file($tmpfile)->print( WML_Backends->input( [$fn] ) );
+        io()->file($temp_fn)->print( WML_Backends->input( [$fn] ) );
 
         #   apply prolog filters
         foreach my $p (@opt_P)
         {
             my $rc = system(
-                "$p <$tmpfile >$tmpfile.f && mv $tmpfile.f $tmpfile 2>/dev/null"
+                "$p <$temp_fn >$temp_fn.f && mv $temp_fn.f $temp_fn 2>/dev/null"
             );
             error("Prolog Filter `$p' failed") if ( $rc != 0 );
         }
@@ -653,11 +653,11 @@ sub main
         #   process file via IPP filter
         $outbuf .=
             $self->ProcessFile( 'include', _sq(),
-            $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
+            $temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
             0, 1, \%arg );
 
         #   cleanup
-        unlink($tmpfile);
+        unlink($temp_fn);
     }
     $self->_do_output( $opt_o, \$outbuf );
 }
