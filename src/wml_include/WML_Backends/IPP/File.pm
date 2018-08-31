@@ -20,6 +20,7 @@ use Class::XSAccessor (
             qw(
             _del
             _main
+            level
             mode
             )
     },
@@ -31,8 +32,7 @@ use WML_Backends::IPP::Line ();
 
 sub _PatternProcess_helper
 {
-    my ( $self, $test, $out, $dirname, $pattern, $ext, $level, $no_id, $arg ) =
-        @_;
+    my ( $self, $test, $out, $dirname, $pattern, $ext, $no_id, $arg ) = @_;
     if ( not -d $dirname )
     {
         return;
@@ -78,7 +78,7 @@ LS:
 
         $$out .=
             $self->_main->ProcessFile( $self->mode, $self->_del,
-            $arg->{'IPP_THIS'}, "", $level, $no_id, $arg );
+            $arg->{'IPP_THIS'}, "", $self->level, $no_id, $arg );
     }
     delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
     return;
@@ -86,7 +86,7 @@ LS:
 
 sub PatternProcess
 {
-    my ( $self,, $dirname, $pattern, $ext, $level, $no_id, $arg ) = @_;
+    my ( $self,, $dirname, $pattern, $ext,, $no_id, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -109,7 +109,7 @@ sub PatternProcess
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .=
                     $self->_main->ProcessFile( $self->mode, $self->_del,
-                    "$dirname/$_$ext", "", $level, $no_id, $arg );
+                    "$dirname/$_$ext", "", $self->level, $no_id, $arg );
                 $found = 1;
             }
             last DIRS if $found;
@@ -130,14 +130,14 @@ sub PatternProcess
     if ( $self->_del->is_quote_all )
     {
         $self->_PatternProcess_helper( $test, \$out, $dirname, $pattern,
-            $ext, $level, $no_id, $arg );
+            $ext, $no_id, $arg );
     }
     return $out;
 }
 
 sub _expand_pattern
 {
-    my ( $self, $dirname, $pattern, $ext,, $level, $no_id, $arg ) = @_;
+    my ( $self, $dirname, $pattern, $ext,,, $no_id, $arg ) = @_;
     if ( $dirname =~ m|^(.*)/(.*?)$| )
     {
         $dirname = $1;
@@ -163,8 +163,7 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->PatternProcess( $dirname, $pattern,
-        $ext, $level, $no_id, +{%$arg} );
+    return $self->PatternProcess( $dirname, $pattern, $ext, $no_id, +{%$arg} );
 }
 
 sub _find_file
@@ -208,7 +207,7 @@ sub _find_file
 
 sub ProcessFile
 {
-    my ( $self,, $fn, $realname, $level, $no_id, $in_arg ) = @_;
+    my ( $self, $fn, $realname,, $no_id, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -217,8 +216,7 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        return $self->_expand_pattern( $dirname, $pattern, $ext,
-            $level, $no_id, $arg );
+        return $self->_expand_pattern( $dirname, $pattern, $ext, $no_id, $arg );
     }
     if ( not $self->_find_file( \$fn ) )
     {
@@ -241,8 +239,8 @@ sub ProcessFile
 
     # Process the file
     $realname = $fn if $realname eq '';
-    $self->_main->verbose( $level, "|" );
-    $self->_main->verbose( $level, "+-- $fn" );
+    $self->_main->verbose( $self->level, "|" );
+    $self->_main->verbose( $self->level, "+-- $fn" );
     my $in       = io()->file($fn);
     my $line_idx = 0;
     my $out      = '';
@@ -266,7 +264,7 @@ LINES:
             line_idx => $line_idx,
             out      => \$out,
             realname => $realname,
-        )->_process_line( \$store, $level, $fn, ) // '';
+        )->_process_line( \$store, $self->level, $fn, ) // '';
         if ( $op eq 'last' )
         {
             last LINES;
