@@ -271,6 +271,84 @@ sub _line_Continuation_Support
     return 1;
 }
 
+sub _line_perform_Substitutions
+{
+    my ( $self, $l, $arg ) = @_;
+
+    #       Substitutions are performed from left to right and from
+    #       inner to outer, all operators have same precedence.
+    if ( $$l !~ m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
+    {
+        return;
+    }
+    my ( $name, $op, $str ) = ( $2, $4, $5 );
+    if ( not defined($op) )
+    {
+        #   Normal Value
+        $$l =~
+s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
+        return 'redo';
+    }
+
+    #   Escape special characters
+    $op =~ s/([?+*])/\\$1/;
+    my $subst = '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
+
+    if ( $op eq '=' )
+    {
+        #   Assign
+        $$l =~ s/$subst/$1/;
+        if ( $str eq '' )
+        {
+            delete $arg->{$name} if exists $arg->{$name};
+        }
+        else
+        {
+            $arg->{$name} = $str;
+        }
+    }
+    elsif ( $op eq ':\?' )
+    {
+        #   Indicate Error if Unset
+        $$l =~
+            s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
+    }
+    elsif ( $op eq ':-' )
+    {
+        #   Use Default Values
+        $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+    }
+    elsif ( $op eq ':=' )
+    {
+        #   Use Default Values And Assign
+        $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+        if ( $str eq '' )
+        {
+            delete $arg->{$name} if exists $arg->{$name};
+        }
+        else
+        {
+            $arg->{$name} = $str;
+        }
+    }
+    elsif ( $op eq ':\+' )
+    {
+        #   Use Alternative Value
+        $$l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
+    }
+    elsif ( $op eq ':\*' )
+    {
+        #   Use Negative Alternative Value
+        $$l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
+    }
+    else
+    {
+        #   There is an error in these statements
+        die "Internal error when expanding variables";
+    }
+    return 'redo';
+}
+
 sub _process_line
 {
     my ( $self, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
@@ -283,76 +361,9 @@ sub _process_line
 
     # Variable Interpolation
 
-    #       Substitutions are performed from left to right and from
-    #       inner to outer, all operators have same precedence.
-    if ( $$l =~ m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
+    if ( my $ret = $self->_line_perform_Substitutions( $l, $arg ) )
     {
-        my ( $name, $op, $str ) = ( $2, $4, $5 );
-        if ( not defined($op) )
-        {
-            #   Normal Value
-            $$l =~
-s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
-            return 'redo';
-        }
-
-        #   Escape special characters
-        $op =~ s/([?+*])/\\$1/;
-        my $subst = '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
-
-        if ( $op eq '=' )
-        {
-            #   Assign
-            $$l =~ s/$subst/$1/;
-            if ( $str eq '' )
-            {
-                delete $arg->{$name} if exists $arg->{$name};
-            }
-            else
-            {
-                $arg->{$name} = $str;
-            }
-        }
-        elsif ( $op eq ':\?' )
-        {
-            #   Indicate Error if Unset
-            $$l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
-        }
-        elsif ( $op eq ':-' )
-        {
-            #   Use Default Values
-            $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
-        }
-        elsif ( $op eq ':=' )
-        {
-            #   Use Default Values And Assign
-            $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
-            if ( $str eq '' )
-            {
-                delete $arg->{$name} if exists $arg->{$name};
-            }
-            else
-            {
-                $arg->{$name} = $str;
-            }
-        }
-        elsif ( $op eq ':\+' )
-        {
-            #   Use Alternative Value
-            $$l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
-        }
-        elsif ( $op eq ':\*' )
-        {
-            #   Use Negative Alternative Value
-            $$l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
-        }
-        else
-        {
-            #   There is an error in these statements
-            die "Internal error when expanding variables";
-        }
-        return 'redo';
+        return $ret;
     }
 
     #   EOL-comments again
