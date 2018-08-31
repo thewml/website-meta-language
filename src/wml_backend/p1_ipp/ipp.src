@@ -136,25 +136,25 @@ sub setargs
 {
     my ( $arg, $str ) = @_;
 
-    return if ( $str eq '' );
+    state $IDENT_RE = qr/[a-zA-Z][a-zA-Z0-9_]*/;
 STR:
     while ($str)
     {
         $str =~ s|^\s+||;
         last STR if ( $str eq '' );
-        if ( $str =~ s|^([a-zA-Z][a-zA-Z0-9_]*)="([^"]*)"|| )
+        if ( $str =~ s|^($IDENT_RE)="([^"]*)"|| )
         {
             $arg->{$1} = $2;
         }
-        elsif ( $str =~ s|^([a-zA-Z][a-zA-Z0-9_]*)=(\S+)|| )
+        elsif ( $str =~ s|^($IDENT_RE)=(\S+)|| )
         {
             $arg->{$1} = $2;
         }
-        elsif ( $str =~ s|^([a-zA-Z][a-zA-Z0-9_]*)=\s+|| )
+        elsif ( $str =~ s|^($IDENT_RE)=\s+|| )
         {
             $arg->{$1} = '';
         }
-        elsif ( $str =~ s|^([a-zA-Z][a-zA-Z0-9_]*)|| )
+        elsif ( $str =~ s|^($IDENT_RE)|| )
         {
             $arg->{$1} = 1;
         }
