@@ -1139,6 +1139,13 @@ sub _handle_out_tmp
     return;
 }
 
+sub _gen_opt
+{
+    my ( $self, $opt ) = @_;
+
+    return sub { my ( undef, $v ) = @_; $self->$opt($v); },;
+}
+
 sub _process_options
 {
     my ( $self, $my_argv, $_opt_D ) = @_;
@@ -1158,20 +1165,17 @@ sub _process_options
         "W|passoption=s@"  => $self->_opt_W,
     );
     my %scalar_options = (
-        "o|outputfile=s@" => sub {
-            my ( undef, $v ) = @_;
-            push @{ $self->_opt_o }, $v;
-        },
-        "r|norcfile"   => sub { my ( undef, $v ) = @_; $self->_opt_r($v); },
-        "n|noshebang"  => sub { my ( undef, $v ) = @_; $self->_opt_n($v); },
-        "c|nocd"       => sub { my ( undef, $v ) = @_; $self->_opt_c($v); },
-        "O|optimize=i" => sub { my ( undef, $v ) = @_; $self->_opt_O($v); },
-        "t|settime"    => sub {
-            my ( undef, $v ) = @_;
-            $self->_opt_t($v);
-        },
-        "M|depend:s" => sub { my ( undef, $v ) = @_; $self->_opt_M($v); },
-        "s|safe"     => sub {
+        "o|outputfile=s@" => $self->_opt_o,
+        "r|norcfile"      => $self->_gen_opt('_opt_r'),
+        "n|noshebang"     => $self->_gen_opt('_opt_n'),
+        "c|nocd"          => $self->_gen_opt('_opt_c'),
+        "O|optimize=i"    => $self->_gen_opt('_opt_O'),
+        "M|depend:s"      => $self->_gen_opt('_opt_M'),
+        "q|quiet"         => $self->_gen_opt('_opt_q'),
+        "V|version:i"     => $self->_gen_opt('_opt_V'),
+        "h|help"          => $self->_gen_opt('_opt_h'),
+        "t|settime"       => $self->_gen_opt('_opt_t'),
+        "s|safe"          => sub {
             my ( undef, $v ) = @_;
             $_pass_mgr->_opt_s($v);
         },
@@ -1179,9 +1183,6 @@ sub _process_options
             my ( undef, $v ) = @_;
             $_pass_mgr->_opt_v($v);
         },
-        "q|quiet"     => sub { my ( undef, $v ) = @_; $self->_opt_q($v); },
-        "V|version:i" => sub { my ( undef, $v ) = @_; $self->_opt_V($v); },
-        "h|help"      => sub { my ( undef, $v ) = @_; $self->_opt_h($v); },
     );
     if (
         not Getopt::Long::GetOptionsFromArray(
