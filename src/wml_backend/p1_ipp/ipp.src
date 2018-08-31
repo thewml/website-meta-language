@@ -29,9 +29,7 @@ use WML_Backends::IPP::Delimit ();
 use WML_Backends::IPP::Map     ();
 use WML_Frontends::Wml::Util qw/ canon_path /;
 
-#
-#   help functions
-#
+# helper functions
 our $opt_v = 0;
 
 sub verbose
@@ -56,9 +54,7 @@ sub warning
     print STDERR "** IPP:Warning: $str\n";
 }
 
-#
-#   process command line
-#
+# process command line
 sub usage
 {
     print STDERR <<'EOF';
@@ -118,25 +114,20 @@ if ( $opt_M !~ m%^(-|[MD]*)$% && ( !@ARGV ) )
 usage() if ( !@ARGV );
 push( @opt_I, '.' );
 
-#
-#   read mapfiles
-#
+# read mapfiles
 our $MAP = WML_Backends::IPP::Map->new;
-
 $MAP->read_multi_map_files( \@opt_m );
 
-#
-#   iterate over the input files
-#
-
+# iterate over the input files
 my %INCLUDES = ();
 my $outbuf   = '';
+
+our $IDENT_RE = qr/[a-zA-Z][a-zA-Z0-9_]*/;
 
 sub setargs
 {
     my ( $arg, $str ) = @_;
 
-    state $IDENT_RE = qr/[a-zA-Z][a-zA-Z0-9_]*/;
 STR:
     while ($str)
     {
@@ -576,19 +567,19 @@ my %arg = ();
 foreach my $str (@opt_D)
 {
     $str =~ s=\A(['"])(.*)\1\z=$2=;
-    if ( $str =~ m|^([a-zA-Z][a-zA-Z0-9_]*)="(.*)"$| )
+    if ( $str =~ m|^($IDENT_RE)="(.*)"$| )
     {
         $arg{$1} = $2;
     }
-    elsif ( $str =~ m|^([a-zA-Z][a-zA-Z0-9_]*)=(['"]['"])?$| )
+    elsif ( $str =~ m|^($IDENT_RE)=(['"]['"])?$| )
     {
         $arg{$1} = '';
     }
-    elsif ( $str =~ m|^([a-zA-Z][a-zA-Z0-9_]*)=(.+)$| )
+    elsif ( $str =~ m|^($IDENT_RE)=(.+)$| )
     {
         $arg{$1} = $2;
     }
-    elsif ( $str =~ m|^([a-zA-Z][a-zA-Z0-9_]*)$| )
+    elsif ( $str =~ m|^($IDENT_RE)$| )
     {
         $arg{$1} = 1;
     }
