@@ -22,6 +22,7 @@ use Class::XSAccessor (
             _main
             level
             mode
+            no_id
             )
     },
 );
@@ -32,7 +33,7 @@ use WML_Backends::IPP::Line ();
 
 sub _PatternProcess_helper
 {
-    my ( $self, $test, $out, $dirname, $pattern, $ext, $no_id, $arg ) = @_;
+    my ( $self, $test, $out, $dirname, $pattern, $ext,, $arg ) = @_;
     if ( not -d $dirname )
     {
         return;
@@ -78,7 +79,7 @@ LS:
 
         $$out .=
             $self->_main->ProcessFile( $self->mode, $self->_del,
-            $arg->{'IPP_THIS'}, "", $self->level, $no_id, $arg );
+            $arg->{'IPP_THIS'}, "", $self->level, $self->no_id, $arg );
     }
     delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
     return;
@@ -86,7 +87,7 @@ LS:
 
 sub PatternProcess
 {
-    my ( $self,, $dirname, $pattern, $ext,, $no_id, $arg ) = @_;
+    my ( $self,, $dirname, $pattern, $ext,,, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -109,7 +110,7 @@ sub PatternProcess
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .=
                     $self->_main->ProcessFile( $self->mode, $self->_del,
-                    "$dirname/$_$ext", "", $self->level, $no_id, $arg );
+                    "$dirname/$_$ext", "", $self->level, $self->no_id, $arg );
                 $found = 1;
             }
             last DIRS if $found;
@@ -130,14 +131,14 @@ sub PatternProcess
     if ( $self->_del->is_quote_all )
     {
         $self->_PatternProcess_helper( $test, \$out, $dirname, $pattern,
-            $ext, $no_id, $arg );
+            $ext, $arg );
     }
     return $out;
 }
 
 sub _expand_pattern
 {
-    my ( $self, $dirname, $pattern, $ext,,, $no_id, $arg ) = @_;
+    my ( $self, $dirname, $pattern, $ext,,,, $arg ) = @_;
     if ( $dirname =~ m|^(.*)/(.*?)$| )
     {
         $dirname = $1;
@@ -163,7 +164,7 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->PatternProcess( $dirname, $pattern, $ext, $no_id, +{%$arg} );
+    return $self->PatternProcess( $dirname, $pattern, $ext,, +{%$arg} );
 }
 
 sub _find_file
@@ -207,7 +208,7 @@ sub _find_file
 
 sub ProcessFile
 {
-    my ( $self, $fn, $realname,, $no_id, $in_arg ) = @_;
+    my ( $self, $fn, $realname, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -216,7 +217,7 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        return $self->_expand_pattern( $dirname, $pattern, $ext, $no_id, $arg );
+        return $self->_expand_pattern( $dirname, $pattern, $ext,, $arg );
     }
     if ( not $self->_find_file( \$fn ) )
     {
@@ -224,7 +225,7 @@ sub ProcessFile
     }
 
     #   stop if file was still included some time before
-    if ( not $no_id )
+    if ( not $self->no_id )
     {
         my $id = canon_path($fn);
         if ( $self->mode eq 'use' )

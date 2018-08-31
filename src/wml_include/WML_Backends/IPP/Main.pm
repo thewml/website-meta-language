@@ -110,7 +110,8 @@ sub ProcessFile
         _main => $self,
         level => $level,
         mode  => $mode,
-    )->ProcessFile( $fn, $realname, $no_id, $in_arg );
+        no_id => $no_id,
+    )->ProcessFile( $fn, $realname, $in_arg );
 }
 
 sub _write_includes
