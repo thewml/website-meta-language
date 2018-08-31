@@ -23,6 +23,7 @@ use Class::XSAccessor (
             opt_N
             opt_S
             opt_v
+            temp_fn
             _map
             )
     },
@@ -524,6 +525,30 @@ LINES:
     return $out;
 }
 
+sub _write_includes
+{
+    my ( $self, $opt_s, $opt_i ) = @_;
+
+    my $tmp = io()->file( $self->temp_fn )->open('>');
+    foreach my $fn (@$opt_s)
+    {
+        if ( $fn =~ m#\A(\S+?)::(\S+).*\n\z# )
+        {
+            $fn = ( "$2.$1" =~ s|::|/|gr );
+        }
+        $tmp->print("#include <$fn>\n");
+    }
+    foreach my $fn (@$opt_i)
+    {
+        $tmp->print(
+            ( $fn =~ m|\A\S+?::\S[^\n]*\z|ms )
+            ? "#use $fn\n"
+            : "#include \"$fn\"\n"
+        );
+    }
+    return;
+}
+
 sub main
 {
     my ( $self, ) = @_;
@@ -609,43 +634,25 @@ sub main
     #   process the pre-loaded include files
     my $tmpdir = tempdir( 'ipp.XXXXXXXX', 'CLEANUP' => 1, )
         or die "Unable to create temporary directory: $!\n";
-    my $temp_fn = File::Spec->catfile( $tmpdir, "ipp.$$.tmp" );
+    $self->temp_fn( File::Spec->catfile( $tmpdir, "ipp.$$.tmp" ) );
 
-    unlink($temp_fn);
-    {
-        my $tmp = io()->file($temp_fn)->open('>');
-        foreach my $fn (@opt_s)
-        {
-            if ( $fn =~ m#\A(\S+?)::(\S+).*\n\z# )
-            {
-                $fn = ( "$2.$1" =~ s|::|/|gr );
-            }
-            $tmp->print("#include <$fn>\n");
-        }
-        foreach my $fn (@opt_i)
-        {
-            $tmp->print(
-                ( $fn =~ m|\A\S+?::\S[^\n]*\z|ms )
-                ? "#use $fn\n"
-                : "#include \"$fn\"\n"
-            );
-        }
-    }
+    unlink( $self->temp_fn );
+    $self->_write_includes( \@opt_s, \@opt_i );
     $outbuf .=
-        $self->ProcessFile( 'include', _sq(), $temp_fn, "", 0, 1, \%arg );
-    unlink($temp_fn);
+        $self->ProcessFile( 'include', _sq(), $self->temp_fn, "", 0, 1, \%arg );
+    unlink( $self->temp_fn );
 
     #   process real files
     foreach my $fn (@ARGV)
     {
         #   create temporary working file
-        io()->file($temp_fn)->print( WML_Backends->input( [$fn] ) );
+        io()->file( $self->temp_fn )->print( WML_Backends->input( [$fn] ) );
 
         #   apply prolog filters
         foreach my $p (@opt_P)
         {
             my $rc = system(
-                "$p <$temp_fn >$temp_fn.f && mv $temp_fn.f $temp_fn 2>/dev/null"
+"$p <$self->temp_fn >$self->temp_fn.f && mv $self->temp_fn.f $self->temp_fn 2>/dev/null"
             );
             error("Prolog Filter `$p' failed") if ( $rc != 0 );
         }
@@ -653,11 +660,11 @@ sub main
         #   process file via IPP filter
         $outbuf .=
             $self->ProcessFile( 'include', _sq(),
-            $temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
+            $self->temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
             0, 1, \%arg );
 
         #   cleanup
-        unlink($temp_fn);
+        unlink( $self->temp_fn );
     }
     $self->_do_output( $opt_o, \$outbuf );
 }
