@@ -659,6 +659,12 @@ sub main
         #   cleanup
         unlink($tmpfile);
     }
+    $self->_do_output( $opt_o, \$outbuf );
+}
+
+sub _do_output
+{
+    my ( $self, $opt_o, $outbuf ) = @_;
 
     if ( $self->opt_M ne '-' && $opt_o ne '-' )
     {
@@ -688,8 +694,10 @@ sub main
     else
     {
         # create output file
-        WML_Backends->out( $opt_o, \&error, [$outbuf] );
+        WML_Backends->out( $opt_o, \&error, [$$outbuf] );
     }
+
+    return;
 }
 
 1;
