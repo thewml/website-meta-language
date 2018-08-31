@@ -285,9 +285,7 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
         return 'redo';
     }
 
-    #   Escape special characters
-    $op =~ s/([?+*])/\\$1/;
-    my $subst = '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
+    my $subst = qr#((?!\\).|^)\$\(\Q$name$op\E(?:[^()]*)\)#;
 
     if ( $op eq '=' )
     {
@@ -302,7 +300,7 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
             $arg->{$name} = $str;
         }
     }
-    elsif ( $op eq ':\?' )
+    elsif ( $op eq ':?' )
     {
         #   Indicate Error if Unset
         $$l =~
@@ -326,12 +324,12 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
             $arg->{$name} = $str;
         }
     }
-    elsif ( $op eq ':\+' )
+    elsif ( $op eq ':+' )
     {
         #   Use Alternative Value
         $$l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
     }
-    elsif ( $op eq ':\*' )
+    elsif ( $op eq ':*' )
     {
         #   Use Negative Alternative Value
         $$l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
