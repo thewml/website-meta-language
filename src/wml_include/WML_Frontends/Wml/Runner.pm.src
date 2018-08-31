@@ -35,6 +35,8 @@ package WML_Frontends::Wml::Runner;
 use strict;
 use warnings;
 
+use parent 'WML_Frontends::Wml::Base';
+
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
@@ -1139,13 +1141,6 @@ sub _handle_out_tmp
     return;
 }
 
-sub _gen_opt
-{
-    my ( $self, $opt ) = @_;
-
-    return sub { my ( undef, $v ) = @_; $self->$opt($v); },;
-}
-
 sub _process_options
 {
     my ( $self, $my_argv, $_opt_D ) = @_;
@@ -1175,14 +1170,8 @@ sub _process_options
         "V|version:i"     => $self->_gen_opt('_opt_V'),
         "h|help"          => $self->_gen_opt('_opt_h'),
         "t|settime"       => $self->_gen_opt('_opt_t'),
-        "s|safe"          => sub {
-            my ( undef, $v ) = @_;
-            $_pass_mgr->_opt_s($v);
-        },
-        "v|verbose:i" => sub {
-            my ( undef, $v ) = @_;
-            $_pass_mgr->_opt_v($v);
-        },
+        "s|safe"          => $_pass_mgr->_gen_opt('_opt_s'),
+        "v|verbose:i"     => $_pass_mgr->_gen_opt('_opt_v'),
     );
     if (
         not Getopt::Long::GetOptionsFromArray(

@@ -133,6 +133,7 @@ INSTALL (
 
 INSTALL (
     FILES
+        "WML_Frontends/Wml/Base.pm"
         "WML_Frontends/Wml/PassesManager.pm"
         "WML_Frontends/Wml/PassObj.pm"
         "${CMAKE_CURRENT_BINARY_DIR}/WML_Frontends/Wml/Runner.pm"

@@ -36,6 +36,8 @@ package WML_Frontends::Wml::PassesManager;
 use strict;
 use warnings;
 
+use parent 'WML_Frontends::Wml::Base';
+
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
