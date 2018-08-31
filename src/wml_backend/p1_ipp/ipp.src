@@ -320,7 +320,7 @@ sub PatternProcess
 sub ProcessFile
 {
     my ( $mode, $delimiter, $file, $realname, $level, $noid, $in_arg ) = @_;
-    my ( $found, $line, $incfile, $type, %argO, $out, $store );
+    my ( $found, $incfile, $type, %argO, $out, $store );
     my ( $dirname, $pattern, $ext );
 
     my $arg = +{%$in_arg};
@@ -430,29 +430,30 @@ sub ProcessFile
     $realname = $file if $realname eq '';
     verbose( $level, "|" );
     verbose( $level, "+-- $file" );
-    my $in = io()->file($file);
-    $line = 0;
-    $out  = '';
+    my $in       = io()->file($file);
+    my $line_idx = 0;
+    $out = '';
     $out =
           "<__file__ $realname /><__line__ 0 />"
-        . "<protect pass=2><:# line $line \"$realname\":></protect>\n"
+        . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n"
         if not $opt_N and not $arg->{'IPP_NOSYNCLINES'};
     $store = '';
 
+LINES:
     while ( my $l = $in->getline )
     {
-        $line++;
+        ++$line_idx;
 
         #   EOL-comments
-        next if $l =~ m/^\s*#(?!use|include|depends)/;
+        next LINES if $l =~ m/^\s*#(?!use|include|depends)/;
 
         #   Line-Continuation Support
         $l =~ s|^\s+|| if $store ne '';
-        next if $l =~ m|^\\\s*\n$|;
+        next LINES if $l =~ m|^\\\s*\n$|;
         if ( $l =~ m|^(.*[^\\])\\\s*\n$| )
         {
             $store .= $1;
-            next;
+            next LINES;
         }
         if ( $l =~ m|^(.*\\)\\(\s*\n)$| )
         {
@@ -467,87 +468,83 @@ sub ProcessFile
 
         #       Substitutions are performed from left to right and from
         #       inner to outer, all operators have same precedence.
+        if ( $l =~ m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
         {
-            if ( $l =~
-                m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
+            my ( $name, $op, $str ) = ( $2, $4, $5 );
+            if ( not defined($op) )
             {
-                my ( $name, $op, $str ) = ( $2, $4, $5 );
-                if ( not defined($op) )
-                {
-                    #   Normal Value
-                    $l =~
+                #   Normal Value
+                $l =~
 s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
-                    redo;
-                }
+                redo;
+            }
 
-                #   Escape special characters
-                $op =~ s/([?+*])/\\$1/;
-                my $subst =
-                    '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
+            #   Escape special characters
+            $op =~ s/([?+*])/\\$1/;
+            my $subst = '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
 
-                if ( $op eq '=' )
+            if ( $op eq '=' )
+            {
+                #   Assign
+                $l =~ s/$subst/$1/;
+                if ( $str eq '' )
                 {
-                    #   Assign
-                    $l =~ s/$subst/$1/;
-                    if ( $str eq '' )
-                    {
-                        delete $arg->{$name} if exists $arg->{$name};
-                    }
-                    else
-                    {
-                        $arg->{$name} = $str;
-                    }
-                }
-                elsif ( $op eq ':\?' )
-                {
-                    #   Indicate Error if Unset
-                    $l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
-                }
-                elsif ( $op eq ':-' )
-                {
-                    #   Use Default Values
-                    $l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
-                }
-                elsif ( $op eq ':=' )
-                {
-                    #   Use Default Values And Assign
-                    $l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
-                    if ( $str eq '' )
-                    {
-                        delete $arg->{$name} if exists $arg->{$name};
-                    }
-                    else
-                    {
-                        $arg->{$name} = $str;
-                    }
-                }
-                elsif ( $op eq ':\+' )
-                {
-                    #   Use Alternative Value
-                    $l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
-                }
-                elsif ( $op eq ':\*' )
-                {
-                    #   Use Negative Alternative Value
-                    $l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
+                    delete $arg->{$name} if exists $arg->{$name};
                 }
                 else
                 {
-                    #   There is an error in these statements
-                    die "Internal error when expanding variables";
+                    $arg->{$name} = $str;
                 }
-                redo;
             }
+            elsif ( $op eq ':\?' )
+            {
+                #   Indicate Error if Unset
+                $l =~
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
+            }
+            elsif ( $op eq ':-' )
+            {
+                #   Use Default Values
+                $l =~
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+            }
+            elsif ( $op eq ':=' )
+            {
+                #   Use Default Values And Assign
+                $l =~
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+                if ( $str eq '' )
+                {
+                    delete $arg->{$name} if exists $arg->{$name};
+                }
+                else
+                {
+                    $arg->{$name} = $str;
+                }
+            }
+            elsif ( $op eq ':\+' )
+            {
+                #   Use Alternative Value
+                $l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
+            }
+            elsif ( $op eq ':\*' )
+            {
+                #   Use Negative Alternative Value
+                $l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
+            }
+            else
+            {
+                #   There is an error in these statements
+                die "Internal error when expanding variables";
+            }
+            redo LINES;
         }
 
         #   EOL-comments again
-        next if $l =~ m/^\s*#(?!use|include|depends)/;
+        next LINES if $l =~ m/^\s*#(?!use|include|depends)/;
 
         #   Implicit Variables
-        $l =~ s|__LINE__|$line|g;
+        $l =~ s|__LINE__|$line_idx|g;
         if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
         {
             $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}
@@ -597,8 +594,8 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
             $out .=
                 ProcessFile( $cmd, $type, $incfile, "", $level + 1, 0, $arg );
             $out .=
-                  "<__file__ $realname /><__line__ $line />"
-                . "<protect pass=2><:# line $line \"$realname\":></protect>\n"
+                  "<__file__ $realname /><__line__ $line_idx />"
+                . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n"
                 if not $opt_N and not $arg->{'IPP_NOSYNCLINES'};
 
             #   reset arguments
@@ -610,12 +607,10 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
         #
         elsif ( $l =~ m|^\s*__END__\s*\n?$| )
         {
-            last;
+            last LINES;
         }
 
-        #
         #   plain text
-        #
         else
         {
             $out .= $l;
