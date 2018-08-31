@@ -194,12 +194,11 @@ sub setargs
 sub mapfile
 {
     my ($fn) = @_;
-    my ( $replace, $type, $text );
 
-    if ( $replace = $MAP->{$fn}->{REPLACE} )
+    if ( my $replace = $MAP->{$fn}->{REPLACE} )
     {
-        $type = $MAP->{$fn}->{ACTIONTYPE};
-        $text = $MAP->{$fn}->{ACTIONTEXT};
+        my $type = $MAP->{$fn}->{ACTIONTYPE};
+        my $text = $MAP->{$fn}->{ACTIONTEXT};
         if ( $type eq 'S' )
         {
             $fn = $replace;
@@ -221,13 +220,12 @@ sub PatternProcess
 {
     my ( $mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, $arg ) =
         @_;
-    my ($dir);
 
     my $out = '';
     my $test =
         +( $ext eq '' )
-        ? sub { return -f "$dir/$dirname/$_"; }
-        : sub { return -d "$dir/$dirname"; };
+        ? sub { my $dir = shift; return -f "$dir/$dirname/$_"; }
+        : sub { my $dir = shift; return -d "$dir/$dirname"; };
 
     my $process_dirs = sub {
         my ($dirs) = @_;
@@ -235,7 +233,7 @@ sub PatternProcess
     DIRS:
         foreach my $dir ( reverse @$dirs )
         {
-            my @ls = grep { /^$pattern$/ && $test->() }
+            my @ls = grep { /^$pattern$/ && $test->($dir) }
                 @{ io->dir("$dir/$dirname") };
             my $found = 0;
         LS:
@@ -263,11 +261,10 @@ sub PatternProcess
     }
     if ( $delimiter eq '<' or $delimiter eq '"' or $delimiter eq "'" )
     {
-        $dir = '.';
         if ( -d $dirname )
         {
             my @ls =
-                grep { /^$pattern$/ && $test->() } @{ io->dir("$dirname") };
+                grep { /^$pattern$/ && $test->('.') } @{ io->dir("$dirname") };
 
             #   Sort list of files
             my $criterion = $arg->{'IPP_SORT'} || $arg->{'IPP_REVERSE'};
