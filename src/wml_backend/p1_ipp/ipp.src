@@ -246,7 +246,7 @@ sub PatternProcess
             {
                 next if ( m|/\.+$| or m|^\.+$| );
                 $out .= ProcessFile( $mode, $delimiter, "$dirname/$_$ext", "",
-                    $level, $noid, %arg );
+                    $level, $noid, \%arg );
                 $found = 1;
             }
             last if $found;
@@ -307,7 +307,7 @@ sub PatternProcess
                 next if $arg{'IPP_THIS'} eq '';
 
                 $out .= ProcessFile( $mode, $delimiter, $arg{'IPP_THIS'}, "",
-                    $level, $noid, %arg );
+                    $level, $noid, \%arg );
             }
             delete $arg{'IPP_NEXT'};
             delete $arg{'IPP_THIS'};
@@ -319,10 +319,11 @@ sub PatternProcess
 
 sub ProcessFile
 {
-    my ( $mode, $delimiter, $file, $realname, $level, $noid, %arg ) = @_;
+    my ( $mode, $delimiter, $file, $realname, $level, $noid, $in_arg ) = @_;
     my ( $found, $line, $incfile, $type, %argO, $out, $store );
     my ( $dirname, $pattern, $ext );
 
+    my $arg = +{%$in_arg};
     #
     #   first check whether this is a filename pattern in which case
     #   we must expand it
@@ -358,7 +359,7 @@ sub ProcessFile
         $pattern =~ s/\*/.*/g;
         $pattern =~ s/\?/./g;
         return PatternProcess( $mode, $delimiter, $dirname, $pattern, $ext,
-            $level, $noid, %arg );
+            $level, $noid, %$arg );
     }
 
     #
@@ -435,7 +436,7 @@ sub ProcessFile
     $out =
           "<__file__ $realname /><__line__ 0 />"
         . "<protect pass=2><:# line $line \"$realname\":></protect>\n"
-        if not $opt_N and not $arg{'IPP_NOSYNCLINES'};
+        if not $opt_N and not $arg->{'IPP_NOSYNCLINES'};
     $store = '';
 
     while ( my $l = $in->getline )
@@ -475,7 +476,7 @@ sub ProcessFile
                 {
                     #   Normal Value
                     $l =~
-s/((?!\\).|^)\$\($name\)/exists $arg{$name} ? $1.$arg{$name} : $1/e;
+s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
                     redo;
                 }
 
@@ -490,48 +491,48 @@ s/((?!\\).|^)\$\($name\)/exists $arg{$name} ? $1.$arg{$name} : $1/e;
                     $l =~ s/$subst/$1/;
                     if ( $str eq '' )
                     {
-                        delete $arg{$name} if exists $arg{$name};
+                        delete $arg->{$name} if exists $arg->{$name};
                     }
                     else
                     {
-                        $arg{$name} = $str;
+                        $arg->{$name} = $str;
                     }
                 }
                 elsif ( $op eq ':\?' )
                 {
                     #   Indicate Error if Unset
                     $l =~
-s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.error($str)/e;
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
                 }
                 elsif ( $op eq ':-' )
                 {
                     #   Use Default Values
                     $l =~
-s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.$str/e;
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
                 }
                 elsif ( $op eq ':=' )
                 {
                     #   Use Default Values And Assign
                     $l =~
-s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.$str/e;
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
                     if ( $str eq '' )
                     {
-                        delete $arg{$name} if exists $arg{$name};
+                        delete $arg->{$name} if exists $arg->{$name};
                     }
                     else
                     {
-                        $arg{$name} = $str;
+                        $arg->{$name} = $str;
                     }
                 }
                 elsif ( $op eq ':\+' )
                 {
                     #   Use Alternative Value
-                    $l =~ s/$subst/exists $arg{$name} ? $1.$str : $1/e;
+                    $l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
                 }
                 elsif ( $op eq ':\*' )
                 {
                     #   Use Negative Alternative Value
-                    $l =~ s/$subst/exists $arg{$name} ? $1 : $1.$str/e;
+                    $l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
                 }
                 else
                 {
@@ -547,11 +548,11 @@ s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.$str/e;
 
         #   Implicit Variables
         $l =~ s|__LINE__|$line|g;
-        if ( $level == 0 and $arg{'IPP_SRC_REALNAME'} ne '' )
+        if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
         {
-            $arg{'IPP_SRC_REALNAME'} = './' . $arg{'IPP_SRC_REALNAME'}
-                if $arg{'IPP_SRC_REALNAME'} !~ m|/|;
-            $l =~ s|__FILE__|$arg{'IPP_SRC_REALNAME'}|g;
+            $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}
+                if $arg->{'IPP_SRC_REALNAME'} !~ m|/|;
+            $l =~ s|__FILE__|$arg->{'IPP_SRC_REALNAME'}|g;
         }
         else
         {
@@ -569,8 +570,8 @@ s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.$str/e;
             ( $l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/ ) )
         {
             #   set arguments
-            %argO = %arg;
-            setargs( \%arg, $args );
+            %argO = %$arg;
+            setargs( $arg, $args );
 
             #   do possible argument mapping
             $incfile = mapfile($incfile);
@@ -594,14 +595,14 @@ s/$subst/exists $arg{$name} ? $1.$arg{$name} : $1.$str/e;
 
             #   now recurse down
             $out .=
-                ProcessFile( $cmd, $type, $incfile, "", $level + 1, 0, %arg );
+                ProcessFile( $cmd, $type, $incfile, "", $level + 1, 0, $arg );
             $out .=
                   "<__file__ $realname /><__line__ $line />"
                 . "<protect pass=2><:# line $line \"$realname\":></protect>\n"
-                if not $opt_N and not $arg{'IPP_NOSYNCLINES'};
+                if not $opt_N and not $arg->{'IPP_NOSYNCLINES'};
 
             #   reset arguments
-            %arg = %argO;
+            %$arg = %argO;
         }
 
         #
@@ -686,7 +687,7 @@ unlink($tmpfile);
         }
     }
 }
-$outbuf .= ProcessFile( 'include', "'", $tmpfile, "", 0, 1, %arg );
+$outbuf .= ProcessFile( 'include', "'", $tmpfile, "", 0, 1, \%arg );
 unlink($tmpfile);
 
 #
@@ -714,7 +715,7 @@ foreach my $fn (@ARGV)
     #   process file via IPP filter
     $outbuf .=
         ProcessFile( 'include', "'", $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
-        0, 1, %arg );
+        0, 1, \%arg );
 
     #   cleanup
     unlink($tmpfile);
