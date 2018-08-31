@@ -240,10 +240,11 @@ sub mapfile
 {
     my ($fn) = @_;
 
-    if ( my $replace = $MAP->{$fn}->{REPLACE} )
+    my $rec = $MAP->{$fn};
+    if ( my $replace = $rec->{REPLACE} )
     {
-        my $type = $MAP->{$fn}->{ACTIONTYPE};
-        my $text = $MAP->{$fn}->{ACTIONTEXT};
+        my $type = $rec->{ACTIONTYPE};
+        my $text = $rec->{ACTIONTEXT};
         if ( $type eq 'S' )
         {
             $fn = $replace;
@@ -263,7 +264,7 @@ sub mapfile
 
 sub PatternProcess
 {
-    my ( $mode, $_del, $dirname, $pattern, $ext, $level, $noid, $arg ) = @_;
+    my ( $mode, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -285,7 +286,7 @@ sub PatternProcess
             {
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .= ProcessFile( $mode, $_del, "$dirname/$_$ext", "",
-                    $level, $noid, $arg );
+                    $level, $no_id, $arg );
                 $found = 1;
             }
             last DIRS if $found;
@@ -347,7 +348,7 @@ sub PatternProcess
                 next LS if $arg->{'IPP_THIS'} eq '';
 
                 $out .= ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
-                    $level, $noid, $arg );
+                    $level, $no_id, $arg );
             }
             delete $arg->{'IPP_NEXT'};
             delete $arg->{'IPP_THIS'};
@@ -359,7 +360,7 @@ sub PatternProcess
 
 sub ProcessFile
 {
-    my ( $mode, $_del, $fn, $realname, $level, $noid, $in_arg ) = @_;
+    my ( $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -394,7 +395,7 @@ sub ProcessFile
         $pattern =~ s/\*/.*/g;
         $pattern =~ s/\?/./g;
         return PatternProcess( $mode, $_del, $dirname, $pattern, $ext,
-            $level, $noid, +{%$arg} );
+            $level, $no_id, +{%$arg} );
     }
 
     #    this is a regular file
@@ -435,10 +436,8 @@ sub ProcessFile
     }
     error("file not found: $fn") if not $found;
 
-    #
     #   stop if file was still included some time before
-    #
-    if ( not $noid )
+    if ( not $no_id )
     {
         my $id = canon_path($fn);
         if ( $mode eq 'use' )
