@@ -588,10 +588,12 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
             #   now recurse down
             $out .=
                 ProcessFile( $cmd, $type, $incfile, "", $level + 1, 0, $arg );
-            $out .=
-                  "<__file__ $realname /><__line__ $line_idx />"
-                . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n"
-                if not $opt_N and not $arg->{'IPP_NOSYNCLINES'};
+            if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+            {
+                $out .=
+                      "<__file__ $realname /><__line__ $line_idx />"
+                    . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n";
+            }
 
             #   reset arguments
             %$arg = %argO;
