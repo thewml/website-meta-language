@@ -206,10 +206,11 @@ sub setargs
     my ( $arg, $str ) = @_;
 
     return if ( $str eq '' );
+STR:
     while ($str)
     {
         $str =~ s|^\s+||;
-        last if ( $str eq '' );
+        last STR if ( $str eq '' );
         if ( $str =~ s|^([a-zA-Z][a-zA-Z0-9_]*)="([^"]*)"|| )
         {
             $arg->{$1} = $2;
@@ -231,6 +232,8 @@ sub setargs
             $str = substr( $str, 1 );    # make sure the loop terminates
         }
     }
+
+    return;
 }
 
 sub mapfile
