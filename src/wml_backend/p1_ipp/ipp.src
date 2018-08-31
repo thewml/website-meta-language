@@ -459,9 +459,7 @@ LINES:
         $l     = $store . $l;
         $store = '';
 
-        #
-        #   Variable Interpolation
-        #
+        # Variable Interpolation
 
         #       Substitutions are performed from left to right and from
         #       inner to outer, all operators have same precedence.
@@ -655,28 +653,21 @@ my $tmpfile = File::Spec->catfile( $tmpdir, "ipp.$$.tmp" );
 unlink($tmpfile);
 {
     my $tmp = io()->file($tmpfile)->open('>');
-    foreach my $file (@opt_s)
+    foreach my $fn (@opt_s)
     {
-        if ( $file =~ m|^(\S+?)::(\S+)(.*)\n$| )
+        if ( $fn =~ m#\A(\S+?)::(\S+).*\n\z# )
         {
-            $file = "$2.$1";
-            $file =~ s|::|/|g;
+            $fn = ( "$2.$1" =~ s|::|/|gr );
         }
-        $tmp->print("#include <$file>\n")
-            || error("cannot write into $tmpfile: $!");
+        $tmp->print("#include <$fn>\n");
     }
-    foreach my $file (@opt_i)
+    foreach my $fn (@opt_i)
     {
-        if ( $file =~ m|^(\S+?)::(\S+)(.*)$| )
-        {
-            $tmp->print("#use $file\n")
-                || error("cannot write into $tmpfile: $!");
-        }
-        else
-        {
-            $tmp->print("#include \"$file\"\n")
-                || error("cannot write into $tmpfile: $!");
-        }
+        $tmp->print(
+            ( $fn =~ m|\A\S+?::\S[^\n]*\z|ms )
+            ? "#use $fn\n"
+            : "#include \"$fn\"\n"
+        );
     }
 }
 $outbuf .= ProcessFile( 'include', "'", $tmpfile, "", 0, 1, \%arg );
