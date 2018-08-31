@@ -15,46 +15,6 @@ use 5.014;
 use strict;
 use warnings;
 
-package WML::IPP::Delimit;
-
-use Class::XSAccessor (
-    accessors => +{
-        map { $_ => $_ }
-            qw(
-            delimiter
-            )
-    },
-    constructor => 'new',
-);
-
-sub is
-{
-    my ( $self, $v ) = @_;
-
-    return $self->delimiter eq $v;
-}
-
-sub is_ang
-{
-    my $self = shift;
-
-    return $self->is('<');
-}
-
-sub is_quote
-{
-    my $self = shift;
-
-    return $self->is_ang || $self->is(q/"/);
-}
-
-sub is_quote_all
-{
-    my $self = shift;
-
-    return $self->is_quote || $self->is(q/'/);
-}
-
 package main;
 
 use Getopt::Long 2.13;
@@ -64,7 +24,8 @@ use File::Spec;
 use IO::All qw/ io /;
 
 use Carp qw( cluck );
-use WML_Backends ();
+use WML_Backends               ();
+use WML_Backends::IPP::Delimit ();
 use WML_Frontends::Wml::Util qw/ canon_path /;
 
 #
@@ -625,7 +586,8 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
 
             #   now recurse down
             $out .=
-                ProcessFile( $cmd, WML::IPP::Delimit->new( delimiter => $type ),
+                ProcessFile( $cmd,
+                WML_Backends::IPP::Delimit->new( delimiter => $type ),
                 $incfile, "", $level + 1, 0, $arg );
             if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
             {
@@ -709,7 +671,9 @@ unlink($tmpfile);
         );
     }
 }
-$outbuf .= ProcessFile( 'include', WML::IPP::Delimit->new( delimiter => q/'/ ),
+$outbuf .=
+    ProcessFile( 'include',
+    WML_Backends::IPP::Delimit->new( delimiter => q/'/ ),
     $tmpfile, "", 0, 1, \%arg );
 unlink($tmpfile);
 
@@ -731,7 +695,7 @@ foreach my $fn (@ARGV)
 
     #   process file via IPP filter
     $outbuf .= ProcessFile(
-        'include', WML::IPP::Delimit->new( delimiter => q/'/ ),
+        'include', WML_Backends::IPP::Delimit->new( delimiter => q/'/ ),
         $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
         0, 1, \%arg
     );

@@ -124,6 +124,11 @@ INSTALL (
 )
 
 INSTALL (
+    FILES "WML_Backends/IPP/Delimit.pm"
+    DESTINATION "${WML_LIB_DIR}/WML_Backends/IPP"
+)
+
+INSTALL (
     FILES
         "WML_Frontends/Wml/PassesManager.pm"
         "WML_Frontends/Wml/PassObj.pm"
