@@ -33,6 +33,18 @@ sub _init
     return;
 }
 
+sub read_multi_map_files
+{
+    my ( $self, $map_fns ) = @_;
+
+    foreach my $fn (@$map_fns)
+    {
+        $self->read_mapfile($fn);
+    }
+
+    return;
+}
+
 sub read_mapfile
 {
     my ( $self, $mapfile ) = @_;

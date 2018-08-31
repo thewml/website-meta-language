@@ -123,10 +123,7 @@ push( @opt_I, '.' );
 #
 our $MAP = WML_Backends::IPP::Map->new;
 
-foreach my $fn (@opt_m)
-{
-    $MAP->read_mapfile($fn);
-}
+$MAP->read_multi_map_files( \@opt_m );
 
 #
 #   iterate over the input files
