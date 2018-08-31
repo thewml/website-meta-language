@@ -27,6 +27,39 @@ use IO::All qw/ io /;
 use WML_Frontends::Wml::Util qw/ canon_path /;
 use WML_Backends::IPP::Line ();
 
+sub _expand_pattern
+{
+    my ( $self, $dirname, $pattern, $ext, $mode, $_del, $level, $no_id, $arg )
+        = @_;
+    if ( $dirname =~ m|^(.*)/(.*?)$| )
+    {
+        $dirname = $1;
+        $pattern = $2 . $pattern;
+    }
+    else
+    {
+        $pattern = $dirname . $pattern;
+        $dirname = '.';
+    }
+    if ( $ext =~ m|^(.*?)(/.*)$| )
+    {
+        $pattern .= $1;
+        $ext = $2;
+    }
+    else
+    {
+        $pattern .= $ext;
+        $ext = '';
+    }
+
+    #   replace filename patterns by regular expressions
+    $pattern =~ s/\./\\./g;
+    $pattern =~ s/\*/.*/g;
+    $pattern =~ s/\?/./g;
+    return $self->_main->PatternProcess( $mode, $_del, $dirname, $pattern,
+        $ext, $level, $no_id, +{%$arg} );
+}
+
 sub ProcessFile
 {
     my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
@@ -38,7 +71,7 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        return $self->_main->_expand_pattern( $dirname, $pattern, $ext, $mode,
+        return $self->_expand_pattern( $dirname, $pattern, $ext, $mode,
             $_del, $level, $no_id, $arg );
     }
     if ( not $self->_main->_find_file( $_del, \$fn ) )

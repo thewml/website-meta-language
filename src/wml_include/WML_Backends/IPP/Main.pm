@@ -212,39 +212,6 @@ sub PatternProcess
     return $out;
 }
 
-sub _expand_pattern
-{
-    my ( $self, $dirname, $pattern, $ext, $mode, $_del, $level, $no_id, $arg )
-        = @_;
-    if ( $dirname =~ m|^(.*)/(.*?)$| )
-    {
-        $dirname = $1;
-        $pattern = $2 . $pattern;
-    }
-    else
-    {
-        $pattern = $dirname . $pattern;
-        $dirname = '.';
-    }
-    if ( $ext =~ m|^(.*?)(/.*)$| )
-    {
-        $pattern .= $1;
-        $ext = $2;
-    }
-    else
-    {
-        $pattern .= $ext;
-        $ext = '';
-    }
-
-    #   replace filename patterns by regular expressions
-    $pattern =~ s/\./\\./g;
-    $pattern =~ s/\*/.*/g;
-    $pattern =~ s/\?/./g;
-    return $self->PatternProcess( $mode, $_del, $dirname, $pattern,
-        $ext, $level, $no_id, +{%$arg} );
-}
-
 sub _find_file
 {
     my ( $self, $_del, $fn ) = @_;
