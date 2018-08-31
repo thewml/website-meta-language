@@ -294,15 +294,16 @@ sub PatternProcess
 
             $arg->{'IPP_NEXT'} = '';
             $arg->{'IPP_THIS'} = '';
+        LS:
             foreach (@ls)
             {
-                next if ( m|/\.+$| or m|^\.+$| );
+                next LS if ( m|/\.+$| or m|^\.+$| );
 
                 #   set IPP_PREV, IPP_THIS, IPP_NEXT
                 $arg->{'IPP_PREV'} = $arg->{'IPP_THIS'};
                 $arg->{'IPP_THIS'} = $arg->{'IPP_NEXT'};
-                $arg->{'IPP_NEXT'} = ( $_ eq '' ? '' : $dirname . "/$_$ext" );
-                next if $arg->{'IPP_THIS'} eq '';
+                $arg->{'IPP_NEXT'} = ( $_ eq '' ? '' : "$dirname/$_$ext" );
+                next LS if $arg->{'IPP_THIS'} eq '';
 
                 $out .= ProcessFile( $mode, $delimiter, $arg->{'IPP_THIS'}, "",
                     $level, $noid, $arg );
@@ -319,14 +320,13 @@ sub ProcessFile
 {
     my ( $mode, $delimiter, $fn, $realname, $level, $noid, $in_arg ) = @_;
     my ( $incfile, $type, %argO, $out, $store );
-    my ( $dirname, $pattern, $ext );
 
     my $arg = +{%$in_arg};
     #
     #   first check whether this is a filename pattern in which case
     #   we must expand it
     #
-    if ( ( $dirname, $pattern, $ext ) =
+    if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
         if ( $dirname =~ m|^(.*)/(.*?)$| )
