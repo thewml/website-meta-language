@@ -125,6 +125,7 @@ INSTALL (
 
 INSTALL (
     FILES
+        "WML_Backends/IPP/Args.pm"
         "WML_Backends/IPP/Delimit.pm"
         "WML_Backends/IPP/Map.pm"
     DESTINATION "${WML_LIB_DIR}/WML_Backends/IPP"

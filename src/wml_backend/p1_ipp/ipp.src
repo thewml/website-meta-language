@@ -24,7 +24,8 @@ use File::Spec;
 use IO::All qw/ io /;
 
 use Carp qw( cluck );
-use WML_Backends               ();
+use WML_Backends ();
+use WML_Backends::IPP::Args qw/ $IDENT_RE /;
 use WML_Backends::IPP::Delimit ();
 use WML_Backends::IPP::Map     ();
 use WML_Frontends::Wml::Util qw/ canon_path /;
@@ -121,42 +122,6 @@ $MAP->read_multi_map_files( \@opt_m );
 # iterate over the input files
 my %INCLUDES = ();
 my $outbuf   = '';
-
-our $IDENT_RE = qr/[a-zA-Z][a-zA-Z0-9_]*/;
-
-sub setargs
-{
-    my ( $arg, $str ) = @_;
-
-STR:
-    while ($str)
-    {
-        $str =~ s|^\s+||;
-        last STR if ( $str eq '' );
-        if ( $str =~ s|^($IDENT_RE)="([^"]*)"|| )
-        {
-            $arg->{$1} = $2;
-        }
-        elsif ( $str =~ s|^($IDENT_RE)=(\S+)|| )
-        {
-            $arg->{$1} = $2;
-        }
-        elsif ( $str =~ s|^($IDENT_RE)=\s+|| )
-        {
-            $arg->{$1} = '';
-        }
-        elsif ( $str =~ s|^($IDENT_RE)|| )
-        {
-            $arg->{$1} = 1;
-        }
-        else
-        {
-            $str = substr( $str, 1 );    # make sure the loop terminates
-        }
-    }
-
-    return;
-}
 
 sub PatternProcess
 {
@@ -407,7 +372,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
     {
         #   set arguments
         my %argO = %$arg;
-        setargs( $arg, $args );
+        WML_Backends::IPP::Args->new->setargs( $arg, $args );
 
         #   do possible argument mapping
         $incfile = $MAP->mapfile($incfile);
