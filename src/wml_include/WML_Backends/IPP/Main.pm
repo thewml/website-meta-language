@@ -15,6 +15,7 @@ use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
             qw(
+            INCLUDES
             _map
             )
     },
@@ -120,8 +121,6 @@ my @opt_m = ();
 my $opt_N = 0;
 my $opt_n = '';
 my $opt_o = '-';
-
-my %INCLUDES = ();
 
 sub PatternProcess
 {
@@ -486,9 +485,9 @@ sub ProcessFile
         my $id = canon_path($fn);
         if ( $mode eq 'use' )
         {
-            return '' if ( exists $INCLUDES{$id} );
+            return '' if ( exists $self->INCLUDES->{$id} );
         }
-        $INCLUDES{$id} = $_del->is_ang ? 1 : 2;
+        $self->INCLUDES->{$id} = $_del->is_ang ? 1 : 2;
     }
 
     # Stop if just want to check dependency
@@ -583,7 +582,7 @@ sub main
     $self->_map->read_multi_map_files( \@opt_m );
 
     # iterate over the input files
-    %INCLUDES = ();
+    $self->INCLUDES( { () } );
     my $outbuf = '';
 
     #   create initial argument vector
@@ -672,9 +671,9 @@ sub main
     if ( $opt_M ne '-' && $opt_o ne '-' )
     {
         my @deps = @ARGV;
-        foreach my $inc ( keys(%INCLUDES) )
+        foreach my $inc ( keys( %{ $self->INCLUDES } ) )
         {
-            if ( $INCLUDES{$inc} != 1 or $opt_M !~ m|M| )
+            if ( $self->INCLUDES->{$inc} != 1 or $opt_M !~ m|M| )
             {
                 push( @deps, $inc );
             }
