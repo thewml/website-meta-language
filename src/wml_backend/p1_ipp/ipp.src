@@ -319,13 +319,11 @@ sub PatternProcess
 sub ProcessFile
 {
     my ( $mode, $delimiter, $fn, $realname, $level, $noid, $in_arg ) = @_;
-    my ( $incfile, $type, %argO, $out, $store );
 
     my $arg = +{%$in_arg};
-    #
+
     #   first check whether this is a filename pattern in which case
     #   we must expand it
-    #
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
@@ -428,12 +426,14 @@ sub ProcessFile
     verbose( $level, "+-- $fn" );
     my $in       = io()->file($fn);
     my $line_idx = 0;
-    $out = '';
-    $out =
-          "<__file__ $realname /><__line__ 0 />"
-        . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n"
-        if not $opt_N and not $arg->{'IPP_NOSYNCLINES'};
-    $store = '';
+    my $out      = '';
+    if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+    {
+        $out .=
+              "<__file__ $realname /><__line__ 0 />"
+            . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n";
+    }
+    my $store = '';
 
 LINES:
     while ( my $l = $in->getline )
@@ -553,19 +553,18 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
         #   remove one preceding backslash
         $l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
 
-        #
         #   ``#include'', ``#use'' and ``#depends'' directives
-        #
-
         if ( my ( $cmd, $incfile, $args ) =
             ( $l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/ ) )
         {
             #   set arguments
-            %argO = %$arg;
+            my %argO = %$arg;
             setargs( $arg, $args );
 
             #   do possible argument mapping
             $incfile = mapfile($incfile);
+
+            my $type;
 
             #   determine raw filename and type
             if ( $incfile =~ m|^(\S+?)::(\S+)$| )
@@ -598,9 +597,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
             %$arg = %argO;
         }
 
-        #
         #   ``__END__'' feature
-        #
         elsif ( $l =~ m|^\s*__END__\s*\n?$| )
         {
             last LINES;
