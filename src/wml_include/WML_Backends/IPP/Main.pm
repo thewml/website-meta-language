@@ -255,8 +255,9 @@ sub _process_line
         arg      => $arg,
         self     => $self,
         l        => $l,
-        line_idx => $line_idx
-    )->_process_line( $store, $level, $out, $fn, $realname, );
+        line_idx => $line_idx,
+        out      => $out,
+    )->_process_line( $store, $level, $fn, $realname, );
 }
 
 sub _find_file

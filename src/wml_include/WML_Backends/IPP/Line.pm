@@ -21,6 +21,7 @@ use Class::XSAccessor (
             arg
             l
             line_idx
+            out
             self
             )
     },
@@ -131,7 +132,7 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
 
 sub _process_line
 {
-    my ( $line, $store, $level, $out, $fn, $realname ) = @_;
+    my ( $line, $store, $level,, $fn, $realname ) = @_;
     my $l   = $line->l;
     my $arg = $line->arg;
 
@@ -165,7 +166,7 @@ sub _process_line
     #   remove one preceding backslash
     $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
 
-    if ( my $ret = $line->_line_do_includes( $out, $realname, $level, ) )
+    if ( my $ret = $line->_line_do_includes( $realname, $level, ) )
     {
         return $ret;
     }
@@ -175,7 +176,7 @@ sub _process_line
 
 sub _line_do_includes
 {
-    my ( $line, $out, $realname, $level, ) = @_;
+    my ( $line,, $realname, $level, ) = @_;
     my $l   = $line->l;
     my $arg = $line->arg;
 
@@ -210,12 +211,12 @@ sub _line_do_includes
         }
 
         #   now recurse down
-        $$out .=
+        ${ $line->out } .=
             $line->self->ProcessFile( $cmd, _delim($type),
             $incfile, "", $level + 1, 0, $arg );
         if ( not $line->self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {
-            $$out .=
+            ${ $line->out } .=
                   "<__file__ $realname /><__line__ @{[$line->line_idx]} />"
                 . "<protect pass=2><:# line @{[$line->line_idx]} \"$realname\":></protect>\n";
         }
@@ -233,7 +234,7 @@ sub _line_do_includes
     #   plain text
     else
     {
-        $$out .= $$l;
+        ${ $line->out } .= $$l;
     }
     return;
 }
