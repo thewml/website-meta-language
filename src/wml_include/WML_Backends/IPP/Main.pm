@@ -287,10 +287,7 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
 
     my $subst = qr#(?:(?!\\).|^)\K\$\(\Q$name$op\E(?:[^()]*)\)#;
 
-    if ( $op eq '=' )
-    {
-        #   Assign
-        $$l =~ s/$subst//;
+    my $del = sub {
         if ( $str eq '' )
         {
             delete $arg->{$name} if exists $arg->{$name};
@@ -299,6 +296,13 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
         {
             $arg->{$name} = $str;
         }
+    };
+
+    if ( $op eq '=' )
+    {
+        #   Assign
+        $$l =~ s/$subst//;
+        $del->();
     }
     elsif ( $op eq ':?' )
     {
@@ -314,14 +318,7 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
     {
         #   Use Default Values And Assign
         $$l =~ s/$subst/exists $arg->{$name} ? $arg->{$name} : $str/e;
-        if ( $str eq '' )
-        {
-            delete $arg->{$name} if exists $arg->{$name};
-        }
-        else
-        {
-            $arg->{$name} = $str;
-        }
+        $del->();
     }
     elsif ( $op eq ':+' )
     {
