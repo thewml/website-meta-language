@@ -25,6 +25,7 @@ use Class::XSAccessor (
             opt_v
             temp_fn
             _map
+            outbuf
             )
     },
 );
@@ -587,6 +588,15 @@ sub _del_temp
     return unlink( $self->temp_fn );
 }
 
+sub _append
+{
+    my ( $self, $text ) = @_;
+
+    ${ $self->outbuf } .= $text;
+
+    return;
+}
+
 sub main
 {
     my ( $self, ) = @_;
@@ -640,7 +650,9 @@ sub main
 
     # iterate over the input files
     $self->INCLUDES( { () } );
-    my $outbuf = '';
+    $self->outbuf(
+        do { my $s = ''; \$s; }
+    );
 
     my %arg;
     $self->_create_initial_argument_vector( \%arg, \@opt_D );
@@ -652,17 +664,18 @@ sub main
 
     $self->_del_temp;
     $self->_write_includes( \@opt_s, \@opt_i );
-    $outbuf .=
-        $self->ProcessFile( 'include', _sq(), $self->temp_fn, "", 0, 1, \%arg );
+    $self->_append(
+        $self->ProcessFile( 'include', _sq(), $self->temp_fn, "", 0, 1, \%arg )
+    );
     $self->_del_temp;
 
-    $self->_process_real_files( \@opt_P, $opt_n, \$outbuf, \%arg );
-    $self->_do_output( $opt_o, \$outbuf );
+    $self->_process_real_files( \@opt_P, $opt_n, \%arg );
+    $self->_do_output( $opt_o, );
 }
 
 sub _process_real_files
 {
-    my ( $self, $opt_P, $opt_n, $outbuf, $arg ) = @_;
+    my ( $self, $opt_P, $opt_n, $arg ) = @_;
 
     foreach my $fn (@ARGV)
     {
@@ -679,10 +692,13 @@ sub _process_real_files
         }
 
         #   process file via IPP filter
-        $$outbuf .=
-            $self->ProcessFile( 'include', _sq(),
-            $self->temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
-            0, 1, $arg );
+        $self->_append(
+            $self->ProcessFile(
+                'include', _sq(),
+                $self->temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
+                0, 1, $arg
+            )
+        );
 
         #   cleanup
         $self->_del_temp;
@@ -693,7 +709,7 @@ sub _process_real_files
 
 sub _do_output
 {
-    my ( $self, $opt_o, $outbuf ) = @_;
+    my ( $self, $opt_o, ) = @_;
 
     if ( $self->opt_M ne '-' && $opt_o ne '-' )
     {
@@ -723,7 +739,7 @@ sub _do_output
     else
     {
         # create output file
-        WML_Backends->out( $opt_o, \&error, [$$outbuf] );
+        WML_Backends->out( $opt_o, \&error, [ ${ $self->outbuf } ] );
     }
 
     return;
