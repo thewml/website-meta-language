@@ -695,14 +695,8 @@ unlink($tmpfile);
 #
 foreach my $fn (@ARGV)
 {
-    #   read input file
-    my $inbuf = WML_Backends->input( [$fn] );
-
     #   create temporary working file
-    open my $tmp, '>', $tmpfile
-        or error("cannot write into $tmpfile: $!");
-    $tmp->print($inbuf) || error("cannot write into $tmpfile: $!");
-    $tmp->close() || error("cannot close $tmpfile: $!");
+    io()->file($tmpfile)->print( WML_Backends->input( [$fn] ) );
 
     #   apply prolog filters
     foreach my $p (@opt_P)
