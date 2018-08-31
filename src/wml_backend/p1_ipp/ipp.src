@@ -220,7 +220,7 @@ sub mapfile
 
 sub PatternProcess
 {
-    my ( $mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, %arg ) =
+    my ( $mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, $arg ) =
         @_;
     my ( $dir, $found, $out, $test, @ls );
 
@@ -246,7 +246,7 @@ sub PatternProcess
             {
                 next if ( m|/\.+$| or m|^\.+$| );
                 $out .= ProcessFile( $mode, $delimiter, "$dirname/$_$ext", "",
-                    $level, $noid, \%arg );
+                    $level, $noid, $arg );
                 $found = 1;
             }
             last if $found;
@@ -272,7 +272,7 @@ sub PatternProcess
             @ls = grep { /^$pattern$/ && eval $test } @{ io->dir("$dirname") };
 
             #   Sort list of files
-            my $criterion = $arg{'IPP_SORT'} || $arg{'IPP_REVERSE'};
+            my $criterion = $arg->{'IPP_SORT'} || $arg->{'IPP_REVERSE'};
             if ( $criterion eq 'date' )
             {
                 @ls = sort { -M $a <=> -M $b } @ls;
@@ -285,33 +285,33 @@ sub PatternProcess
             {
                 @ls = sort @ls;
             }
-            @ls = reverse @ls if ( $arg{'IPP_REVERSE'} );
+            @ls = reverse @ls if ( $arg->{'IPP_REVERSE'} );
 
             #   and truncate it
-            if ( $arg{'IPP_MAX'} =~ m/^\d+$/ and $arg{'IPP_MAX'} < @ls )
+            if ( $arg->{'IPP_MAX'} =~ m/^\d+$/ and $arg->{'IPP_MAX'} < @ls )
             {
-                splice( @ls, $arg{'IPP_MAX'} - scalar(@ls) );
+                splice( @ls, $arg->{'IPP_MAX'} - scalar(@ls) );
             }
             push( @ls, "" );
 
-            $arg{'IPP_NEXT'} = '';
-            $arg{'IPP_THIS'} = '';
+            $arg->{'IPP_NEXT'} = '';
+            $arg->{'IPP_THIS'} = '';
             foreach (@ls)
             {
                 next if ( m|/\.+$| or m|^\.+$| );
 
                 #   set IPP_PREV, IPP_THIS, IPP_NEXT
-                $arg{'IPP_PREV'} = $arg{'IPP_THIS'};
-                $arg{'IPP_THIS'} = $arg{'IPP_NEXT'};
-                $arg{'IPP_NEXT'} = ( $_ eq '' ? '' : $dirname . "/$_$ext" );
-                next if $arg{'IPP_THIS'} eq '';
+                $arg->{'IPP_PREV'} = $arg->{'IPP_THIS'};
+                $arg->{'IPP_THIS'} = $arg->{'IPP_NEXT'};
+                $arg->{'IPP_NEXT'} = ( $_ eq '' ? '' : $dirname . "/$_$ext" );
+                next if $arg->{'IPP_THIS'} eq '';
 
-                $out .= ProcessFile( $mode, $delimiter, $arg{'IPP_THIS'}, "",
-                    $level, $noid, \%arg );
+                $out .= ProcessFile( $mode, $delimiter, $arg->{'IPP_THIS'}, "",
+                    $level, $noid, $arg );
             }
-            delete $arg{'IPP_NEXT'};
-            delete $arg{'IPP_THIS'};
-            delete $arg{'IPP_PREV'};
+            delete $arg->{'IPP_NEXT'};
+            delete $arg->{'IPP_THIS'};
+            delete $arg->{'IPP_PREV'};
         }
     }
     return $out;
@@ -359,7 +359,7 @@ sub ProcessFile
         $pattern =~ s/\*/.*/g;
         $pattern =~ s/\?/./g;
         return PatternProcess( $mode, $delimiter, $dirname, $pattern, $ext,
-            $level, $noid, %$arg );
+            $level, $noid, +{%$arg} );
     }
 
     #
