@@ -113,12 +113,8 @@ EOF
     exit(1);
 }
 
-my @opt_s = ();
-my @opt_P = ();
-my @opt_m = ();
 my $opt_N = 0;
 my $opt_n = '';
-my $opt_o = '-';
 
 sub PatternProcess
 {
@@ -535,17 +531,17 @@ sub main
     $self->opt_M('-');
     $self->opt_I( [ () ] );
     $self->opt_S( [ () ] );
-    @opt_s                       = ();
-    @opt_P                       = ();
-    @opt_m                       = ();
     $opt_N                       = 0;
     $opt_n                       = '';
-    $opt_o                       = '-';
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
 
     my @opt_D;
     my @opt_i;
+    my @opt_s;
+    my @opt_P;
+    my @opt_m;
+    my $opt_o = '-';
     if (
         not Getopt::Long::GetOptions(
             "D|define=s@"     => \@opt_D,
