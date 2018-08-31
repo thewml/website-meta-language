@@ -16,6 +16,8 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             INCLUDES
+            opt_I
+            opt_M
             _map
             )
     },
@@ -110,8 +112,6 @@ EOF
     exit(1);
 }
 
-my $opt_M = '-';
-my @opt_I = ();
 my @opt_D = ();
 my @opt_S = ();
 my @opt_i = ();
@@ -164,7 +164,7 @@ sub PatternProcess
     }
     if ( $_del->is_quote )
     {
-        $process_dirs->( \@opt_I );
+        $process_dirs->( $self->opt_I );
     }
     if ( $_del->is_quote_all )
     {
@@ -468,7 +468,7 @@ sub ProcessFile
     }
     if ( $_del->is_quote )
     {
-        $process_dirs->( \@opt_I );
+        $process_dirs->( $self->opt_I );
     }
     if ( $_del->is_quote_all )
     {
@@ -533,9 +533,9 @@ LINES:
 sub main
 {
     my ( $self, ) = @_;
-    $opt_v                       = 0;
-    $opt_M                       = '-';
-    @opt_I                       = ();
+    $opt_v = 0;
+    $self->opt_M('-');
+    $self->opt_I( [ () ] );
     @opt_D                       = ();
     @opt_S                       = ();
     @opt_i                       = ();
@@ -550,11 +550,11 @@ sub main
 
     if (
         not Getopt::Long::GetOptions(
-            "D|define=s@"         => \@opt_D,
-            "I|includedir=s@"     => \@opt_I,
-            "M|depend:s"          => \$opt_M,
-            "N|nosynclines"       => \$opt_N,
-            "P|prolog=s@"         => \@opt_P,
+            "D|define=s@"     => \@opt_D,
+            "I|includedir=s@" => $self->opt_I,
+            "M|depend:s"    => sub { my ( undef, $v ) = @_; $self->opt_M($v); },
+            "N|nosynclines" => \$opt_N,
+            "P|prolog=s@"   => \@opt_P,
             "S|sysincludedir=s@"  => \@opt_S,
             "i|includefile=s@"    => \@opt_i,
             "m|mapfile=s@"        => \@opt_m,
@@ -569,13 +569,13 @@ sub main
     }
 
     #   Adjust the -M flags
-    if ( $opt_M !~ m%^(-|[MD]*)$% && ( !@ARGV ) )
+    if ( $self->opt_M !~ m%^(-|[MD]*)$% && ( !@ARGV ) )
     {
-        push( @ARGV, $opt_M );
-        $opt_M = '';
+        push( @ARGV, $self->opt_M );
+        $self->opt_M('');
     }
     usage() if ( !@ARGV );
-    push( @opt_I, '.' );
+    push( @{ $self->opt_I }, '.' );
 
     # read mapfiles
     $self->_map( WML_Backends::IPP::Map->new );
@@ -668,19 +668,23 @@ sub main
         unlink($tmpfile);
     }
 
-    if ( $opt_M ne '-' && $opt_o ne '-' )
+    if ( $self->opt_M ne '-' && $opt_o ne '-' )
     {
         my @deps = @ARGV;
         foreach my $inc ( keys( %{ $self->INCLUDES } ) )
         {
-            if ( $self->INCLUDES->{$inc} != 1 or $opt_M !~ m|M| )
+            if ( $self->INCLUDES->{$inc} != 1 or $self->opt_M !~ m|M| )
             {
                 push( @deps, $inc );
             }
         }
 
         WML_Backends->out(
-            ( $opt_M =~ /D/ ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' ) : '-' ),
+            (
+                $self->opt_M =~ /D/
+                ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' )
+                : '-'
+            ),
             \&error,
             [
                 $opt_o . ": \\\n",
