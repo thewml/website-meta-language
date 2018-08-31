@@ -122,7 +122,6 @@ push( @opt_I, '.' );
 #   read mapfiles
 #
 our $MAP = WML_Backends::IPP::Map->new;
-die if not defined $MAP;
 
 foreach my $fn (@opt_m)
 {
