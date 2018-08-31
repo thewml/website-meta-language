@@ -27,6 +27,63 @@ use IO::All qw/ io /;
 use WML_Frontends::Wml::Util qw/ canon_path /;
 use WML_Backends::IPP::Line ();
 
+sub _PatternProcess_helper
+{
+    my (
+        $self,    $test, $out,   $mode,  $_del, $dirname,
+        $pattern, $ext,  $level, $no_id, $arg
+    ) = @_;
+    if ( not -d $dirname )
+    {
+        return;
+    }
+    my @ls =
+        grep { /^$pattern$/ && $test->('.') } @{ io->dir("$dirname") };
+
+    #   Sort list of files
+    my $criterion = $arg->{'IPP_SORT'} || $arg->{'IPP_REVERSE'};
+    if ( $criterion eq 'date' )
+    {
+        @ls = sort { -M $a <=> -M $b } @ls;
+    }
+    elsif ( $criterion eq 'numeric' )
+    {
+        @ls = sort { $a <=> $b } @ls;
+    }
+    elsif ($criterion)
+    {
+        @ls = sort @ls;
+    }
+    @ls = reverse @ls if ( $arg->{'IPP_REVERSE'} );
+
+    #   and truncate it
+    if ( $arg->{'IPP_MAX'} =~ m/^\d+$/ and $arg->{'IPP_MAX'} < @ls )
+    {
+        splice( @ls, $arg->{'IPP_MAX'} - scalar(@ls) );
+    }
+    push( @ls, "" );
+
+    $arg->{'IPP_NEXT'} = '';
+    $arg->{'IPP_THIS'} = '';
+LS:
+    foreach (@ls)
+    {
+        next LS if ( m|/\.+$| or m|^\.+$| );
+
+        #   set IPP_PREV, IPP_THIS, IPP_NEXT
+        $arg->{'IPP_PREV'} = $arg->{'IPP_THIS'};
+        $arg->{'IPP_THIS'} = $arg->{'IPP_NEXT'};
+        $arg->{'IPP_NEXT'} = ( $_ eq '' ? '' : "$dirname/$_$ext" );
+        next LS if $arg->{'IPP_THIS'} eq '';
+
+        $$out .=
+            $self->_main->ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
+            $level, $no_id, $arg );
+    }
+    delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
+    return;
+}
+
 sub PatternProcess
 {
     my ( $self, $mode, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg )
@@ -73,7 +130,7 @@ sub PatternProcess
     }
     if ( $_del->is_quote_all )
     {
-        $self->_main->_PatternProcess_helper(
+        $self->_PatternProcess_helper(
             $test,    \$out, $mode,  $_del,  $dirname,
             $pattern, $ext,  $level, $no_id, $arg
         );

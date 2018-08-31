@@ -101,63 +101,6 @@ EOF
     exit(1);
 }
 
-sub _PatternProcess_helper
-{
-    my (
-        $self,    $test, $out,   $mode,  $_del, $dirname,
-        $pattern, $ext,  $level, $no_id, $arg
-    ) = @_;
-    if ( not -d $dirname )
-    {
-        return;
-    }
-    my @ls =
-        grep { /^$pattern$/ && $test->('.') } @{ io->dir("$dirname") };
-
-    #   Sort list of files
-    my $criterion = $arg->{'IPP_SORT'} || $arg->{'IPP_REVERSE'};
-    if ( $criterion eq 'date' )
-    {
-        @ls = sort { -M $a <=> -M $b } @ls;
-    }
-    elsif ( $criterion eq 'numeric' )
-    {
-        @ls = sort { $a <=> $b } @ls;
-    }
-    elsif ($criterion)
-    {
-        @ls = sort @ls;
-    }
-    @ls = reverse @ls if ( $arg->{'IPP_REVERSE'} );
-
-    #   and truncate it
-    if ( $arg->{'IPP_MAX'} =~ m/^\d+$/ and $arg->{'IPP_MAX'} < @ls )
-    {
-        splice( @ls, $arg->{'IPP_MAX'} - scalar(@ls) );
-    }
-    push( @ls, "" );
-
-    $arg->{'IPP_NEXT'} = '';
-    $arg->{'IPP_THIS'} = '';
-LS:
-    foreach (@ls)
-    {
-        next LS if ( m|/\.+$| or m|^\.+$| );
-
-        #   set IPP_PREV, IPP_THIS, IPP_NEXT
-        $arg->{'IPP_PREV'} = $arg->{'IPP_THIS'};
-        $arg->{'IPP_THIS'} = $arg->{'IPP_NEXT'};
-        $arg->{'IPP_NEXT'} = ( $_ eq '' ? '' : "$dirname/$_$ext" );
-        next LS if $arg->{'IPP_THIS'} eq '';
-
-        $$out .=
-            $self->ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
-            $level, $no_id, $arg );
-    }
-    delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
-    return;
-}
-
 sub _find_file
 {
     my ( $self, $_del, $fn ) = @_;
