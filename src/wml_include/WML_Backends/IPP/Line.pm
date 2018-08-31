@@ -36,8 +36,8 @@ sub _delim
 
 sub _line_Continuation_Support
 {
-    my ( $line, $store ) = @_;
-    my $l = $line->l;
+    my ( $self, $store ) = @_;
+    my $l = $self->l;
 
     #   Line-Continuation Support
     $$l =~ s|^\s+|| if $$store ne '';
@@ -58,9 +58,9 @@ sub _line_Continuation_Support
 
 sub _line_perform_Substitutions
 {
-    my ( $line, ) = @_;
-    my $l         = $line->l;
-    my $arg       = $line->arg;
+    my ( $self, ) = @_;
+    my $l         = $self->l;
+    my $arg       = $self->arg;
 
     #       Substitutions are performed from left to right and from
     #       inner to outer, all operators have same precedence.
@@ -132,17 +132,17 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
 
 sub _process_line
 {
-    my ( $line, $store, $level,, $fn, $realname ) = @_;
-    my $l   = $line->l;
-    my $arg = $line->arg;
+    my ( $self, $store, $level, $fn, $realname ) = @_;
+    my $l   = $self->l;
+    my $arg = $self->arg;
 
     #   EOL-comments
     return if $$l =~ m/^\s*#(?!use|include|depends)/;
 
-    return if !$line->_line_Continuation_Support($store);
+    return if !$self->_line_Continuation_Support($store);
 
     # Variable Interpolation
-    if ( my $ret = $line->_line_perform_Substitutions )
+    if ( my $ret = $self->_line_perform_Substitutions )
     {
         return $ret;
     }
@@ -151,7 +151,7 @@ sub _process_line
     return if $$l =~ m/^\s*#(?!use|include|depends)/;
 
     #   Implicit Variables
-    $$l =~ s|__LINE__|$line->line_idx|eg;
+    $$l =~ s|__LINE__|$self->line_idx|eg;
     if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
     {
         $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}
@@ -166,7 +166,7 @@ sub _process_line
     #   remove one preceding backslash
     $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
 
-    if ( my $ret = $line->_line_do_includes( $realname, $level, ) )
+    if ( my $ret = $self->_line_do_includes( $realname, $level, ) )
     {
         return $ret;
     }
@@ -176,9 +176,9 @@ sub _process_line
 
 sub _line_do_includes
 {
-    my ( $line,, $realname, $level, ) = @_;
-    my $l   = $line->l;
-    my $arg = $line->arg;
+    my ( $self, $realname, $level, ) = @_;
+    my $l   = $self->l;
+    my $arg = $self->arg;
 
     #   ``#include'', ``#use'' and ``#depends'' directives
     if ( my ( $cmd, $incfile, $args ) =
@@ -189,7 +189,7 @@ sub _line_do_includes
         WML_Backends::IPP::Args->new->setargs( $arg, $args );
 
         #   do possible argument mapping
-        $incfile = $line->self->_map->mapfile($incfile);
+        $incfile = $self->self->_map->mapfile($incfile);
 
         my $type;
 
@@ -211,14 +211,14 @@ sub _line_do_includes
         }
 
         #   now recurse down
-        ${ $line->out } .=
-            $line->self->ProcessFile( $cmd, _delim($type),
+        ${ $self->out } .=
+            $self->self->ProcessFile( $cmd, _delim($type),
             $incfile, "", $level + 1, 0, $arg );
-        if ( not $line->self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+        if ( not $self->self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {
-            ${ $line->out } .=
-                  "<__file__ $realname /><__line__ @{[$line->line_idx]} />"
-                . "<protect pass=2><:# line @{[$line->line_idx]} \"$realname\":></protect>\n";
+            ${ $self->out } .=
+                  "<__file__ $realname /><__line__ @{[$self->line_idx]} />"
+                . "<protect pass=2><:# self @{[$self->line_idx]} \"$realname\":></protect>\n";
         }
 
         #   reset arguments
@@ -234,7 +234,7 @@ sub _line_do_includes
     #   plain text
     else
     {
-        ${ $line->out } .= $$l;
+        ${ $self->out } .= $$l;
     }
     return;
 }
