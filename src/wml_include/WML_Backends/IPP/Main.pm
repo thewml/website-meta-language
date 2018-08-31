@@ -43,7 +43,6 @@ use WML_Backends::IPP::Args qw/ $IDENT_RE /;
 use WML_Backends::IPP::Delimit ();
 use WML_Backends::IPP::File    ();
 use WML_Backends::IPP::Map     ();
-use WML_Frontends::Wml::Util qw/ canon_path /;
 
 sub _delim
 {
