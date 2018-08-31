@@ -459,20 +459,9 @@ sub _line_do_includes
     return;
 }
 
-sub ProcessFile
+sub _find_file
 {
-    my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
-
-    my $arg = +{%$in_arg};
-
-    #   first check whether this is a filename pattern in which case
-    #   we must expand it
-    if ( my ( $dirname, $pattern, $ext ) =
-        ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
-    {
-        return $self->_expand_pattern( $dirname, $pattern, $ext, $mode,
-            $_del, $level, $no_id, $arg );
-    }
+    my ( $self, $_del, $fn ) = @_;
 
     #    this is a regular file
     my $found = 0;
@@ -481,9 +470,9 @@ sub ProcessFile
     OPT:
         foreach my $dir ( reverse @{ shift @_ } )
         {
-            if ( -f "$dir/$fn" )
+            if ( -f "$dir/$$fn" )
             {
-                $fn    = "$dir/$fn";
+                $$fn   = "$dir/$$fn";
                 $found = 1;
                 last OPT;
             }
@@ -501,12 +490,32 @@ sub ProcessFile
     }
     if ( $_del->is_quote_all )
     {
-        if ( -f $fn )
+        if ( -f $$fn )
         {
             $found = 1;
         }
     }
-    error("file not found: $fn") if not $found;
+    return $found;
+}
+
+sub ProcessFile
+{
+    my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
+
+    my $arg = +{%$in_arg};
+
+    #   first check whether this is a filename pattern in which case
+    #   we must expand it
+    if ( my ( $dirname, $pattern, $ext ) =
+        ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
+    {
+        return $self->_expand_pattern( $dirname, $pattern, $ext, $mode,
+            $_del, $level, $no_id, $arg );
+    }
+    if ( not $self->_find_file( $_del, \$fn ) )
+    {
+        error("file not found: $fn");
+    }
 
     #   stop if file was still included some time before
     if ( not $no_id )
