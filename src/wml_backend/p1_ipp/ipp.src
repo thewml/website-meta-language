@@ -148,9 +148,9 @@ LINES:
     }
 }
 
-foreach my $file (@opt_m)
+foreach my $fn (@opt_m)
 {
-    read_mapfile( $MAP, $file );
+    read_mapfile( $MAP, $fn );
 }
 
 #
@@ -194,28 +194,28 @@ sub setargs
 
 sub mapfile
 {
-    my ($file) = @_;
+    my ($fn) = @_;
     my ( $replace, $type, $text );
 
-    if ( $replace = $MAP->{$file}->{REPLACE} )
+    if ( $replace = $MAP->{$fn}->{REPLACE} )
     {
-        $type = $MAP->{$file}->{ACTIONTYPE};
-        $text = $MAP->{$file}->{ACTIONTEXT};
+        $type = $MAP->{$fn}->{ACTIONTYPE};
+        $text = $MAP->{$fn}->{ACTIONTEXT};
         if ( $type eq 'S' )
         {
-            $file = $replace;
+            $fn = $replace;
         }
         elsif ( $type eq 'W' )
         {
-            warning("$file: $text");
-            $file = $replace;
+            warning("$fn: $text");
+            $fn = $replace;
         }
         else
         {
-            error("$file: $text");
+            error("$fn: $text");
         }
     }
-    return $file;
+    return $fn;
 }
 
 sub PatternProcess
@@ -318,7 +318,7 @@ sub PatternProcess
 
 sub ProcessFile
 {
-    my ( $mode, $delimiter, $file, $realname, $level, $noid, $in_arg ) = @_;
+    my ( $mode, $delimiter, $fn, $realname, $level, $noid, $in_arg ) = @_;
     my ( $incfile, $type, %argO, $out, $store );
     my ( $dirname, $pattern, $ext );
 
@@ -328,7 +328,7 @@ sub ProcessFile
     #   we must expand it
     #
     if ( ( $dirname, $pattern, $ext ) =
-        ( $file =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
+        ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
         if ( $dirname =~ m|^(.*)/(.*?)$| )
         {
@@ -367,9 +367,9 @@ sub ProcessFile
     OPT_S:
         foreach my $dir ( reverse @opt_S )
         {
-            if ( -f "$dir/$file" )
+            if ( -f "$dir/$fn" )
             {
-                $file  = "$dir/$file";
+                $fn    = "$dir/$fn";
                 $found = 1;
                 last OPT_S;
             }
@@ -380,9 +380,9 @@ sub ProcessFile
     OPT_I:
         foreach my $dir ( reverse @opt_I )
         {
-            if ( -f "$dir/$file" )
+            if ( -f "$dir/$fn" )
             {
-                $file  = "$dir/$file";
+                $fn    = "$dir/$fn";
                 $found = 1;
                 last OPT_I;
             }
@@ -390,19 +390,19 @@ sub ProcessFile
     }
     if ( $delimiter eq '<' or $delimiter eq '"' or $delimiter eq "'" )
     {
-        if ( -f $file )
+        if ( -f $fn )
         {
             $found = 1;
         }
     }
-    error("file not found: $file") if not $found;
+    error("file not found: $fn") if not $found;
 
     #
     #   stop if file was still included some time before
     #
     if ( not $noid )
     {
-        my $id = canon_path($file);
+        my $id = canon_path($fn);
         if ( $mode eq 'use' )
         {
             return '' if ( exists $INCLUDES{$id} );
@@ -424,10 +424,10 @@ sub ProcessFile
     #
     #   process the file
     #
-    $realname = $file if $realname eq '';
+    $realname = $fn if $realname eq '';
     verbose( $level, "|" );
-    verbose( $level, "+-- $file" );
-    my $in       = io()->file($file);
+    verbose( $level, "+-- $fn" );
+    my $in       = io()->file($fn);
     my $line_idx = 0;
     $out = '';
     $out =
@@ -548,7 +548,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
         }
         else
         {
-            $l =~ s|__FILE__|$file|g;
+            $l =~ s|__FILE__|$fn|g;
         }
 
         #   remove one preceding backslash
