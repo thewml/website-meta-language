@@ -246,21 +246,6 @@ sub _expand_pattern
         $ext, $level, $no_id, +{%$arg} );
 }
 
-sub _process_line
-{
-    my ( $self, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
-        @_;
-
-    return WML_Backends::IPP::Line->new(
-        _main    => $self,
-        arg      => $arg,
-        l        => $l,
-        line_idx => $line_idx,
-        out      => $out,
-        realname => $realname,
-    )->_process_line( $store, $level, $fn, );
-}
-
 sub _find_file
 {
     my ( $self, $_del, $fn ) = @_;
@@ -353,9 +338,14 @@ LINES:
     {
         ++$line_idx;
 
-        my $op =
-            $self->_process_line( \$l, $line_idx, $arg, \$store,
-            $level, \$out, $fn, $realname, ) // '';
+        my $op = WML_Backends::IPP::Line->new(
+            _main    => $self,
+            arg      => $arg,
+            l        => \$l,
+            line_idx => $line_idx,
+            out      => \$out,
+            realname => $realname,
+        )->_process_line( \$store, $level, $fn, ) // '';
         if ( $op eq 'last' )
         {
             last LINES;
