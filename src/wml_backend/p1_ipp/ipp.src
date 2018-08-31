@@ -545,31 +545,27 @@ sub ProcessFile
     #    this is a regular file
     my $found = 0;
 
-    if ( $_del->is_ang )
-    {
-    OPT_S:
-        foreach my $dir ( reverse @opt_S )
+    my $process_dirs = sub {
+    OPT:
+        foreach my $dir ( reverse @{ shift @_ } )
         {
             if ( -f "$dir/$fn" )
             {
                 $fn    = "$dir/$fn";
                 $found = 1;
-                last OPT_S;
+                last OPT;
             }
         }
+        return;
+    };
+
+    if ( $_del->is_ang )
+    {
+        $process_dirs->( \@opt_S );
     }
     if ( $_del->is_quote )
     {
-    OPT_I:
-        foreach my $dir ( reverse @opt_I )
-        {
-            if ( -f "$dir/$fn" )
-            {
-                $fn    = "$dir/$fn";
-                $found = 1;
-                last OPT_I;
-            }
-        }
+        $process_dirs->( \@opt_I );
     }
     if ( $_del->is_quote_all )
     {
