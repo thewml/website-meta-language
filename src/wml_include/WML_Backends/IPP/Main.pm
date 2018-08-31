@@ -272,11 +272,11 @@ sub _line_perform_Substitutions
 
     #       Substitutions are performed from left to right and from
     #       inner to outer, all operators have same precedence.
-    if ( $$l !~ m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
+    if ( $$l !~ m/(?:(?!\\).|^)\$\(([a-zA-Z0-9_]+)(?:(=|:[-=?+*])([^()]*))?\)/ )
     {
         return;
     }
-    my ( $name, $op, $str ) = ( $2, $4, $5 );
+    my ( $name, $op, $str ) = ( $1, $2, $3 );
     if ( not defined($op) )
     {
         #   Normal Value
