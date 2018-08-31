@@ -15,6 +15,48 @@ use 5.014;
 use strict;
 use warnings;
 
+package WML::IPP::Delimit;
+
+use Class::XSAccessor (
+    accessors => +{
+        map { $_ => $_ }
+            qw(
+            delimiter
+            )
+    },
+    constructor => 'new',
+);
+
+sub is
+{
+    my ( $self, $v ) = @_;
+
+    return $self->delimiter eq $v;
+}
+
+sub is_ang
+{
+    my $self = shift;
+
+    return $self->is('<');
+}
+
+sub is_quote
+{
+    my $self = shift;
+
+    return $self->is_ang || $self->is(q/"/);
+}
+
+sub is_quote_all
+{
+    my $self = shift;
+
+    return $self->is_quote || $self->is(q/'/);
+}
+
+package main;
+
 use Getopt::Long 2.13;
 use File::Temp qw/tempdir/;
 use File::Spec;
@@ -218,8 +260,7 @@ sub mapfile
 
 sub PatternProcess
 {
-    my ( $mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, $arg ) =
-        @_;
+    my ( $mode, $_del, $dirname, $pattern, $ext, $level, $noid, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -240,7 +281,7 @@ sub PatternProcess
             foreach (@ls)
             {
                 next LS if ( m|/\.+$| or m|^\.+$| );
-                $out .= ProcessFile( $mode, $delimiter, "$dirname/$_$ext", "",
+                $out .= ProcessFile( $mode, $_del, "$dirname/$_$ext", "",
                     $level, $noid, $arg );
                 $found = 1;
             }
@@ -251,15 +292,15 @@ sub PatternProcess
 
     };
 
-    if ( $delimiter eq '<' )
+    if ( $_del->is_ang )
     {
         $process_dirs->( \@opt_S );
     }
-    if ( $delimiter eq '<' or $delimiter eq '"' )
+    if ( $_del->is_quote )
     {
         $process_dirs->( \@opt_I );
     }
-    if ( $delimiter eq '<' or $delimiter eq '"' or $delimiter eq "'" )
+    if ( $_del->is_quote_all )
     {
         if ( -d $dirname )
         {
@@ -302,7 +343,7 @@ sub PatternProcess
                 $arg->{'IPP_NEXT'} = ( $_ eq '' ? '' : "$dirname/$_$ext" );
                 next LS if $arg->{'IPP_THIS'} eq '';
 
-                $out .= ProcessFile( $mode, $delimiter, $arg->{'IPP_THIS'}, "",
+                $out .= ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
                     $level, $noid, $arg );
             }
             delete $arg->{'IPP_NEXT'};
@@ -315,7 +356,7 @@ sub PatternProcess
 
 sub ProcessFile
 {
-    my ( $mode, $delimiter, $fn, $realname, $level, $noid, $in_arg ) = @_;
+    my ( $mode, $_del, $fn, $realname, $level, $noid, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -349,14 +390,14 @@ sub ProcessFile
         $pattern =~ s/\./\\./g;
         $pattern =~ s/\*/.*/g;
         $pattern =~ s/\?/./g;
-        return PatternProcess( $mode, $delimiter, $dirname, $pattern, $ext,
+        return PatternProcess( $mode, $_del, $dirname, $pattern, $ext,
             $level, $noid, +{%$arg} );
     }
 
     #    this is a regular file
     my $found = 0;
 
-    if ( $delimiter eq '<' )
+    if ( $_del->is_ang )
     {
     OPT_S:
         foreach my $dir ( reverse @opt_S )
@@ -369,7 +410,7 @@ sub ProcessFile
             }
         }
     }
-    if ( $delimiter eq '<' or $delimiter eq '"' )
+    if ( $_del->is_quote )
     {
     OPT_I:
         foreach my $dir ( reverse @opt_I )
@@ -382,7 +423,7 @@ sub ProcessFile
             }
         }
     }
-    if ( $delimiter eq '<' or $delimiter eq '"' or $delimiter eq "'" )
+    if ( $_del->is_quote_all )
     {
         if ( -f $fn )
         {
@@ -401,7 +442,7 @@ sub ProcessFile
         {
             return '' if ( exists $INCLUDES{$id} );
         }
-        if ( $delimiter eq '<' )
+        if ( $_del->is_ang )
         {
             $INCLUDES{$id} = 1;
         }
@@ -582,7 +623,8 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
 
             #   now recurse down
             $out .=
-                ProcessFile( $cmd, $type, $incfile, "", $level + 1, 0, $arg );
+                ProcessFile( $cmd, WML::IPP::Delimit->new( delimiter => $type ),
+                $incfile, "", $level + 1, 0, $arg );
             if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
             {
                 $out .=
@@ -665,7 +707,8 @@ unlink($tmpfile);
         );
     }
 }
-$outbuf .= ProcessFile( 'include', "'", $tmpfile, "", 0, 1, \%arg );
+$outbuf .= ProcessFile( 'include', WML::IPP::Delimit->new( delimiter => q/'/ ),
+    $tmpfile, "", 0, 1, \%arg );
 unlink($tmpfile);
 
 #
@@ -685,9 +728,11 @@ foreach my $fn (@ARGV)
     }
 
     #   process file via IPP filter
-    $outbuf .=
-        ProcessFile( 'include', "'", $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
-        0, 1, \%arg );
+    $outbuf .= ProcessFile(
+        'include', WML::IPP::Delimit->new( delimiter => q/'/ ),
+        $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
+        0, 1, \%arg
+    );
 
     #   cleanup
     unlink($tmpfile);
