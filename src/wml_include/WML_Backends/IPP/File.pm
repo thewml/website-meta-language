@@ -171,6 +171,45 @@ sub _expand_pattern
         $ext, $level, $no_id, +{%$arg} );
 }
 
+sub _find_file
+{
+    my ( $self, $_del, $fn ) = @_;
+
+    #    this is a regular file
+    my $found = 0;
+
+    my $process_dirs = sub {
+    OPT:
+        foreach my $dir ( reverse @{ shift @_ } )
+        {
+            if ( -f "$dir/$$fn" )
+            {
+                $$fn   = "$dir/$$fn";
+                $found = 1;
+                last OPT;
+            }
+        }
+        return;
+    };
+
+    if ( $_del->is_ang )
+    {
+        $process_dirs->( $self->_main->opt_S );
+    }
+    if ( $_del->is_quote )
+    {
+        $process_dirs->( $self->_main->opt_I );
+    }
+    if ( $_del->is_quote_all )
+    {
+        if ( -f $$fn )
+        {
+            $found = 1;
+        }
+    }
+    return $found;
+}
+
 sub ProcessFile
 {
     my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
@@ -185,7 +224,7 @@ sub ProcessFile
         return $self->_expand_pattern( $dirname, $pattern, $ext, $mode,
             $_del, $level, $no_id, $arg );
     }
-    if ( not $self->_main->_find_file( $_del, \$fn ) )
+    if ( not $self->_find_file( $_del, \$fn ) )
     {
         error("file not found: $fn");
     }

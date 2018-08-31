@@ -101,45 +101,6 @@ EOF
     exit(1);
 }
 
-sub _find_file
-{
-    my ( $self, $_del, $fn ) = @_;
-
-    #    this is a regular file
-    my $found = 0;
-
-    my $process_dirs = sub {
-    OPT:
-        foreach my $dir ( reverse @{ shift @_ } )
-        {
-            if ( -f "$dir/$$fn" )
-            {
-                $$fn   = "$dir/$$fn";
-                $found = 1;
-                last OPT;
-            }
-        }
-        return;
-    };
-
-    if ( $_del->is_ang )
-    {
-        $process_dirs->( $self->opt_S );
-    }
-    if ( $_del->is_quote )
-    {
-        $process_dirs->( $self->opt_I );
-    }
-    if ( $_del->is_quote_all )
-    {
-        if ( -f $$fn )
-        {
-            $found = 1;
-        }
-    }
-    return $found;
-}
-
 sub ProcessFile
 {
     my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
