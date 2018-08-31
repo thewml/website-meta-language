@@ -25,7 +25,7 @@ use Class::XSAccessor (
             opt_v
             temp_fn
             _map
-            outbuf
+            _out_buf_ref
             )
     },
 );
@@ -592,7 +592,7 @@ sub _append
 {
     my ( $self, $text ) = @_;
 
-    ${ $self->outbuf } .= $text;
+    ${ $self->_out_buf_ref } .= $text;
 
     return;
 }
@@ -650,7 +650,7 @@ sub main
 
     # iterate over the input files
     $self->INCLUDES( { () } );
-    $self->outbuf(
+    $self->_out_buf_ref(
         do { my $s = ''; \$s; }
     );
 
@@ -739,7 +739,7 @@ sub _do_output
     else
     {
         # create output file
-        WML_Backends->out( $opt_o, \&error, [ ${ $self->outbuf } ] );
+        WML_Backends->out( $opt_o, \&error, [ ${ $self->_out_buf_ref } ] );
     }
 
     return;
