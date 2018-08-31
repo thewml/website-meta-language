@@ -549,6 +549,37 @@ sub _write_includes
     return;
 }
 
+sub _create_initial_argument_vector
+{
+    my ( $self, $arg, $opt_D ) = @_;
+
+    foreach my $str (@$opt_D)
+    {
+        $str =~ s=\A(['"])(.*)\1\z=$2=;
+        if ( $str =~ m|^($IDENT_RE)="(.*)"$| )
+        {
+            $arg->{$1} = $2;
+        }
+        elsif ( $str =~ m|^($IDENT_RE)=(['"]['"])?$| )
+        {
+            $arg->{$1} = '';
+        }
+        elsif ( $str =~ m|^($IDENT_RE)=(.+)$| )
+        {
+            $arg->{$1} = $2;
+        }
+        elsif ( $str =~ m|^($IDENT_RE)$| )
+        {
+            $arg->{$1} = 1;
+        }
+        else
+        {
+            error("Bad argument to option `D': $str");
+        }
+    }
+    return;
+}
+
 sub main
 {
     my ( $self, ) = @_;
@@ -604,32 +635,8 @@ sub main
     $self->INCLUDES( { () } );
     my $outbuf = '';
 
-    #   create initial argument vector
-    my %arg = ();
-    foreach my $str (@opt_D)
-    {
-        $str =~ s=\A(['"])(.*)\1\z=$2=;
-        if ( $str =~ m|^($IDENT_RE)="(.*)"$| )
-        {
-            $arg{$1} = $2;
-        }
-        elsif ( $str =~ m|^($IDENT_RE)=(['"]['"])?$| )
-        {
-            $arg{$1} = '';
-        }
-        elsif ( $str =~ m|^($IDENT_RE)=(.+)$| )
-        {
-            $arg{$1} = $2;
-        }
-        elsif ( $str =~ m|^($IDENT_RE)$| )
-        {
-            $arg{$1} = 1;
-        }
-        else
-        {
-            error("Bad argument to option `D': $str");
-        }
-    }
+    my %arg;
+    $self->_create_initial_argument_vector( \%arg, \@opt_D );
 
     #   process the pre-loaded include files
     my $tmpdir = tempdir( 'ipp.XXXXXXXX', 'CLEANUP' => 1, )
