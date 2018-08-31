@@ -19,6 +19,7 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             l
+            line_idx
             self
             )
     },
@@ -128,7 +129,7 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
 
 sub _process_line
 {
-    my ( $line, $line_idx, $arg, $store, $level, $out, $fn, $realname ) = @_;
+    my ( $line, $arg, $store, $level, $out, $fn, $realname ) = @_;
     my $l = $line->l;
 
     #   EOL-comments
@@ -146,7 +147,7 @@ sub _process_line
     return if $$l =~ m/^\s*#(?!use|include|depends)/;
 
     #   Implicit Variables
-    $$l =~ s|__LINE__|$line_idx|g;
+    $$l =~ s|__LINE__|$line->line_idx|eg;
     if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
     {
         $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}
@@ -161,8 +162,7 @@ sub _process_line
     #   remove one preceding backslash
     $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
 
-    if ( my $ret =
-        $line->_line_do_includes( $arg, $out, $line_idx, $realname, $level, ) )
+    if ( my $ret = $line->_line_do_includes( $arg, $out, $realname, $level, ) )
     {
         return $ret;
     }
@@ -172,7 +172,7 @@ sub _process_line
 
 sub _line_do_includes
 {
-    my ( $line, $arg, $out, $line_idx, $realname, $level, ) = @_;
+    my ( $line, $arg, $out, $realname, $level, ) = @_;
     my $l = $line->l;
 
     #   ``#include'', ``#use'' and ``#depends'' directives
@@ -212,8 +212,8 @@ sub _line_do_includes
         if ( not $line->self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {
             $$out .=
-                  "<__file__ $realname /><__line__ $line_idx />"
-                . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n";
+                  "<__file__ $realname /><__line__ @{[$line->line_idx]} />"
+                . "<protect pass=2><:# line @{[$line->line_idx]} \"$realname\":></protect>\n";
         }
 
         #   reset arguments
