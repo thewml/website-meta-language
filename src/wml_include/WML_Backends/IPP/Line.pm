@@ -18,11 +18,11 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            _main
             arg
             l
             line_idx
             out
-            self
             )
     },
 );
@@ -189,7 +189,7 @@ sub _line_do_includes
         WML_Backends::IPP::Args->new->setargs( $arg, $args );
 
         #   do possible argument mapping
-        $incfile = $self->self->_map->mapfile($incfile);
+        $incfile = $self->_main->_map->mapfile($incfile);
 
         my $type;
 
@@ -212,9 +212,9 @@ sub _line_do_includes
 
         #   now recurse down
         ${ $self->out } .=
-            $self->self->ProcessFile( $cmd, _delim($type),
+            $self->_main->ProcessFile( $cmd, _delim($type),
             $incfile, "", $level + 1, 0, $arg );
-        if ( not $self->self->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+        if ( not $self->_main->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {
             ${ $self->out } .=
                   "<__file__ $realname /><__line__ @{[$self->line_idx]} />"

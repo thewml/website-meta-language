@@ -252,8 +252,8 @@ sub _process_line
         @_;
 
     return WML_Backends::IPP::Line->new(
+        _main    => $self,
         arg      => $arg,
-        self     => $self,
         l        => $l,
         line_idx => $line_idx,
         out      => $out,
