@@ -677,10 +677,7 @@ sub main
     }
     usage() if ( !@ARGV );
     push( @{ $self->opt_I }, '.' );
-
-    # read mapfiles
-    $self->_map( WML_Backends::IPP::Map->new );
-    $self->_map->read_multi_map_files( \@opt_m );
+    $self->_map( WML_Backends::IPP::Map->new( { filenames => \@opt_m } ) );
 
     # iterate over the input files
     $self->INCLUDES( { () } );

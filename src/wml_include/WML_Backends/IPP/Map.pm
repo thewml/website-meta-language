@@ -29,6 +29,7 @@ sub _init
     my ( $self, $args ) = @_;
 
     $self->_map( +{} );
+    $self->read_multi_map_files( $args->{filenames} );
 
     return;
 }
