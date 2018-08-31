@@ -27,6 +27,60 @@ use IO::All qw/ io /;
 use WML_Frontends::Wml::Util qw/ canon_path /;
 use WML_Backends::IPP::Line ();
 
+sub PatternProcess
+{
+    my ( $self, $mode, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg )
+        = @_;
+
+    my $out = '';
+    my $test =
+        +( $ext eq '' )
+        ? sub { my $dir = shift; return -f "$dir/$dirname/$_"; }
+        : sub { my $dir = shift; return -d "$dir/$dirname"; };
+
+    my $process_dirs = sub {
+        my ($dirs) = @_;
+
+    DIRS:
+        foreach my $dir ( reverse @$dirs )
+        {
+            my @ls = grep { /^$pattern$/ && $test->($dir) }
+                @{ io->dir("$dir/$dirname") };
+            my $found = 0;
+        LS:
+            foreach (@ls)
+            {
+                next LS if ( m|/\.+$| or m|^\.+$| );
+                $out .=
+                    $self->_main->ProcessFile( $mode, $_del, "$dirname/$_$ext",
+                    "", $level, $no_id, $arg );
+                $found = 1;
+            }
+            last DIRS if $found;
+        }
+
+        return;
+
+    };
+
+    if ( $_del->is_ang )
+    {
+        $process_dirs->( $self->_main->opt_S );
+    }
+    if ( $_del->is_quote )
+    {
+        $process_dirs->( $self->_main->opt_I );
+    }
+    if ( $_del->is_quote_all )
+    {
+        $self->_main->_PatternProcess_helper(
+            $test,    \$out, $mode,  $_del,  $dirname,
+            $pattern, $ext,  $level, $no_id, $arg
+        );
+    }
+    return $out;
+}
+
 sub _expand_pattern
 {
     my ( $self, $dirname, $pattern, $ext, $mode, $_del, $level, $no_id, $arg )
@@ -56,7 +110,7 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->_main->PatternProcess( $mode, $_del, $dirname, $pattern,
+    return $self->PatternProcess( $mode, $_del, $dirname, $pattern,
         $ext, $level, $no_id, +{%$arg} );
 }
 
