@@ -252,10 +252,11 @@ sub _process_line
         @_;
 
     return WML_Backends::IPP::Line->new(
+        arg      => $arg,
         self     => $self,
         l        => $l,
         line_idx => $line_idx
-    )->_process_line( $arg, $store, $level, $out, $fn, $realname, );
+    )->_process_line( $store, $level, $out, $fn, $realname, );
 }
 
 sub _find_file

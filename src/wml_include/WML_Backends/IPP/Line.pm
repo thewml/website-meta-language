@@ -18,6 +18,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            arg
             l
             line_idx
             self
@@ -56,8 +57,9 @@ sub _line_Continuation_Support
 
 sub _line_perform_Substitutions
 {
-    my ( $line, $arg ) = @_;
-    my $l = $line->l;
+    my ( $line, ) = @_;
+    my $l         = $line->l;
+    my $arg       = $line->arg;
 
     #       Substitutions are performed from left to right and from
     #       inner to outer, all operators have same precedence.
@@ -129,8 +131,9 @@ s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
 
 sub _process_line
 {
-    my ( $line, $arg, $store, $level, $out, $fn, $realname ) = @_;
-    my $l = $line->l;
+    my ( $line, $store, $level, $out, $fn, $realname ) = @_;
+    my $l   = $line->l;
+    my $arg = $line->arg;
 
     #   EOL-comments
     return if $$l =~ m/^\s*#(?!use|include|depends)/;
@@ -138,7 +141,7 @@ sub _process_line
     return if !$line->_line_Continuation_Support($store);
 
     # Variable Interpolation
-    if ( my $ret = $line->_line_perform_Substitutions($arg) )
+    if ( my $ret = $line->_line_perform_Substitutions )
     {
         return $ret;
     }
@@ -162,7 +165,7 @@ sub _process_line
     #   remove one preceding backslash
     $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
 
-    if ( my $ret = $line->_line_do_includes( $arg, $out, $realname, $level, ) )
+    if ( my $ret = $line->_line_do_includes( $out, $realname, $level, ) )
     {
         return $ret;
     }
@@ -172,8 +175,9 @@ sub _process_line
 
 sub _line_do_includes
 {
-    my ( $line, $arg, $out, $realname, $level, ) = @_;
-    my $l = $line->l;
+    my ( $line, $out, $realname, $level, ) = @_;
+    my $l   = $line->l;
+    my $arg = $line->arg;
 
     #   ``#include'', ``#use'' and ``#depends'' directives
     if ( my ( $cmd, $incfile, $args ) =
