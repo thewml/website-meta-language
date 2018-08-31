@@ -154,9 +154,7 @@ LS:
             $self->ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
             $level, $no_id, $arg );
     }
-    delete $arg->{'IPP_NEXT'};
-    delete $arg->{'IPP_THIS'};
-    delete $arg->{'IPP_PREV'};
+    delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
     return;
 }
 
