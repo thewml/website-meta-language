@@ -319,7 +319,7 @@ sub PatternProcess
 sub ProcessFile
 {
     my ( $mode, $delimiter, $file, $realname, $level, $noid, $in_arg ) = @_;
-    my ( $found, $incfile, $type, %argO, $out, $store );
+    my ( $incfile, $type, %argO, $out, $store );
     my ( $dirname, $pattern, $ext );
 
     my $arg = +{%$in_arg};
@@ -351,9 +351,7 @@ sub ProcessFile
             $ext = '';
         }
 
-        #
         #   replace filename patterns by regular expressions
-        #
         $pattern =~ s/\./\\./g;
         $pattern =~ s/\*/.*/g;
         $pattern =~ s/\?/./g;
@@ -361,32 +359,32 @@ sub ProcessFile
             $level, $noid, +{%$arg} );
     }
 
-    #
     #    this is a regular file
-    #
-    $found = 0;
+    my $found = 0;
 
     if ( $delimiter eq '<' )
     {
+    OPT_S:
         foreach my $dir ( reverse @opt_S )
         {
             if ( -f "$dir/$file" )
             {
                 $file  = "$dir/$file";
                 $found = 1;
-                last;
+                last OPT_S;
             }
         }
     }
     if ( $delimiter eq '<' or $delimiter eq '"' )
     {
+    OPT_I:
         foreach my $dir ( reverse @opt_I )
         {
             if ( -f "$dir/$file" )
             {
                 $file  = "$dir/$file";
                 $found = 1;
-                last;
+                last OPT_I;
             }
         }
     }
