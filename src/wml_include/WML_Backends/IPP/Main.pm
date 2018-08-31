@@ -11,6 +11,8 @@ use 5.014;
 use strict;
 use warnings;
 
+use parent 'WML_Frontends::Wml::Base';
+
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
@@ -542,18 +544,18 @@ sub main
     my $opt_n = '';
     if (
         not Getopt::Long::GetOptions(
-            "D|define=s@"     => \@opt_D,
-            "I|includedir=s@" => $self->opt_I,
-            "M|depend:s"    => sub { my ( undef, $v ) = @_; $self->opt_M($v); },
-            "N|nosynclines" => sub { my ( undef, $v ) = @_; $self->opt_N($v); },
-            "P|prolog=s@"   => \@opt_P,
+            "D|define=s@"         => \@opt_D,
+            "I|includedir=s@"     => $self->opt_I,
+            "M|depend:s"          => $self->_gen_opt('opt_M'),
+            "N|nosynclines"       => $self->_gen_opt('opt_N'),
+            "v|verbose"           => $self->_gen_opt('opt_v'),
+            "P|prolog=s@"         => \@opt_P,
             "S|sysincludedir=s@"  => $self->opt_S,
             "i|includefile=s@"    => \@opt_i,
             "m|mapfile=s@"        => \@opt_m,
             "n|inputfile=s"       => \$opt_n,
             "o|outputfile=s"      => \$opt_o,
             "s|sysincludefile=s@" => \@opt_s,
-            "v|verbose" => sub { my ( undef, $v ) = @_; $self->opt_v($v); },
         )
         )
     {
