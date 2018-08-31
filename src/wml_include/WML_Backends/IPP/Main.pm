@@ -360,7 +360,6 @@ sub _process_line
     return if !$self->_line_Continuation_Support( $l, $store );
 
     # Variable Interpolation
-
     if ( my $ret = $self->_line_perform_Substitutions( $l, $arg ) )
     {
         return $ret;
@@ -384,6 +383,22 @@ sub _process_line
 
     #   remove one preceding backslash
     $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
+
+    if (
+        my $ret =
+        $self->_line_do_includes( $l, $arg, $out, $line_idx, $realname, $level,
+        )
+        )
+    {
+        return $ret;
+    }
+
+    return;
+}
+
+sub _line_do_includes
+{
+    my ( $self, $l, $arg, $out, $line_idx, $realname, $level, ) = @_;
 
     #   ``#include'', ``#use'' and ``#depends'' directives
     if ( my ( $cmd, $incfile, $args ) =
@@ -441,7 +456,6 @@ sub _process_line
     {
         $$out .= $$l;
     }
-
     return;
 }
 
