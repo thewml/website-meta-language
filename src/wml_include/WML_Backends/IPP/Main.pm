@@ -656,14 +656,21 @@ sub main
         $self->ProcessFile( 'include', _sq(), $self->temp_fn, "", 0, 1, \%arg );
     $self->_del_temp;
 
-    #   process real files
+    $self->_process_real_files( \@opt_P, $opt_n, \$outbuf, \%arg );
+    $self->_do_output( $opt_o, \$outbuf );
+}
+
+sub _process_real_files
+{
+    my ( $self, $opt_P, $opt_n, $outbuf, $arg ) = @_;
+
     foreach my $fn (@ARGV)
     {
         #   create temporary working file
         io()->file( $self->temp_fn )->print( WML_Backends->input( [$fn] ) );
 
         #   apply prolog filters
-        foreach my $p (@opt_P)
+        foreach my $p (@$opt_P)
         {
             my $rc = system(
 "$p <$self->temp_fn >$self->temp_fn.f && mv $self->temp_fn.f $self->temp_fn 2>/dev/null"
@@ -672,15 +679,16 @@ sub main
         }
 
         #   process file via IPP filter
-        $outbuf .=
+        $$outbuf .=
             $self->ProcessFile( 'include', _sq(),
             $self->temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
-            0, 1, \%arg );
+            0, 1, $arg );
 
         #   cleanup
         $self->_del_temp;
     }
-    $self->_do_output( $opt_o, \$outbuf );
+
+    return;
 }
 
 sub _do_output
