@@ -18,6 +18,7 @@ use Class::XSAccessor (
             INCLUDES
             opt_I
             opt_M
+            opt_S
             _map
             )
     },
@@ -112,9 +113,6 @@ EOF
     exit(1);
 }
 
-my @opt_D = ();
-my @opt_S = ();
-my @opt_i = ();
 my @opt_s = ();
 my @opt_P = ();
 my @opt_m = ();
@@ -160,7 +158,7 @@ sub PatternProcess
 
     if ( $_del->is_ang )
     {
-        $process_dirs->( \@opt_S );
+        $process_dirs->( $self->opt_S );
     }
     if ( $_del->is_quote )
     {
@@ -464,7 +462,7 @@ sub ProcessFile
 
     if ( $_del->is_ang )
     {
-        $process_dirs->( \@opt_S );
+        $process_dirs->( $self->opt_S );
     }
     if ( $_del->is_quote )
     {
@@ -536,9 +534,7 @@ sub main
     $opt_v = 0;
     $self->opt_M('-');
     $self->opt_I( [ () ] );
-    @opt_D                       = ();
-    @opt_S                       = ();
-    @opt_i                       = ();
+    $self->opt_S( [ () ] );
     @opt_s                       = ();
     @opt_P                       = ();
     @opt_m                       = ();
@@ -548,6 +544,8 @@ sub main
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
 
+    my @opt_D;
+    my @opt_i;
     if (
         not Getopt::Long::GetOptions(
             "D|define=s@"     => \@opt_D,
@@ -555,7 +553,7 @@ sub main
             "M|depend:s"    => sub { my ( undef, $v ) = @_; $self->opt_M($v); },
             "N|nosynclines" => \$opt_N,
             "P|prolog=s@"   => \@opt_P,
-            "S|sysincludedir=s@"  => \@opt_S,
+            "S|sysincludedir=s@"  => $self->opt_S,
             "i|includefile=s@"    => \@opt_i,
             "m|mapfile=s@"        => \@opt_m,
             "n|inputfile=s"       => \$opt_n,
