@@ -19,6 +19,7 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             _main
+            mode
             )
     },
 );
@@ -30,7 +31,7 @@ use WML_Backends::IPP::Line ();
 sub _PatternProcess_helper
 {
     my (
-        $self,    $test, $out,   $mode,  $_del, $dirname,
+        $self,    $test, $out,   $_del,  $dirname,
         $pattern, $ext,  $level, $no_id, $arg
     ) = @_;
     if ( not -d $dirname )
@@ -77,8 +78,8 @@ LS:
         next LS if $arg->{'IPP_THIS'} eq '';
 
         $$out .=
-            $self->_main->ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
-            $level, $no_id, $arg );
+            $self->_main->ProcessFile( $self->mode, $_del, $arg->{'IPP_THIS'},
+            "", $level, $no_id, $arg );
     }
     delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
     return;
@@ -86,8 +87,7 @@ LS:
 
 sub PatternProcess
 {
-    my ( $self, $mode, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg )
-        = @_;
+    my ( $self, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -109,8 +109,8 @@ sub PatternProcess
             {
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .=
-                    $self->_main->ProcessFile( $mode, $_del, "$dirname/$_$ext",
-                    "", $level, $no_id, $arg );
+                    $self->_main->ProcessFile( $self->mode, $_del,
+                    "$dirname/$_$ext", "", $level, $no_id, $arg );
                 $found = 1;
             }
             last DIRS if $found;
@@ -131,8 +131,8 @@ sub PatternProcess
     if ( $_del->is_quote_all )
     {
         $self->_PatternProcess_helper(
-            $test,    \$out, $mode,  $_del,  $dirname,
-            $pattern, $ext,  $level, $no_id, $arg
+            $test, \$out,  $_del,  $dirname, $pattern,
+            $ext,  $level, $no_id, $arg
         );
     }
     return $out;
@@ -140,8 +140,7 @@ sub PatternProcess
 
 sub _expand_pattern
 {
-    my ( $self, $dirname, $pattern, $ext, $mode, $_del, $level, $no_id, $arg )
-        = @_;
+    my ( $self, $dirname, $pattern, $ext, $_del, $level, $no_id, $arg ) = @_;
     if ( $dirname =~ m|^(.*)/(.*?)$| )
     {
         $dirname = $1;
@@ -167,7 +166,7 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->PatternProcess( $mode, $_del, $dirname, $pattern,
+    return $self->PatternProcess( $_del, $dirname, $pattern,
         $ext, $level, $no_id, +{%$arg} );
 }
 
@@ -212,7 +211,7 @@ sub _find_file
 
 sub ProcessFile
 {
-    my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
+    my ( $self, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -221,7 +220,7 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        return $self->_expand_pattern( $dirname, $pattern, $ext, $mode,
+        return $self->_expand_pattern( $dirname, $pattern, $ext,
             $_del, $level, $no_id, $arg );
     }
     if ( not $self->_find_file( $_del, \$fn ) )
@@ -233,7 +232,7 @@ sub ProcessFile
     if ( not $no_id )
     {
         my $id = canon_path($fn);
-        if ( $mode eq 'use' )
+        if ( $self->mode eq 'use' )
         {
             return '' if ( exists $self->_main->INCLUDES->{$id} );
         }
@@ -241,7 +240,7 @@ sub ProcessFile
     }
 
     # Stop if just want to check dependency
-    return '' if $mode eq 'depends';
+    return '' if $self->mode eq 'depends';
 
     # Process the file
     $realname = $fn if $realname eq '';

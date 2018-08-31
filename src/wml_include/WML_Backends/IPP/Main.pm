@@ -105,8 +105,8 @@ sub ProcessFile
 {
     my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
-    return WML_Backends::IPP::File->new( _main => $self )
-        ->ProcessFile( $mode, $_del, $fn, $realname, $level, $no_id, $in_arg );
+    return WML_Backends::IPP::File->new( _main => $self, mode => $mode, )
+        ->ProcessFile( $_del, $fn, $realname, $level, $no_id, $in_arg );
 }
 
 sub _write_includes
