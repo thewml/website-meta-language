@@ -33,7 +33,7 @@ use WML_Backends::IPP::Line ();
 
 sub _PatternProcess_helper
 {
-    my ( $self, $test, $out, $dirname, $pattern, $ext,, $arg ) = @_;
+    my ( $self, $test, $out, $dirname, $pattern, $ext, $arg ) = @_;
     if ( not -d $dirname )
     {
         return;
@@ -87,7 +87,7 @@ LS:
 
 sub PatternProcess
 {
-    my ( $self,, $dirname, $pattern, $ext,,, $arg ) = @_;
+    my ( $self, $dirname, $pattern, $ext, $arg ) = @_;
 
     my $out = '';
     my $test =
@@ -138,7 +138,7 @@ sub PatternProcess
 
 sub _expand_pattern
 {
-    my ( $self, $dirname, $pattern, $ext,,,, $arg ) = @_;
+    my ( $self, $dirname, $pattern, $ext, $arg ) = @_;
     if ( $dirname =~ m|^(.*)/(.*?)$| )
     {
         $dirname = $1;
@@ -164,12 +164,12 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->PatternProcess( $dirname, $pattern, $ext,, +{%$arg} );
+    return $self->PatternProcess( $dirname, $pattern, $ext, +{%$arg} );
 }
 
 sub _find_file
 {
-    my ( $self,, $fn ) = @_;
+    my ( $self, $fn ) = @_;
 
     #    this is a regular file
     my $found = 0;
@@ -217,7 +217,7 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        return $self->_expand_pattern( $dirname, $pattern, $ext,, $arg );
+        return $self->_expand_pattern( $dirname, $pattern, $ext, $arg );
     }
     if ( not $self->_find_file( \$fn ) )
     {
