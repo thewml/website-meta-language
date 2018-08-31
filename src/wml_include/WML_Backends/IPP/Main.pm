@@ -11,6 +11,15 @@ use 5.014;
 use strict;
 use warnings;
 
+use Class::XSAccessor (
+    accessors => +{
+        map { $_ => $_ }
+            qw(
+            _map
+            )
+    },
+);
+
 sub new
 {
     my $class = shift;
@@ -106,10 +115,8 @@ my %INCLUDES = ();
 
 sub PatternProcess
 {
-    my (
-        $self,    $MAP, $mode,  $_del,  $dirname,
-        $pattern, $ext, $level, $no_id, $arg
-    ) = @_;
+    my ( $self, $mode, $_del, $dirname, $pattern, $ext, $level, $no_id, $arg )
+        = @_;
 
     my $out = '';
     my $test =
@@ -131,8 +138,8 @@ sub PatternProcess
             {
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .=
-                    $self->ProcessFile( $MAP, $mode, $_del, "$dirname/$_$ext",
-                    "", $level, $no_id, $arg );
+                    $self->ProcessFile( $mode, $_del, "$dirname/$_$ext", "",
+                    $level, $no_id, $arg );
                 $found = 1;
             }
             last DIRS if $found;
@@ -194,8 +201,8 @@ sub PatternProcess
                 next LS if $arg->{'IPP_THIS'} eq '';
 
                 $out .=
-                    $self->ProcessFile( $MAP, $mode, $_del, $arg->{'IPP_THIS'},
-                    "", $level, $no_id, $arg );
+                    $self->ProcessFile( $mode, $_del, $arg->{'IPP_THIS'}, "",
+                    $level, $no_id, $arg );
             }
             delete $arg->{'IPP_NEXT'};
             delete $arg->{'IPP_THIS'};
@@ -207,10 +214,8 @@ sub PatternProcess
 
 sub _expand_pattern
 {
-    my (
-        $self, $MAP,  $dirname, $pattern, $ext,
-        $mode, $_del, $level,   $no_id,   $arg
-    ) = @_;
+    my ( $self, $dirname, $pattern, $ext, $mode, $_del, $level, $no_id, $arg )
+        = @_;
     if ( $dirname =~ m|^(.*)/(.*?)$| )
     {
         $dirname = $1;
@@ -236,18 +241,14 @@ sub _expand_pattern
     $pattern =~ s/\./\\./g;
     $pattern =~ s/\*/.*/g;
     $pattern =~ s/\?/./g;
-    return $self->PatternProcess(
-        $MAP, $mode,  $_del,  $dirname, $pattern,
-        $ext, $level, $no_id, +{%$arg}
-    );
+    return $self->PatternProcess( $mode, $_del, $dirname, $pattern,
+        $ext, $level, $no_id, +{%$arg} );
 }
 
 sub _process_line
 {
-    my (
-        $self,  $MAP,   $l,   $line_idx, $arg,
-        $store, $level, $out, $fn,       $realname
-    ) = @_;
+    my ( $self, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
+        @_;
 
     #   EOL-comments
     return if $$l =~ m/^\s*#(?!use|include|depends)/;
@@ -369,7 +370,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
         WML_Backends::IPP::Args->new->setargs( $arg, $args );
 
         #   do possible argument mapping
-        $incfile = $MAP->mapfile($incfile);
+        $incfile = $self->_map->mapfile($incfile);
 
         my $type;
 
@@ -392,7 +393,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
 
         #   now recurse down
         $$out .=
-            $self->ProcessFile( $MAP, $cmd,
+            $self->ProcessFile( $cmd,
             WML_Backends::IPP::Delimit->new( delimiter => $type ),
             $incfile, "", $level + 1, 0, $arg );
         if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
@@ -423,8 +424,7 @@ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
 
 sub ProcessFile
 {
-    my ( $self, $MAP, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) =
-        @_;
+    my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
     my $arg = +{%$in_arg};
 
@@ -433,10 +433,8 @@ sub ProcessFile
     if ( my ( $dirname, $pattern, $ext ) =
         ( $fn =~ m/^(.*?)(?=[?*\]])([?*]|\[[^\]]*\])(.*)$/ ) )
     {
-        return $self->_expand_pattern(
-            $MAP,  $dirname, $pattern, $ext, $mode,
-            $_del, $level,   $no_id,   $arg
-        );
+        return $self->_expand_pattern( $dirname, $pattern, $ext, $mode,
+            $_del, $level, $no_id, $arg );
     }
 
     #    this is a regular file
@@ -507,10 +505,9 @@ LINES:
     {
         ++$line_idx;
 
-        my $op = $self->_process_line(
-            $MAP,   \$l,   $line_idx, $arg, \$store,
-            $level, \$out, $fn,       $realname,
-        ) // '';
+        my $op =
+            $self->_process_line( \$l, $line_idx, $arg, \$store,
+            $level, \$out, $fn, $realname, ) // '';
         if ( $op eq 'last' )
         {
             last LINES;
@@ -573,8 +570,8 @@ sub main
     push( @opt_I, '.' );
 
     # read mapfiles
-    my $MAP = WML_Backends::IPP::Map->new;
-    $MAP->read_multi_map_files( \@opt_m );
+    $self->_map( WML_Backends::IPP::Map->new );
+    $self->_map->read_multi_map_files( \@opt_m );
 
     # iterate over the input files
     %INCLUDES = ();
@@ -635,7 +632,7 @@ sub main
         }
     }
     $outbuf .=
-        $self->ProcessFile( $MAP, 'include',
+        $self->ProcessFile( 'include',
         WML_Backends::IPP::Delimit->new( delimiter => q/'/ ),
         $tmpfile, "", 0, 1, \%arg );
     unlink($tmpfile);
@@ -659,7 +656,6 @@ sub main
 
         #   process file via IPP filter
         $outbuf .= $self->ProcessFile(
-            $MAP,
             'include', WML_Backends::IPP::Delimit->new( delimiter => q/'/ ),
             $tmpfile, ( $opt_n eq '' ? $fn : $opt_n ),
             0, 1, \%arg
