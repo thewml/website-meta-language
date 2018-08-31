@@ -250,13 +250,9 @@ sub _expand_pattern
         $ext, $level, $no_id, +{%$arg} );
 }
 
-sub _process_line
+sub _line_Continuation_Support
 {
-    my ( $self, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
-        @_;
-
-    #   EOL-comments
-    return if $$l =~ m/^\s*#(?!use|include|depends)/;
+    my ( $self, $l, $store ) = @_;
 
     #   Line-Continuation Support
     $$l =~ s|^\s+|| if $$store ne '';
@@ -272,6 +268,18 @@ sub _process_line
     }
     $$l     = $$store . $$l;
     $$store = '';
+    return 1;
+}
+
+sub _process_line
+{
+    my ( $self, $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) =
+        @_;
+
+    #   EOL-comments
+    return if $$l =~ m/^\s*#(?!use|include|depends)/;
+
+    return if !$self->_line_Continuation_Support( $l, $store );
 
     # Variable Interpolation
 
