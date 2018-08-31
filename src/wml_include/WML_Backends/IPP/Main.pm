@@ -20,6 +20,7 @@ use Class::XSAccessor (
             opt_M
             opt_N
             opt_S
+            opt_v
             _map
             )
     },
@@ -67,12 +68,11 @@ sub _sq
 }
 
 # helper functions
-my $opt_v = 0;
 
 sub verbose
 {
-    my ( $level, $str ) = @_;
-    if ($opt_v)
+    my ( $self, $level, $str ) = @_;
+    if ( $self->opt_v )
     {
         print STDERR ' ' x ( $level * 2 ) . "$str\n";
     }
@@ -487,8 +487,8 @@ sub ProcessFile
 
     # Process the file
     $realname = $fn if $realname eq '';
-    verbose( $level, "|" );
-    verbose( $level, "+-- $fn" );
+    $self->verbose( $level, "|" );
+    $self->verbose( $level, "+-- $fn" );
     my $in       = io()->file($fn);
     my $line_idx = 0;
     my $out      = '';
@@ -525,7 +525,7 @@ LINES:
 sub main
 {
     my ( $self, ) = @_;
-    $opt_v = 0;
+    $self->opt_v(0);
     $self->opt_M('-');
     $self->opt_I( [ () ] );
     $self->opt_S( [ () ] );
@@ -553,7 +553,7 @@ sub main
             "n|inputfile=s"       => \$opt_n,
             "o|outputfile=s"      => \$opt_o,
             "s|sysincludefile=s@" => \@opt_s,
-            "v|verbose"           => \$opt_v,
+            "v|verbose" => sub { my ( undef, $v ) = @_; $self->opt_v($v); },
         )
         )
     {
