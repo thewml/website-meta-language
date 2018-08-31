@@ -222,9 +222,9 @@ sub PatternProcess
 {
     my ( $mode, $delimiter, $dirname, $pattern, $ext, $level, $noid, $arg ) =
         @_;
-    my ( $dir, $found, $out, $test, @ls );
+    my ( $dir, $test );
 
-    $out = '';
+    my $out = '';
     if ( $ext eq '' )
     {
         $test = '-f "$dir/$dirname/$_"';
@@ -237,19 +237,21 @@ sub PatternProcess
     my $process_dirs = sub {
         my ($dirs) = @_;
 
-        $found = 0;
+    DIRS:
         foreach my $dir ( reverse @$dirs )
         {
-            @ls = grep { /^$pattern$/ && eval $test }
+            my @ls = grep { /^$pattern$/ && eval $test }
                 @{ io->dir("$dir/$dirname") };
+            my $found = 0;
+        LS:
             foreach (@ls)
             {
-                next if ( m|/\.+$| or m|^\.+$| );
+                next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .= ProcessFile( $mode, $delimiter, "$dirname/$_$ext", "",
                     $level, $noid, $arg );
                 $found = 1;
             }
-            last if $found;
+            last DIRS if $found;
         }
 
         return;
@@ -269,7 +271,8 @@ sub PatternProcess
         $dir = '.';
         if ( -d $dirname )
         {
-            @ls = grep { /^$pattern$/ && eval $test } @{ io->dir("$dirname") };
+            my @ls =
+                grep { /^$pattern$/ && eval $test } @{ io->dir("$dirname") };
 
             #   Sort list of files
             my $criterion = $arg->{'IPP_SORT'} || $arg->{'IPP_REVERSE'};
