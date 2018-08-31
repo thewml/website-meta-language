@@ -351,6 +351,182 @@ sub _expand_pattern
         $level, $no_id, +{%$arg} );
 }
 
+sub _process_line
+{
+    my ( $l, $line_idx, $arg, $store, $level, $out, $fn, $realname ) = @_;
+
+    #   EOL-comments
+    return if $$l =~ m/^\s*#(?!use|include|depends)/;
+
+    #   Line-Continuation Support
+    $$l =~ s|^\s+|| if $$store ne '';
+    return if $$l =~ m|^\\\s*\n$|;
+    if ( $$l =~ m|^(.*[^\\])\\\s*\n$| )
+    {
+        $$store .= $1;
+        return;
+    }
+    if ( $$l =~ m|^(.*\\)\\(\s*\n)$| )
+    {
+        $$l = $1 . $2;
+    }
+    $$l     = $$store . $$l;
+    $$store = '';
+
+    # Variable Interpolation
+
+    #       Substitutions are performed from left to right and from
+    #       inner to outer, all operators have same precedence.
+    if ( $$l =~ m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
+    {
+        my ( $name, $op, $str ) = ( $2, $4, $5 );
+        if ( not defined($op) )
+        {
+            #   Normal Value
+            $$l =~
+s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
+            return 'redo';
+        }
+
+        #   Escape special characters
+        $op =~ s/([?+*])/\\$1/;
+        my $subst = '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
+
+        if ( $op eq '=' )
+        {
+            #   Assign
+            $$l =~ s/$subst/$1/;
+            if ( $str eq '' )
+            {
+                delete $arg->{$name} if exists $arg->{$name};
+            }
+            else
+            {
+                $arg->{$name} = $str;
+            }
+        }
+        elsif ( $op eq ':\?' )
+        {
+            #   Indicate Error if Unset
+            $$l =~
+s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
+        }
+        elsif ( $op eq ':-' )
+        {
+            #   Use Default Values
+            $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+        }
+        elsif ( $op eq ':=' )
+        {
+            #   Use Default Values And Assign
+            $$l =~ s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
+            if ( $str eq '' )
+            {
+                delete $arg->{$name} if exists $arg->{$name};
+            }
+            else
+            {
+                $arg->{$name} = $str;
+            }
+        }
+        elsif ( $op eq ':\+' )
+        {
+            #   Use Alternative Value
+            $$l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
+        }
+        elsif ( $op eq ':\*' )
+        {
+            #   Use Negative Alternative Value
+            $$l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
+        }
+        else
+        {
+            #   There is an error in these statements
+            die "Internal error when expanding variables";
+        }
+        return 'redo';
+    }
+
+    #   EOL-comments again
+    return if $$l =~ m/^\s*#(?!use|include|depends)/;
+
+    #   Implicit Variables
+    $$l =~ s|__LINE__|$line_idx|g;
+    if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
+    {
+        $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}
+            if $arg->{'IPP_SRC_REALNAME'} !~ m|/|;
+        $$l =~ s|__FILE__|$arg->{'IPP_SRC_REALNAME'}|g;
+    }
+    else
+    {
+        $$l =~ s|__FILE__|$fn|g;
+    }
+
+    #   remove one preceding backslash
+    $$l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
+
+    #   ``#include'', ``#use'' and ``#depends'' directives
+    if ( my ( $cmd, $incfile, $args ) =
+        ( $$l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/ ) )
+    {
+        #   set arguments
+        my %argO = %$arg;
+        setargs( $arg, $args );
+
+        #   do possible argument mapping
+        $incfile = mapfile($incfile);
+
+        my $type;
+
+        #   determine raw filename and type
+        if ( $incfile =~ m|^(\S+?)::(\S+)$| )
+        {
+            $type    = '<';
+            $incfile = "$2.$1";
+            $incfile =~ s|::|/|g;
+        }
+        elsif ( $incfile =~ m|^(['"<])([^'">]+)['">]$| )
+        {
+            $type    = $1;
+            $incfile = $2;
+        }
+        else
+        {
+            error("Unknown file-argument syntax: ``$incfile''");
+        }
+
+        #   now recurse down
+        $$out .=
+            ProcessFile( $cmd,
+            WML_Backends::IPP::Delimit->new( delimiter => $type ),
+            $incfile, "", $level + 1, 0, $arg );
+        if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
+        {
+            $$out .=
+                  "<__file__ $realname /><__line__ $line_idx />"
+                . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n";
+        }
+
+        #   reset arguments
+        %$arg = %argO;
+    }
+
+    #   ``__END__'' feature
+    elsif ( $$l =~ m|^\s*__END__\s*\n?$| )
+    {
+        return 'last';
+    }
+
+    #   plain text
+    else
+    {
+        $$out .= $$l;
+    }
+
+    return;
+}
+
 sub ProcessFile
 {
     my ( $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
@@ -441,175 +617,16 @@ LINES:
     {
         ++$line_idx;
 
-        #   EOL-comments
-        next LINES if $l =~ m/^\s*#(?!use|include|depends)/;
-
-        #   Line-Continuation Support
-        $l =~ s|^\s+|| if $store ne '';
-        next LINES if $l =~ m|^\\\s*\n$|;
-        if ( $l =~ m|^(.*[^\\])\\\s*\n$| )
-        {
-            $store .= $1;
-            next LINES;
-        }
-        if ( $l =~ m|^(.*\\)\\(\s*\n)$| )
-        {
-            $l = $1 . $2;
-        }
-        $l     = $store . $l;
-        $store = '';
-
-        # Variable Interpolation
-
-        #       Substitutions are performed from left to right and from
-        #       inner to outer, all operators have same precedence.
-        if ( $l =~ m/((?!\\).|^)\$\(([a-zA-Z0-9_]+)((=|:[-=?+*])([^()]*))?\)/ )
-        {
-            my ( $name, $op, $str ) = ( $2, $4, $5 );
-            if ( not defined($op) )
-            {
-                #   Normal Value
-                $l =~
-s/((?!\\).|^)\$\($name\)/exists $arg->{$name} ? $1.$arg->{$name} : $1/e;
-                redo;
-            }
-
-            #   Escape special characters
-            $op =~ s/([?+*])/\\$1/;
-            my $subst = '((?!\\\\).|^)\\$\\(' . $name . $op . '(?:[^()]*)\\)';
-
-            if ( $op eq '=' )
-            {
-                #   Assign
-                $l =~ s/$subst/$1/;
-                if ( $str eq '' )
-                {
-                    delete $arg->{$name} if exists $arg->{$name};
-                }
-                else
-                {
-                    $arg->{$name} = $str;
-                }
-            }
-            elsif ( $op eq ':\?' )
-            {
-                #   Indicate Error if Unset
-                $l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.error($str)/e;
-            }
-            elsif ( $op eq ':-' )
-            {
-                #   Use Default Values
-                $l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
-            }
-            elsif ( $op eq ':=' )
-            {
-                #   Use Default Values And Assign
-                $l =~
-s/$subst/exists $arg->{$name} ? $1.$arg->{$name} : $1.$str/e;
-                if ( $str eq '' )
-                {
-                    delete $arg->{$name} if exists $arg->{$name};
-                }
-                else
-                {
-                    $arg->{$name} = $str;
-                }
-            }
-            elsif ( $op eq ':\+' )
-            {
-                #   Use Alternative Value
-                $l =~ s/$subst/exists $arg->{$name} ? $1.$str : $1/e;
-            }
-            elsif ( $op eq ':\*' )
-            {
-                #   Use Negative Alternative Value
-                $l =~ s/$subst/exists $arg->{$name} ? $1 : $1.$str/e;
-            }
-            else
-            {
-                #   There is an error in these statements
-                die "Internal error when expanding variables";
-            }
-            redo LINES;
-        }
-
-        #   EOL-comments again
-        next LINES if $l =~ m/^\s*#(?!use|include|depends)/;
-
-        #   Implicit Variables
-        $l =~ s|__LINE__|$line_idx|g;
-        if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
-        {
-            $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}
-                if $arg->{'IPP_SRC_REALNAME'} !~ m|/|;
-            $l =~ s|__FILE__|$arg->{'IPP_SRC_REALNAME'}|g;
-        }
-        else
-        {
-            $l =~ s|__FILE__|$fn|g;
-        }
-
-        #   remove one preceding backslash
-        $l =~ s/\\(\$\([a-zA-Z0-9_]+(:[-=?+*][^()]*)?\))/$1/g;
-
-        #   ``#include'', ``#use'' and ``#depends'' directives
-        if ( my ( $cmd, $incfile, $args ) =
-            ( $l =~ m/^#(use|include|depends)\s+(\S+)(.*)$/ ) )
-        {
-            #   set arguments
-            my %argO = %$arg;
-            setargs( $arg, $args );
-
-            #   do possible argument mapping
-            $incfile = mapfile($incfile);
-
-            my $type;
-
-            #   determine raw filename and type
-            if ( $incfile =~ m|^(\S+?)::(\S+)$| )
-            {
-                $type    = '<';
-                $incfile = "$2.$1";
-                $incfile =~ s|::|/|g;
-            }
-            elsif ( $incfile =~ m|^(['"<])([^'">]+)['">]$| )
-            {
-                $type    = $1;
-                $incfile = $2;
-            }
-            else
-            {
-                error("Unknown file-argument syntax: ``$incfile''");
-            }
-
-            #   now recurse down
-            $out .=
-                ProcessFile( $cmd,
-                WML_Backends::IPP::Delimit->new( delimiter => $type ),
-                $incfile, "", $level + 1, 0, $arg );
-            if ( not $opt_N and not $arg->{'IPP_NOSYNCLINES'} )
-            {
-                $out .=
-                      "<__file__ $realname /><__line__ $line_idx />"
-                    . "<protect pass=2><:# line $line_idx \"$realname\":></protect>\n";
-            }
-
-            #   reset arguments
-            %$arg = %argO;
-        }
-
-        #   ``__END__'' feature
-        elsif ( $l =~ m|^\s*__END__\s*\n?$| )
+        my $op =
+            _process_line( \$l, $line_idx, $arg, \$store, $level, \$out, $fn,
+            $realname, ) // '';
+        if ( $op eq 'last' )
         {
             last LINES;
         }
-
-        #   plain text
-        else
+        elsif ( $op eq 'redo' )
         {
-            $out .= $l;
+            redo LINES;
         }
     }
     $out .= $store;
