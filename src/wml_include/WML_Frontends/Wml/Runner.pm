@@ -92,10 +92,9 @@ use Term::ReadKey qw/ ReadMode ReadKey /;
 
 use WmlConfig qw//;
 use WML_Frontends::Wml::PassesManager ();
+use WML_Frontends::Wml::WmlRc         ();
 use WML_Frontends::Wml::Util
     qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
-
-use WML_Frontends::Wml::WmlRcDir ();
 
 sub new
 {
@@ -755,65 +754,11 @@ sub _process_ENV_WMLOPTS
     return;
 }
 
-sub _process_wmlrc_dir
-{
-    my ( $self, $dir ) = @_;
-
-    return WML_Frontends::Wml::WmlRcDir->new( _main => $self, dir => $dir )
-        ->_process_wmlrc_dir;
-}
-
 sub _process_wmlrc
 {
     my ($self) = @_;
 
-    my $_pass_mgr = $self->_pass_mgr;
-
-    if ( $self->_opt_r )
-    {
-        return;
-    }
-    my $savedir = '';
-
-    #   First save current directory and go to input file directory
-    if ( not $self->_opt_c and $self->_src =~ m|/| )
-    {
-        $self->_src( dirname( $self->_src ) );
-        if ( -d $self->_src )
-        {
-            $savedir = Cwd::cwd;
-            chdir( $self->_src );
-        }
-    }
-    $self->_src('') if not $savedir;
-
-    #   2. add all parent dirs .wmlrc files for options
-    my $cwd = _my_cwd;
-    my @DIR;
-    while ($cwd)
-    {
-        push( @DIR, $cwd );
-        $cwd =~ s#/[^/]+\z##;
-    }
-
-    #   Restore directory
-    chdir($savedir) if $savedir;
-
-    #   3. add ~/.wmlrc file for options
-    my @pwinfo = getpwuid($<);
-    my $home   = $pwinfo[7];
-    $home =~ s#/\z##;
-    if ( -f "$home/.wmlrc" )
-    {
-        push( @DIR, $home );
-    }
-
-    #   now parse these RC files
-    foreach my $dir ( reverse(@DIR) )
-    {
-        $self->_process_wmlrc_dir($dir);
-    }
-    return;
+    return WML_Frontends::Wml::WmlRc->new( _main => $self )->_process_wmlrc;
 }
 
 sub _calc_default_opts
