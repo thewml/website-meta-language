@@ -1,4 +1,3 @@
-##  WML -- Website META Language
 ##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2001 Denis Barbier.
@@ -83,9 +82,7 @@ use Class::XSAccessor (
 
 use Getopt::Long 2.13;
 use File::Spec ();
-use Cwd        ();
 use List::Util qw/ max /;
-use File::Basename qw/ basename dirname /;
 
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
@@ -95,7 +92,7 @@ use WML_Frontends::Wml::OptD          ();
 use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::WmlRc         ();
 use WML_Frontends::Wml::Util
-    qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
+    qw/ _my_cwd error expandrange quotearg split_argv usage /;
 
 sub _opt_D
 {

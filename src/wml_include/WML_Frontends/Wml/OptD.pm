@@ -8,36 +8,12 @@
 ##  the Free Software Foundation; either version 2 of the License, or
 ##  (at your option) any later version.
 ##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  You should have received a copy of the GNU General Public License
-##  along with this program; if not, write to
-##
-##      Free Software Foundation, Inc.
-##      59 Temple Place - Suite 330
-##      Boston, MA  02111-1307, USA
-##
-##  Notice, that ``free software'' addresses the fact that this program
-##  is __distributed__ under the term of the GNU General Public License
-##  and because of this, it can be redistributed and modified under the
-##  conditions of this license, but the software remains __copyrighted__
-##  by the author. Don't intermix this with the general meaning of
-##  Public Domain software or such a derivated distribution label.
-##
-##  The author reserves the right to distribute following releases of
-##  this program under different conditions or license agreements.
-
 package WML_Frontends::Wml::OptD;
 
 use 5.014;
 
 use strict;
 use warnings;
-
-use parent 'WML_Frontends::Wml::Base';
 
 use Class::XSAccessor (
     constructor => 'new',
@@ -50,20 +26,13 @@ use Class::XSAccessor (
     }
 );
 
-use Getopt::Long 2.13;
-use File::Spec ();
-use Cwd        ();
-use List::Util qw/ max /;
 use File::Basename qw/ basename dirname /;
 
 use IO::All qw/ io /;
-use Term::ReadKey qw/ ReadMode ReadKey /;
 
 use WmlConfig qw//;
-use WML_Frontends::Wml::PassesManager ();
-use WML_Frontends::Wml::WmlRc         ();
 use WML_Frontends::Wml::Util
-    qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
+    qw/ _my_cwd canonize_path quotearg time_record usage user_record /;
 
 sub _populate_opt_D
 {
