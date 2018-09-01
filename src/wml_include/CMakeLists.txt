@@ -143,6 +143,7 @@ INSTALL (
         "WML_Frontends/Wml/PassObj.pm"
         "WML_Frontends/Wml/Runner.pm"
         "WML_Frontends/Wml/Util.pm"
+        "WML_Frontends/Wml/WmlRcDir.pm"
     DESTINATION "${WML_LIB_DIR}/WML_Frontends/Wml"
 )
 

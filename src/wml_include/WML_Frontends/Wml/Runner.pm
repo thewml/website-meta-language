@@ -95,6 +95,8 @@ use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::Util
     qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
 
+use WML_Frontends::Wml::WmlRcDir ();
+
 sub new
 {
     my $self = bless +{}, shift;
@@ -763,69 +765,7 @@ sub _process_wmlrc_dir
 {
     my ( $self, $dir ) = @_;
 
-    my $_pass_mgr = $self->_pass_mgr;
-
-    if ( not -f "$dir/.wmlrc" )
-    {
-        return;
-    }
-    $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
-    open( my $wml_rc_fh, '<', "$dir/.wmlrc" )
-        or error("Unable to load $dir/.wmlrc: $!");
-    my @aa;
-WMLRC_LINES:
-    while ( my $l = <$wml_rc_fh> )
-    {
-        if ( $l =~ m|\A\s*\n?\z| or $l =~ m|\A\s*#[#\s]*.*\z| )
-        {
-            next WMLRC_LINES;
-        }
-        $l =~ s|\A\s+||;
-        $l =~ s|\s+\z||;
-        $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-        push( @aa, split_argv($l) );
-    }
-    close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-    my @opt_I_OLD = @{ $self->_opt_I };
-    $self->_opt_I( [] );
-    my $dnew = $self->_process_options( \@aa, [] );
-    my @opt_I_NEW = @opt_I_OLD;
-
-    #   adjust -D options
-    my $reldir = File::Spec->abs2rel( "$dir", $self->_src );
-    $reldir = "." if $reldir eq '';
-    foreach my $d (@$dnew)
-    {
-        if ( my ( $var, $path ) = $d =~ m#\A([A-Za-z0-9_]+)~(.+)\z# )
-        {
-            if ( $path !~ m#\A/# )
-            {
-                canonize_path( \$path, $reldir );
-            }
-            $path = '""' if ( $path eq '' );
-            $d = "$var=$path";
-        }
-        elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
-        {
-            $d .= '=1';
-        }
-        push( @{ $self->_opt_D }, $d );
-    }
-
-    #   adjust -I options
-    $reldir = File::Spec->abs2rel("$dir");
-    $reldir = "." if $reldir eq '';
-    foreach my $path ( @{ $self->_opt_I } )
-    {
-        if ( $path !~ m#\A/# )
-        {
-            canonize_path( \$path, $reldir );
-            $path = '.' if ( $path eq '' );
-        }
-        push( @opt_I_NEW, $path );
-    }
-    $self->_opt_I( [@opt_I_NEW] );
-    return;
+    return WML_Frontends::Wml::WmlRcDir->new->_process_wmlrc_dir( $self, $dir );
 }
 
 sub _process_wmlrc
