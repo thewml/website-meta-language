@@ -91,7 +91,7 @@ use Term::ReadKey qw/ ReadMode ReadKey /;
 use WmlConfig qw//;
 use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::Util
-    qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage /;
+    qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
 
 sub new
 {
@@ -411,29 +411,6 @@ sub _handle_opt_M_stdin
     }
 }
 
-sub _make_shell_safe
-{
-    my ( $self, $str ) = @_;
-
-    $$str =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
-
-    return;
-}
-
-sub _user_record
-{
-    my ( $self, $uid ) = @_;
-
-    my @pwinfo = getpwuid($uid);
-    my $username = $pwinfo[0] || 'UNKNOWN-USERNAME';
-    $self->_make_shell_safe( \$username );
-    my $realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
-    $realname =~ s|^([^\,]+)\,.*$|$1|;
-    $self->_make_shell_safe( \$realname );
-
-    return { username => $username, realname => $realname };
-}
-
 sub _populate_opt_D
 {
     my ($self) = @_;
@@ -441,7 +418,7 @@ sub _populate_opt_D
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
-    my $gen_user     = $self->_user_record($<);
+    my $gen_user     = user_record($<);
     my $gen_time_rec = time_record( time() );
 
     my ( $src_dirname, $src_basename, $src_time_rec, $src_user );
@@ -466,7 +443,7 @@ sub _populate_opt_D
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
         my $stat = io->file( $self->_src );
         $src_time_rec = time_record( $stat->mtime );
-        $src_user     = $self->_user_record( $stat->uid );
+        $src_user     = user_record( $stat->uid );
     }
 
     unshift(

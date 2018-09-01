@@ -42,7 +42,7 @@ use parent 'Exporter';
 
 our @EXPORT_OK = qw/ _my_cwd canon_path canonize_path ctime
     error expandrange gmt_ctime gmt_isotime
-    isotime quotearg split_argv time_record usage /;
+    isotime make_shell_safe quotearg split_argv time_record usage user_record /;
 
 sub expandrange
 {
@@ -105,6 +105,29 @@ sub time_record
         isotime     => isotime($time),
         time        => $time,
     };
+}
+
+sub make_shell_safe
+{
+    my ($str) = @_;
+
+    $$str =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
+
+    return;
+}
+
+sub user_record
+{
+    my ($uid) = @_;
+
+    my @pwinfo = getpwuid($uid);
+    my $username = $pwinfo[0] || 'UNKNOWN-USERNAME';
+    make_shell_safe( \$username );
+    my $realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
+    $realname =~ s|^([^\,]+)\,.*$|$1|;
+    make_shell_safe( \$realname );
+
+    return { username => $username, realname => $realname };
 }
 
 sub usage
