@@ -411,6 +411,15 @@ sub _handle_opt_M_stdin
     }
 }
 
+sub _make_shell_safe
+{
+    my ( $self, $str ) = @_;
+
+    $$str =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
+
+    return;
+}
+
 sub _populate_opt_D
 {
     my ($self) = @_;
@@ -420,12 +429,12 @@ sub _populate_opt_D
 
     my @pwinfo       = getpwuid($<);
     my $gen_username = $pwinfo[0];
-    $gen_username =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
+    $self->_make_shell_safe( \$gen_username );
     $gen_username ||= 'UNKNOWN-USERNAME';
 
     my $gen_realname = $pwinfo[6];
     $gen_realname =~ s|^([^\,]+)\,.*$|$1|;
-    $gen_realname =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
+    $self->_make_shell_safe( \$gen_realname );
     $gen_realname ||= 'UNKNOWN-REALNAME';
 
     my $gen_time_rec = time_record( time() );
@@ -454,15 +463,14 @@ sub _populate_opt_D
         );
         $src_basename = $self->_src_filename( basename( $self->_src ) );
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
-        my $stat  = io->file( $self->_src );
-        my $mtime = $stat->mtime;
-        $src_time_rec = time_record($mtime);
+        my $stat = io->file( $self->_src );
+        $src_time_rec = time_record( $stat->mtime );
         my @pwinfo = getpwuid( $stat->uid );
         $src_username = $pwinfo[0] || 'UNKNOWN-USERNAME';
-        $src_username =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
+        $self->_make_shell_safe( \$src_username );
         $src_realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
         $src_realname =~ s|^([^\,]+)\,.*$|$1|;
-        $src_realname =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
+        $self->_make_shell_safe( \$src_realname );
     }
 
     unshift(
