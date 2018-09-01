@@ -420,6 +420,20 @@ sub _make_shell_safe
     return;
 }
 
+sub _user_record
+{
+    my ( $self, $uid ) = @_;
+
+    my @pwinfo = getpwuid($uid);
+    my $username = $pwinfo[0] || 'UNKNOWN-USERNAME';
+    $self->_make_shell_safe( \$username );
+    my $realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
+    $realname =~ s|^([^\,]+)\,.*$|$1|;
+    $self->_make_shell_safe( \$realname );
+
+    return { username => $username, realname => $realname };
+}
+
 sub _populate_opt_D
 {
     my ($self) = @_;
@@ -427,22 +441,10 @@ sub _populate_opt_D
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = $_pass_mgr->libdir;
 
-    my @pwinfo       = getpwuid($<);
-    my $gen_username = $pwinfo[0];
-    $self->_make_shell_safe( \$gen_username );
-    $gen_username ||= 'UNKNOWN-USERNAME';
-
-    my $gen_realname = $pwinfo[6];
-    $gen_realname =~ s|^([^\,]+)\,.*$|$1|;
-    $self->_make_shell_safe( \$gen_realname );
-    $gen_realname ||= 'UNKNOWN-REALNAME';
-
+    my $gen_user     = $self->_user_record($<);
     my $gen_time_rec = time_record( time() );
 
-    my (
-        $src_dirname,  $src_basename, $src_time_rec,
-        $src_username, $src_realname,
-    );
+    my ( $src_dirname, $src_basename, $src_time_rec, $src_user );
     my $cwd = _my_cwd;
 
     if ( $self->_src_istmp )
@@ -451,8 +453,7 @@ sub _populate_opt_D
         $self->_src_filename('STDIN');
         $src_basename = 'STDIN';
         $src_time_rec = $gen_time_rec;
-        $src_username = $gen_username;
-        $src_realname = $gen_realname;
+        $src_user     = $gen_user;
     }
     else
     {
@@ -465,12 +466,7 @@ sub _populate_opt_D
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
         my $stat = io->file( $self->_src );
         $src_time_rec = time_record( $stat->mtime );
-        my @pwinfo = getpwuid( $stat->uid );
-        $src_username = $pwinfo[0] || 'UNKNOWN-USERNAME';
-        $self->_make_shell_safe( \$src_username );
-        $src_realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
-        $src_realname =~ s|^([^\,]+)\,.*$|$1|;
-        $self->_make_shell_safe( \$src_realname );
+        $src_user     = $self->_user_record( $stat->uid );
     }
 
     unshift(
@@ -483,15 +479,15 @@ sub _populate_opt_D
         "WML_SRC_ISOTIME=$src_time_rec->{isotime}",
         "WML_SRC_GMT_CTIME=$src_time_rec->{gmt_ctime}",
         "WML_SRC_GMT_ISOTIME=$src_time_rec->{gmt_isotime}",
-        "WML_SRC_USERNAME=$src_username",
-        "WML_SRC_REALNAME=$src_realname",
+        "WML_SRC_USERNAME=$src_user->{username}",
+        "WML_SRC_REALNAME=$src_user->{realname}",
         "WML_GEN_TIME=$gen_time_rec->{time}",
         "WML_GEN_CTIME=$gen_time_rec->{ctime}",
         "WML_GEN_ISOTIME=$gen_time_rec->{isotime}",
         "WML_GEN_GMT_CTIME=$gen_time_rec->{gmt_ctime}",
         "WML_GEN_GMT_ISOTIME=$gen_time_rec->{gmt_isotime}",
-        "WML_GEN_USERNAME=$gen_username",
-        "WML_GEN_REALNAME=$gen_realname",
+        "WML_GEN_USERNAME=$gen_user->{username}",
+        "WML_GEN_REALNAME=$gen_user->{realname}",
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
         'WML_LOC_PREFIX=' . WmlConfig::prefix(),
         "WML_LOC_BINDIR=" . $self->bindir,
