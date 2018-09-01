@@ -544,10 +544,37 @@ sub _calc_passes_idxs
     return;
 }
 
+sub _optionally_view_current_result
+{
+    my ( $self, $pass_idx, $to ) = @_;
+    return;
+    my $_pass_mgr = $self->_pass_mgr;
+    if ( not( $_pass_mgr->_opt_v() >= 3 && $pass_idx < 9 ) )
+    {
+        return;
+    }
+    print STDERR "Want to see result after Pass$pass_idx [yNq]: ";
+    ReadMode 4;
+    my $key = ReadKey(0);
+    ReadMode 0;
+    print STDERR "\n";
+    if ( $key =~ m|[Yy]| )
+    {
+        my $pager = ( $ENV{PAGER} || 'more' );
+        system("$pager $to");
+    }
+    elsif ( $key =~ m|[qQ]| )
+    {
+        printf( STDERR "** WML:Break: Manual Stop.\n" );
+        $self->_unlink_tmp;
+        die;
+    }
+}
+
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
-    my ( $self,, ) = @_;
+    my ($self) = @_;
 
     my $final     = 0;
     my $last      = '';
@@ -610,30 +637,7 @@ PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_idxs } )
         my $dtime = $etime - $stime;
         $dtime = 0.01 if ( $dtime < 0 );
         $_pass->time_($dtime);
-
-        #   optionally view current result
-        if (0)
-        {
-            if ( $_pass_mgr->_opt_v() >= 3 && $pass_idx < 9 )
-            {
-                print STDERR "Want to see result after Pass$pass_idx [yNq]: ";
-                ReadMode 4;
-                my $key = ReadKey(0);
-                ReadMode 0;
-                print STDERR "\n";
-                if ( $key =~ m|[Yy]| )
-                {
-                    my $pager = ( $ENV{PAGER} || 'more' );
-                    system("$pager $to");
-                }
-                elsif ( $key =~ m|[qQ]| )
-                {
-                    printf( STDERR "** WML:Break: Manual Stop.\n" );
-                    $self->_unlink_tmp;
-                    die;
-                }
-            }
-        }
+        $self->_optionally_view_current_result( $pass_idx, $to );
 
         #   step further
         $last = $to;
@@ -960,9 +964,9 @@ SHEBANG:
 
 sub _calc_passes_options
 {
-    my ( $self,, ) = @_;
-    my $_pass_mgr  = $self->_pass_mgr;
-    my $libdir     = $_pass_mgr->libdir;
+    my ($self)    = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+    my $libdir    = $_pass_mgr->libdir;
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) = $self->_calc_default_opts();
 
     #   determine preloads
@@ -1008,7 +1012,7 @@ sub _calc_reldir
         return '.';
     }
     my $reldir = $self->_src;
-    $reldir =~ s,(:?/|^)[^/]+$,,;
+    $reldir =~ s#(:?/|^)[^/]+$##;
     my $cwd = _my_cwd;
     $reldir = File::Spec->abs2rel( $cwd, "$cwd/$reldir" );
     $reldir = "." if $reldir eq '';
@@ -1098,7 +1102,7 @@ sub _set_src
 
 sub _output_and_cleanup
 {
-    my ( $self,, ) = @_;
+    my ($self) = @_;
     my $_pass_mgr = $self->_pass_mgr;
 
     $self->_do_output( $self->_passes_loop() );
