@@ -178,11 +178,9 @@ sub _handle_output
     #   to mtime of inputfile if inputfile was not STDIN
     if ( not $self->_src_istmp and $self->_opt_t )
     {
-        my (
-            $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
-            $size, $atime, $mtime, $ctime, $blksize, $blocks
-        ) = stat( $self->_src );
-        $atime = time();
+        my $stat  = io->file( $self->_src );
+        my $atime = time();
+        my $mtime = $stat->mtime;
         foreach my $o ( @{ $self->_out_filenames } )
         {
             utime( $atime, $mtime + 1, $o );
@@ -466,16 +464,14 @@ sub _populate_opt_D
         );
         $src_basename = $self->_src_filename( basename( $self->_src ) );
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
-        my (
-            $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
-            $size, $atime, $mtime, $ctime, $blksize, $blocks
-        ) = stat( $self->_src );
+        my $stat  = io->file( $self->_src );
+        my $mtime = $stat->mtime;
         $src_time        = $mtime;
         $src_ctime       = ctime($mtime);
         $src_isotime     = isotime($mtime);
         $src_gmt_ctime   = gmt_ctime($mtime);
         $src_gmt_isotime = gmt_isotime($mtime);
-        my @pwinfo = getpwuid($uid);
+        my @pwinfo = getpwuid( $stat->uid );
         $src_username = $pwinfo[0] || 'UNKNOWN-USERNAME';
         $src_username =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
         $src_realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
