@@ -1004,31 +1004,30 @@ sub _process_options
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
     my %list_options = (
-        "I|include=s@"     => $self->_opt_I,
-        "i|includefile=s@" => $self->_opt_i,
         "D|define=s@"      => $_opt_D,
-        "P|prolog=s@"      => $self->_opt_P,
         "E|epilog=s@"      => $self->_opt_E,
-        "p|pass=s@"        => $self->_opt_p,
+        "I|include=s@"     => $self->_opt_I,
+        "P|prolog=s@"      => $self->_opt_P,
         "W|passoption=s@"  => $self->_opt_W,
-    );
-    my %scalar_options = (
-        "o|outputfile=s@" => $self->_opt_o,
-        "r|norcfile"      => $self->_gen_opt('_opt_r'),
-        "n|noshebang"     => $self->_gen_opt('_opt_n'),
-        "c|nocd"          => $self->_gen_opt('_opt_c'),
-        "O|optimize=i"    => $self->_gen_opt('_opt_O'),
-        "M|depend:s"      => $self->_gen_opt('_opt_M'),
-        "q|quiet"         => $self->_gen_opt('_opt_q'),
-        "V|version:i"     => $self->_gen_opt('_opt_V'),
-        "h|help"          => $self->_gen_opt('_opt_h'),
-        "t|settime"       => $self->_gen_opt('_opt_t'),
-        "s|safe"          => $_pass_mgr->_gen_opt('_opt_s'),
-        "v|verbose:i"     => $_pass_mgr->_gen_opt('_opt_v'),
+        "i|includefile=s@" => $self->_opt_i,
+        "p|pass=s@"        => $self->_opt_p,
     );
     if (
         not Getopt::Long::GetOptionsFromArray(
-            $my_argv, %scalar_options, %list_options
+            $my_argv, %list_options,
+            "M|depend:s"      => $self->_gen_opt('_opt_M'),
+            "O|optimize=i"    => $self->_gen_opt('_opt_O'),
+            "V|version:i"     => $self->_gen_opt('_opt_V'),
+            "c|nocd"          => $self->_gen_opt('_opt_c'),
+            "h|help"          => $self->_gen_opt('_opt_h'),
+            "n|noshebang"     => $self->_gen_opt('_opt_n'),
+            "o|outputfile=s@" => $self->_opt_o,
+            "q|quiet"         => $self->_gen_opt('_opt_q'),
+            "r|norcfile"      => $self->_gen_opt('_opt_r'),
+            "s|safe"          => $_pass_mgr->_gen_opt('_opt_s'),
+            "t|settime"       => $self->_gen_opt('_opt_t'),
+            "v|verbose:i"     => $_pass_mgr->_gen_opt('_opt_v'),
+
         )
         )
     {
