@@ -139,6 +139,7 @@ INSTALL (
 INSTALL (
     FILES
         "WML_Frontends/Wml/Base.pm"
+        "WML_Frontends/Wml/OptD.pm"
         "WML_Frontends/Wml/PassesManager.pm"
         "WML_Frontends/Wml/PassObj.pm"
         "WML_Frontends/Wml/Runner.pm"

@@ -1,0 +1,186 @@
+##  WML -- Website META Language
+##
+##  Copyright (c) 1996-2001 Ralf S. Engelschall.
+##  Copyright (c) 1999-2001 Denis Barbier.
+##
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 of the License, or
+##  (at your option) any later version.
+##
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License
+##  along with this program; if not, write to
+##
+##      Free Software Foundation, Inc.
+##      59 Temple Place - Suite 330
+##      Boston, MA  02111-1307, USA
+##
+##  Notice, that ``free software'' addresses the fact that this program
+##  is __distributed__ under the term of the GNU General Public License
+##  and because of this, it can be redistributed and modified under the
+##  conditions of this license, but the software remains __copyrighted__
+##  by the author. Don't intermix this with the general meaning of
+##  Public Domain software or such a derivated distribution label.
+##
+##  The author reserves the right to distribute following releases of
+##  this program under different conditions or license agreements.
+
+package WML_Frontends::Wml::OptD;
+
+use 5.014;
+
+use strict;
+use warnings;
+
+use parent 'WML_Frontends::Wml::Base';
+
+use Class::XSAccessor (
+    constructor => 'new',
+    accessors   => +{
+        map { $_ => $_ }
+            qw(
+            _main
+            _opt_D
+            )
+    }
+);
+
+use Getopt::Long 2.13;
+use File::Spec ();
+use Cwd        ();
+use List::Util qw/ max /;
+use File::Basename qw/ basename dirname /;
+
+use IO::All qw/ io /;
+use Term::ReadKey qw/ ReadMode ReadKey /;
+
+use WmlConfig qw//;
+use WML_Frontends::Wml::PassesManager ();
+use WML_Frontends::Wml::WmlRc         ();
+use WML_Frontends::Wml::Util
+    qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
+
+sub _populate_opt_D
+{
+    my ($self) = @_;
+
+    my $_pass_mgr = $self->_main->_pass_mgr;
+
+    my $gen_user     = user_record($<);
+    my $gen_time_rec = time_record( time() );
+
+    my ( $src_dirname, $src_basename, $src_time_rec, $src_user );
+    my $cwd = _my_cwd;
+
+    if ( $self->_main->_src_istmp )
+    {
+        $src_dirname  = $cwd;
+        $src_basename = $self->_main->_src_filename('STDIN');
+        $src_time_rec = $gen_time_rec;
+        $src_user     = $gen_user;
+    }
+    else
+    {
+        $src_dirname = (
+            ( $self->_main->_src =~ m#/# )
+            ? Cwd::abs_path( dirname( $self->_main->_src ) )
+            : $cwd
+        );
+        $src_basename =
+            $self->_main->_src_filename( basename( $self->_main->_src ) ) =~
+            s#(\.[a-zA-Z0-9]+)\z##r;
+        my $stat = io->file( $self->_main->_src );
+        $src_time_rec = time_record( $stat->mtime );
+        $src_user     = user_record( $stat->uid );
+    }
+
+    unshift(
+        @{ $self->_opt_D },
+        "WML_SRC_DIRNAME=$src_dirname",
+        "WML_SRC_FILENAME=" . $self->_main->_src_filename,
+        "WML_SRC_BASENAME=$src_basename",
+        "WML_SRC_TIME=$src_time_rec->{time}",
+        "WML_SRC_CTIME=$src_time_rec->{ctime}",
+        "WML_SRC_ISOTIME=$src_time_rec->{isotime}",
+        "WML_SRC_GMT_CTIME=$src_time_rec->{gmt_ctime}",
+        "WML_SRC_GMT_ISOTIME=$src_time_rec->{gmt_isotime}",
+        "WML_SRC_USERNAME=$src_user->{username}",
+        "WML_SRC_REALNAME=$src_user->{realname}",
+        "WML_GEN_TIME=$gen_time_rec->{time}",
+        "WML_GEN_CTIME=$gen_time_rec->{ctime}",
+        "WML_GEN_ISOTIME=$gen_time_rec->{isotime}",
+        "WML_GEN_GMT_CTIME=$gen_time_rec->{gmt_ctime}",
+        "WML_GEN_GMT_ISOTIME=$gen_time_rec->{gmt_isotime}",
+        "WML_GEN_USERNAME=$gen_user->{username}",
+        "WML_GEN_REALNAME=$gen_user->{realname}",
+        "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
+        'WML_LOC_PREFIX=' . WmlConfig::prefix(),
+        "WML_LOC_BINDIR=" . $self->_main->bindir,
+        "WML_LOC_LIBDIR=" . WmlConfig::libdir(),
+        'WML_LOC_MANDIR=' . WmlConfig::mandir(),
+        "WML_VERSION=@{[$self->_main->_VERSION]}",
+        "WML_TMPDIR=" . $self->_main->_tmpdir
+    );
+
+    return;
+}
+
+sub _process_opt_D
+{
+    my ($self) = @_;
+
+    #   7. Undefine variables when requested
+    my %new_opt_D;
+    foreach my $d ( @{ $self->_opt_D } )
+    {
+        if ( my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| ) )
+        {
+            if ( $val eq 'UNDEF' )
+            {
+                delete $new_opt_D{$var};
+            }
+            else
+            {
+                $new_opt_D{$var} = $val;
+            }
+        }
+    }
+    @{ $self->_opt_D } = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
+    return;
+}
+
+sub _adjust_opt_D
+{
+    my ( $self, $dnew ) = @_;
+
+    my $reldir = $self->_main->_calc_reldir;
+    foreach my $d ( map { quotearg $_} @$dnew )
+    {
+        if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
+        {
+            if ( $path !~ m|^/| )
+            {
+                canonize_path( \$path, $reldir );
+            }
+            $path = '""' if ( $path eq '' );
+            $d = "$var=$path";
+        }
+        elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
+        {
+            $d .= '=1';
+        }
+        push( @{ $self->_opt_D }, $d );
+    }
+    return;
+}
+
+1;
+
+__END__
+
+# vim: ft=perl

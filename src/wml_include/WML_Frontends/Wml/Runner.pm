@@ -47,7 +47,7 @@ use Class::XSAccessor (
             _argv
             _firstpass
             _last
-            _opt_D
+            _opt_D_man
             _opt_E
             _opt_I
             _opt_M
@@ -91,10 +91,16 @@ use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
 use WmlConfig qw//;
+use WML_Frontends::Wml::OptD          ();
 use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::WmlRc         ();
 use WML_Frontends::Wml::Util
     qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage user_record /;
+
+sub _opt_D
+{
+    return shift->_opt_D_man->_opt_D(@_);
+}
 
 sub new
 {
@@ -109,6 +115,8 @@ sub new
     );
 
     $self->_tmpdir( $ENV{TMPDIR} || '/tmp' );
+    $self->_opt_D_man(
+        WML_Frontends::Wml::OptD->new( _main => $self, _opt_D => [] ) );
 
     # Clear out any existing CGI environments because some of our passes
     # (currently Pass 2 and 3) get totally confused by these variables.
@@ -408,70 +416,6 @@ sub _handle_opt_M_stdin
         $self->_unlink_tmp;
         die;
     }
-}
-
-sub _populate_opt_D
-{
-    my ($self) = @_;
-
-    my $_pass_mgr = $self->_pass_mgr;
-
-    my $gen_user     = user_record($<);
-    my $gen_time_rec = time_record( time() );
-
-    my ( $src_dirname, $src_basename, $src_time_rec, $src_user );
-    my $cwd = _my_cwd;
-
-    if ( $self->_src_istmp )
-    {
-        $src_dirname  = $cwd;
-        $src_basename = $self->_src_filename('STDIN');
-        $src_time_rec = $gen_time_rec;
-        $src_user     = $gen_user;
-    }
-    else
-    {
-        $src_dirname = (
-            ( $self->_src =~ m#/# )
-            ? Cwd::abs_path( dirname( $self->_src ) )
-            : $cwd
-        );
-        $src_basename = $self->_src_filename( basename( $self->_src ) ) =~
-            s#(\.[a-zA-Z0-9]+)\z##r;
-        my $stat = io->file( $self->_src );
-        $src_time_rec = time_record( $stat->mtime );
-        $src_user     = user_record( $stat->uid );
-    }
-
-    unshift(
-        @{ $self->_opt_D },
-        "WML_SRC_DIRNAME=$src_dirname",
-        "WML_SRC_FILENAME=" . $self->_src_filename,
-        "WML_SRC_BASENAME=$src_basename",
-        "WML_SRC_TIME=$src_time_rec->{time}",
-        "WML_SRC_CTIME=$src_time_rec->{ctime}",
-        "WML_SRC_ISOTIME=$src_time_rec->{isotime}",
-        "WML_SRC_GMT_CTIME=$src_time_rec->{gmt_ctime}",
-        "WML_SRC_GMT_ISOTIME=$src_time_rec->{gmt_isotime}",
-        "WML_SRC_USERNAME=$src_user->{username}",
-        "WML_SRC_REALNAME=$src_user->{realname}",
-        "WML_GEN_TIME=$gen_time_rec->{time}",
-        "WML_GEN_CTIME=$gen_time_rec->{ctime}",
-        "WML_GEN_ISOTIME=$gen_time_rec->{isotime}",
-        "WML_GEN_GMT_CTIME=$gen_time_rec->{gmt_ctime}",
-        "WML_GEN_GMT_ISOTIME=$gen_time_rec->{gmt_isotime}",
-        "WML_GEN_USERNAME=$gen_user->{username}",
-        "WML_GEN_REALNAME=$gen_user->{realname}",
-        "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
-        'WML_LOC_PREFIX=' . WmlConfig::prefix(),
-        "WML_LOC_BINDIR=" . $self->bindir,
-        "WML_LOC_LIBDIR=" . WmlConfig::libdir(),
-        'WML_LOC_MANDIR=' . WmlConfig::mandir(),
-        "WML_VERSION=@{[$self->_VERSION]}",
-        "WML_TMPDIR=" . $self->_tmpdir
-    );
-
-    return;
 }
 
 sub _calc_passes_idxs
@@ -866,55 +810,6 @@ sub _calc_reldir
     return $reldir;
 }
 
-sub _process_opt_D
-{
-    my ($self) = @_;
-
-    #   7. Undefine variables when requested
-    my %new_opt_D;
-    foreach my $d ( @{ $self->_opt_D } )
-    {
-        if ( my ( $var, $val ) = ( $d =~ m|^(.+?)=(.*)$| ) )
-        {
-            if ( $val eq 'UNDEF' )
-            {
-                delete $new_opt_D{$var};
-            }
-            else
-            {
-                $new_opt_D{$var} = $val;
-            }
-        }
-    }
-    @{ $self->_opt_D } = map { $_ . "=" . $new_opt_D{$_} } keys %new_opt_D;
-    return;
-}
-
-sub _adjust_opt_D
-{
-    my ( $self, $dnew ) = @_;
-
-    my $reldir = $self->_calc_reldir;
-    foreach my $d ( map { quotearg $_} @$dnew )
-    {
-        if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
-        {
-            if ( $path !~ m|^/| )
-            {
-                canonize_path( \$path, $reldir );
-            }
-            $path = '""' if ( $path eq '' );
-            $d = "$var=$path";
-        }
-        elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
-        {
-            $d .= '=1';
-        }
-        push( @{ $self->_opt_D }, $d );
-    }
-    return;
-}
-
 sub _set_src
 {
     my ( $self, ) = @_;
@@ -1107,14 +1002,14 @@ sub run_with_ARGV
     $self->_set_src();
 
     # now adjust -D options from command line relative to path to source file
-    $self->_adjust_opt_D($dnew);
+    $self->_opt_D_man->_adjust_opt_D($dnew);
 
     #   5. process the options from the pseudo-shebang line
     $self->_process_shebang;
 
     #   6. expand %DIR and %BASE in the -o flags
     $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
-    $self->_process_opt_D;
+    $self->_opt_D_man->_process_opt_D;
     $_pass_mgr->_fix_verbose_level;
     $self->_PROTECT_COUNTER(0);
     $self->_protect_storage( +{} );
@@ -1126,7 +1021,7 @@ sub run_with_ARGV
     $_pass_mgr->out_istmp(0);
 
     my $cwd = _my_cwd;
-    $self->_populate_opt_D;
+    $self->_opt_D_man->_populate_opt_D;
 
     #   Create temporary file names
     $self->_tmp(
