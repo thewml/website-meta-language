@@ -852,11 +852,10 @@ sub _process_shebang
     {
         return;
     }
-    open( my $tmp_fh, '<', $self->_src )
-        or error("Unable to load @{[$self->_src]}: $!");
+    my $tmp_fh  = io->file( $self->_src );
     my $shebang = '';
 SHEBANG:
-    while ( my $l = <$tmp_fh> )
+    while ( my $l = $tmp_fh->getline )
     {
         $shebang .= $l;
         if ( $shebang !~ s/\\\s*\z//s )
@@ -864,8 +863,7 @@ SHEBANG:
             last SHEBANG;
         }
     }
-    close($tmp_fh)
-        or error("Unable to close @{[$self->_src]}:: $!");
+    $tmp_fh->close;
     if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
     {
         #   split opts into arguments and process them
