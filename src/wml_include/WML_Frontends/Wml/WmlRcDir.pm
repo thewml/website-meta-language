@@ -84,7 +84,7 @@ WMLRC_LINES:
     my @opt_I_NEW = @opt_I_OLD;
 
     #   adjust -D options
-    my $reldir = File::Spec->abs2rel( "$dir", $self->_main->_src );
+    my $reldir = File::Spec->abs2rel( $dir, $self->_main->_src );
     $reldir = "." if $reldir eq '';
     foreach my $d (@$dnew)
     {
@@ -94,7 +94,7 @@ WMLRC_LINES:
             {
                 canonize_path( \$path, $reldir );
             }
-            $path = '""' if ( $path eq '' );
+            $path = q/""/ if ( $path eq '' );
             $d = "$var=$path";
         }
         elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
@@ -105,7 +105,7 @@ WMLRC_LINES:
     }
 
     #   adjust -I options
-    $reldir = File::Spec->abs2rel("$dir");
+    $reldir = File::Spec->abs2rel($dir);
     $reldir = "." if $reldir eq '';
     foreach my $path ( @{ $self->_main->_opt_I } )
     {
