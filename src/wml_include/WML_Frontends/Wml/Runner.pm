@@ -246,8 +246,7 @@ sub _protect
     my ( $self, $fn, $pass ) = @_;
 
     my $data = io->file($fn)->all;
-    open my $fp, '>', $fn
-        or error("Unable to write into $fn for protection: $!");
+    my $fp   = io->file($fn)->open('>');
 
     #   First remove a shebang line
     if ( $self->_firstpass and $data =~ m/^#!wml/ )
@@ -290,12 +289,10 @@ sub _protect
     while ( $data =~ s|^(.*?)-=P\[([0-9]+)\]=-||s )
     {
         my $key = $2;
-        $fp->print($1)
-            || error("Unable to write into $fn for protection: $!");
+        $fp->print($1);
         if ( $self->_protect_storage->{$key}->{SPEC} =~ m/$pass/ )
         {
-            $fp->print("-=P[$key]=-")
-                || error("Unable to write into $fn for protection: $!");
+            $fp->print("-=P[$key]=-");
         }
         else
         {
@@ -307,9 +304,8 @@ sub _protect
                 . $data;
         }
     }
-    $fp->print($data)
-        || error("Unable to write into $fn for protection: $!");
-    $fp->close() || error("Unable to close ${fn}: $!");
+    $fp->print($data);
+    $fp->close;
 }
 
 sub _calc_out_fn_helper
