@@ -91,8 +91,7 @@ use Term::ReadKey qw/ ReadMode ReadKey /;
 use WmlConfig qw//;
 use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::Util
-    qw/ _my_cwd canonize_path ctime error expandrange gmt_ctime gmt_isotime
-    isotime quotearg split_argv usage /;
+    qw/ _my_cwd canonize_path error expandrange quotearg split_argv time_record usage /;
 
 sub new
 {
@@ -429,16 +428,11 @@ sub _populate_opt_D
     $gen_realname =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
     $gen_realname ||= 'UNKNOWN-REALNAME';
 
-    my $gen_time        = time();
-    my $gen_ctime       = ctime($gen_time);
-    my $gen_isotime     = isotime($gen_time);
-    my $gen_gmt_ctime   = gmt_ctime($gen_time);
-    my $gen_gmt_isotime = gmt_isotime($gen_time);
+    my $gen_time_rec = time_record( time() );
 
     my (
-        $src_dirname,     $src_basename, $src_time,
-        $src_ctime,       $src_isotime,  $src_gmt_ctime,
-        $src_gmt_isotime, $src_username, $src_realname,
+        $src_dirname,  $src_basename, $src_time_rec,
+        $src_username, $src_realname,
     );
     my $cwd = _my_cwd;
 
@@ -446,14 +440,10 @@ sub _populate_opt_D
     {
         $src_dirname = $cwd;
         $self->_src_filename('STDIN');
-        $src_basename    = 'STDIN';
-        $src_time        = $gen_time;
-        $src_ctime       = $gen_ctime;
-        $src_isotime     = $gen_isotime;
-        $src_gmt_ctime   = $gen_gmt_ctime;
-        $src_gmt_isotime = $gen_gmt_isotime;
-        $src_username    = $gen_username;
-        $src_realname    = $gen_realname;
+        $src_basename = 'STDIN';
+        $src_time_rec = $gen_time_rec;
+        $src_username = $gen_username;
+        $src_realname = $gen_realname;
     }
     else
     {
@@ -466,11 +456,7 @@ sub _populate_opt_D
         $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
         my $stat  = io->file( $self->_src );
         my $mtime = $stat->mtime;
-        $src_time        = $mtime;
-        $src_ctime       = ctime($mtime);
-        $src_isotime     = isotime($mtime);
-        $src_gmt_ctime   = gmt_ctime($mtime);
-        $src_gmt_isotime = gmt_isotime($mtime);
+        $src_time_rec = time_record($mtime);
         my @pwinfo = getpwuid( $stat->uid );
         $src_username = $pwinfo[0] || 'UNKNOWN-USERNAME';
         $src_username =~ s|[\'\$\`\"]||g;    # make safe for shell interpolation
@@ -484,18 +470,18 @@ sub _populate_opt_D
         "WML_SRC_DIRNAME=$src_dirname",
         "WML_SRC_FILENAME=" . $self->_src_filename,
         "WML_SRC_BASENAME=$src_basename",
-        "WML_SRC_TIME=$src_time",
-        "WML_SRC_CTIME=$src_ctime",
-        "WML_SRC_ISOTIME=$src_isotime",
-        "WML_SRC_GMT_CTIME=$src_gmt_ctime",
-        "WML_SRC_GMT_ISOTIME=$src_gmt_isotime",
+        "WML_SRC_TIME=$src_time_rec->{time}",
+        "WML_SRC_CTIME=$src_time_rec->{ctime}",
+        "WML_SRC_ISOTIME=$src_time_rec->{isotime}",
+        "WML_SRC_GMT_CTIME=$src_time_rec->{gmt_ctime}",
+        "WML_SRC_GMT_ISOTIME=$src_time_rec->{gmt_isotime}",
         "WML_SRC_USERNAME=$src_username",
         "WML_SRC_REALNAME=$src_realname",
-        "WML_GEN_TIME=$gen_time",
-        "WML_GEN_CTIME=$gen_ctime",
-        "WML_GEN_ISOTIME=$gen_isotime",
-        "WML_GEN_GMT_CTIME=$gen_gmt_ctime",
-        "WML_GEN_GMT_ISOTIME=$gen_gmt_isotime",
+        "WML_GEN_TIME=$gen_time_rec->{time}",
+        "WML_GEN_CTIME=$gen_time_rec->{ctime}",
+        "WML_GEN_ISOTIME=$gen_time_rec->{isotime}",
+        "WML_GEN_GMT_CTIME=$gen_time_rec->{gmt_ctime}",
+        "WML_GEN_GMT_ISOTIME=$gen_time_rec->{gmt_isotime}",
         "WML_GEN_USERNAME=$gen_username",
         "WML_GEN_REALNAME=$gen_realname",
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",

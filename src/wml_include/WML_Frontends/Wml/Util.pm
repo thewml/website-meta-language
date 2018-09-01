@@ -42,7 +42,7 @@ use parent 'Exporter';
 
 our @EXPORT_OK = qw/ _my_cwd canon_path canonize_path ctime
     error expandrange gmt_ctime gmt_isotime
-    isotime quotearg split_argv usage /;
+    isotime quotearg split_argv time_record usage /;
 
 sub expandrange
 {
@@ -93,6 +93,18 @@ sub gmt_isotime
         $year + 1900,
         $mon + 1, $mday, $hour, $min, $sec
     );
+}
+
+sub time_record
+{
+    my ($time) = @_;
+    return +{
+        ctime       => ctime($time),
+        gmt_ctime   => gmt_ctime($time),
+        gmt_isotime => gmt_isotime($time),
+        isotime     => isotime($time),
+        time        => $time,
+    };
 }
 
 sub usage
