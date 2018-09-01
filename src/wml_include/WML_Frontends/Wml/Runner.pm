@@ -32,6 +32,8 @@
 
 package WML_Frontends::Wml::Runner;
 
+use 5.014;
+
 use strict;
 use warnings;
 
@@ -425,9 +427,8 @@ sub _populate_opt_D
 
     if ( $self->_src_istmp )
     {
-        $src_dirname = $cwd;
-        $self->_src_filename('STDIN');
-        $src_basename = 'STDIN';
+        $src_dirname  = $cwd;
+        $src_basename = $self->_src_filename('STDIN');
         $src_time_rec = $gen_time_rec;
         $src_user     = $gen_user;
     }
@@ -438,8 +439,8 @@ sub _populate_opt_D
             ? Cwd::abs_path( dirname( $self->_src ) )
             : $cwd
         );
-        $src_basename = $self->_src_filename( basename( $self->_src ) );
-        $src_basename =~ s#(\.[a-zA-Z0-9]+)\z##;
+        $src_basename = $self->_src_filename( basename( $self->_src ) ) =~
+            s#(\.[a-zA-Z0-9]+)\z##r;
         my $stat = io->file( $self->_src );
         $src_time_rec = time_record( $stat->mtime );
         $src_user     = user_record( $stat->uid );
