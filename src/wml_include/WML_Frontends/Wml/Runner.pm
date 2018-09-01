@@ -754,13 +754,6 @@ sub _process_ENV_WMLOPTS
     return;
 }
 
-sub _process_wmlrc
-{
-    my ($self) = @_;
-
-    return WML_Frontends::Wml::WmlRc->new( _main => $self )->_process_wmlrc;
-}
-
 sub _calc_default_opts
 {
     my ( $self, ) = @_;
@@ -1098,7 +1091,7 @@ sub run_with_ARGV
     $self->_process_ENV_WMLOPTS;
 
     # .wmlrc File Parsing
-    $self->_process_wmlrc;
+    WML_Frontends::Wml::WmlRc->new( _main => $self )->_process_wmlrc;
 
     #   4. process the command line options
     my ($dnew) = $self->_process_options( $self->_argv, [] );
