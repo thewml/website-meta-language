@@ -656,21 +656,19 @@ sub _do_output
         {
             foreach my $o ( @{ $self->_out_filenames } )
             {
-                open my $fp, '>', $o or error("Unable to write into $o");
-                push @fh, $fp;
+                push @fh, io->file($o)->open('>');
             }
         }
         else
         {
             my $o = $self->_tmp->[3];
-            open $fh[0], '>', $o or error("Unable to write into $o");
+            push @fh, io->file($o)->open('>');
         }
         my $buf = io()->file( $self->_last )->all;
         foreach my $fp (@fh)
         {
-            $fp->print($buf)
-                or error("Unable to write into output file: $!");
-            $fp->close() or error("Unable to close output file: $!");
+            $fp->print($buf);
+            $fp->close;
         }
     }
 
