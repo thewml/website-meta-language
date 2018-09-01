@@ -44,6 +44,7 @@ use Class::XSAccessor (
             _PROTECT_COUNTER
             _argv
             _firstpass
+            _last
             _opt_D
             _opt_E
             _opt_I
@@ -72,6 +73,8 @@ use Class::XSAccessor (
             _tmp
             _tmpdir
             bindir
+            final
+            pcnt
             )
     }
 );
@@ -571,89 +574,99 @@ sub _optionally_view_current_result
     }
 }
 
+my @_PROP = ( "-", "\\", "|", "/" );
+
+sub _run_pass
+{
+    my ( $self, $pass_idx, $cnt, $from, $to ) = @_;
+    my $_pass_mgr = $self->_pass_mgr;
+
+    $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
+    print STDERR $_PROP[ $self->pcnt % 4 ] . "\b" if ( not $self->_opt_q );
+    $self->pcnt( $self->pcnt + 1 );
+
+    #   run pass
+    my ( $u, $s, $cu, $cs ) = times();
+    my $stime = $u + $s + $cu + $cs;
+    $self->_protect( $$from, $pass_idx );
+    my $opt_pass = '';
+    foreach my $aa ( @{ $self->_opt_W } )
+    {
+        if ( my ( $pp, $s ) = $aa =~ m|\A([0-9]),(.*)\z| )
+        {
+            $opt_pass .= " $s " if $pp == $pass_idx;
+        }
+    }
+    my $_pass = $_pass_mgr->pass($pass_idx);
+    my $rc    = $_pass->cb()->(
+        $_pass_mgr, $_pass->opt_pass() . $opt_pass,
+        $$from, $$to, $self->_tmp->[2]
+    );
+    if ( !length($rc) )
+    {
+        $rc = 0;
+    }
+    if ( $rc != 0 )
+    {
+        if ( $rc % 256 != 0 )
+        {
+            printf( STDERR
+                    "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n",
+                $pass_idx, $rc % 256, $rc / 256 );
+        }
+        else
+        {
+            printf( STDERR "** WML:Break: Error in Pass %d (rc=%d).\n",
+                $pass_idx, $rc / 256 );
+        }
+        $self->_unlink_tmp;
+        die;
+    }
+
+    # pass 9 is a special case
+    $self->_unprotect( $$to, $pass_idx ) if ( $pass_idx < 9 );
+    ( $u, $s, $cu, $cs ) = times();
+    my $etime = $u + $s + $cu + $cs;
+    my $dtime = $etime - $stime;
+    $dtime = 0.01 if ( $dtime < 0 );
+    $_pass->time_($dtime);
+    $self->_optionally_view_current_result( $pass_idx, $$to );
+
+    #   step further
+    $self->_last($$to);
+    $self->final(1) if $pass_idx == 9;
+    my $bit = ( $$cnt & 1 );
+    $$from = $self->_tmp->[$bit];
+    $$to   = $self->_tmp->[ $bit ^ 1 ];
+    unlink($$to);
+    ++$$cnt;
+
+}
+
 # MAIN PROCESSING LOOP
 sub _passes_loop
 {
     my ($self) = @_;
 
-    my $final     = 0;
-    my $last      = '';
+    $self->final(0);
+    $self->_last('');
     my $_pass_mgr = $self->_pass_mgr;
-    my @prop      = ( "-", "\\", "|", "/" );
     my ( $from, $to, $cnt ) = (
           ( not $self->_src_istmp )
         ? ( $self->_tmp->[0], $self->_tmp->[1], 1, )
         : ( $self->_src, $self->_tmp->[0], 0, )
     );
 
-    my $pcnt = 0;
+    $self->pcnt(0);
 PASS_IDX: foreach my $pass_idx ( @{ $self->_passes_idxs } )
     {
-        $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
-        print STDERR $prop[ $pcnt++ % 4 ] . "\b" if ( not $self->_opt_q );
-
-        #   run pass
-        my ( $u, $s, $cu, $cs ) = times();
-        my $stime = $u + $s + $cu + $cs;
-        $self->_protect( $from, $pass_idx );
-        my $opt_pass = '';
-        foreach my $aa ( @{ $self->_opt_W } )
-        {
-            if ( my ( $pp, $s ) = $aa =~ m|\A([0-9]),(.*)\z| )
-            {
-                $opt_pass .= " $s " if $pp == $pass_idx;
-            }
-        }
-        my $_pass = $_pass_mgr->pass($pass_idx);
-        my $rc    = $_pass->cb()->(
-            $_pass_mgr, $_pass->opt_pass() . $opt_pass,
-            $from, $to, $self->_tmp->[2]
-        );
-        if ( !length($rc) )
-        {
-            $rc = 0;
-        }
-        if ( $rc != 0 )
-        {
-            if ( $rc % 256 != 0 )
-            {
-                printf( STDERR
-                        "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n",
-                    $pass_idx, $rc % 256, $rc / 256 );
-            }
-            else
-            {
-                printf( STDERR "** WML:Break: Error in Pass %d (rc=%d).\n",
-                    $pass_idx, $rc / 256 );
-            }
-            $self->_unlink_tmp;
-            die;
-        }
-
-        # pass 9 is a special case
-        $self->_unprotect( $to, $pass_idx ) if ( $pass_idx < 9 );
-        ( $u, $s, $cu, $cs ) = times();
-        my $etime = $u + $s + $cu + $cs;
-        my $dtime = $etime - $stime;
-        $dtime = 0.01 if ( $dtime < 0 );
-        $_pass->time_($dtime);
-        $self->_optionally_view_current_result( $pass_idx, $to );
-
-        #   step further
-        $last = $to;
-        $final = 1 if $pass_idx == 9;
-        my $bit = ( $cnt & 1 );
-        $from = $self->_tmp->[$bit];
-        $to   = $self->_tmp->[ $bit ^ 1 ];
-        unlink($to);
-        ++$cnt;
-
-        if ($final)
+        $self->_run_pass( $pass_idx, \$cnt, \$from, \$to );
+        if ( $self->final )
         {
             last PASS_IDX;
         }
     }
-    return ( $final, $last );
+    return;
 }
 
 sub _unlink_tmp
@@ -666,18 +679,18 @@ sub _unlink_tmp
 
 sub _do_output
 {
-    my ( $self, $final, $last ) = @_;
+    my ($self) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
 
-    if ( $last ne '' and $final and $_pass_mgr->out_istmp )
+    if ( $self->_last ne '' and $self->final and $_pass_mgr->out_istmp )
     {
         $self->_unprotect( $self->_tmp->[3], 9 );
     }
-    elsif ( $last ne '' and not $final )
+    elsif ( $self->_last ne '' and not $self->final )
     {
         my @fh = ();
-        $self->_unprotect( $last, 9 );
+        $self->_unprotect( $self->_last, 9 );
         if ( @{ $self->_out_filenames } )
         {
             foreach my $o ( @{ $self->_out_filenames } )
@@ -691,7 +704,7 @@ sub _do_output
             my $o = $self->_tmp->[3];
             open $fh[0], '>', $o or error("Unable to write into $o");
         }
-        my $buf = io()->file($last)->all;
+        my $buf = io()->file( $self->_last )->all;
         foreach my $fp (@fh)
         {
             $fp->print($buf)
