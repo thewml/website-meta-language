@@ -37,6 +37,8 @@ use 5.014;
 use strict;
 use warnings;
 
+use IO::All qw/ io /;
+
 use WML_Frontends::Wml::Util qw/ canonize_path split_argv /;
 use Class::XSAccessor (
     constructor => 'new',
@@ -61,11 +63,10 @@ sub _process_wmlrc_dir
         return;
     }
     $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
-    open( my $wml_rc_fh, '<', "$dir/.wmlrc" )
-        or error("Unable to load $dir/.wmlrc: $!");
+    my $wml_rc_fh = io->file("$dir/.wmlrc");
     my @aa;
 WMLRC_LINES:
-    while ( my $l = <$wml_rc_fh> )
+    while ( my $l = $wml_rc_fh->getline )
     {
         if ( $l =~ m|\A\s*\n?\z| or $l =~ m|\A\s*#[#\s]*.*\z| )
         {
@@ -76,7 +77,7 @@ WMLRC_LINES:
         $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
         push( @aa, split_argv($l) );
     }
-    close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
+    $wml_rc_fh->close;
     my @opt_I_OLD = @{ $self->_main->_opt_I };
     $self->_main->_opt_I( [] );
     my $dnew = $self->_main->_process_options( \@aa, [] );
