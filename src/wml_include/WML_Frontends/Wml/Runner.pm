@@ -765,7 +765,8 @@ sub _process_wmlrc_dir
 {
     my ( $self, $dir ) = @_;
 
-    return WML_Frontends::Wml::WmlRcDir->new->_process_wmlrc_dir( $self, $dir );
+    return WML_Frontends::Wml::WmlRcDir->new( _main => $self, dir => $dir )
+        ->_process_wmlrc_dir;
 }
 
 sub _process_wmlrc

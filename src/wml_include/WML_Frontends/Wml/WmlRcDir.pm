@@ -38,19 +38,23 @@ use strict;
 use warnings;
 
 use WML_Frontends::Wml::Util qw/ canonize_path split_argv /;
-
-sub new
-{
-    my $self = bless +{}, shift;
-
-    return $self;
-}
+use Class::XSAccessor (
+    constructor => 'new',
+    accessors   => +{
+        map { $_ => $_ }
+            qw(
+            _main
+            dir
+            )
+    }
+);
 
 sub _process_wmlrc_dir
 {
-    my ( $obj, $self, $dir ) = @_;
+    my ($self) = @_;
+    my $dir = $self->dir;
 
-    my $_pass_mgr = $self->_pass_mgr;
+    my $_pass_mgr = $self->_main->_pass_mgr;
 
     if ( not -f "$dir/.wmlrc" )
     {
@@ -73,13 +77,13 @@ WMLRC_LINES:
         push( @aa, split_argv($l) );
     }
     close($wml_rc_fh) || error("Unable to close $dir/.wmlrc: $!");
-    my @opt_I_OLD = @{ $self->_opt_I };
-    $self->_opt_I( [] );
-    my $dnew = $self->_process_options( \@aa, [] );
+    my @opt_I_OLD = @{ $self->_main->_opt_I };
+    $self->_main->_opt_I( [] );
+    my $dnew = $self->_main->_process_options( \@aa, [] );
     my @opt_I_NEW = @opt_I_OLD;
 
     #   adjust -D options
-    my $reldir = File::Spec->abs2rel( "$dir", $self->_src );
+    my $reldir = File::Spec->abs2rel( "$dir", $self->_main->_src );
     $reldir = "." if $reldir eq '';
     foreach my $d (@$dnew)
     {
@@ -96,13 +100,13 @@ WMLRC_LINES:
         {
             $d .= '=1';
         }
-        push( @{ $self->_opt_D }, $d );
+        push( @{ $self->_main->_opt_D }, $d );
     }
 
     #   adjust -I options
     $reldir = File::Spec->abs2rel("$dir");
     $reldir = "." if $reldir eq '';
-    foreach my $path ( @{ $self->_opt_I } )
+    foreach my $path ( @{ $self->_main->_opt_I } )
     {
         if ( $path !~ m#\A/# )
         {
@@ -111,7 +115,7 @@ WMLRC_LINES:
         }
         push( @opt_I_NEW, $path );
     }
-    $self->_opt_I( [@opt_I_NEW] );
+    $self->_main->_opt_I( [@opt_I_NEW] );
     return;
 }
 
