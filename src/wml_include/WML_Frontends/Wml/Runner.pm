@@ -416,7 +416,6 @@ sub _populate_opt_D
     my ($self) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = $_pass_mgr->libdir;
 
     my $gen_user     = user_record($<);
     my $gen_time_rec = time_record( time() );
@@ -468,7 +467,7 @@ sub _populate_opt_D
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
         'WML_LOC_PREFIX=' . WmlConfig::prefix(),
         "WML_LOC_BINDIR=" . $self->bindir,
-        "WML_LOC_LIBDIR=$libdir",
+        "WML_LOC_LIBDIR=" . WmlConfig::libdir(),
         'WML_LOC_MANDIR=' . WmlConfig::mandir(),
         "WML_VERSION=@{[$self->_VERSION]}",
         "WML_TMPDIR=" . $self->_tmpdir
