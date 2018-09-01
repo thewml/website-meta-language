@@ -28,12 +28,7 @@ use Class::XSAccessor (
     },
 );
 
-use WML_Backends::IPP::Delimit ();
-
-sub _delim
-{
-    return WML_Backends::IPP::Delimit->new( delimiter => shift );
-}
+use WML_Backends::IPP::Delimit qw/ _delim /;
 
 sub _line_Continuation_Support
 {

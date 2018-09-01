@@ -3,6 +3,9 @@ package WML_Backends::IPP::Delimit;
 use strict;
 use warnings;
 
+use parent 'Exporter';
+our @EXPORT_OK = (qw(_delim));
+
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
@@ -39,6 +42,11 @@ sub is_quote_all
     my $self = shift;
 
     return $self->is_quote || $self->is(q/'/);
+}
+
+sub _delim
+{
+    return WML_Backends::IPP::Delimit->new( delimiter => shift );
 }
 
 1;

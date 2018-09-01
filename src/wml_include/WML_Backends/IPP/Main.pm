@@ -40,14 +40,9 @@ use IO::All qw/ io /;
 use Carp qw( cluck );
 use WML_Backends ();
 use WML_Backends::IPP::Args qw/ $IDENT_RE /;
-use WML_Backends::IPP::Delimit ();
-use WML_Backends::IPP::File    ();
-use WML_Backends::IPP::Map     ();
-
-sub _delim
-{
-    return WML_Backends::IPP::Delimit->new( delimiter => shift );
-}
+use WML_Backends::IPP::Delimit qw/ _delim /;
+use WML_Backends::IPP::File ();
+use WML_Backends::IPP::Map  ();
 
 sub _sq
 {
