@@ -279,6 +279,7 @@ sub _handle_opt_M_stdin
             : sprintf( "** WML:Break: Error in Pass %d (rc=%d).\n", 1,
             $rc / 256 );
     }
+    return;
 }
 
 sub _calc_passes_idxs
@@ -338,6 +339,7 @@ sub _optionally_view_current_result
         $self->_unlink_tmp;
         die "** WML:Break: Manual Stop.\n";
     }
+    return;
 }
 
 my @_PROP = ( "-", "\\", "|", "/" );
@@ -407,6 +409,7 @@ sub _run_pass
     unlink($$to);
     ++$$cnt;
 
+    return;
 }
 
 # MAIN PROCESSING LOOP
@@ -613,6 +616,7 @@ SHEBANG:
         #   split opts into arguments and process them
         $self->_process_options( [ split_argv($1) ], $self->_opt_D );
     }
+    return;
 }
 
 sub _calc_passes_options
@@ -654,6 +658,7 @@ sub _calc_passes_options
     {
         $_pass_mgr->pass( $i + 1 )->opt_pass($str);
     }
+    return;
 }
 
 sub _calc_reldir
