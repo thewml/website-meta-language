@@ -92,7 +92,7 @@ sub _populate_opt_D
         "WML_LOC_BINDIR=" . $self->_main->bindir,
         "WML_LOC_LIBDIR=" . WmlConfig::libdir(),
         'WML_LOC_MANDIR=' . WmlConfig::mandir(),
-        "WML_VERSION=@{[$self->_main->_VERSION]}",
+        "WML_VERSION=@{[WmlConfig::_VERSION]}",
         "WML_TMPDIR=" . $self->_main->_tmpdir
     );
 

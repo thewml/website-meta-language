@@ -523,7 +523,7 @@ sub _print_version
     if ( $self->_opt_V )
     {
         print STDERR <<"EOF";
-This is WML Version @{[$self->_VERSION]}
+This is WML Version @{[WmlConfig::_VERSION]}
 Copyright (c) 1996-2001 Ralf S. Engelschall.
 Copyright (c) 1999-2001 Denis Barbier.
 
@@ -732,11 +732,6 @@ sub _output_and_cleanup
     }
 
     return 0;
-}
-
-sub _VERSION
-{
-    return WmlConfig::_VERSION;
 }
 
 sub _handle_out_tmp
