@@ -41,11 +41,12 @@ use parent 'WML_Frontends::Wml::Base';
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _passes _process_argv_cb gen_hostname libdir out_istmp _opt_v _opt_o _opt_s )
+            qw( _passes _process_argv_cb gen_hostname out_istmp _opt_v _opt_o _opt_s )
     }
 );
 
-use WML_Frontends::Wml::PassObj;
+use WmlConfig                   ();
+use WML_Frontends::Wml::PassObj ();
 
 use WML_Frontends::Wml::Util qw/ _my_cwd error split_argv /;
 use IO::All qw/ io /;
@@ -54,9 +55,8 @@ my $RESOLV_FN = '/etc/resolv.conf';
 
 sub new
 {
-    my $self = bless +{}, shift;
-    my $args = shift;
-    $self->libdir( $args->{libdir} );
+    my $self     = bless +{}, shift;
+    my $args     = shift;
     my $__PASSES = [
         sub { return shift->pass1(@_); },
         sub { return shift->pass2(@_); },
@@ -134,7 +134,7 @@ sub dosystem
 sub _generic_do
 {
     my ( $self, $pass_idx, $EXE, $opt, $from, $to ) = @_;
-    my $prog = "@{[$self->libdir]}/exec/$EXE";
+    my $prog = "@{[WmlConfig::libdir()]}/exec/$EXE";
     my $args = "$opt -o $to $from";
     return scalar(
           $self->_opt_s
@@ -154,7 +154,7 @@ sub pass2
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     my $cwd = _my_cwd;
     my $rc  = $_pass_mgr->dosystem(
-        "@{[$_pass_mgr->libdir]}/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
+        "@{[WmlConfig::libdir()]}/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -172,7 +172,7 @@ sub pass3
 
     return
         scalar $_pass_mgr->dosystem(
-"@{[$_pass_mgr->libdir]}/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to"
+"@{[WmlConfig::libdir()]}/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to"
         );
 }
 
@@ -229,7 +229,7 @@ sub pass9
     #   other stuff, so we cannot source it.
     return
         scalar $_pass_mgr->dosystem(
-        "@{[$_pass_mgr->libdir]}/exec/wml_p9_slice $opt $from");
+        "@{[WmlConfig::libdir()]}/exec/wml_p9_slice $opt $from");
 }
 
 sub _read_slices

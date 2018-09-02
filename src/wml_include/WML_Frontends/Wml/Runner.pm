@@ -64,7 +64,7 @@ use File::Spec ();
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
-use WmlConfig qw//;
+use WmlConfig                         ();
 use WML_Frontends::Wml::OptD          ();
 use WML_Frontends::Wml::PassesManager ();
 use WML_Frontends::Wml::Protect       ();
@@ -81,13 +81,7 @@ sub new
 {
     my $self = bless +{}, shift;
 
-    $self->_pass_mgr(
-        WML_Frontends::Wml::PassesManager->new(
-            {
-                libdir => WmlConfig::libdir(),
-            }
-        )
-    );
+    $self->_pass_mgr( WML_Frontends::Wml::PassesManager->new );
 
     $self->_tmpdir( $ENV{TMPDIR} || '/tmp' );
     $self->_opt_D_man(
@@ -118,7 +112,7 @@ sub _calc_epilogue_program
     my ( $self, $e ) = @_;
 
     my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = $_pass_mgr->libdir;
+    my $libdir    = WmlConfig::libdir();
 
     if ( $e =~ m|^htmlinfo(.*)| )
     {
@@ -145,7 +139,7 @@ sub _handle_output
 {
     my ( $self, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = $_pass_mgr->libdir;
+    my $libdir    = WmlConfig::libdir();
 
     #   Unprotect output files and run epilog filters
     if ( !@{ $self->_out_filenames } )
@@ -625,7 +619,7 @@ sub _calc_passes_options
 {
     my ($self)    = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = $_pass_mgr->libdir;
+    my $libdir    = WmlConfig::libdir();
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) = $self->_calc_default_opts();
 
     #   determine preloads
