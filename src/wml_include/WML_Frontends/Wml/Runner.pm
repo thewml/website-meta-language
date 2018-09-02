@@ -348,7 +348,10 @@ sub _run_pass
     my $_pass_mgr = $self->_pass_mgr;
 
     $_pass_mgr->verbose( 2, "PASS $pass_idx:\n" );
-    print STDERR $_PROP[ $self->pcnt % 4 ] . "\b" if ( not $self->_opt_q );
+    if ( not $self->_opt_q )
+    {
+        print STDERR $_PROP[ $self->pcnt % 4 ] . "\b";
+    }
     $self->pcnt( $self->pcnt + 1 );
 
     #   run pass

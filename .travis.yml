@@ -7,7 +7,7 @@ before_install:
     - sudo apt-get install -y build-essential cmake cpanminus fortune-mod hunspell libdb5.3-dev libgd-dev libhunspell-dev libncurses-dev libpcre3-dev libperl-dev lynx perl myspell-en-gb python3 python3-setuptools python3-pip valgrind xsltproc xz-utils zip
     - cpanm local::lib
     - eval "$(perl -Mlocal::lib=$HOME/perl_modules)"
-    - cpanm Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Tidy Test::Code::TidyAll Term::ReadKey
+    - cpanm Bit::Vector Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Perl::Critic Perl::Tidy Test::Code::TidyAll Term::ReadKey
 python:
     - "3.5"
 script:
