@@ -47,6 +47,7 @@ use Class::XSAccessor (
             _pass_mgr
             _passes_idxs
             _protect_storage
+            _protector
             _src
             _src_filename
             _src_istmp
@@ -69,6 +70,7 @@ use Term::ReadKey qw/ ReadMode ReadKey /;
 use WmlConfig qw//;
 use WML_Frontends::Wml::OptD          ();
 use WML_Frontends::Wml::PassesManager ();
+use WML_Frontends::Wml::Protect       ();
 use WML_Frontends::Wml::WmlRc         ();
 use WML_Frontends::Wml::Util
     qw/ _my_cwd error expandrange quotearg split_argv usage /;
@@ -157,7 +159,7 @@ sub _handle_output
     #   unprotect all outputfiles
     foreach my $o ( @{ $self->_out_filenames } )
     {
-        $self->_unprotect( $o, 9 );
+        $self->_protector->_unprotect( $o, 9 );
     }
 
     #   optionally set mtime of outputfiles
@@ -189,38 +191,6 @@ sub _handle_output
             error("epilog failed: $e_prog $o") if $rc != 0;
         }
     }
-    return;
-}
-
-sub _unprotect
-{
-    my ( $self, $fn, $pass ) = @_;
-
-    my $data = io->file($fn)->all;
-    while ( my ( $prefix, $key, $new ) =
-        $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s )
-    {
-        $data = $new;
-        if ( $pass < 9 and $pass < $self->_protect_storage->{$key}->{MAX} )
-        {
-            $prefix .=
-                "<protect" . $self->_protect_storage->{$key}->{ARG} . ">";
-            $data = "</protect>" . $data;
-        }
-        $data = $prefix . $self->_protect_storage->{$key}->{BODY} . $data;
-    }
-
-    #    Remove useless <protect> tags
-    $data =~ s|</?protect.*?>||gs if $pass == 9;
-    io->file($fn)->print($data);
-    if ( $pass < 9 )
-    {
-        foreach my $key ( keys %{ $self->_protect_storage } )
-        {
-            $self->_protect_storage->{$key} = undef;
-        }
-    }
-
     return;
 }
 
@@ -504,7 +474,7 @@ sub _run_pass
     }
 
     # pass 9 is a special case
-    $self->_unprotect( $$to, $pass_idx ) if ( $pass_idx < 9 );
+    $self->_protector->_unprotect( $$to, $pass_idx ) if ( $pass_idx < 9 );
     ( $u, $s, $cu, $cs ) = times();
     my $etime = $u + $s + $cu + $cs;
     my $dtime = $etime - $stime;
@@ -565,12 +535,12 @@ sub _do_output
 
     if ( $self->_last ne '' and $self->final and $_pass_mgr->out_istmp )
     {
-        $self->_unprotect( $self->_tmp->[3], 9 );
+        $self->_protector->_unprotect( $self->_tmp->[3], 9 );
     }
     elsif ( $self->_last ne '' and not $self->final )
     {
         my @fh = ();
-        $self->_unprotect( $self->_last, 9 );
+        $self->_protector->_unprotect( $self->_last, 9 );
         if ( @{ $self->_out_filenames } )
         {
             foreach my $o ( @{ $self->_out_filenames } )
@@ -988,7 +958,11 @@ sub run_with_ARGV
     $self->_opt_D_man->_process_opt_D;
     $_pass_mgr->_fix_verbose_level;
     $self->_PROTECT_COUNTER(0);
-    $self->_protect_storage( +{} );
+    $self->_protector(
+        WML_Frontends::Wml::Protect->new(
+            _protect_storage => $self->_protect_storage( +{} )
+        )
+    );
     $_pass_mgr->_opt_o( $self->_opt_o );
 
     $self->_firstpass(1);
