@@ -7,3 +7,4 @@ ignore =
 ; select = **/*.{pl,pm,t}
 ; ignore = **/*
 select = wml_include/**/*.pm
+ignore = wml_include/WML_Frontends/Wml/PassObj.pm
