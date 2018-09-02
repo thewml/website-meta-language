@@ -21,9 +21,7 @@ use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
             qw(
-            _PROTECT_COUNTER
             _argv
-            _firstpass
             _last
             _opt_D_man
             _opt_E
@@ -62,7 +60,6 @@ use Class::XSAccessor (
 
 use Getopt::Long 2.13;
 use File::Spec ();
-use List::Util qw/ max /;
 
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
@@ -192,73 +189,6 @@ sub _handle_output
         }
     }
     return;
-}
-
-sub _protect
-{
-    my ( $self, $fn, $pass ) = @_;
-
-    my $data = io->file($fn)->all;
-    my $fp   = io->file($fn)->open('>');
-
-    #   First remove a shebang line
-    if ( $self->_firstpass and $data =~ m/^#!wml/ )
-    {
-        while ( $data =~ s/^[^\n]*\\\n//s ) { 1; }
-        $data =~ s/^[^\n]*\n//s;
-    }
-
-    #   Following passes will pass through previous test
-    $self->_firstpass(0);
-
-    #  This loop must take care of nestable <protect> tags
-    while ( $data =~ s#\A(.*)<protect(.*?)>(.*?)</protect>##is )
-    {
-        my ( $prolog, $arg, $body ) = ( $1, $2, $3 );
-        my $passes_str = '123456789';
-
-        #    unquote the attribute
-        $arg =~ s|(['"])(.*)\1\s*$|$2|;
-        if ( $arg =~ m|pass=([0-9,-]*)|i )
-        {
-            $passes_str = $1;
-            $passes_str =~ s|,||g;
-            $passes_str = "1$passes_str" if $passes_str =~ m|^-|;
-            $passes_str .= '9' if $passes_str =~ m|-$|;
-            $passes_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
-        }
-        my $key = sprintf( "%06d", $self->_PROTECT_COUNTER );
-        $self->_PROTECT_COUNTER( $self->_PROTECT_COUNTER + 1 );
-        $self->_protect_storage->{$key} = {
-            SPEC => $passes_str,
-            MAX  => max( split( '', $passes_str ) ),
-            ARG  => $arg,
-            BODY => $body
-        };
-        $data = $prolog . "-=P[$key]=-" . $data;
-    }
-
-    #   And now unprotect passes
-    while ( $data =~ s|^(.*?)-=P\[([0-9]+)\]=-||s )
-    {
-        my $key = $2;
-        $fp->print($1);
-        if ( $self->_protect_storage->{$key}->{SPEC} =~ m/$pass/ )
-        {
-            $fp->print("-=P[$key]=-");
-        }
-        else
-        {
-            $data =
-                  "<protect"
-                . $self->_protect_storage->{$key}->{ARG} . ">"
-                . $self->_protect_storage->{$key}->{BODY}
-                . "</protect>"
-                . $data;
-        }
-    }
-    $fp->print($data);
-    $fp->close;
 }
 
 sub _calc_out_fn_helper
@@ -438,7 +368,7 @@ sub _run_pass
     #   run pass
     my ( $u, $s, $cu, $cs ) = times();
     my $stime = $u + $s + $cu + $cs;
-    $self->_protect( $$from, $pass_idx );
+    $self->_protector->_protect( $$from, $pass_idx );
     my $opt_pass = '';
     foreach my $aa ( @{ $self->_opt_W } )
     {
@@ -957,15 +887,15 @@ sub run_with_ARGV
     $self->_opt_o( [ map { $self->_map_opt_o($_) } @{ $self->_opt_o } ] );
     $self->_opt_D_man->_process_opt_D;
     $_pass_mgr->_fix_verbose_level;
-    $self->_PROTECT_COUNTER(0);
     $self->_protector(
         WML_Frontends::Wml::Protect->new(
-            _protect_storage => $self->_protect_storage( +{} )
+            _PROTECT_COUNTER => 0,
+            _protect_storage => $self->_protect_storage( +{} ),
         )
     );
     $_pass_mgr->_opt_o( $self->_opt_o );
 
-    $self->_firstpass(1);
+    $self->_protector->_firstpass(1);
 
     #   Flag set if some output goes to stdout
     $_pass_mgr->out_istmp(0);
