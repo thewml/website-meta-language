@@ -110,9 +110,7 @@ sub new
 sub _calc_epilogue_program
 {
     my ( $self, $e ) = @_;
-
-    my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = WmlConfig::libdir();
+    my $libdir = WmlConfig::libdir();
 
     if ( $e =~ m|^htmlinfo(.*)| )
     {
@@ -419,7 +417,6 @@ sub _passes_loop
 
     $self->final(0);
     $self->_last('');
-    my $_pass_mgr = $self->_pass_mgr;
     my ( $from, $to, $cnt ) = (
           ( not $self->_src_istmp )
         ? ( $self->_tmp->[0], $self->_tmp->[1], 1, )
@@ -806,10 +803,9 @@ sub _process_options
 
 sub _reset_opts
 {
-    my $self      = shift;
-    my $_pass_mgr = $self->_pass_mgr;
+    my $self = shift;
 
-    $_pass_mgr->_opt_s(0);
+    $self->_pass_mgr->_opt_s(0);
     $self->_opt_D( [] );
     $self->_opt_M('-');
     $self->_opt_O('');
