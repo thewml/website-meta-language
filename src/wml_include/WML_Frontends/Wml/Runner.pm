@@ -278,19 +278,12 @@ sub _handle_opt_M_stdin
     };
     if ( $rc != 0 )
     {
-        if ( $rc % 256 != 0 )
-        {
-            printf( STDERR
-                    "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n",
-                1, $rc % 256, $rc / 256 );
-        }
-        else
-        {
-            printf( STDERR "** WML:Break: Error in Pass %d (rc=%d).\n",
-                1, $rc / 256 );
-        }
         $self->_unlink_tmp;
-        die;
+        die +( $rc % 256 != 0 )
+            ? sprintf( "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n",
+            1, $rc % 256, $rc / 256 )
+            : sprintf( "** WML:Break: Error in Pass %d (rc=%d).\n", 1,
+            $rc / 256 );
     }
 }
 
@@ -348,9 +341,8 @@ sub _optionally_view_current_result
     }
     elsif ( $key =~ m|[qQ]| )
     {
-        printf( STDERR "** WML:Break: Manual Stop.\n" );
         $self->_unlink_tmp;
-        die;
+        die "** WML:Break: Manual Stop.\n";
     }
 }
 
@@ -712,8 +704,7 @@ sub _set_src
 
     if ( $self->_src_istmp and not -f $self->_src )
     {
-        print STDERR "** WML:Error: input file `@{[$self->_src]}' not found\n";
-        die;
+        die "** WML:Error: input file `@{[$self->_src]}' not found\n";
     }
     return;
 }
