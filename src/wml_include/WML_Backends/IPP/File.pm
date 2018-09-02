@@ -28,7 +28,7 @@ use Class::XSAccessor (
 );
 
 use IO::All qw/ io /;
-use WML_Frontends::Wml::Util qw/ canon_path /;
+use WML_Frontends::Wml::Util qw/ canon_path error /;
 use WML_Backends::IPP::Line ();
 
 sub _PatternProcess_helper
