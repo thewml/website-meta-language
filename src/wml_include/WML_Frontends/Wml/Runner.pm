@@ -60,6 +60,7 @@ use Class::XSAccessor (
 
 use Getopt::Long 2.13;
 use File::Spec ();
+use List::Util qw/ sum /;
 
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
@@ -342,6 +343,11 @@ sub _optionally_view_current_result
 
 my @_PROP = ( "-", "\\", "|", "/" );
 
+sub _times_sum
+{
+    return sum( ( times() )[ 0 .. 3 ] );
+}
+
 sub _run_pass
 {
     my ( $self, $pass_idx, $cnt, $from, $to ) = @_;
@@ -355,8 +361,7 @@ sub _run_pass
     $self->pcnt( $self->pcnt + 1 );
 
     #   run pass
-    my ( $u, $s, $cu, $cs ) = times();
-    my $stime = $u + $s + $cu + $cs;
+    my $stime = _times_sum;
     $self->_protector->_protect( $$from, $pass_idx );
     my $opt_pass = '';
     foreach my $aa ( @{ $self->_opt_W } )
@@ -394,9 +399,7 @@ sub _run_pass
 
     # pass 9 is a special case
     $self->_protector->_unprotect( $$to, $pass_idx ) if ( $pass_idx < 9 );
-    ( $u, $s, $cu, $cs ) = times();
-    my $etime = $u + $s + $cu + $cs;
-    my $dtime = $etime - $stime;
+    my $dtime = _times_sum() - $stime;
     $dtime = 0.01 if ( $dtime < 0 );
     $_pass->time_($dtime);
     $self->_optionally_view_current_result( $pass_idx, $$to );
