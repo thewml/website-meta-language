@@ -21,18 +21,6 @@ if "%perl_type%" == "cygwin" (
     exit /b 1
   )
   set "PATH=C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\Strawberry\c\bin;%PATH%"
-) else if "%perl_type%" == "strawberry" (
-  if not defined perl_version (
-    cinst -y StrawberryPerl
-  ) else (
-    cinst -y StrawberryPerl --version %perl_version%
-  )
-  if errorlevel 1 (
-    type C:\ProgramData\chocolatey\logs\chocolatey.log
-    exit /b 1
-  )
-  set "PATH=C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\Strawberry\c\bin;%PATH%"
-) else if "%perl_type%" == "activestate" (
 ) else if "%perl_type%" == "activestate" (
   start /wait ppm install dmake MinGW
 ) else (
