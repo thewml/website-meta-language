@@ -38,5 +38,6 @@ build: off
 test_script:
     - set HARNESS_BREAK=1
     - set FCS_USE_TEST_RUN=1
-    - set "PATH=C:\cygwin64\usr\local\bin;C:\cygwin64\bin;%PATH%"
+    - 'set "PATH=C:\cygwin64\usr\local\bin;C:\cygwin64\bin;%PATH%"'
+    - 'call .appveyor.cmd local_lib'
     - xcopy /i /q /s c:\Projects\website-meta-language c:\cygwin64\home\appveyor\website-meta-language && c:\cygwin64\bin\bash -e -l -c "export WMLOPTS='--passoption 3,-x'; export PERL_MM_USE_DEFAULT=1; eval ""$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"" ; ls ; cd website-meta-language/ ; mkdir build; cd build; perl ../src/wml_test/run_test.pl"
