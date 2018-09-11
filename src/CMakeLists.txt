@@ -95,6 +95,11 @@ SET(CPACK_PACKAGE_EXECUTABLES
     "wml" "Website Meta Language Frontend"
 )
 
+FIND_PROGRAM(_lynx NAMES "lynx")
+IF (NOT _lynx)
+    MESSAGE (FATAL_ERROR "lynx is required - please install it.")
+ENDIF ()
+
 INCLUDE (CPack)
 
 ENABLE_TESTING()
