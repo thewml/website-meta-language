@@ -1,4 +1,4 @@
-package WML_Backends;
+package TheWML::Backends;
 
 use strict;
 use warnings;

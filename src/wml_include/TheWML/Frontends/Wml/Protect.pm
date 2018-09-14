@@ -2,7 +2,7 @@
 ##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2001 Denis Barbier.
-package WML_Frontends::Wml::Protect;
+package TheWML::Frontends::Wml::Protect;
 
 use 5.014;
 
@@ -23,7 +23,7 @@ use Class::XSAccessor (
 
 use List::Util qw/ max /;
 use IO::All qw/ io /;
-use WML_Frontends::Wml::Util qw/ expandrange /;
+use TheWML::Frontends::Wml::Util qw/ expandrange /;
 
 sub _protect
 {

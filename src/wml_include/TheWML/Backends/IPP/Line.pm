@@ -4,14 +4,14 @@
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
-package WML_Backends::IPP::Line;
+package TheWML::Backends::IPP::Line;
 
 use 5.014;
 
 use strict;
 use warnings;
 
-use parent 'WML_Frontends::Wml::Base';
+use parent 'TheWML::Frontends::Wml::Base';
 
 use Class::XSAccessor (
     constructor => 'new',
@@ -28,7 +28,7 @@ use Class::XSAccessor (
     },
 );
 
-use WML_Backends::IPP::Delimit qw/ _delim /;
+use TheWML::Backends::IPP::Delimit qw/ _delim /;
 
 sub _line_Continuation_Support
 {
@@ -182,7 +182,7 @@ sub _line_do_includes
     {
         #   set arguments
         my %argO = %$arg;
-        WML_Backends::IPP::Args->new->setargs( $arg, $args );
+        TheWML::Backends::IPP::Args->new->setargs( $arg, $args );
 
         #   do possible argument mapping
         $incfile = $self->_main->_map->mapfile($incfile);

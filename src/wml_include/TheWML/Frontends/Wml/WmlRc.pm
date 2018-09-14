@@ -2,7 +2,7 @@
 ##
 ##  Copyright (c) 1996-2001 Ralf S. Engelschall.
 ##  Copyright (c) 1999-2001 Denis Barbier.
-package WML_Frontends::Wml::WmlRc;
+package TheWML::Frontends::Wml::WmlRc;
 
 use 5.014;
 
@@ -21,14 +21,14 @@ use Class::XSAccessor (
 
 use Cwd ();
 use File::Basename qw/ basename dirname /;
-use WML_Frontends::Wml::WmlRcDir ();
-use WML_Frontends::Wml::Util qw/ _my_cwd /;
+use TheWML::Frontends::Wml::WmlRcDir ();
+use TheWML::Frontends::Wml::Util qw/ _my_cwd /;
 
 sub _process_wmlrc_dir
 {
     my ( $self, $dir ) = @_;
 
-    return WML_Frontends::Wml::WmlRcDir->new(
+    return TheWML::Frontends::Wml::WmlRcDir->new(
         _main => $self->_main,
         dir   => $dir
     )->_process_wmlrc_dir;

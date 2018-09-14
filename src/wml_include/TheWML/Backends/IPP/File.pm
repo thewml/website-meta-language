@@ -4,14 +4,14 @@
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
-package WML_Backends::IPP::File;
+package TheWML::Backends::IPP::File;
 
 use 5.014;
 
 use strict;
 use warnings;
 
-use parent 'WML_Frontends::Wml::Base';
+use parent 'TheWML::Frontends::Wml::Base';
 
 use Class::XSAccessor (
     constructor => 'new',
@@ -28,8 +28,8 @@ use Class::XSAccessor (
 );
 
 use IO::All qw/ io /;
-use WML_Frontends::Wml::Util qw/ canon_path error /;
-use WML_Backends::IPP::Line ();
+use TheWML::Frontends::Wml::Util qw/ canon_path error /;
+use TheWML::Backends::IPP::Line ();
 
 sub _PatternProcess_helper
 {
@@ -258,7 +258,7 @@ LINES:
     {
         ++$line_idx;
 
-        my $op = WML_Backends::IPP::Line->new(
+        my $op = TheWML::Backends::IPP::Line->new(
             _main    => $self->_main,
             arg      => $arg,
             l        => \$l,

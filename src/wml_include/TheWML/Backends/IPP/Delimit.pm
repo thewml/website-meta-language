@@ -1,4 +1,4 @@
-package WML_Backends::IPP::Delimit;
+package TheWML::Backends::IPP::Delimit;
 
 use strict;
 use warnings;
@@ -46,7 +46,7 @@ sub is_quote_all
 
 sub _delim
 {
-    return WML_Backends::IPP::Delimit->new( delimiter => shift );
+    return TheWML::Backends::IPP::Delimit->new( delimiter => shift );
 }
 
 1;

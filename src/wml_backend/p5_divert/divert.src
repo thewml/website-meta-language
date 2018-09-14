@@ -16,11 +16,11 @@ use lib '@INSTALLARCHLIB@';
 #
 #   create output file
 #
-use WML_Backends;
-use WML_Backends::Divert;
+use TheWML::Backends;
+use TheWML::Backends::Divert;
 
-my $obj = WML_Backends::Divert->new;
-WML_Backends->out($obj->_opt_o(),
+my $obj = TheWML::Backends::Divert->new;
+TheWML::Backends->out($obj->_opt_o(),
     sub { return $obj->error(@_); } ,
     [$obj->calc_result]
 );

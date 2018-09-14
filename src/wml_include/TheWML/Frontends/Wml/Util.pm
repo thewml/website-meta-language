@@ -32,7 +32,7 @@
 ##  this program under different conditions or license agreements.
 ##
 
-package WML_Frontends::Wml::Util;
+package TheWML::Frontends::Wml::Util;
 
 use strict;
 use warnings;

@@ -86,9 +86,9 @@ use vars qw( $buffer );
 
 BEGIN { $buffer = ''; }
 
-use WML_Backends;
+use TheWML::Backends;
 
-$buffer = WML_Backends->input(\@ARGV, \&error, \&usage);
+$buffer = TheWML::Backends->input(\@ARGV, \&error, \&usage);
 
 if (!defined($buffer)) { die "Egloo Buffer is undef." }
 
@@ -435,7 +435,7 @@ foreach my $m (split(',', $opt_F)) {
 #
 verbose("Total amount of images: $bytes bytes");
 
-WML_Backends->out($opt_o, \&error, [$buffer]);
+TheWML::Backends->out($opt_o, \&error, [$buffer]);
 
 
 exit(0);

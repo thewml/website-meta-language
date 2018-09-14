@@ -41,9 +41,9 @@ use warnings;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-use WML_Frontends::Wml::Runner ();
+use TheWML::Frontends::Wml::Runner ();
 
-WML_Frontends::Wml::Runner->new->run_with_ARGV(
+TheWML::Frontends::Wml::Runner->new->run_with_ARGV(
     {
         ARGV => [@ARGV],
     }

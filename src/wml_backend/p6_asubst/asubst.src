@@ -54,9 +54,9 @@ sub error {
 #
 #   open input file and read into buffer
 #
-use WML_Backends;
+use TheWML::Backends;
 
-my $foo_buffer = WML_Backends->input(\@ARGV, \&error, \&usage);
+my $foo_buffer = TheWML::Backends->input(\@ARGV, \&error, \&usage);
 
 #
 #   processing loop
@@ -240,7 +240,7 @@ if ($rc) {
 }
 
 
-WML_Backends->out($opt_o, \&error, [$foo_buffer]);
+TheWML::Backends->out($opt_o, \&error, [$foo_buffer]);
 
 exit(0);
 

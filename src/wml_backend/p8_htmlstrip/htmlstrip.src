@@ -61,9 +61,9 @@ sub error {
 #
 #   read input file
 #
-use WML_Backends;
+use TheWML::Backends;
 
-my $INPUT = WML_Backends->input(\@ARGV, \&error, \&usage);
+my $INPUT = TheWML::Backends->input(\@ARGV, \&error, \&usage);
 
 #
 #   global initial stripping
@@ -355,7 +355,7 @@ verbose("Fix <suck> special command");
 $OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
 $OUTPUT =~ s|^\n||s;
 
-WML_Backends->out($opt_o, \&error, [$OUTPUT]);
+TheWML::Backends->out($opt_o, \&error, [$OUTPUT]);
 
 exit(0);
 

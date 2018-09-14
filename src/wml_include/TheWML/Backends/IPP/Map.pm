@@ -1,4 +1,4 @@
-package WML_Backends::IPP::Map;
+package TheWML::Backends::IPP::Map;
 
 use strict;
 use warnings;

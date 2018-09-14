@@ -37,7 +37,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
-use WML_Frontends::Wml::Util qw/ canon_path /;
+use TheWML::Frontends::Wml::Util qw/ canon_path /;
 
 use 5.014;
 

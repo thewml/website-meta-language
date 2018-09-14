@@ -4,14 +4,14 @@
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
-package WML_Backends::IPP::Main;
+package TheWML::Backends::IPP::Main;
 
 use 5.014;
 
 use strict;
 use warnings;
 
-use parent 'WML_Frontends::Wml::Base';
+use parent 'TheWML::Frontends::Wml::Base';
 
 use Class::XSAccessor (
     constructor => 'new',
@@ -38,11 +38,11 @@ use File::Spec;
 use IO::All qw/ io /;
 
 use Carp qw( cluck );
-use WML_Backends ();
-use WML_Backends::IPP::Args qw/ $IDENT_RE /;
-use WML_Backends::IPP::Delimit qw/ _delim /;
-use WML_Backends::IPP::File ();
-use WML_Backends::IPP::Map  ();
+use TheWML::Backends ();
+use TheWML::Backends::IPP::Args qw/ $IDENT_RE /;
+use TheWML::Backends::IPP::Delimit qw/ _delim /;
+use TheWML::Backends::IPP::File ();
+use TheWML::Backends::IPP::Map  ();
 
 sub _sq
 {
@@ -100,7 +100,7 @@ sub ProcessFile
 {
     my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
-    return WML_Backends::IPP::File->new(
+    return TheWML::Backends::IPP::File->new(
         _del  => $_del,
         _main => $self,
         level => $level,
@@ -217,7 +217,7 @@ sub main
     }
     usage() if ( !@ARGV );
     push( @{ $self->opt_I }, '.' );
-    $self->_map( WML_Backends::IPP::Map->new( { filenames => \@opt_m } ) );
+    $self->_map( TheWML::Backends::IPP::Map->new( { filenames => \@opt_m } ) );
 
     # iterate over the input files
     $self->INCLUDES( { () } );
@@ -251,7 +251,7 @@ sub _process_real_files
     foreach my $fn (@ARGV)
     {
         #   create temporary working file
-        io()->file( $self->temp_fn )->print( WML_Backends->input( [$fn] ) );
+        io()->file( $self->temp_fn )->print( TheWML::Backends->input( [$fn] ) );
 
         #   apply prolog filters
         foreach my $p (@$opt_P)
@@ -293,7 +293,7 @@ sub _do_output
             }
         }
 
-        WML_Backends->out(
+        TheWML::Backends->out(
             (
                 $self->opt_M =~ /D/
                 ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' )
@@ -310,7 +310,7 @@ sub _do_output
     else
     {
         # create output file
-        WML_Backends->out( $opt_o, \&error, [ ${ $self->_out_buf_ref } ] );
+        TheWML::Backends->out( $opt_o, \&error, [ ${ $self->_out_buf_ref } ] );
     }
 
     return;

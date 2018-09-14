@@ -8,7 +8,7 @@
 ##  the Free Software Foundation; either version 2 of the License, or
 ##  (at your option) any later version.
 ##
-package WML_Frontends::Wml::OptD;
+package TheWML::Frontends::Wml::OptD;
 
 use 5.014;
 
@@ -30,8 +30,8 @@ use File::Basename qw/ basename dirname /;
 
 use IO::All qw/ io /;
 
-use WmlConfig qw//;
-use WML_Frontends::Wml::Util
+use TheWML::Config qw//;
+use TheWML::Frontends::Wml::Util
     qw/ _my_cwd canonize_path quotearg time_record usage user_record /;
 
 sub _populate_opt_D
@@ -88,11 +88,11 @@ sub _populate_opt_D
         "WML_GEN_USERNAME=$gen_user->{username}",
         "WML_GEN_REALNAME=$gen_user->{realname}",
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
-        'WML_LOC_PREFIX=' . WmlConfig::prefix(),
+        'WML_LOC_PREFIX=' . TheWML::Config::prefix(),
         "WML_LOC_BINDIR=" . $self->_main->bindir,
-        "WML_LOC_LIBDIR=" . WmlConfig::libdir(),
-        'WML_LOC_MANDIR=' . WmlConfig::mandir(),
-        "WML_VERSION=@{[WmlConfig::_VERSION]}",
+        "WML_LOC_LIBDIR=" . TheWML::Config::libdir(),
+        'WML_LOC_MANDIR=' . TheWML::Config::mandir(),
+        "WML_VERSION=@{[TheWML::Config::_VERSION]}",
         "WML_TMPDIR=" . $self->_main->_tmpdir
     );
 

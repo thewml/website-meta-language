@@ -1,37 +1,13 @@
-package WmlConfig;
+package TheWML::Frontends::Wml::Base;
 
 use strict;
 use warnings;
 
-use parent 'Exporter';
-
-our @EXPORT_OK = (qw(libdir));
-
-sub bindir   { return '@bindir@'; }
-sub libdir   { return '@libdir@'; }
-sub mandir   { return '@mandir@'; }
-sub prefix   { return '@prefix@'; }
-sub perlprog { return '@perlprog@'; }
-
-sub _VERSION
+sub _gen_opt
 {
-    return '@WML_VERSION@';
-}
+    my ( $self, $opt ) = @_;
 
-sub build_info
-{
-    return <<'EOF';
-Built Environment:
-    Host: @built_system@
-    Perl: @perlvers@ (@perlprog@)
-    User: @built_user@
-    Date: @built_date@
-Built Location:
-    Prefix: @prefix@
-    BinDir: @bindir@
-    LibDir: @libdir@
-    ManDir: @mandir@
-EOF
+    return sub { my ( undef, $v ) = @_; $self->$opt($v); },;
 }
 
 1;
@@ -67,4 +43,3 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
-# vim: ft=perl

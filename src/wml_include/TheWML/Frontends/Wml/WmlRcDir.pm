@@ -30,7 +30,7 @@
 ##  The author reserves the right to distribute following releases of
 ##  this program under different conditions or license agreements.
 
-package WML_Frontends::Wml::WmlRcDir;
+package TheWML::Frontends::Wml::WmlRcDir;
 
 use 5.014;
 
@@ -39,7 +39,7 @@ use warnings;
 
 use IO::All qw/ io /;
 
-use WML_Frontends::Wml::Util qw/ canonize_path split_argv /;
+use TheWML::Frontends::Wml::Util qw/ canonize_path split_argv /;
 use Class::XSAccessor (
     constructor => 'new',
     accessors   => +{

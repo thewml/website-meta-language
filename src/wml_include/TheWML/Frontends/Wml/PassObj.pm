@@ -32,7 +32,7 @@
 ##  this program under different conditions or license agreements.
 ##
 
-package WML_Frontends::Wml::PassObj;
+package TheWML::Frontends::Wml::PassObj;
 
 use strict;
 use warnings;

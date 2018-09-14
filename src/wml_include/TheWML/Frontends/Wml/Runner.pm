@@ -8,14 +8,14 @@
 ##  (at your option) any later version.
 ##
 
-package WML_Frontends::Wml::Runner;
+package TheWML::Frontends::Wml::Runner;
 
 use 5.014;
 
 use strict;
 use warnings;
 
-use parent 'WML_Frontends::Wml::Base';
+use parent 'TheWML::Frontends::Wml::Base';
 
 use Class::XSAccessor (
     accessors => +{
@@ -65,12 +65,12 @@ use List::Util qw/ sum /;
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
-use WmlConfig                         ();
-use WML_Frontends::Wml::OptD          ();
-use WML_Frontends::Wml::PassesManager ();
-use WML_Frontends::Wml::Protect       ();
-use WML_Frontends::Wml::WmlRc         ();
-use WML_Frontends::Wml::Util
+use TheWML::Config                        ();
+use TheWML::Frontends::Wml::OptD          ();
+use TheWML::Frontends::Wml::PassesManager ();
+use TheWML::Frontends::Wml::Protect       ();
+use TheWML::Frontends::Wml::WmlRc         ();
+use TheWML::Frontends::Wml::Util
     qw/ _my_cwd error expandrange quotearg split_argv usage /;
 
 sub _opt_D
@@ -82,11 +82,11 @@ sub new
 {
     my $self = bless +{}, shift;
 
-    $self->_pass_mgr( WML_Frontends::Wml::PassesManager->new );
+    $self->_pass_mgr( TheWML::Frontends::Wml::PassesManager->new );
 
     $self->_tmpdir( $ENV{TMPDIR} || '/tmp' );
     $self->_opt_D_man(
-        WML_Frontends::Wml::OptD->new( _main => $self, _opt_D => [] ) );
+        TheWML::Frontends::Wml::OptD->new( _main => $self, _opt_D => [] ) );
 
     # Clear out any existing CGI environments because some of our passes
     # (currently Pass 2 and 3) get totally confused by these variables.
@@ -99,7 +99,7 @@ sub new
             )
     };
 
-    my $bindir = $self->bindir( WmlConfig::bindir() );
+    my $bindir = $self->bindir( TheWML::Config::bindir() );
     if ( index( $ENV{PATH}, $bindir ) < 0 )
     {
         $ENV{PATH} = "$bindir:$ENV{PATH}";
@@ -111,7 +111,7 @@ sub new
 sub _calc_epilogue_program
 {
     my ( $self, $e ) = @_;
-    my $libdir = WmlConfig::libdir();
+    my $libdir = TheWML::Config::libdir();
 
     if ( $e =~ m|^htmlinfo(.*)| )
     {
@@ -138,7 +138,7 @@ sub _handle_output
 {
     my ( $self, ) = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = WmlConfig::libdir();
+    my $libdir    = TheWML::Config::libdir();
 
     #   Unprotect output files and run epilog filters
     if ( !@{ $self->_out_filenames } )
@@ -523,7 +523,7 @@ sub _print_version
     if ( $self->_opt_V )
     {
         print STDERR <<"EOF";
-This is WML Version @{[WmlConfig::_VERSION]}
+This is WML Version @{[TheWML::Config::_VERSION]}
 Copyright (c) 1996-2001 Ralf S. Engelschall.
 Copyright (c) 1999-2001 Denis Barbier.
 
@@ -534,12 +534,12 @@ GNU General Public License for more details.
 EOF
         if ( $self->_opt_V > 1 )
         {
-            print STDERR WmlConfig::build_info();
+            print STDERR TheWML::Config::build_info();
         }
         if ( $self->_opt_V > 2 )
         {
             print STDERR "\nUsed Perl System:\n",
-                `@{[WmlConfig::perlprog()]} -V`;
+                `@{[TheWML::Config::perlprog()]} -V`;
         }
         exit(0);
     }
@@ -626,7 +626,7 @@ sub _calc_passes_options
 {
     my ($self)    = @_;
     my $_pass_mgr = $self->_pass_mgr;
-    my $libdir    = WmlConfig::libdir();
+    my $libdir    = TheWML::Config::libdir();
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) = $self->_calc_default_opts();
 
     #   determine preloads
@@ -848,7 +848,7 @@ sub run_with_ARGV
     $self->_process_ENV_WMLOPTS;
 
     # .wmlrc File Parsing
-    WML_Frontends::Wml::WmlRc->new( _main => $self )->_process_wmlrc;
+    TheWML::Frontends::Wml::WmlRc->new( _main => $self )->_process_wmlrc;
 
     #   4. process the command line options
     my ($dnew) = $self->_process_options( $self->_argv, [] );
@@ -875,7 +875,7 @@ sub run_with_ARGV
     $self->_opt_D_man->_process_opt_D;
     $_pass_mgr->_fix_verbose_level;
     $self->_protector(
-        WML_Frontends::Wml::Protect->new(
+        TheWML::Frontends::Wml::Protect->new(
             _PROTECT_COUNTER => 0,
             _protect_storage => $self->_protect_storage( +{} ),
         )

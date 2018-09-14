@@ -1,4 +1,4 @@
-package WML_Backends::IPP::Args;
+package TheWML::Backends::IPP::Args;
 
 use strict;
 use warnings;

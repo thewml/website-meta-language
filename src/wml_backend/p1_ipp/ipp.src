@@ -10,9 +10,9 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
-require WML_Backends::IPP::Main;
+require TheWML::Backends::IPP::Main;
 
-WML_Backends::IPP::Main->new->main;
+TheWML::Backends::IPP::Main->new->main;
 
 ##EOF##
 __END__

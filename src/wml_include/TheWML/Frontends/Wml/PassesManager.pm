@@ -31,12 +31,12 @@
 ##  The author reserves the right to distribute following releases of
 ##  this program under different conditions or license agreements.
 ##
-package WML_Frontends::Wml::PassesManager;
+package TheWML::Frontends::Wml::PassesManager;
 
 use strict;
 use warnings;
 
-use parent 'WML_Frontends::Wml::Base';
+use parent 'TheWML::Frontends::Wml::Base';
 
 use Class::XSAccessor (
     accessors => +{
@@ -45,10 +45,10 @@ use Class::XSAccessor (
     }
 );
 
-use WmlConfig                   ();
-use WML_Frontends::Wml::PassObj ();
+use TheWML::Config                  ();
+use TheWML::Frontends::Wml::PassObj ();
 
-use WML_Frontends::Wml::Util qw/ _my_cwd error split_argv /;
+use TheWML::Frontends::Wml::Util qw/ _my_cwd error split_argv /;
 use IO::All qw/ io /;
 
 my $RESOLV_FN = '/etc/resolv.conf';
@@ -72,7 +72,7 @@ sub new
         [
             '',
             map {
-                WML_Frontends::Wml::PassObj->new(
+                TheWML::Frontends::Wml::PassObj->new(
                     idx => ( $_ + 1 ),
                     cb  => $__PASSES->[$_]
                     )
@@ -134,7 +134,7 @@ sub dosystem
 sub _generic_do
 {
     my ( $self, $pass_idx, $EXE, $opt, $from, $to ) = @_;
-    my $prog = "@{[WmlConfig::libdir()]}/exec/$EXE";
+    my $prog = "@{[TheWML::Config::libdir()]}/exec/$EXE";
     my $args = "$opt -o $to $from";
     return scalar(
           $self->_opt_s
@@ -154,7 +154,8 @@ sub pass2
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     my $cwd = _my_cwd;
     my $rc  = $_pass_mgr->dosystem(
-        "@{[WmlConfig::libdir()]}/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
+"@{[TheWML::Config::libdir()]}/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp"
+    );
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -172,7 +173,7 @@ sub pass3
 
     return
         scalar $_pass_mgr->dosystem(
-"@{[WmlConfig::libdir()]}/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to"
+"@{[TheWML::Config::libdir()]}/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to"
         );
 }
 
@@ -229,7 +230,7 @@ sub pass9
     #   other stuff, so we cannot source it.
     return
         scalar $_pass_mgr->dosystem(
-        "@{[WmlConfig::libdir()]}/exec/wml_p9_slice $opt $from");
+        "@{[TheWML::Config::libdir()]}/exec/wml_p9_slice $opt $from");
 }
 
 sub _read_slices
