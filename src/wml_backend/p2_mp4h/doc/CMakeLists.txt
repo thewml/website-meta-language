@@ -30,6 +30,7 @@ ADD_CUSTOM_TARGET( "mp4h_doc_html" ALL DEPENDS "${HTML_TARGET}" )
 SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
 SET (mp4h_pod_dests )
 INST_RENAME_POD2MAN( "mp4h_pod_dests" "mp4h.pod" "mp4h" "1" "mp4h")
+INSTALL_RENAME_MAN ("mp4h.1" "1" "wml_p2_mp4h" "${CMAKE_CURRENT_BINARY_DIR}")
 ADD_CUSTOM_TARGET(
     "mp4h_pod" ALL
     DEPENDS ${mp4h_pod_dests}
