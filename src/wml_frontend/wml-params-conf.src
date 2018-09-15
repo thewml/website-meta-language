@@ -4,10 +4,19 @@ use strict;
 use warnings;
 
 use Getopt::Long qw/ GetOptions /;
+use Pod::Usage qw/ pod2usage /;
 
 my $INSTALLPRIVLIB = 0;
-GetOptions( 'show-privlib!' => \$INSTALLPRIVLIB, )
-    or die "$!";
+my $help           = 0;
+GetOptions(
+    'h|help!'       => \$help,
+    'show-privlib!' => \$INSTALLPRIVLIB,
+) or die "$!";
+
+if ($help)
+{
+    pod2usage(1);
+}
 
 if ($INSTALLPRIVLIB)
 {
@@ -15,6 +24,14 @@ if ($INSTALLPRIVLIB)
     print "\n";
 }
 __END__
+
+=head1 NAME
+
+wml-params-conf
+
+=head1 SYNOPSIS
+
+    use lib do { my $s = `wml-params-conf --show-privlib`; chomp $s; $s;}
 
 =head1 COPYRIGHT & LICENSE
 
