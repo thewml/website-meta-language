@@ -14,6 +14,7 @@ use Cwd ();
 use IO::All qw / io /;
 
 use File::Path qw / rmtree /;
+use Path::Tiny qw/ path /;
 
 sub do_system
 {
@@ -42,9 +43,9 @@ if ($IS_WIN)
 {
     $cmake_gen = 'MSYS Makefiles';
 }
+my $tatzer_dir = File::Spec->rel2abs( path($0)->parent->parent->stringify );
 my $script_dir = File::Spec->rel2abs( dirname(__FILE__) );
-
-my $myprefix = Cwd::getcwd() . "/tests/installation";
+my $myprefix   = Cwd::getcwd() . "/tests/installation";
 
 my $build_dir = "FOO";
 
@@ -55,7 +56,7 @@ if ( !-e $myprefix )
         do_system(
             {
                 cmd => [
-"cd . && mkdir $build_dir && cd $build_dir && $^X ..${SEP}..${SEP}src${SEP}Tatzer "
+"cd . && mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
                         . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
                         . " --prefix=$myprefix && $MAKE && $MAKE install"
                 ]
@@ -86,11 +87,12 @@ else
     do_system(
         {
             cmd => [
-                'prove', '-v',
+                'prove',
+                ( $ENV{WML_TEST_QUIET} ? () : ('-v') ),
                 glob(
                           't'
                         . $SEP
-                        . '{{02,03,05,06,07,08,09,10,des,std}-,tidyall}*.t'
+                        . '{{02,03,05,06,07,08,09,10,des,std}-,build-process,tidyall}*.t'
                 ),
             ],
         }

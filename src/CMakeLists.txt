@@ -50,25 +50,9 @@ SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSIO
 SET (base_with_ver "${CPACK_PACKAGE_NAME}-[0-9]+\\\\.[0-9]+\\\\.[0-9]+")
 
 SET(CPACK_SOURCE_IGNORE_FILES
-    "/build/"
-    "/_CPack_Packages/"
-    "/CMakeFiles/"
-    "/.deps/"
-    "^${base_with_ver}(-Source|-Linux)?/"
-    "${base_with_ver}.tar\\\\.(gz|bz2|Z|lzma|xz)$"
-    "\\\\.o$"
     "~$"
-    "\\\\.so(\\\\.[0-9]+)*$"
-    "/\\\\.svn/"
-    "\\\\.(pdf|fo)$"
     "/t/t/.*\\\\.exe$"
-    "/t/Presets"
-    "/CMakeCache\\\\.txt$"
-    "/Makefile$"
     "/tags$"
-    "/([0-9]+)\\\\.board$"
-    "/config\\\\.h$"
-    "ids-whitelist\\\\.txt"
 )
 
 IF(WIN32 AND NOT UNIX)

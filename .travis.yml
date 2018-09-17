@@ -15,4 +15,4 @@ python:
 script:
     - mkdir build
     - cd build
-    - perl ../src/wml_test/run_test.pl
+    - WML_TEST_BUILD=1 perl ../src/wml_test/run_test.pl
