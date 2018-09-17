@@ -8,7 +8,6 @@ use File::Spec ();
 use List::MoreUtils qw(none);
 use Cwd ();
 use File::Path qw/ mkpath rmtree /;
-use Env::Path ();
 
 use File::Temp qw/ tempdir /;
 use Path::Tiny qw/ path /;
