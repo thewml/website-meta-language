@@ -1,1 +1,0 @@
-DEFINE_WML_AUX_PERL_PROG("freetable")
