@@ -74,7 +74,8 @@ $ENV{PERL5LIB}              = "$myprefix/lib/perl5$P$P5L$script_dir";
 $ENV{QUAD_PRES_NO_HOME_LIB} = 1;
 $ENV{PATH}                  = "$myprefix/bin$P$ENV{PATH}";
 $ENV{WML}                   = "$myprefix/bin/wml -q -W1-N";
-$ENV{LANG}                  = $ENV{LC_ALL} = 'C';
+( $ENV{WML_P3} ) = glob("$myprefix/*/wml/exec/wml_p3_eperl*");
+$ENV{LANG} = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
 

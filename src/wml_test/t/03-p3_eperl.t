@@ -29,7 +29,7 @@ sub generic
     my $tmpfile1 = tmpfile($in);
     my $tmpfile2 = tmpfile($out);
     my $tmpfile3 = tmpfile();
-    my $rc       = system("$ENV{WML} -p$pass $opt $tmpfile1 >$tmpfile3");
+    my $rc       = system("$ENV{WML_P3} $tmpfile1 >$tmpfile3");
 
     Test::More::ok( !$rc, "generic system wml" );
 
