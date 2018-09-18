@@ -1,2 +1,1 @@
-ADD_SUBDIRECTORY( p1_ipp )
 ADD_SUBDIRECTORY( p3_eperl )
