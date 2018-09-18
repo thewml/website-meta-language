@@ -78,6 +78,9 @@ $ENV{LANG}                  = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
 
+do_system( { cmd => [ 'which',      'perlcritic' ] } );
+do_system( { cmd => [ 'bash',       '-c', q{echo "$PATH"}, ] } );
+do_system( { cmd => [ 'perlcritic', '--version', ] } );
 if ($is_interactive)
 {
     system("bash");
