@@ -90,4 +90,3 @@ ENABLE_TESTING()
 
 ADD_SUBDIRECTORY( wml_backend )
 ADD_SUBDIRECTORY( wml_test )
-ADD_SUBDIRECTORY( wml_include )
