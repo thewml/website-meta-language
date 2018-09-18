@@ -22,7 +22,7 @@ ENDMACRO(set_vars)
 
 SET (pod_dests )
 
-FOREACH (cmd wmk wml wmb wmd wmu wml-params-conf)
+FOREACH (cmd wml wml-params-conf)
     set_vars()
     # MESSAGE( FATAL_ERROR "WML_LIB_DIR = ${WML_LIB_DIR}")
     PREPROCESS_PATH_PERL_WITH_FULL_NAMES("preprocess_perl_frontend_${cmd}" "${src}" "${dest}")
@@ -34,14 +34,7 @@ FOREACH (cmd wmk wml wmb wmd wmu wml-params-conf)
     INST_POD2MAN("pod_dests" "${srcbase}" "${mannamebase}" "1")
 ENDFOREACH(cmd)
 
-FOREACH(cmd wmd_missing)
-    set_vars()
-    INST_POD2MAN("pod_dests" "${srcbase}" "${mannamebase}" "1")
-ENDFOREACH(cmd)
-
 ADD_CUSTOM_TARGET(
     "frontend_pods" ALL
     DEPENDS ${pod_dests}
 )
-
-INSTALL_DATA ("wmd.txt")
