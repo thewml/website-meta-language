@@ -252,8 +252,7 @@ char *Perl5_RememberedScalars[1024] = { NULL };
 void Perl5_RememberScalar(char *str)
 {
     int i;
-
-    for (i = 0; Perl5_RememberedScalars[i] != NULL; i++)
+    for ( i = 0; Perl5_RememberedScalars[i] != NULL; i++)
         ;
     Perl5_RememberedScalars[i++] = strdup(str);
     Perl5_RememberedScalars[i++] = NULL;
@@ -393,7 +392,6 @@ int main(int argc, char **argv, char **env)
 {
     int rc;
     FILE *fp = NULL;
-    char *cpBuf3 = NULL;
     char perlscript[1024] = "";
     char perlstderr[1024] = "";
     char perlstdout[1024] = "";
@@ -403,11 +401,7 @@ int main(int argc, char **argv, char **env)
     int nBuf;
     int nOut;
     char *cp;
-    int c;
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
-    int i, n, k;
-    char *cwd2;
-    int fOkSwitch;
 
     /*  second step: canonicalize program name */
     progname = argv[0];
@@ -489,7 +483,7 @@ int main(int argc, char **argv, char **env)
     /*  - program name and possible -T -w options */
     myargv[myargc++] = progname;
     /*  - previously remembered Perl 5 INC entries (option -I) */
-    for (i = 0; RememberedINC[i] != NULL; i++) {
+    for (int i = 0; RememberedINC[i] != NULL; i++) {
         myargv[myargc++] = "-I";
         myargv[myargc++] = RememberedINC[i];
     }
