@@ -193,7 +193,6 @@
 extern void Perl5_XSInit(pTHX);
 extern void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue);
 extern char *Perl5_RememberedScalars[1024];
-extern void Perl5_RememberScalar(char *str);
 extern void Perl5_SetRememberedScalars(pTHX);
 
 #include "eperl_perl5_sm.h"
@@ -248,16 +247,6 @@ void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
 */
 
 char *Perl5_RememberedScalars[1024] = { NULL };
-
-void Perl5_RememberScalar(char *str)
-{
-    int i;
-    for ( i = 0; Perl5_RememberedScalars[i] != NULL; i++)
-        ;
-    Perl5_RememberedScalars[i++] = strdup(str);
-    Perl5_RememberedScalars[i++] = NULL;
-    return;
-}
 
 void Perl5_SetRememberedScalars(pTHX)
 {
@@ -344,7 +333,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
 }
 
 extern int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, char *perlstderr, char *perlstdout);
-extern void Perl5_RememberScalar(char *str);
 
 
 /*
