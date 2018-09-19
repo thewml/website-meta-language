@@ -37,21 +37,7 @@
 
 /*_BEGIN_PROTO_*/
 
-/* eperl_main.c */
-extern int mode;
-extern char *allowed_file_ext[];
-extern char *allowed_caller_uid[];
-extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...);
-extern void give_version(void);
-extern void give_usage(char *name);
-extern char *RememberedINC[1024];
-extern void RememberINC(char *str);
-extern void mysighandler(int rc);
-extern void myinit(void);
-extern void myexit(int rc);
-
 /* eperl_perl5.c */
-extern void give_version_extended_perl(void);
 extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
 extern void Perl5_RememberScalar(char *str);
 
