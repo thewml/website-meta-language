@@ -25,17 +25,9 @@ int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *per
 {
     int rc;
     FILE *er;
-    FILE *out;
     char *cpBuf = NULL;
     static PerlInterpreter *my_perl = NULL;
     int size;
-
-    /* open a file for Perl's STDOUT channel
-       and redirect stdout to the new channel */
-    if ((out = fopen(perlstdout, "w")) == NULL) {
-        fprintf(stderr, "Cannot open STDOUT file `%s' for writing", perlstdout);
-        CU(-1);
-    }
 
     /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
@@ -62,7 +54,6 @@ int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *per
 
     /*  pre-close the handles, to be able to check
         its size and to be able to display the contents */
-    fclose(out); out = NULL;
     fclose(er);  er  = NULL;
 
     CUS: /* the Clean Up Sequence */
