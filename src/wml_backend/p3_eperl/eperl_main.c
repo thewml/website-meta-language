@@ -409,33 +409,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     return;
 }
 
-void give_usage(char *name)
-{
-    fprintf(stderr, "Usage: %s [options] [scriptfile]\n", name);
-    fprintf(stderr, "\n");
-    fprintf(stderr, "Input Options:\n");
-    fprintf(stderr, "  -d, --define=NAME=VALUE   define global Perl variable ($main::name)\n");
-    fprintf(stderr, "  -I, --includedir=PATH     add @INC/#include directory\n");
-    fprintf(stderr, "  -B, --block-begin=STR     set begin block delimiter\n");
-    fprintf(stderr, "  -E, --block-end=STR       set end block delimiter\n");
-    fprintf(stderr, "  -n, --nocase              force block delimiters to be case insensitive\n");
-    fprintf(stderr, "  -k, --keepcwd             force keeping of current working directory\n");
-    fprintf(stderr, "  -P, --preprocess          enable ePerl Preprocessor\n");
-    fprintf(stderr, "  -L, --line-continue       enable line continuation via backslashes\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, "Output Options:\n");
-    fprintf(stderr, "  -T, --tainting            enable Perl Tainting\n");
-    fprintf(stderr, "  -w, --warnings            enable Perl Warnings\n");
-    fprintf(stderr, "  -x, --debug               enable ePerl debugging output on console\n");
-    fprintf(stderr, "  -o, --outputfile=PATH     force the output to be send to this file (default=stdout)\n");
-    fprintf(stderr, "  -c, --check               run syntax check only and exit (no execution)\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, "Giving Feedback:\n");
-    fprintf(stderr, "  -l, --license             display ePerl license files (COPYING and ARTISTIC)\n");
-    fprintf(stderr, "  -h, --help                display ePerl usage list (this one)\n");
-    fprintf(stderr, "\n");
-}
-
 char *RememberedINC[1024] = { NULL };
 
 void RememberINC(char *str)
