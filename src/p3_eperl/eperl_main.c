@@ -6,13 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 
-/*
-**
-**  CU() -- CleanUp Makro (implemented in a safety way)
-**
-*/
-#define CU(returncode) do { rc = returncode; goto CUS; } while (0)
-
 /*  first include the standard Perl
  *      includes designed for embedding   */
 #define PERL_NO_GET_CONTEXT     /* for efficiency reasons, see perlguts(3) */
@@ -35,7 +28,7 @@ int Perl5_Run(int myargc, char **myargv, char **env)
     rc = perl_parse(my_perl, NULL, myargc, myargv, env);
     if (rc != 0) {
         fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
-        CU(-1);
+        goto CUS;
     }
 
     /*  NOW IT IS TIME to evaluate/execute the script!!! */
@@ -59,7 +52,6 @@ int main(int argc, char **argv, char **env)
 {
     FILE *fp = NULL;
     char *perlscript = "ePerl.script";
-    int myargc;
     char *myargv[20];
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
 
@@ -76,7 +68,7 @@ int main(int argc, char **argv, char **env)
     fprintf(stderr, "----internally created Perl script-----------------------------------\n%s\n--end--\n", cpScript);
 
     /*  create command line...  */
-    myargc = 0;
+    int myargc = 0;
     /*  - program name and possible -T -w options */
     myargv[myargc++] = argv[0];
     /*  - and the script itself  */
