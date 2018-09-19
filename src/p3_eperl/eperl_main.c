@@ -57,7 +57,6 @@ int Perl5_Run(int myargc, char **myargv, char **env)
  */
 int main(int argc, char **argv, char **env)
 {
-    int rc;
     FILE *fp = NULL;
     char *perlscript = "ePerl.script";
     int myargc;
@@ -83,6 +82,6 @@ int main(int argc, char **argv, char **env)
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
-    rc = Perl5_Run(myargc, myargv, env);
+    const int rc = Perl5_Run(myargc, myargv, env);
     return rc;
 }
