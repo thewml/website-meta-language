@@ -138,8 +138,6 @@ int main(int argc, char **argv, char **env)
 
     rc = Perl5_Run(myargc, myargv, env, perlstderr, perlstdout);
     if (rc != 0) {
-        if (rc == -1)
-            CU(0);
         CU(-1);
     }
 
