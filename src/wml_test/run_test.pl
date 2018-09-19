@@ -3,16 +3,6 @@
 use strict;
 use warnings;
 
-use Getopt::Long qw/ GetOptions /;
-
-use File::Glob;
-
-use File::Basename qw(dirname);
-use File::Spec;
-
-use Cwd ();
-use IO::All qw / io /;
-
 use File::Path qw / rmtree /;
 use Path::Tiny qw/ path /;
 
@@ -27,10 +17,6 @@ sub do_system
         die "Running [@$cmd] failed!";
     }
 }
-my $is_interactive;
-
-GetOptions( 'interactive!' => \$is_interactive, );
-
 my $IS_WIN = ( $^O eq "MSWin32" );
 my $SEP = $IS_WIN ? "\\" : '/';
 
@@ -43,9 +29,9 @@ if ($IS_WIN)
 {
     $cmake_gen = 'MSYS Makefiles';
 }
-my $tatzer_dir = File::Spec->rel2abs( path($0)->parent->parent->stringify );
-my $script_dir = File::Spec->rel2abs( dirname(__FILE__) );
-my $myprefix   = Cwd::getcwd() . "/tests/installation";
+my $tatzer_dir =  path($0)->parent->parent->absolute ;
+my $script_dir = path(__FILE__)->parent->absolute;
+my $myprefix   = Path::Tiny->cwd->child(qw(tests installation));
 
 my $build_dir = "FOO";
 
@@ -80,7 +66,7 @@ $ENV{LANG} = $ENV{LC_ALL} = 'C';
 chdir($script_dir);
 
 do_system( { cmd => [ 'bash', '-c', q{echo "$PATH"}, ] } );
-if ($is_interactive)
+if ( $ENV{INTERACTIVE} )
 {
     system("bash");
 }
