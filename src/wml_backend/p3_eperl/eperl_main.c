@@ -718,30 +718,6 @@ int main(int argc, char **argv, char **env)
         }
     }
 
-    /* Security! Eliminate effective root permissions if we are running setuid */
-    if (geteuid() == 0) {
-        uid = getuid();
-        gid = getgid();
-#ifdef HAVE_SETEUID
-        if (seteuid(uid)) {
-            PrintError(mode, source, NULL, NULL, "Unable to set EUID %ld: seteuid failed", (long)uid);
-            exit(-1);
-        }
-#else
-        /* HP/UX and others eliminate the effective UID with setuid(uid) ! */
-        setuid(uid);
-#endif
-#ifdef HAVE_SETEGID
-        if (setegid(uid)) {
-            PrintError(mode, source, NULL, NULL, "Unable to set EGID %ld: setegid failed", (long)uid);
-            exit(-1);
-        }
-#else
-        /* HP/UX and others eliminate the effective GID with setgid(gid) ! */
-        setgid(gid);
-#endif
-    }
-
     /* read source file into internal buffer */
     if ((cpBuf = ePerl_ReadSourceFile(source, &cpBuf, &nBuf)) == NULL) {
         PrintError(mode, source, NULL, NULL, "Cannot open source file `%s' for reading\n%s", source, ePerl_GetError);

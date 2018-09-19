@@ -72,15 +72,6 @@ SET (INCLUDE_FILES_TO_CHECK
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})
 
-SET (FUNCTIONS_TO_CHECK
-    memmove
-    setegid
-    seteuid
-    strdup
-    )
-CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
-
-
 SET (SOURCES
     eperl_main.c
     eperl_parse.c
