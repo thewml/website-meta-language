@@ -121,7 +121,7 @@ void Perl5_SetRememberedScalars(pTHX)
 
 int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout)
 {
-    DECL_EXRC;
+    int rc;
     FILE *er;
     FILE *out;
     char *cpBuf = NULL;
@@ -135,15 +135,15 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     /* open a file for Perl's STDOUT channel
        and redirect stdout to the new channel */
     if ((out = fopen(perlstdout, "w")) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot open STDOUT file `%s' for writing", perlstdout);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        fprintf(stderr, "Cannot open STDOUT file `%s' for writing", perlstdout);
+        CU(mode == 0 ? EX_IOERR : EX_OK);
     }
 
     /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
     if ((er = fopen(perlstderr, "w")) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot open STDERR file `%s' for writing", perlstderr);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        fprintf(stderr, "Cannot open STDERR file `%s' for writing", perlstderr);
+        CU(mode == 0 ? EX_IOERR : EX_OK);
     }
 
     my_perl = perl_alloc();
@@ -159,19 +159,19 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     rc = perl_parse(my_perl, NULL, myargc, myargv, env);
 #endif
     if (rc != 0) {
-        if (fCheck && mode == MODE_FILTER) {
+        if (fCheck && mode == 0) {
             fclose(er); er = NULL;
             CU(EX_FAIL);
         }
         else {
             fclose(er); er = NULL;
-            PrintError(mode, source, perlscript, perlstderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
-            CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
+            fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
+            CU(mode == 0 ? EX_FAIL : EX_OK);
         }
     }
 
     /* Stop when we are just doing a syntax check */
-    if (fCheck && mode == MODE_FILTER) {
+    if (fCheck && mode == 0) {
         fclose(er); er = NULL;
         fprintf(stderr, "%s syntax OK\n", source);
         CU(-1);
@@ -183,7 +183,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     cwd[0] = NUL;
     if (!keepcwd) {
         /* if running as a Unix filter remember the cwd for outputfile */
-        if (mode == MODE_FILTER)
+        if (mode == 0)
         {
             if (! getcwd(cwd, MAXPATHLEN))
             {
@@ -219,8 +219,8 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     else
         size = 0;
     if (rc != 0 || size > 0) {
-        PrintError(mode, source, perlscript, perlstderr, "Perl runtime error (interpreter rc=%d)", rc);
-        CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
+        fprintf(stderr, "Perl runtime error (interpreter rc=%d)", rc);
+        CU(mode == 0 ? EX_FAIL : EX_OK);
     }
 
     CUS: /* the Clean Up Sequence */

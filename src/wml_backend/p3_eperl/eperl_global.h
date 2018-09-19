@@ -35,38 +35,12 @@
 #ifndef EPERL_GLOBAL_H
 #define EPERL_GLOBAL_H 1
 
-
-/*
-**
-**  The ePerl block delimiters
-**
-*/
-#define BEGIN_DELIMITER_FILTER "<:"
-#define   END_DELIMITER_FILTER ":>"
-#define BEGIN_DELIMITER_CGI    "<?"
-#define   END_DELIMITER_CGI    "!>"
-
-
-/*
-**
-**  The ePerl runtime mode
-**
-*/
-#define MODE_UNKNOWN    1
-#define MODE_FILTER     2
-#define MODE_CGI        4
-#define MODE_NPHCGI     8
-
-
 /*
 **
 **  CU() -- CleanUp Makro (implemented in a safety way)
 **
 */
-#define DECL_EXRC int rc
-#define EXRC rc
-#define ZERO 0
-#define STMT(stuff) do { stuff } while (ZERO)
+#define STMT(stuff) do { stuff } while (0)
 #define CU(returncode) STMT( rc = returncode; goto CUS; )
 #define VCU STMT( goto CUS; )
 #define RETURN_WVAL(val) return (val)

@@ -39,8 +39,6 @@
 #include "eperl_global.h"
 #include "eperl_proto.h"
 
-int mode = MODE_UNKNOWN;
-
 /*
  *  Display an error message and a logfile content as a HTML page
  */
@@ -71,7 +69,6 @@ void give_usage(char *name)
     fprintf(stderr, "  -T, --tainting            enable Perl Tainting\n");
     fprintf(stderr, "  -w, --warnings            enable Perl Warnings\n");
     fprintf(stderr, "  -x, --debug               enable ePerl debugging output on console\n");
-    fprintf(stderr, "  -m, --mode=STR            force runtime mode to FILTER, CGI or NPH-CGI\n");
     fprintf(stderr, "  -o, --outputfile=PATH     force the output to be send to this file (default=stdout)\n");
     fprintf(stderr, "  -c, --check               run syntax check only and exit (no execution)\n");
     fprintf(stderr, "\n");
@@ -104,7 +101,7 @@ void mysighandler(int rc)
     fprintf(stderr, "ePerl: **INTERRUPT**\n");
 
     /* exit immediately */
-    myexit(EX_FAIL);
+    exit(EX_FAIL);
 }
 
 void myinit(void)
@@ -114,32 +111,12 @@ void myinit(void)
     signal(SIGTERM, mysighandler);
 }
 
-void myexit(int rc)
-{
-    /* cleanup */
-#ifndef DEBUG_ENABLED
-#endif
-
-    /* restore signals */
-    signal(SIGINT,  SIG_DFL);
-    signal(SIGTERM, SIG_DFL);
-
-#ifdef DEBUG_ENABLED
-#ifdef HAVE_DMALLOC
-    dmalloc_shutdown();
-#endif
-#endif
-
-    /* die gracefully */
-    exit(rc);
-}
-
 /*
  *  main procedure
  */
 int main(int argc, char **argv, char **env)
 {
-    DECL_EXRC;
+    int rc;
     FILE *fp = NULL;
     char *cpBuf2 = NULL;
     char *cpBuf3 = NULL;
@@ -247,25 +224,8 @@ int main(int argc, char **argv, char **env)
             source in PATH_TRANSLATED. */
         source = cpCGIpt;
 
-        /*  determine whether pure CGI or NPH-CGI mode */
-        if ((cp = getenv("SCRIPT_FILENAME")) != NULL) {
-            strncpy(ca, cp, sizeof(ca));
-            ca[sizeof(ca)-1] = NUL;
-            if ((cp = strrchr(ca, '/')) != NULL)
-                *cp++ = NUL;
-            else
-                cp = ca;
-            if (strncasecmp(cp, "nph-", 4) == 0)
-                mode = (mode == MODE_UNKNOWN ? MODE_NPHCGI : mode);
-            else
-                mode = (mode == MODE_UNKNOWN ? MODE_CGI : mode);
-        }
-        else {
-            mode = (mode == MODE_UNKNOWN ? MODE_CGI : mode);
-        }
-
         /* set the command line for ``ps'' output */
-        snprintf(ca, sizeof(ca), "%s %s [%sCGI/SSSL]", argv[0], source, mode == MODE_NPHCGI ? "NPH-" : "");
+        snprintf(ca, sizeof(ca), "%s %s [%sCGI/SSSL]", argv[0], source, 0 ? "NPH-" : "");
         ca[sizeof(ca)-1] = NUL;
         argv[0] = strdup(ca);
     }
@@ -309,27 +269,6 @@ int main(int argc, char **argv, char **env)
             source in ARGV */
         source = argv[optind];
 
-        /*  determine whether pure CGI or NPH-CGI mode */
-        if ((cp = getenv("SCRIPT_FILENAME")) != NULL) {
-            strncpy(ca, cp, sizeof(ca));
-            ca[sizeof(ca)-1] = NUL;
-            if ((cp = strrchr(ca, '/')) != NULL)
-                *cp++ = NUL;
-            else
-                cp = ca;
-            if (strncasecmp(cp, "nph-", 4) == 0)
-                mode = (mode == MODE_UNKNOWN ? MODE_NPHCGI : mode);
-            else
-                mode = (mode == MODE_UNKNOWN ? MODE_CGI : mode);
-        }
-        else {
-            mode = (mode == MODE_UNKNOWN ? MODE_CGI : mode);
-        }
-
-        /* set the command line for ``ps'' output */
-        snprintf(ca, sizeof(ca), "%s %s [%sCGI/stand-alone]", argv[0], source, mode == MODE_NPHCGI ? "NPH-" : "");
-        ca[sizeof(ca)-1] = NUL;
-        argv[0] = strdup(ca);
     }
     /*
      *  Stand-Alone outside Webserver environment:
@@ -354,8 +293,6 @@ int main(int argc, char **argv, char **env)
         /*  stand-alone filter, source as argument:
             either manually on the console or via shebang */
         source = argv[optind];
-        mode   = (mode == MODE_UNKNOWN ? MODE_FILTER : mode);
-
     }
     /*
      *   Any other calling environment is an error...
@@ -364,29 +301,24 @@ int main(int argc, char **argv, char **env)
         fprintf(stderr, "ePerl:Error: Missing required file to process\n");
         fprintf(stderr, "ePerl:Error: Use either a filename, `-' for STDIN or PATH_TRANSLATED.\n");
         fprintf(stderr, "Try `%s --help' for more information.\n", progname);
-        myexit(EX_USAGE);
+        exit(EX_USAGE);
     }
 
     /* CGI modes imply
        - Preprocessor usage
        - HTML entity conversions
        - adding of DOCUMENT_ROOT to include paths */
-    if (mode == MODE_CGI || mode == MODE_NPHCGI) {
-        fPP = TRUE;
-        if ((cp = getenv("DOCUMENT_ROOT")) != NULL)
-            RememberINC(cp);
-    }
-
     /* check for valid source file */
     if (*source == NUL) {
-        PrintError(mode, "", NULL, NULL, "Filename is empty");
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        PrintError(0, "", NULL, NULL, "Filename is empty");
+        CU(0 ? EX_IOERR : EX_OK);
     }
 
+#define mode 0
     /* check for existing source file */
     if ((stat(source, &st)) != 0) {
         PrintError(mode, source, NULL, NULL, "File `%s' not exists", source);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? EX_IOERR : EX_OK);
     }
 
     /* now set the additional env vars */
@@ -413,7 +345,7 @@ int main(int argc, char **argv, char **env)
         /* switch to directory where script stays */
         if (! getcwd(cwd, MAXPATHLEN) ) {
             PrintError(mode, source, NULL, NULL, "getcwd failed with errno %ld", (long)errno);
-            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+            CU(mode == 0 ? EX_IOERR : EX_OK);
         }
         strncpy(sourcedir, source, sizeof(sourcedir));
         sourcedir[sizeof(sourcedir)-1] = NUL;
@@ -422,12 +354,12 @@ int main(int argc, char **argv, char **env)
         *cp = NUL;
         if (chdir(sourcedir) != 0) {
             PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
-            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+            CU(mode == 0 ? EX_IOERR : EX_OK);
         }
         /* switch to previous dir */
         if (chdir(cwd) != 0) {
-            PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
-            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+            PrintError(0, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
+            CU(mode == 0 ? EX_IOERR : EX_OK);
         }
     }
 
@@ -440,11 +372,11 @@ int main(int argc, char **argv, char **env)
 #endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
         PrintError(mode, source, NULL, NULL, "Cannot open Perl script file `%s' for writing", perlscript);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? EX_IOERR : EX_OK);
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
         PrintError(mode, source, NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? EX_IOERR : EX_OK);
     }
     fclose(fp); fp = NULL;
 
@@ -457,7 +389,7 @@ int main(int argc, char **argv, char **env)
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
             PrintError(mode, source, NULL, NULL, "%s\n", "Cannot write");
-            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
+            CU(mode == 0 ? EX_IOERR : EX_OK);
         }
         if (cpScript[strlen(cpScript)-1] == '\n')
             fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
@@ -503,7 +435,7 @@ int main(int argc, char **argv, char **env)
     rc = Perl5_Run(myargc, myargv, mode, fCheck, keepcwd, source, env, perlscript, perlstderr, perlstdout);
     /*  Return code:
      *     0: ok
-     *    -1: fCheck && mode == MODE_FILTER and
+     *    -1: fCheck && mode == 0 and
      *        no error detected by perl_parse()
      *    otherwise: error detected by perl_parse() or perl_run()
      *  Error message has already been delivered bu Perl5_Run.
@@ -511,37 +443,7 @@ int main(int argc, char **argv, char **env)
     if (rc != 0) {
         if (rc == -1)
             CU(EX_OK);
-        CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
-    }
-
-    /*  if we are running as a NPH-CGI/1.1 script
-        we had to provide the HTTP reponse headers ourself */
-    if (mode == MODE_NPHCGI) {
-    }
-    else if (mode == MODE_CGI) {
-    }
-    else if (mode == MODE_FILTER) {
-    }
-
-    /* now when the request was not a HEAD request we create the output */
-    cp = getenv("REQUEST_METHOD");
-    if (! ((mode == MODE_CGI || mode == MODE_NPHCGI) &&
-           cp != NULL && stringEQ(cp, "HEAD"))) {
-        if (outputfile != NULL && stringNE(outputfile, "-")) {
-            /* if we remembered current working dir, restore it now */
-            if (mode == MODE_FILTER && cwd[0] != NUL)
-            {
-                if (chdir(cwd) != 0)
-                {
-                    PrintError(mode, source, NULL, NULL, "%s\n", "Cannot chdir");
-                    CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
-                }
-            }
-        }
-        else {
-            /* data just goes to stdout */
-            fflush(stdout);
-        }
+        CU(mode == 0 ? EX_FAIL : EX_OK);
     }
 
     CUS: /* the Clean Up Sequence */
@@ -564,8 +466,7 @@ int main(int argc, char **argv, char **env)
         unlink(perlscript);
 #endif
 
-    myexit(EXRC);
-    return EXRC; /* make -Wall happy ;-) */
+    exit(rc);
 }
 
 /*EOF*/
