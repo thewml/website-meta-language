@@ -52,7 +52,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
 {
     va_list ap;
     char ca[1024];
-    char *cpBuf;
     char *cp;
 
     va_start(ap, str);
@@ -184,69 +183,6 @@ void myexit(int rc)
     exit(rc);
 }
 
-char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC)
-{
-    char *rc;
-    FILE *fp = NULL;
-    char *cpBuf = NULL;
-    int nBuf;
-    char tmpfile[256], *ptr_tmpfile;
-    int usetmp = 0;
-    int c;
-
-    if (stringEQ(filename, "-")) {
-        /* file is given on stdin */
-        ptr_tmpfile = "ePerl.source";
-        sprintf(tmpfile, "%s", ptr_tmpfile);
-        if ((fp = fopen(tmpfile, "w")) == NULL) {
-            fprintf(stderr, "Cannot open temporary source file %s for writing", tmpfile);
-            CU(NULL);
-        }
-        nBuf = 0;
-        while ((c = fgetc(stdin)) != EOF) {
-            fprintf(fp, "%c", c);
-        }
-        fclose(fp);
-        fp = NULL;
-        filename = tmpfile;
-        usetmp = 1;
-    }
-
-    if ((fp = fopen(filename, "r")) == NULL) {
-        fprintf(stderr, "Cannot open source file %s for reading", filename);
-        CU(NULL);
-    }
-    fseek(fp, 0, SEEK_END);
-    nBuf = ftell(fp);
-    if (nBuf == 0) {
-        cpBuf = (char *)malloc(sizeof(char) * 1);
-        *cpBuf = NUL;
-    }
-    else {
-        if ((cpBuf = (char *)malloc(sizeof(char) * nBuf+1)) == NULL) {
-            fprintf(stderr, "Cannot allocate %d bytes of memory", nBuf);
-            CU(NULL);
-        }
-        fseek(fp, 0, SEEK_SET);
-        if (fread(cpBuf, nBuf, 1, fp) == 0) {
-            fprintf(stderr, "Cannot read from file %s", filename);
-            CU(NULL);
-        }
-        cpBuf[nBuf] = '\0';
-    }
-    *cpBufC = cpBuf;
-    *nBufC  = nBuf;
-    RETURN_WVAL(cpBuf);
-
-    CUS:
-    if (cpBuf)
-        free(cpBuf);
-    if (fp)
-        fclose(fp);
-    if (usetmp)
-        unlink(tmpfile);
-    RETURN_EXRC;
-}
 /*
  *  main procedure
  */
@@ -254,7 +190,6 @@ int main(int argc, char **argv, char **env)
 {
     DECL_EXRC;
     FILE *fp = NULL;
-    char *cpBuf = NULL;
     char *cpBuf2 = NULL;
     char *cpBuf3 = NULL;
     char perlscript[1024] = "";
@@ -273,8 +208,6 @@ int main(int argc, char **argv, char **env)
     char sourcedir[2048];
     char *cp;
     struct stat st;
-    char *cpOut0 = NULL;
-    char *cpOut = NULL;
     struct passwd *pw;
     struct passwd *pw2;
     struct group *gr;
@@ -699,12 +632,6 @@ int main(int argc, char **argv, char **env)
         }
     }
 
-    /* read source file into internal buffer */
-    if ((cpBuf = ePerl_ReadSourceFile(source, &cpBuf, &nBuf)) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot open source file `%s' for reading\n%s", source, NULL);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
-    }
-
     /* now set the additional env vars */
     if ((cpPath = getenv("PATH_INFO")) != NULL) {
         if ((cpHost = getenv("SERVER_NAME")) == NULL)
@@ -830,15 +757,6 @@ int main(int argc, char **argv, char **env)
         CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
     }
 
-    /*  else all processing was fine, so
-        we read in the stdout contents */
-    if ((cpOut = ePerl_ReadSourceFile(perlstdout, &cpOut, &nOut)) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot open STDOUT file `%s' for reading", perlstdout);
-        CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
-    }
-    cpOut0 = cpOut; /* cpOut will move by HTTP_PrintResponseHeaders() later */
-    stat(perlstdout, &st);
-
     /*  if we are running as a NPH-CGI/1.1 script
         we had to provide the HTTP reponse headers ourself */
     if (mode == MODE_NPHCGI) {
@@ -862,16 +780,6 @@ int main(int argc, char **argv, char **env)
                     CU(mode == MODE_FILTER ? EX_FAIL : EX_OK);
                 }
             }
-            /* open outputfile and write out the data */
-            if ((fp = fopen(outputfile, "w")) == NULL) {
-                PrintError(mode, source, NULL, NULL, "Cannot open output file `%s' for writing", outputfile);
-                CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
-            }
-            if (fwrite(cpOut, nOut, 1, fp) != 1) {
-                PrintError(mode, source, NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
-                CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
-            }
-            fclose(fp); fp = NULL;
         }
         else {
             /* data just goes to stdout */
@@ -886,12 +794,8 @@ int main(int argc, char **argv, char **env)
         fclose(fp);
 
     /* de-allocate the script buffer */
-    if (cpBuf)
-        free(cpBuf);
     if (cpBuf2)
         free(cpBuf2);
-    if (cpOut0)
-        free(cpOut0);
 
     /* remove temporary files */
 #ifndef DEBUG_ENABLED
