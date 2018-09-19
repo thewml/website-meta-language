@@ -123,29 +123,7 @@
 #  endif
 #endif
 
-/* eperl_perl5.c */
-/*  These prototypes can no longer be included in eperl_proto.h because
- *      pTHX argument has been introduced in Perl 5.6.0  */
-extern void Perl5_XSInit(pTHX);
-extern void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue);
-
 #include "eperl_perl5_sm.h"
-
-/*
-**
-**  sets a Perl scalar variable
-**
-*/
-void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
-{
-    dTHR;
-    ENTER;
-    save_hptr(&PL_curstash);
-    PL_curstash = gv_stashpv(pname, TRUE);
-    sv_setpv(perl_get_sv(vname, TRUE), vvalue);
-    LEAVE;
-    return;
-}
 
 /*
 **
