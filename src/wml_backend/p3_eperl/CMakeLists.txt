@@ -10,25 +10,10 @@ MACRO(GET_PERL_CONFIG cfg)
     )
 ENDMACRO(GET_PERL_CONFIG)
 
-SET (PERL_CONFIGS archlib libs usedl ccflags optimize ccdlflags ldflags)
+SET (PERL_CONFIGS archlib libs ccflags optimize ccdlflags ldflags)
 FOREACH (cfg ${PERL_CONFIGS})
     GET_PERL_CONFIG(${cfg})
 ENDFOREACH(cfg)
-
-EXECUTE_PROCESS(COMMAND "whoami"
-    OUTPUT_VARIABLE build_user
-)
-
-EXECUTE_PROCESS(COMMAND "date" "+%D-%m-%Y"
-    OUTPUT_VARIABLE build_time_iso
-)
-
-MACRO(CHOMP VAR)
-    STRING(REGEX REPLACE "[\r\n]+$" "" ${VAR} "${${VAR}}")
-ENDMACRO(CHOMP)
-
-CHOMP(build_user)
-CHOMP(build_time_iso)
 
 SET (SOURCES
     eperl_main.c
