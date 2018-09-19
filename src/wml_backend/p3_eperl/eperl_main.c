@@ -58,52 +58,6 @@
 
 /*
  * **
- * **  ASCII Control Codes
- * **
- * */
-#define ASC_NUL '\x00'
-#define ASC_SOH '\x01'
-#define ASC_STX '\x02'
-#define ASC_ETX '\x03'
-#define ASC_EOT '\x04'
-#define ASC_ENQ '\x05'
-#define ASC_ACK '\x06'
-#define ASC_BEL '\x07'
-#define ASC_BS  '\x08'
-#define ASC_HT  '\x09'
-#define ASC_LF  '\x0a'
-#define ASC_VT  '\x0b'
-#define ASC_FF  '\x0c'
-#define ASC_CR  '\x0d'
-#define ASC_SO  '\x0e'
-#define ASC_SI  '\x0f'
-#define ASC_DLE '\x10'
-#define ASC_DC1 '\x11'
-#define ASC_DC2 '\x12'
-#define ASC_DC3 '\x13'
-#define ASC_DC4 '\x14'
-#define ASC_NAK '\x15'
-#define ASC_SYN '\x16'
-#define ASC_ETB '\x17'
-#define ASC_CAN '\x18'
-#define ASC_EM  '\x19'
-#define ASC_SUB '\x1a'
-#define ASC_ESC '\x1b'
-#define ASC_FS  '\x1c'
-#define ASC_GS  '\x1d'
-#define ASC_RS  '\x1e'
-#define ASC_US  '\x1f'
-#define ASC_SP  '\x20'
-#define ASC_DEL '\x7f'
-#define NUL ASC_NUL
-
-#define ASC_QUOTE '\x22'
-#define ASC_NL    ASC_LF
-#define NL        ASC_NL
-
-
-/*
- * **
  * **  Boolean Values -- defined in a general and portable way
  * **
  * */
@@ -382,15 +336,13 @@ int main(int argc, char **argv, char **env)
     }
 
     /* temporary filename for Perl's STDOUT channel */
-    strncpy(perlstdout, "/tmp/ePerl.stdout", sizeof(perlstdout));
-    perlstdout[sizeof(perlstdout)-1] = NUL;
+    strcpy(perlstdout, "/tmp/ePerl.stdout");
 #ifndef DEBUG_ENABLED
     unlink(perlstdout);
 #endif
 
     /* temporary filename for Perl's STDERR channel */
-    strncpy(perlstderr, "ePerl.stderr", sizeof(perlstderr));
-    perlstderr[sizeof(perlstderr)-1] = NUL;
+    strcpy(perlstderr, "ePerl.stderr");
 #ifndef DEBUG_ENABLED
     unlink(perlstderr);
 #endif
