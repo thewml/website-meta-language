@@ -278,7 +278,7 @@ void Perl5_SetRememberedScalars(pTHX)
     }
 }
 
-int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout)
+int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout)
 {
     int rc;
     FILE *er;
@@ -318,22 +318,11 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     rc = perl_parse(my_perl, NULL, myargc, myargv, env);
 #endif
     if (rc != 0) {
-        if (fCheck && mode == 0) {
-            fclose(er); er = NULL;
-            CU(EX_FAIL);
-        }
-        else {
+        {
             fclose(er); er = NULL;
             fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
             CU(mode == 0 ? EX_FAIL : EX_OK);
         }
-    }
-
-    /* Stop when we are just doing a syntax check */
-    if (fCheck && mode == 0) {
-        fclose(er); er = NULL;
-        fprintf(stderr, "%s syntax OK\n", "src");
-        CU(-1);
     }
 
     /* change to directory of script:
@@ -374,7 +363,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     return rc;
 }
 
-extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
+extern int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
 extern void Perl5_RememberScalar(char *str);
 
 
@@ -416,13 +405,6 @@ void mysighandler(int rc)
     exit(EX_FAIL);
 }
 
-void myinit(void)
-{
-    /* caught signals */
-    signal(SIGINT,  mysighandler);
-    signal(SIGTERM, mysighandler);
-}
-
 /*
  *  main procedure
  */
@@ -458,15 +440,11 @@ int main(int argc, char **argv, char **env)
     int i, n, k;
     char *outputfile = NULL;
     char cwd[MAXPATHLEN];
-    int fCheck = FALSE;
     int fTaint = FALSE;
     int fWarn = FALSE;
     int fNoCase = FALSE;
     char *cwd2;
     int fOkSwitch;
-
-    /*  first step: our process initialisation */
-    myinit();
 
     /*  second step: canonicalize program name */
     progname = argv[0];
@@ -513,9 +491,6 @@ int main(int argc, char **argv, char **env)
     }
     fclose(fp); fp = NULL;
 
-#ifdef __CYGWIN__
-#define USE_stderr
-#endif
     if (1) {
         fp = stderr;
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
@@ -529,9 +504,6 @@ int main(int argc, char **argv, char **env)
         else
             fprintf(fp, "%c\n", cpScript[strlen(cpScript)-1]);
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
-#ifndef USE_stderr
-        fclose(fp);
-#endif
         fp = NULL;
     }
 
@@ -565,14 +537,7 @@ int main(int argc, char **argv, char **env)
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
-    rc = Perl5_Run(myargc, myargv, mode, fCheck, keepcwd, "", env, perlscript, perlstderr, perlstdout);
-    /*  Return code:
-     *     0: ok
-     *    -1: fCheck && mode == 0 and
-     *        no error detected by perl_parse()
-     *    otherwise: error detected by perl_parse() or perl_run()
-     *  Error message has already been delivered bu Perl5_Run.
-     */
+    rc = Perl5_Run(myargc, myargv, mode, keepcwd, "", env, perlscript, perlstderr, perlstdout);
     if (rc != 0) {
         if (rc == -1)
             CU(EX_OK);
