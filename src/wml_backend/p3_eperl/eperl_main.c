@@ -51,53 +51,8 @@ char *allowed_caller_uid[] = LIST_OF_ALLOWED_CALLER_UID;
 void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...)
 {
     va_list ap;
-    char ca[1024];
-    char *cp;
-
     va_start(ap, str);
-    vsnprintf(ca, sizeof(ca), str, ap);
-    ca[sizeof(ca)-1] = NUL;
-
-    if (mode == MODE_CGI || mode == MODE_NPHCGI) {
-        printf("Content-Type: text/html\r\n\r\n");
-        printf("<html>\n");
-        printf("<head>\n");
-        printf("<title>ePerl: ERROR: %s</title>\n", ca);
-        printf("</head>\n");
-        printf("<body bgcolor=\"#d0d0d0\">\n");
-        printf("<blockquote>\n");
-        cp = getenv("SCRIPT_NAME");
-        if (cp == NULL)
-            cp = "UNKNOWN_IMG_DIR";
-        printf("<table cellspacing=0 cellpadding=0 border=0>\n");
-        printf("<tr>\n");
-        printf("</tr>\n");
-        printf("<tr>\n");
-        printf("</tr>\n");
-        printf("</table>\n");
-        printf("<p>\n");
-        printf("<table bgcolor=\"#d0d0f0\" cellspacing=0 cellpadding=10 border=0>\n");
-        printf("<tr><td bgcolor=\"#b0b0d0\">\n");
-        printf("<font face=\"Arial, Helvetica\"><b>ERROR:</b></font>\n");
-        printf("</td></tr>\n");
-        printf("<tr><td>\n");
-        printf("<h1><font color=\"#3333cc\">%s</font></h1>\n", ca);
-        printf("</td></tr>\n");
-        printf("</table>\n");
-        if (logfile != NULL) {
-        }
-        printf("</blockquote>\n");
-        printf("</body>\n");
-        printf("</html>\n");
-    }
-    else {
-        fprintf(stderr, "ePerl:Error: %s\n", ca);
-        if (logfile != NULL) {
-        }
-    }
-    fflush(stderr);
-    fflush(stdout);
-
+    vfprintf(stderr, str, ap);
     va_end(ap);
     return;
 }
