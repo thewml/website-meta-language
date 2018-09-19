@@ -76,64 +76,6 @@
 */
 
 /*
- *  Believe it or not, these do have to be declared, at least on SunOS,
- *  because they aren't mentioned in the relevant system headers.
- *  Sun Quality Software.  Gotta love it.
- */
-#ifdef SUNOS_LIB_PROTOTYPES
-int strcasecmp (char *, char *);
-int strncasecmp (char *, char *, int);
-int toupper(int);
-int tolower(int);
-int printf (char *, ...);
-int fprintf (FILE *, char *, ...);
-int fputs (char *, FILE *);
-int fread (char *, int, int, FILE *);
-int fwrite (char *, int, int, FILE *);
-int fflush (FILE *);
-int fclose (FILE *);
-int ungetc (int, FILE *);
-int _filbuf (FILE *);       /* !!! */
-int _flsbuf (unsigned char, FILE *); /* !!! */
-int sscanf (char *, char *, ...);
-void setbuf (FILE *, char *);
-void perror (char *);
-time_t time (time_t *);
-int strftime (char *, int, char *, struct tm *);
-int initgroups (char *, int);
-int wait3 (int *, int, void*);  /* Close enough for us... */
-int lstat (const char *, struct stat *);
-int stat (const char *, struct stat *);
-int flock (int, int);
-#ifndef NO_KILLPG
-int killpg(int, int);
-#endif
-int socket (int, int, int);
-int setsockopt (int, int, int, const char*, int);
-int listen (int, int);
-int bind (int, struct sockaddr *, int);
-int connect (int, struct sockaddr *, int);
-int accept (int, struct sockaddr *, int *);
-int shutdown (int, int);
-int getsockname (int s, struct sockaddr *name, int *namelen);
-int getpeername (int s, struct sockaddr *name, int *namelen);
-int gethostname (char *name, int namelen);
-void syslog (int, char *, ...);
-char *mktemp (char *);
-long vfprintf (FILE *, char *, va_list);
-char *vsprintf (char *, char *, va_list);
-#endif
-
-/*
- *
- *  We can provide own functions...
- */
-#ifndef HAVE_STRDUP
-char *strdup(const char *str);
-#endif
-
-
-/*
 **
 **  OS Return Values
 **
@@ -209,46 +151,6 @@ char *strdup(const char *str);
 #define ASC_QUOTE '\x22'
 #define ASC_NL    ASC_LF
 #define NL        ASC_NL
-
-
-/*
-**
-**  NULL
-**
-*/
-#ifndef NULL
-#define NULL (void *)0
-#endif
-
-
-/*
-**
-**  MAXPATHLEN
-**  PATH_MAX should be used in .c files, but it needs to be
-**  fixed upstream
-*/
-/*  Cut'n'paste from perl.h  */
-#ifndef MAXPATHLEN
-#  ifdef PATH_MAX
-#    ifdef _POSIX_PATH_MAX
-#       if PATH_MAX > _POSIX_PATH_MAX
-/* MAXPATHLEN is supposed to include the final null character,
- *  * as opposed to PATH_MAX and _POSIX_PATH_MAX. */
-#         define MAXPATHLEN (PATH_MAX+1)
-#       else
-#         define MAXPATHLEN (_POSIX_PATH_MAX+1)
-#       endif
-#    else
-#      define MAXPATHLEN (PATH_MAX+1)
-#    endif
-#  else
-#    ifdef _POSIX_PATH_MAX
-#       define MAXPATHLEN (_POSIX_PATH_MAX+1)
-#    else
-#       define MAXPATHLEN 1024  /* Err on the large side. */
-#    endif
-#  endif
-#endif
 
 
 /*
