@@ -131,26 +131,6 @@ extern void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue);
 
 #include "eperl_perl5_sm.h"
 
-#ifdef HAVE_PERL_DYNALOADER
-
-extern void boot_DynaLoader _((pTHX_ CV* cv));
-
-/*
-**
-**  the Perl XS init function for dynamic library loading
-**
-*/
-void Perl5_XSInit(pTHX)
-{
-   char *file = __FILE__;
-   /* dXSUB_SYS; */
-   /* dummy = 0; */ /* make gcc -Wall happy ;-) */
-
-   /* do newXS() the available modules */
-   DO_NEWXS_STATIC_MODULES
-}
-#endif /* HAVE_PERL_DYNALOADER */
-
 /*
 **
 **  sets a Perl scalar variable
