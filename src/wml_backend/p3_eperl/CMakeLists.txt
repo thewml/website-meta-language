@@ -94,31 +94,6 @@ SET_TARGET_PROPERTIES(${EXE}
     PROPERTIES OUTPUT_NAME "wml_p3_${EXE}"
 )
 
-SET (POD_PATH  "${CMAKE_CURRENT_BINARY_DIR}/eperl.pod")
-ADD_CUSTOM_COMMAND(
-    OUTPUT "${POD_PATH}"
-    COMMAND "${PERL_EXECUTABLE}"
-    ARGS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl"
-        "--input" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod"
-        "--output" "${POD_PATH}"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod"
-)
-
-ADD_CUSTOM_TARGET(
-    "eperl_pod_preproc" ALL
-    DEPENDS "${POD_PATH}"
-)
-
-SET (POD2MAN_SOURCE_IS_IN_BINARY 1)
-SET (eperl_pods )
-INST_RENAME_POD2MAN( "eperl_pods" "eperl.pod" "eperl" "1" "wml_p3_eperl")
-SET (POD2MAN_TARGET_IS_A_LIST)
-
-ADD_CUSTOM_TARGET(
-    "eperl_pod" ALL
-    DEPENDS "${eperl_pods}"
-)
-
 INSTALL(TARGETS ${EXE} DESTINATION "${WML_LIBEXE_DIR}")
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config_ac.h.in" "${CMAKE_CURRENT_BINARY_DIR}/config_ac.h")
