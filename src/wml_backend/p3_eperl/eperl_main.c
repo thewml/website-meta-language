@@ -62,12 +62,6 @@
 #define RETURN_EXRC return (rc)
 #define RETURN_NORC return
 
-/*
-**  Shortcuts for string comparisons
-*/
-#define stringEQ(s1,s2)    (s1 != NULL && s2 != NULL && strcmp(s1,s2) == 0)
-#define stringNE(s1,s2)    (s1 != NULL && s2 != NULL && strcmp(s1,s2) != 0)
-
 /*  first include the standard Perl
  *      includes designed for embedding   */
 #define PERL_NO_GET_CONTEXT     /* for efficiency reasons, see perlguts(3) */
@@ -206,15 +200,6 @@ extern int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **e
 /*
  *  Display an error message and a logfile content as a HTML page
  */
-void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...)
-{
-    va_list ap;
-    va_start(ap, str);
-    vfprintf(stderr, str, ap);
-    va_end(ap);
-    return;
-}
-
 /*
  *  main procedure
  */
@@ -237,11 +222,11 @@ int main(int argc, char **argv, char **env)
     unlink(perlscript);
 #endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
-        PrintError(mode, "", NULL, NULL, "Cannot open Perl script file `%s' for writing", perlscript);
+        fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
         CU(mode == 0 ? -1 : EX_OK);
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
-        PrintError(mode, "", NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
+        fprintf(stderr, "Cannot write to Perl script file `%s'", perlscript);
         CU(mode == 0 ? -1 : EX_OK);
     }
     fclose(fp); fp = NULL;
@@ -251,7 +236,7 @@ int main(int argc, char **argv, char **env)
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
-            PrintError(mode, "", NULL, NULL, "%s\n", "Cannot write");
+            fprintf(stderr, "%s\n", "Cannot write");
             CU(mode == 0 ? -1 : EX_OK);
         }
         if (cpScript[strlen(cpScript)-1] == '\n')
