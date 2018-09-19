@@ -13,15 +13,8 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <time.h>
-#include <signal.h>
-#include <pwd.h>
-#include <grp.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/param.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 
 
 /*
@@ -81,17 +74,11 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
     /*  now parse the script!
         NOTICE: At this point, the script gets
         only _parsed_, not evaluated/executed!  */
-#ifdef HAVE_PERL_DYNALOADER
-    rc = perl_parse(my_perl, Perl5_XSInit, myargc, myargv, env);
-#else
     rc = perl_parse(my_perl, NULL, myargc, myargv, env);
-#endif
     if (rc != 0) {
-        {
-            fclose(er); er = NULL;
-            fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
-            CU(-1);
-        }
+        fclose(er); er = NULL;
+        fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
+        CU(-1);
     }
 
     /*  NOW IT IS TIME to evaluate/execute the script!!! */
