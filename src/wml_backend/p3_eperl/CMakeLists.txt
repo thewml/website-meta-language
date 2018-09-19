@@ -52,26 +52,6 @@ ENDMACRO(CHOMP)
 CHOMP(build_user)
 CHOMP(build_time_iso)
 
-SET (INCLUDE_FILES_TO_CHECK
-    ctype.h
-    grp.h
-    netdb.h
-    netinet/in.h
-    pwd.h
-    signal.h
-    stdarg.h
-    stdio.h
-    stdlib.h
-    string.h
-    sys/param.h
-    sys/socket.h
-    sys/stat.h
-    sys/types.h
-    time.h
-    unistd.h
-    )
-CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})
-
 SET (SOURCES
     eperl_main.c
     eperl_parse.c

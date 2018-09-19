@@ -50,58 +50,22 @@
 **  Headers from the Unix system
 **
 */
-#ifdef HAVE_STDIO_H
 #include <stdio.h>
-#endif
-#ifdef HAVE_STDARG_H
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
 #include <string.h>
-#else
-#include <strings.h>
-#endif
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-#ifdef HAVE_TIME_H
 #include <time.h>
-#endif
-#ifdef HAVE_SIGNAL_H
 #include <signal.h>
-#endif
-#ifdef HAVE_PWD_H
 #include <pwd.h>
-#endif
-#ifdef HAVE_GRP_H
 #include <grp.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
-#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#endif
-#ifdef HAVE_NETDB_H
 #include <netdb.h>
-#endif
 
 
 /*
