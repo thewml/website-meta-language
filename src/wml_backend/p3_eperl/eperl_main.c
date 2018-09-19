@@ -40,10 +40,6 @@
 #include "eperl_security.h"
 #include "eperl_proto.h"
 
-#define _EPERL_VERSION_C_AS_HEADER_
-#include "eperl_version.c"
-#undef  _EPERL_VERSION_C_AS_HEADER_
-
 int mode = MODE_UNKNOWN;
 
 char *allowed_file_ext[]   = LIST_OF_ALLOWED_FILE_EXT;
@@ -81,7 +77,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
         printf("<tr>\n");
         printf("</tr>\n");
         printf("<tr>\n");
-        printf("<td align=right><b>Version %s</b></td>\n", eperl_version.v_short);
         printf("</tr>\n");
         printf("</table>\n");
         printf("<p>\n");
@@ -132,19 +127,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     return;
 }
 
-void give_version(void)
-{
-    fprintf(stdout, "%s\n", eperl_version.v_tex);
-    fprintf(stdout, "\n");
-    fprintf(stdout, "Copyright (c) 1996,1997,1998,1999 Ralf S. Engelschall <rse@engelschall.com>\n");
-    fprintf(stdout, "\n");
-    fprintf(stdout, "This program is distributed in the hope that it will be useful,\n");
-    fprintf(stdout, "but WITHOUT ANY WARRANTY; without even the implied warranty of\n");
-    fprintf(stdout, "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either\n");
-    fprintf(stdout, "the Artistic License or the GNU General Public License for more details.\n");
-    fprintf(stdout, "\n");
-}
-
 void give_usage(char *name)
 {
     fprintf(stderr, "Usage: %s [options] [scriptfile]\n", name);
@@ -158,7 +140,6 @@ void give_usage(char *name)
     fprintf(stderr, "  -n, --nocase              force block delimiters to be case insensitive\n");
     fprintf(stderr, "  -k, --keepcwd             force keeping of current working directory\n");
     fprintf(stderr, "  -P, --preprocess          enable ePerl Preprocessor\n");
-    fprintf(stderr, "  -C, --convert-entity      enable HTML entity conversion for ePerl blocks\n");
     fprintf(stderr, "  -L, --line-continue       enable line continuation via backslashes\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Output Options:\n");
@@ -171,8 +152,6 @@ void give_usage(char *name)
     fprintf(stderr, "\n");
     fprintf(stderr, "Giving Feedback:\n");
     fprintf(stderr, "  -l, --license             display ePerl license files (COPYING and ARTISTIC)\n");
-    fprintf(stderr, "  -v, --version             display ePerl VERSION id\n");
-    fprintf(stderr, "  -V, --ingredients         display ePerl VERSION id & compilation parameters\n");
     fprintf(stderr, "  -h, --help                display ePerl usage list (this one)\n");
     fprintf(stderr, "\n");
 }
@@ -801,8 +780,6 @@ int main(int argc, char **argv, char **env)
         env = mysetenv(env, "SCRIPT_SRC_OWNER", "%s", pw->pw_name);
     else
         env = mysetenv(env, "SCRIPT_SRC_OWNER", "unknown-uid-%d", st.st_uid);
-    env = mysetenv(env, "VERSION_INTERPRETER", "%s", eperl_version.v_web);
-    env = mysetenv(env, "VERSION_LANGUAGE", "Perl/%s", AC_perl_vers);
 
     /* optionally run the ePerl preprocessor */
     if (fPP) {
