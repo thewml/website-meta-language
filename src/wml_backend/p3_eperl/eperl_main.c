@@ -281,7 +281,7 @@ int main(int argc, char **argv, char **env)
     int uid, gid;
     int keepcwd = FALSE;
     int c;
-    char *cpScript = NULL;
+    char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
     int allow;
     int i, n, k;
     char *outputfile = NULL;
@@ -724,21 +724,6 @@ int main(int argc, char **argv, char **env)
         CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
     }
 
-    /* strip shebang prefix */
-    if (strncmp(cpBuf, "#!", 2) == 0) {
-        for (cpScript = cpBuf;
-             (*cpScript != ' ' && *cpScript != '\t' && *cpScript != '\n') && (cpScript-cpBuf < nBuf);
-             cpScript++)
-            ;
-        for (cpScript = cpBuf;
-             *cpScript != '\n' && (cpScript-cpBuf < nBuf);
-             cpScript++)
-            ;
-        cpScript++;
-    }
-    else
-        cpScript = cpBuf;
-
     /* now set the additional env vars */
     if ((cpPath = getenv("PATH_INFO")) != NULL) {
         if ((cpHost = getenv("SERVER_NAME")) == NULL)
@@ -782,12 +767,6 @@ int main(int argc, char **argv, char **env)
     }
 
     /* convert bristled source to valid Perl code */
-    if ((cpBuf2 = ePerl_Bristled2Plain(cpScript)) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot convert bristled code file `%s' to pure HTML", source);
-        CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
-    }
-    cpScript = cpBuf2;
-
     /* write buffer to temporary script file */
     strncpy(perlscript, "ePerl.script", sizeof(perlscript));
     perlscript[sizeof(perlscript)-1] = NUL;
