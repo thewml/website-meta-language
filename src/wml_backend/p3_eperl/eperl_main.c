@@ -332,7 +332,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     /* Stop when we are just doing a syntax check */
     if (fCheck && mode == 0) {
         fclose(er); er = NULL;
-        fprintf(stderr, "%s syntax OK\n", source);
+        fprintf(stderr, "%s syntax OK\n", "src");
         CU(-1);
     }
 
@@ -340,25 +340,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
        this actually is not important to us, but really useful
        for the ePerl source file programmer!! */
     cwd[0] = NUL;
-    if (!keepcwd) {
-        /* if running as a Unix filter remember the cwd for outputfile */
-        if (mode == 0)
-        {
-            if (! getcwd(cwd, MAXPATHLEN))
-            {
-                CU(-1);
-            }
-        }
-        /* determine dir of source file and switch to it */
-        strncpy(sourcedir, source, sizeof(sourcedir));
-        sourcedir[sizeof(sourcedir)-1] = NUL;
-        for (cp = sourcedir+strlen(sourcedir); cp > sourcedir && *cp != '/'; cp--)
-            ;
-        *cp = NUL;
-        if (chdir(sourcedir) != 0) {
-            CU(-1);
-        }
-    }
 
     /*  Set the previously remembered Perl 5 scalars (option -d) */
     Perl5_SetRememberedScalars(aTHX);
@@ -463,7 +444,6 @@ int main(int argc, char **argv, char **env)
     char *progname;
     int nBuf;
     int nOut;
-    char *source = NULL;
     char sourcedir[2048];
     char *cp;
     struct stat st;
@@ -482,15 +462,8 @@ int main(int argc, char **argv, char **env)
     int fTaint = FALSE;
     int fWarn = FALSE;
     int fNoCase = FALSE;
-    int fPP = FALSE;
     char *cwd2;
     int fOkSwitch;
-    char *cpHost;
-    char *cpPort;
-    char *cpPath;
-    char *cpCGIpt;
-    char *cpCGIqs;
-    int fCGIqsEqualChar;
 
     /*  first step: our process initialisation */
     myinit();
@@ -522,67 +495,7 @@ int main(int argc, char **argv, char **env)
      *      optind=argc-1
      *      argv[optind]=script
      */
-        source = argv[1];
-
-    /* CGI modes imply
-       - Preprocessor usage
-       - HTML entity conversions
-       - adding of DOCUMENT_ROOT to include paths */
-    /* check for valid source file */
-    if (*source == NUL) {
-        PrintError(0, "", NULL, NULL, "Filename is empty");
-        CU(0 ? EX_IOERR : EX_OK);
-    }
-
 #define mode 0
-    /* check for existing source file */
-    if ((stat(source, &st)) != 0) {
-        PrintError(mode, source, NULL, NULL, "File `%s' not exists", source);
-        CU(mode == 0 ? EX_IOERR : EX_OK);
-    }
-
-    /* now set the additional env vars */
-    if ((cpPath = getenv("PATH_INFO")) != NULL) {
-        if ((cpHost = getenv("SERVER_NAME")) == NULL)
-            cpHost = "localhost";
-        cpPort = getenv("SERVER_PORT");
-        if (stringEQ(cpPort, "80"))
-            cpPort = NULL;
-        snprintf(ca, sizeof(ca), "http://%s%s%s%s",
-                cpHost, cpPort != NULL ? ":" : "", cpPort != NULL ? cpPort : "", cpPath);
-        ca[sizeof(ca)-1] = NUL;
-    }
-    else {
-    }
-
-    stat(source, &st);
-    cp = ctime(&(st.st_mtime));
-    cp[strlen(cp)-1] = NUL;
-    if ((pw = getpwuid(st.st_uid)) != NULL)
-    {}
-    /* optionally run the ePerl preprocessor */
-    if (fPP) {
-        /* switch to directory where script stays */
-        if (! getcwd(cwd, MAXPATHLEN) ) {
-            PrintError(mode, source, NULL, NULL, "getcwd failed with errno %ld", (long)errno);
-            CU(mode == 0 ? EX_IOERR : EX_OK);
-        }
-        strncpy(sourcedir, source, sizeof(sourcedir));
-        sourcedir[sizeof(sourcedir)-1] = NUL;
-        for (cp = sourcedir+strlen(sourcedir); cp > sourcedir && *cp != '/'; cp--)
-            ;
-        *cp = NUL;
-        if (chdir(sourcedir) != 0) {
-            PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
-            CU(mode == 0 ? EX_IOERR : EX_OK);
-        }
-        /* switch to previous dir */
-        if (chdir(cwd) != 0) {
-            PrintError(0, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
-            CU(mode == 0 ? EX_IOERR : EX_OK);
-        }
-    }
-
     /* convert bristled source to valid Perl code */
     /* write buffer to temporary script file */
     strncpy(perlscript, "ePerl.script", sizeof(perlscript));
@@ -591,11 +504,11 @@ int main(int argc, char **argv, char **env)
     unlink(perlscript);
 #endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot open Perl script file `%s' for writing", perlscript);
+        PrintError(mode, "", NULL, NULL, "Cannot open Perl script file `%s' for writing", perlscript);
         CU(mode == 0 ? EX_IOERR : EX_OK);
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
-        PrintError(mode, source, NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
+        PrintError(mode, "", NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
         CU(mode == 0 ? EX_IOERR : EX_OK);
     }
     fclose(fp); fp = NULL;
@@ -608,7 +521,7 @@ int main(int argc, char **argv, char **env)
         fprintf(fp, "----internally created Perl script-----------------------------------\n");
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
-            PrintError(mode, source, NULL, NULL, "%s\n", "Cannot write");
+            PrintError(mode, "", NULL, NULL, "%s\n", "Cannot write");
             CU(mode == 0 ? EX_IOERR : EX_OK);
         }
         if (cpScript[strlen(cpScript)-1] == '\n')
@@ -652,7 +565,7 @@ int main(int argc, char **argv, char **env)
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
-    rc = Perl5_Run(myargc, myargv, mode, fCheck, keepcwd, source, env, perlscript, perlstderr, perlstdout);
+    rc = Perl5_Run(myargc, myargv, mode, fCheck, keepcwd, "", env, perlscript, perlstderr, perlstdout);
     /*  Return code:
      *     0: ok
      *    -1: fCheck && mode == 0 and
