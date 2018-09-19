@@ -76,12 +76,6 @@ extern void give_version_extended_perl(void);
 extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
 extern void Perl5_RememberScalar(char *str);
 
-/* eperl_pp.c */
-extern void ePerl_PP_SetError(char *str, ...);
-extern char *ePerl_PP_GetError(void);
-extern char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode);
-extern char *ePerl_PP(char *cpBuf, char **cppINC);
-
 /* eperl_debug.c */
 extern int fDebug;
 extern char *cpDebugFile;

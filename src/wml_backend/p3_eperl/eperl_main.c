@@ -798,12 +798,6 @@ int main(int argc, char **argv, char **env)
             PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
             CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
         }
-        /* run the preprocessor */
-        if ((cpBuf3 = ePerl_PP(cpScript, RememberedINC)) == NULL) {
-            PrintError(mode, source, NULL, NULL, "Preprocessing failed for `%s': %s", source, ePerl_PP_GetError());
-            CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
-        }
-        cpScript = cpBuf3;
         /* switch to previous dir */
         if (chdir(cwd) != 0) {
             PrintError(mode, source, NULL, NULL, "chdir failed with errno %ld", (long)errno);
