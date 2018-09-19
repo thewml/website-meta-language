@@ -54,7 +54,6 @@ CHOMP(build_time_iso)
 
 SET (SOURCES
     eperl_main.c
-    eperl_parse.c
     eperl_perl5.c
 )
 

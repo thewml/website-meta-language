@@ -199,7 +199,7 @@ char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC)
         ptr_tmpfile = "ePerl.source";
         sprintf(tmpfile, "%s", ptr_tmpfile);
         if ((fp = fopen(tmpfile, "w")) == NULL) {
-            ePerl_SetError("Cannot open temporary source file %s for writing", tmpfile);
+            fprintf(stderr, "Cannot open temporary source file %s for writing", tmpfile);
             CU(NULL);
         }
         nBuf = 0;
@@ -213,7 +213,7 @@ char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC)
     }
 
     if ((fp = fopen(filename, "r")) == NULL) {
-        ePerl_SetError("Cannot open source file %s for reading", filename);
+        fprintf(stderr, "Cannot open source file %s for reading", filename);
         CU(NULL);
     }
     fseek(fp, 0, SEEK_END);
@@ -224,12 +224,12 @@ char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC)
     }
     else {
         if ((cpBuf = (char *)malloc(sizeof(char) * nBuf+1)) == NULL) {
-            ePerl_SetError("Cannot allocate %d bytes of memory", nBuf);
+            fprintf(stderr, "Cannot allocate %d bytes of memory", nBuf);
             CU(NULL);
         }
         fseek(fp, 0, SEEK_SET);
         if (fread(cpBuf, nBuf, 1, fp) == 0) {
-            ePerl_SetError("Cannot read from file %s", filename);
+            fprintf(stderr, "Cannot read from file %s", filename);
             CU(NULL);
         }
         cpBuf[nBuf] = '\0';
@@ -483,31 +483,12 @@ int main(int argc, char **argv, char **env)
         myexit(EX_USAGE);
     }
 
-    /* set default delimiters */
-    if (ePerl_begin_delimiter == NULL) {
-        if (mode == MODE_FILTER)
-            ePerl_begin_delimiter = BEGIN_DELIMITER_FILTER;
-        else
-            ePerl_begin_delimiter = BEGIN_DELIMITER_CGI;
-    }
-    if (ePerl_end_delimiter == NULL) {
-        if (mode == MODE_FILTER)
-            ePerl_end_delimiter = END_DELIMITER_FILTER;
-        else
-            ePerl_end_delimiter = END_DELIMITER_CGI;
-    }
-    if (fNoCase)
-        ePerl_case_sensitive_delimiters = FALSE;
-    else
-        ePerl_case_sensitive_delimiters = TRUE;
-
     /* CGI modes imply
        - Preprocessor usage
        - HTML entity conversions
        - adding of DOCUMENT_ROOT to include paths */
     if (mode == MODE_CGI || mode == MODE_NPHCGI) {
         fPP = TRUE;
-        ePerl_convert_entities = TRUE;
         if ((cp = getenv("DOCUMENT_ROOT")) != NULL)
             RememberINC(cp);
     }
@@ -720,7 +701,7 @@ int main(int argc, char **argv, char **env)
 
     /* read source file into internal buffer */
     if ((cpBuf = ePerl_ReadSourceFile(source, &cpBuf, &nBuf)) == NULL) {
-        PrintError(mode, source, NULL, NULL, "Cannot open source file `%s' for reading\n%s", source, ePerl_GetError);
+        PrintError(mode, source, NULL, NULL, "Cannot open source file `%s' for reading\n%s", source, NULL);
         CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
     }
 

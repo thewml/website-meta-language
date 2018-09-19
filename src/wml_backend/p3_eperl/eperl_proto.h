@@ -50,27 +50,6 @@ extern void mysighandler(int rc);
 extern void myinit(void);
 extern void myexit(int rc);
 
-/* eperl_parse.c */
-extern char *ePerl_begin_delimiter;
-extern char *ePerl_end_delimiter;
-extern int ePerl_case_sensitive_delimiters;
-extern int ePerl_convert_entities;
-extern int ePerl_line_continuation;
-extern void ePerl_SetError(char *str, ...);
-extern char *ePerl_GetError(void);
-extern char *ePerl_fprintf(char *cpOut, char *str, ...);
-extern char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...);
-extern char *ePerl_fwrite(char *cpBuf, int nBuf, int cNum, char *cpOut);
-extern char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen);
-extern char *ePerl_Efwrite(char *cpBuf, int nBuf, int cNum, char *cpOut);
-extern char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n);
-extern char *ePerl_Cfwrite(char *cpBuf, int nBuf, int cNum, char *cpOut);
-extern char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen);
-extern char *ep_strnchr(char *buf, char chr, int n);
-extern char *ep_strnstr(char *buf, char *str, int n);
-extern char *ep_strncasestr(char *buf, char *str, int n);
-extern char *ePerl_Bristled2Plain(char *cpBuf);
-
 /* eperl_perl5.c */
 extern void give_version_extended_perl(void);
 extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
