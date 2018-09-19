@@ -41,7 +41,6 @@
 **  Headers from GNU autoconf
 **
 */
-#include "config_ac.h"
 #include "config_sc.h"
 
 
