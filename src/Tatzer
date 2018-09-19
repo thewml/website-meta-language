@@ -30,34 +30,6 @@ $STR_OPTS{'prefix'}{value} = '/usr';
 
 my $build_type = "debug";
 my $generate_what;
-my $build_static_lib = 0;
-my $with_context_var = 1;
-my $max_bench_threads_num = 4;
-my $link_to_static = 0;
-
-sub set_both
-{
-    my $val = shift;
-    foreach my $k ('p|pos')
-    {
-        $STR_OPTS{$k}{'value'} = $val;
-    }
-    return;
-}
-
-sub set_hash
-{
-    return set_both("INTERNAL_HASH");
-}
-
-set_hash();
-
-my $HOME = $ENV{HOME};
-
-if ($ENV{VERBOSE})
-{
-    print "<@ARGV>";
-}
 
 GetOptions(
     'd|debug' => sub {
@@ -80,7 +52,6 @@ GetOptions(
         }
         return;
     },
-    'hash' => \&set_hash,
     'profile' => sub {
         my ($opt, $val) = @_;
         if ($val)
@@ -98,30 +69,11 @@ GetOptions(
         return;
     },
     'gen=s' => \$generate_what,
-    'tokyo' => sub { return set_both("TOKYO_CAB_HASH"); },
-    'static' => \$build_static_lib,
-    'with-ctx-var!' => \$with_context_var,
-    'max-bench-threads-num=i' => \$max_bench_threads_num,
-    'static!' => \$link_to_static,
     (map {; "$_=s" => \($STR_OPTS{$_}{value}) } @STR_OPTS__KEYS),
 ) or
     die "Wrong options";
 
-my $path_to_source_dir;
-
-if (@ARGV)
-{
-    $path_to_source_dir = shift(@ARGV);
-
-    if (@ARGV)
-    {
-        die "Junk at the end of ARGV - <@ARGV>";
-    }
-}
-else
-{
-    $path_to_source_dir = dirname($0);
-}
+my $path_to_source_dir = dirname($0);
 
 # This cache is sometimes causing problems.
 unlink("CMakeCache.txt");
@@ -133,14 +85,10 @@ my @cmd= ("cmake",
     (defined($generate_what) ? ("-G", $generate_what) : ()),
     "-DCMAKE_BUILD_TYPE=$build_type",
     "-DDATADIR=$STR_OPTS{prefix}{value}/share",
-    ((!$build_static_lib) ? ("-DBUILD_STATIC_LIBRARY=") : ()),
     (map { my $k = $_; my $r = $STR_OPTS{$k}; my $v = $r->{value}; defined($v) ? ("-D$r->{param}=$r->{prefix}$v") : () } @STR_OPTS__KEYS),
 );
 
-if (defined ($path_to_source_dir))
-{
-    push @cmd, $path_to_source_dir;
-}
+push @cmd, $path_to_source_dir;
 
 print(join(" ", @cmd), "\n");
 my $exit_code = system(@cmd);
