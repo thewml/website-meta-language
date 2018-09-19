@@ -60,19 +60,6 @@
 
 /*
 **
-**   debugging
-**
-*/
-#ifdef DEBUG_ENABLED
-#ifdef HAVE_DMALLOC
-#define DMALLOC_FUNC_CHECK 1
-#include <dmalloc.h>
-#endif
-#endif
-
-
-/*
-**
 **  CU() -- CleanUp Makro (implemented in a safety way)
 **
 */
