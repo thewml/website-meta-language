@@ -192,8 +192,6 @@
  *      pTHX argument has been introduced in Perl 5.6.0  */
 extern void Perl5_XSInit(pTHX);
 extern void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue);
-extern char *Perl5_RememberedScalars[1024];
-extern void Perl5_SetRememberedScalars(pTHX);
 
 #include "eperl_perl5_sm.h"
 
@@ -246,33 +244,12 @@ void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
 **
 */
 
-char *Perl5_RememberedScalars[1024] = { NULL };
-
-void Perl5_SetRememberedScalars(pTHX)
-{
-    char ca[1024];
-    char *cp;
-    int i;
-
-    for (i = 0; Perl5_RememberedScalars[i] != NULL; i++) {
-        strncpy(ca, Perl5_RememberedScalars[i], 1023);
-        ca[1023] = 0;
-        cp = strchr(ca, '=');
-        if (cp != NULL)
-            *cp++ = '\0';
-        else
-            cp = "";
-        Perl5_SetScalar(aTHX_ "main", ca, cp);
-    }
-}
-
 int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, char *perlstderr, char *perlstdout)
 {
     int rc;
     FILE *er;
     FILE *out;
     char *cpBuf = NULL;
-    char *cp;
     static PerlInterpreter *my_perl = NULL;
     int size;
 
@@ -309,9 +286,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
             CU(mode == 0 ? EX_FAIL : EX_OK);
         }
     }
-
-    /*  Set the previously remembered Perl 5 scalars (option -d) */
-    Perl5_SetRememberedScalars(aTHX);
 
     /*  NOW IT IS TIME to evaluate/execute the script!!! */
     rc = perl_run(my_perl);
@@ -360,19 +334,6 @@ void RememberINC(char *str)
     return;
 }
 
-void mysighandler(int rc)
-{
-    /* ignore more signals */
-    signal(SIGINT,  SIG_IGN);
-    signal(SIGTERM, SIG_IGN);
-
-    /* give interrupt information */
-    fprintf(stderr, "ePerl: **INTERRUPT**\n");
-
-    /* exit immediately */
-    exit(EX_FAIL);
-}
-
 /*
  *  main procedure
  */
@@ -385,44 +346,12 @@ int main(int argc, char **argv, char **env)
     char perlstdout[1024] = "";
     int myargc;
     char *myargv[20];
-    char *progname;
-    int nBuf;
-    int nOut;
-    char *cp;
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
 
-    /*  second step: canonicalize program name */
-    progname = argv[0];
-    if ((cp = strrchr(progname, '/')) != NULL) {
-        progname = cp+1;
-    }
-
-    /*  parse the option arguments */
-    opterr = 0;
-    /*
-     *  determine source filename and runtime mode
-     */
-
-    /*
-     *  Stand-Alone outside Webserver environment:
-     *
-     *  Request:
-     *      eperl script
-     *  Environment:
-     *      GATEWAY_INTERFACE=""
-     *      SCRIPT_NAME=""
-     *      SCRIPT_FILENAME=""
-     *      PATH_INFO=""
-     *      PATH_TRANSLATED=""
-     *      QUERY_STRING=""
-     *      optind=argc-1
-     *      argv[optind]=script
-     */
 #define mode 0
     /* convert bristled source to valid Perl code */
     /* write buffer to temporary script file */
-    strncpy(perlscript, "ePerl.script", sizeof(perlscript));
-    perlscript[sizeof(perlscript)-1] = NUL;
+    strcpy(perlscript, "ePerl.script");
 #ifndef DEBUG_ENABLED
     unlink(perlscript);
 #endif
@@ -469,7 +398,7 @@ int main(int argc, char **argv, char **env)
     /*  create command line...  */
     myargc = 0;
     /*  - program name and possible -T -w options */
-    myargv[myargc++] = progname;
+    myargv[myargc++] = argv[0];
     /*  - previously remembered Perl 5 INC entries (option -I) */
     for (int i = 0; RememberedINC[i] != NULL; i++) {
         myargv[myargc++] = "-I";
