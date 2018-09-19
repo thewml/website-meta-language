@@ -1,8 +1,24 @@
 #include "eperl_config.h"
-#include "eperl_global.h"
+/*
+**
+**  CU() -- CleanUp Makro (implemented in a safety way)
+**
+*/
+#define STMT(stuff) do { stuff } while (0)
+#define CU(returncode) STMT( rc = returncode; goto CUS; )
+#define VCU STMT( goto CUS; )
+#define RETURN_WVAL(val) return (val)
+#define RETURN_EXRC return (rc)
+#define RETURN_NORC return
+
+/*
+**  Shortcuts for string comparisons
+*/
+#define stringEQ(s1,s2)    (s1 != NULL && s2 != NULL && strcmp(s1,s2) == 0)
+#define stringNE(s1,s2)    (s1 != NULL && s2 != NULL && strcmp(s1,s2) != 0)
+
 #include "eperl_perl5.h"
 #include "eperl_perl5_sm.h"
-#include "eperl_proto.h"
 
 #ifdef HAVE_PERL_DYNALOADER
 
@@ -238,8 +254,9 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
 #include <errno.h>
 
 #include "eperl_config.h"
-#include "eperl_global.h"
-#include "eperl_proto.h"
+extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
+extern void Perl5_RememberScalar(char *str);
+
 
 /*
  *  Display an error message and a logfile content as a HTML page
