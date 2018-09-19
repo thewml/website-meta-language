@@ -146,11 +146,6 @@ void give_version(void)
     fprintf(stdout, "\n");
 }
 
-void give_readme(void)
-{
-    fprintf(stdout, "%s", ePerl_README);
-}
-
 void give_usage(char *name)
 {
     fprintf(stderr, "Usage: %s [options] [scriptfile]\n", name);
@@ -176,7 +171,6 @@ void give_usage(char *name)
     fprintf(stderr, "  -c, --check               run syntax check only and exit (no execution)\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Giving Feedback:\n");
-    fprintf(stderr, "  -r, --readme              display ePerl README file\n");
     fprintf(stderr, "  -l, --license             display ePerl license files (COPYING and ARTISTIC)\n");
     fprintf(stderr, "  -v, --version             display ePerl VERSION id\n");
     fprintf(stderr, "  -V, --ingredients         display ePerl VERSION id & compilation parameters\n");
@@ -259,7 +253,6 @@ struct option options[] = {
     { "mode",           1, NULL, 'm' },
     { "outputfile",     1, NULL, 'o' },
     { "check",          0, NULL, 'c' },
-    { "readme",         0, NULL, 'r' },
     { "license",        0, NULL, 'l' },
     { "version",        0, NULL, 'v' },
     { "ingredients",    0, NULL, 'V' },
@@ -401,7 +394,6 @@ int main(int argc, char **argv, char **env)
                 fCheck = TRUE;
                 break;
             case 'r':
-                give_readme();
                 myexit(EX_OK);
             case 'l':
                 myexit(EX_OK);

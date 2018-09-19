@@ -768,10 +768,6 @@ diagnostics. See perldiag(1) for more details.
 
 This runs a pure syntax check which is similar to ``C<perl -c>''.
 
-=item B<-r>
-
-This prints the internal ePerl README file to the console.
-
 =item B<-l>
 
 This prints the internal ePerl LICENSE file to the console.
