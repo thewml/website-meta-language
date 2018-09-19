@@ -42,9 +42,9 @@ if ( !-e $myprefix )
         do_system(
             {
                 cmd => [
-"cd . && mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
-                        . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
-                        . " --prefix=$myprefix && $MAKE && $MAKE install"
+"cd . && mkdir $build_dir && cd $build_dir && cmake "
+                        . ( defined($cmake_gen) ? qq#-G "$cmake_gen"# : "" )
+                        . " -DCMAKE_INSTALL_PREFIX=$myprefix $tatzer_dir && $MAKE && $MAKE install"
                 ]
             }
         )
