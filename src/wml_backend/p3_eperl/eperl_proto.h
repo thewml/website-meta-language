@@ -45,7 +45,6 @@ extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfil
 extern void give_version(void);
 extern void give_readme(void);
 extern void give_license(void);
-extern void give_img_logo(void);
 extern void give_img_powered(void);
 extern void give_usage(char *name);
 extern char *RememberedINC[1024];
@@ -130,10 +129,6 @@ extern char *ePerl_README;
 
 /* eperl_license.c */
 extern char *ePerl_LICENSE;
-
-/* eperl_logo.c */
-extern int ePerl_LOGO_size;
-extern unsigned char ePerl_LOGO_data[];
 
 /* eperl_powered.c */
 extern int ePerl_POWERED_size;

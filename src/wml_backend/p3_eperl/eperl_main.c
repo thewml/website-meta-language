@@ -83,7 +83,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
         printf("<a href=\"http://www.engelschall.com/sw/eperl/\"><img src=\"%s/powered.gif\" alt=\"Powered By ePerl\" align=right border=0></a>\n", cp);
         printf("<table cellspacing=0 cellpadding=0 border=0>\n");
         printf("<tr>\n");
-        printf("<td><img src=\"%s/logo.gif\" alt=\"Embedded Perl 5 Language\"></td>\n", cp);
         printf("</tr>\n");
         printf("<tr>\n");
         printf("<td align=right><b>Version %s</b></td>\n", eperl_version.v_short);
@@ -158,18 +157,6 @@ void give_readme(void)
 void give_license(void)
 {
     fprintf(stdout, "%s", ePerl_LICENSE);
-}
-
-void give_img_logo(void)
-{
-    if (mode == MODE_NPHCGI)
-        HTTP_PrintResponseHeaders("");
-    printf("Content-Type: image/gif\r\n\r\n");
-    if (fwrite(ePerl_LOGO_data, ePerl_LOGO_size, 1, stdout) != 1)
-    {
-        fprintf (stderr, "%s\n", "Cannot print the logo.");
-        return;
-    }
 }
 
 void give_img_powered(void)
@@ -670,11 +657,7 @@ int main(int argc, char **argv, char **env)
 
     /* the built-in GIF images */
     if ((mode == MODE_CGI || mode == MODE_NPHCGI) && (cp = getenv("PATH_INFO")) != NULL) {
-        if (stringEQ(cp, "/logo.gif")) {
-            give_img_logo();
-            myexit(0);
-        }
-        else if (stringEQ(cp, "/powered.gif")) {
+        if (stringEQ(cp, "/powered.gif")) {
             give_img_powered();
             myexit(0);
         }

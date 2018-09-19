@@ -87,7 +87,6 @@ SET (SOURCES
     eperl_getopt.c
     eperl_http.c
     eperl_license.c
-    eperl_logo.c
     eperl_main.c
     eperl_parse.c
     eperl_perl5.c

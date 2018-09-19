@@ -877,13 +877,9 @@ C</url/to/nph-eperl/>I<NAME>C<.gif>:
 
 =over 4
 
-=item C<logo.gif>
-
-The standard ePerl logo. Please do not include this one on your website.
-
 =item C<powered.gif>
 
-The ``I<powered by ePerl 2.2>'' logo. Feel free to use this on your website.
+The ``I<powered by ePerl 2.2>''  Feel free to use this on your website.
 
 =back
 
