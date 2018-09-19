@@ -21,20 +21,7 @@
 
 #include "eperl_perl5_sm.h"
 
-/*
-**
-**  remember a Perl scalar variable
-**  and set it later
-**
-**  (this is needed because we have to
-**   remember the scalars when parsing
-**   the command line, but actually setting
-**   them can only be done later when the
-**   Perl 5 interpreter is allocated !!)
-**
-*/
-
-int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, char *perlstderr, char *perlstdout)
+int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *perlstdout)
 {
     int rc;
     FILE *er;
@@ -47,14 +34,14 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
        and redirect stdout to the new channel */
     if ((out = fopen(perlstdout, "w")) == NULL) {
         fprintf(stderr, "Cannot open STDOUT file `%s' for writing", perlstdout);
-        CU(mode == 0 ? -1 : 0);
+        CU(-1);
     }
 
     /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
     if ((er = fopen(perlstderr, "w")) == NULL) {
         fprintf(stderr, "Cannot open STDERR file `%s' for writing", perlstderr);
-        CU(mode == 0 ? -1 : 0);
+        CU(-1);
     }
 
     my_perl = perl_alloc();
@@ -89,12 +76,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
     return rc;
 }
 
-extern int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, char *perlstderr, char *perlstdout);
-
-
-/*
- *  Display an error message and a logfile content as a HTML page
- */
 /*
  *  main procedure
  */
@@ -107,17 +88,16 @@ int main(int argc, char **argv, char **env)
     char *myargv[20];
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
 
-#define mode 0
 #ifndef DEBUG_ENABLED
     unlink(perlscript);
 #endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
         fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
-        CU(mode == 0 ? -1 : 0);
+        CU(-1);
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
         fprintf(stderr, "Cannot write to Perl script file `%s'", perlscript);
-        CU(mode == 0 ? -1 : 0);
+        CU(-1);
     }
     fclose(fp); fp = NULL;
 
@@ -127,7 +107,7 @@ int main(int argc, char **argv, char **env)
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
             fprintf(stderr, "%s\n", "Cannot write");
-            CU(mode == 0 ? -1 : 0);
+            CU(-1);
         }
         if (cpScript[strlen(cpScript)-1] == '\n')
             fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
@@ -156,7 +136,7 @@ int main(int argc, char **argv, char **env)
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
-    rc = Perl5_Run(myargc, myargv, mode, "", env, perlstderr, perlstdout);
+    rc = Perl5_Run(myargc, myargv, env, perlstderr, perlstdout);
     if (rc != 0) {
         if (rc == -1)
             CU(0);
