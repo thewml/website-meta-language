@@ -284,12 +284,10 @@ int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, ch
     FILE *er;
     FILE *out;
     char *cpBuf = NULL;
-    char sourcedir[2048];
     char *cp;
     static PerlInterpreter *my_perl = NULL;
     struct stat st;
     int size;
-    char cwd[MAXPATHLEN];
 
     /* open a file for Perl's STDOUT channel
        and redirect stdout to the new channel */
@@ -324,11 +322,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, ch
             CU(mode == 0 ? EX_FAIL : EX_OK);
         }
     }
-
-    /* change to directory of script:
-       this actually is not important to us, but really useful
-       for the ePerl source file programmer!! */
-    cwd[0] = NUL;
 
     /*  Set the previously remembered Perl 5 scalars (option -d) */
     Perl5_SetRememberedScalars(aTHX);
@@ -412,21 +405,15 @@ int main(int argc, char **argv, char **env)
 {
     int rc;
     FILE *fp = NULL;
-    char *cpBuf2 = NULL;
     char *cpBuf3 = NULL;
     char perlscript[1024] = "";
     char perlstderr[1024] = "";
     char perlstdout[1024] = "";
-    char dir_tmp[1024];
-    char *dir_home;
-    char *dir_script;
-    char ca[1024] = "";
     int myargc;
     char *myargv[20];
     char *progname;
     int nBuf;
     int nOut;
-    char sourcedir[2048];
     char *cp;
     struct stat st;
     struct passwd *pw;
@@ -436,10 +423,7 @@ int main(int argc, char **argv, char **env)
     int keepcwd = FALSE;
     int c;
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
-    int allow;
     int i, n, k;
-    char *outputfile = NULL;
-    char cwd[MAXPATHLEN];
     int fTaint = FALSE;
     int fWarn = FALSE;
     int fNoCase = FALSE;
@@ -549,20 +533,6 @@ int main(int argc, char **argv, char **env)
     /* close all still open file handles */
     if (fp)
         fclose(fp);
-
-    /* de-allocate the script buffer */
-    if (cpBuf2)
-        free(cpBuf2);
-
-    /* remove temporary files */
-#ifndef DEBUG_ENABLED
-    if (*perlstderr != NUL)
-        unlink(perlstderr);
-    if (*perlstdout != NUL)
-        unlink(perlstdout);
-    if (*perlscript != NUL)
-        unlink(perlscript);
-#endif
 
     exit(rc);
 }
