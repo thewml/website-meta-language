@@ -24,17 +24,9 @@
 int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *perlstdout)
 {
     int rc;
-    FILE *er;
     char *cpBuf = NULL;
     static PerlInterpreter *my_perl = NULL;
     int size;
-
-    /* open a file for Perl's STDERR channel
-       and redirect stderr to the new channel */
-    if ((er = fopen(perlstderr, "w")) == NULL) {
-        fprintf(stderr, "Cannot open STDERR file `%s' for writing", perlstderr);
-        CU(-1);
-    }
 
     my_perl = perl_alloc();
     perl_construct(my_perl);
@@ -44,17 +36,12 @@ int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *per
         only _parsed_, not evaluated/executed!  */
     rc = perl_parse(my_perl, NULL, myargc, myargv, env);
     if (rc != 0) {
-        fclose(er); er = NULL;
         fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
         CU(-1);
     }
 
     /*  NOW IT IS TIME to evaluate/execute the script!!! */
     rc = perl_run(my_perl);
-
-    /*  pre-close the handles, to be able to check
-        its size and to be able to display the contents */
-    fclose(er);  er  = NULL;
 
     CUS: /* the Clean Up Sequence */
 
