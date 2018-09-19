@@ -1,21 +1,10 @@
 #include "config_sc.h"
 
-
-/*
- * **
- * **  Headers from the Unix system
- * **
- * */
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/param.h>
-
 
 /*
 **
