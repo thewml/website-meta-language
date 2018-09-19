@@ -278,7 +278,7 @@ void Perl5_SetRememberedScalars(pTHX)
     }
 }
 
-int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout)
+int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, char *perlstderr, char *perlstdout)
 {
     int rc;
     FILE *er;
@@ -286,7 +286,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, ch
     char *cpBuf = NULL;
     char *cp;
     static PerlInterpreter *my_perl = NULL;
-    struct stat st;
     int size;
 
     /* open a file for Perl's STDOUT channel
@@ -334,17 +333,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, ch
     fclose(out); out = NULL;
     fclose(er);  er  = NULL;
 
-    /*  when the Perl interpreter failed or there
-        is data on stderr, we print a error page */
-    if (stat(perlstderr, &st) == 0)
-        size = st.st_size;
-    else
-        size = 0;
-    if (rc != 0 || size > 0) {
-        fprintf(stderr, "Perl runtime error (interpreter rc=%d)", rc);
-        CU(mode == 0 ? EX_FAIL : EX_OK);
-    }
-
     CUS: /* the Clean Up Sequence */
 
     /* Ok, the script got evaluated. Now we can destroy
@@ -356,7 +344,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, ch
     return rc;
 }
 
-extern int Perl5_Run(int myargc, char **myargv, int mode, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
+extern int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, char *perlstderr, char *perlstdout);
 extern void Perl5_RememberScalar(char *str);
 
 
@@ -415,18 +403,9 @@ int main(int argc, char **argv, char **env)
     int nBuf;
     int nOut;
     char *cp;
-    struct stat st;
-    struct passwd *pw;
-    struct passwd *pw2;
-    struct group *gr;
-    int uid, gid;
-    int keepcwd = FALSE;
     int c;
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
     int i, n, k;
-    int fTaint = FALSE;
-    int fWarn = FALSE;
-    int fNoCase = FALSE;
     char *cwd2;
     int fOkSwitch;
 
@@ -509,10 +488,6 @@ int main(int argc, char **argv, char **env)
     myargc = 0;
     /*  - program name and possible -T -w options */
     myargv[myargc++] = progname;
-    if (fTaint)
-        myargv[myargc++] = "-T";
-    if (fWarn)
-        myargv[myargc++] = "-w";
     /*  - previously remembered Perl 5 INC entries (option -I) */
     for (i = 0; RememberedINC[i] != NULL; i++) {
         myargv[myargc++] = "-I";
@@ -521,7 +496,7 @@ int main(int argc, char **argv, char **env)
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
-    rc = Perl5_Run(myargc, myargv, mode, keepcwd, "", env, perlscript, perlstderr, perlstdout);
+    rc = Perl5_Run(myargc, myargv, mode, "", env, perlstderr, perlstdout);
     if (rc != 0) {
         if (rc == -1)
             CU(EX_OK);
