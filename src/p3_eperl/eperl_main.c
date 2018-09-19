@@ -21,7 +21,7 @@
 
 #include "eperl_perl5_sm.h"
 
-int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *perlstdout)
+int Perl5_Run(int myargc, char **myargv, char **env)
 {
     int rc;
     PerlInterpreter *my_perl = NULL;
@@ -76,12 +76,6 @@ int main(int argc, char **argv, char **env)
 
     fprintf(stderr, "----internally created Perl script-----------------------------------\n%s\n--end--\n", cpScript);
 
-    /* temporary filename for Perl's STDOUT channel */
-    char *perlstdout= "/tmp/ePerl.stdout";
-
-    /* temporary filename for Perl's STDERR channel */
-    char * perlstderr= "ePerl.stderr";
-
     /*  create command line...  */
     myargc = 0;
     /*  - program name and possible -T -w options */
@@ -89,7 +83,7 @@ int main(int argc, char **argv, char **env)
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
-    rc = Perl5_Run(myargc, myargv, env, perlstderr, perlstdout);
+    rc = Perl5_Run(myargc, myargv, env);
     if (rc != 0) {
         CU(-1);
     }
