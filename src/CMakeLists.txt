@@ -5,8 +5,6 @@ SHLOMIF_COMMON_SETUP("${private_mod_path}")
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(VERSION "2.8.1")
-
 IF (NOT CMAKE_INSTALL_PREFIX)
     MESSAGE (FATAL_ERROR "CMAKE_INSTALL_PREFIX must be defined. Specify it with -DCMAKE_INSTALL_PREFIX=...")
 ENDIF (NOT CMAKE_INSTALL_PREFIX)
@@ -25,10 +23,6 @@ SET (WML_LIB_DIR "${WML_LIB_DIR_BASE}/wml")
 SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
 SET (WML_LIBEXE_DIR "${WML_LIB_DIR}/exec/")
 
-# Process and extract the version number.
-# FILE( READ "ver.txt" VERSION)
-
 ENABLE_TESTING()
 
 ADD_SUBDIRECTORY( p3_eperl )
-ADD_SUBDIRECTORY( wml_test )
