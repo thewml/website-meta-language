@@ -54,7 +54,6 @@ CHOMP(build_time_iso)
 
 SET (SOURCES
     eperl_main.c
-    eperl_perl5.c
 )
 
 SET(EXE "eperl")
@@ -73,7 +72,7 @@ ADD_CUSTOM_COMMAND(
 )
 
 
-SET_SOURCE_FILES_PROPERTIES("eperl_perl5.c"
+SET_SOURCE_FILES_PROPERTIES("eperl_main.c"
     PROPERTIES OBJECT_DEPENDS ${HEADER}
 )
 
