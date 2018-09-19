@@ -55,33 +55,13 @@
 **  CU() -- CleanUp Makro (implemented in a safety way)
 **
 */
-#define STMT(stuff) do { stuff } while (0)
-#define CU(returncode) STMT( rc = returncode; goto CUS; )
-#define VCU STMT( goto CUS; )
-#define RETURN_WVAL(val) return (val)
-#define RETURN_EXRC return (rc)
-#define RETURN_NORC return
+#define CU(returncode) do { rc = returncode; goto CUS; } while (0)
 
 /*  first include the standard Perl
  *      includes designed for embedding   */
 #define PERL_NO_GET_CONTEXT     /* for efficiency reasons, see perlguts(3) */
 #include <EXTERN.h>
 #include <perl.h>
-
-/*
- *   Initialization of locales when building a new Perl interpreter.
- *        Perl 5.003 calls perl_init_i18nl14n
- *             Perl 5.004 and 5.005 call perl_init_i18nl10n
- *                  In Perl 5.6.0 this routine is already called by perl_construct
- *                  */
-#ifndef perl_init_i18nl10n
-#  define perl_init_i18nl10n perl_init_i18nl14n
-#else
-#  if (PERL_REVISION > 5) || ((PERL_REVISION == 5) && (PERL_VERSION >= 6))
-#    undef perl_init_i18nl10n
-#    define perl_init_i18nl10n(a)
-#  endif
-#endif
 
 #include "eperl_perl5_sm.h"
 
@@ -123,7 +103,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
 
     my_perl = perl_alloc();
     perl_construct(my_perl);
-    perl_init_i18nl10n(1);
 
     /*  now parse the script!
         NOTICE: At this point, the script gets
