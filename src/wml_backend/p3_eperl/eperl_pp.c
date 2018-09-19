@@ -103,10 +103,7 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
     else {
         /* treat input as filename */
 
-        if (strncmp(cpInput, "http://", 7) == 0) {
-            fp = HTTP_openURLasFP(cpInput);
-        }
-        else if (*cpInput == '/') {
+        if (*cpInput == '/') {
             fp = fopen(cpInput, "r");
         }
         else {

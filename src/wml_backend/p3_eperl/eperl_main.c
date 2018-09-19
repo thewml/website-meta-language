@@ -68,8 +68,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     IO_restore_stderr();
 
     if (mode == MODE_CGI || mode == MODE_NPHCGI) {
-        if (mode == MODE_NPHCGI)
-            HTTP_PrintResponseHeaders("");
         printf("Content-Type: text/html\r\n\r\n");
         printf("<html>\n");
         printf("<head>\n");
@@ -161,8 +159,6 @@ void give_license(void)
 
 void give_img_powered(void)
 {
-    if (mode == MODE_NPHCGI)
-        HTTP_PrintResponseHeaders("");
     printf("Content-Type: image/gif\r\n\r\n");
     if (fwrite(ePerl_POWERED_data, ePerl_POWERED_size, 1, stdout) != 1) {
         exit(-1);
@@ -1100,32 +1096,10 @@ int main(int argc, char **argv, char **env)
     /*  if we are running as a NPH-CGI/1.1 script
         we had to provide the HTTP reponse headers ourself */
     if (mode == MODE_NPHCGI) {
-        char *p = HTTP_PrintResponseHeaders(cpOut);
-        /* HTTP_PrintResponseHeader will skip HTTP status line */
-        nOut -= (p - cpOut); /* adjust length */
-        cpOut = p; /* points top of HTTP response header */
-
-        /* if there are no HTTP header lines, we print a basic
-           Content-Type header which should be ok */
-        if (!HTTP_HeadersExists(cpOut)) {
-            printf("Content-Type: text/html\r\n");
-            printf("Content-Length: %d\r\n", nOut);
-            printf("\r\n");
-        }
     }
     else if (mode == MODE_CGI) {
-        HTTP_StripResponseHeaders(&cpOut, &nOut);
-
-        /* if there are no HTTP header lines, we print a basic
-           Content-Type header which should be ok */
-        if (!HTTP_HeadersExists(cpOut)) {
-            printf("Content-Type: text/html\n");
-            printf("Content-Length: %d\n", nOut);
-            printf("\n");
-        }
     }
     else if (mode == MODE_FILTER) {
-        HTTP_StripResponseHeaders(&cpOut, &nOut);
     }
 
     /* now when the request was not a HEAD request we create the output */
