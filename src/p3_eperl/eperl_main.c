@@ -116,7 +116,7 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
         {
             fclose(er); er = NULL;
             fprintf(stderr, "Perl parsing error (interpreter rc=%d) error=%s", rc, SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "");
-            CU(mode == 0 ? EX_FAIL : EX_OK);
+            CU(-1);
         }
     }
 
@@ -210,7 +210,7 @@ int main(int argc, char **argv, char **env)
     if (rc != 0) {
         if (rc == -1)
             CU(EX_OK);
-        CU(mode == 0 ? EX_FAIL : EX_OK);
+        CU(-1);
     }
 
     CUS: /* the Clean Up Sequence */
