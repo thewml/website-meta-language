@@ -73,26 +73,6 @@ void Perl5_ForceUnbufferedStdout(pTHX)
 
 /*
 **
-**  set a Perl environment variable
-**
-*/
-char **Perl5_SetEnvVar(char **env, char *str)
-{
-    char ca[1024];
-    char *cp;
-
-    strncpy(ca, str, 1023);
-    ca[1023] = NUL;
-    cp = strchr(ca, '=');
-    if (cp != NULL)
-        *cp++ = '\0';
-    else
-        cp = "";
-    return mysetenv(env, ca, cp);
-}
-
-/*
-**
 **  sets a Perl scalar variable
 **
 */
@@ -170,7 +150,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
         PrintError(mode, source, NULL, NULL, "Cannot open STDOUT file `%s' for writing", perlstdout);
         CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
     }
-    IO_redirect_stdout(out);
 
     /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
@@ -178,7 +157,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
         PrintError(mode, source, NULL, NULL, "Cannot open STDERR file `%s' for writing", perlstderr);
         CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
     }
-    IO_redirect_stderr(er);
 
     my_perl = perl_alloc();
     perl_construct(my_perl);
@@ -195,11 +173,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     if (rc != 0) {
         if (fCheck && mode == MODE_FILTER) {
             fclose(er); er = NULL;
-            IO_restore_stdout();
-            IO_restore_stderr();
-            if ((cpBuf = ePerl_ReadErrorFile(perlstderr, perlscript, source)) != NULL) {
-                fprintf(stderr, "%s", cpBuf);
-            }
             CU(EX_FAIL);
         }
         else {
@@ -212,8 +185,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     /* Stop when we are just doing a syntax check */
     if (fCheck && mode == MODE_FILTER) {
         fclose(er); er = NULL;
-        IO_restore_stdout();
-        IO_restore_stderr();
         fprintf(stderr, "%s syntax OK\n", source);
         CU(-1);
     }
@@ -255,10 +226,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
         its size and to be able to display the contents */
     fclose(out); out = NULL;
     fclose(er);  er  = NULL;
-
-    /* ok, now recover the stdout and stderr */
-    IO_restore_stdout();
-    IO_restore_stderr();
 
     /*  when the Perl interpreter failed or there
         is data on stderr, we print a error page */

@@ -87,7 +87,6 @@ SET (SOURCES
     eperl_parse.c
     eperl_perl5.c
     eperl_pp.c
-    eperl_sys.c
 )
 
 SET(EXE "eperl")

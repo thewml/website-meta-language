@@ -68,6 +68,7 @@ void ePerl_SetError(char *str, ...)
     va_start(ap, str);
     vsnprintf(ePerl_ErrorString, sizeof(ePerl_ErrorString), str, ap);
     ePerl_ErrorString[sizeof(ePerl_ErrorString)-1] = NUL;
+    fprintf(stderr, "%s\n", ePerl_ErrorString);
     va_end(ap);
     return;
 }

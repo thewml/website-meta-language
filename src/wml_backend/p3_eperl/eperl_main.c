@@ -59,9 +59,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     vsnprintf(ca, sizeof(ca), str, ap);
     ca[sizeof(ca)-1] = NUL;
 
-    IO_restore_stdout();
-    IO_restore_stderr();
-
     if (mode == MODE_CGI || mode == MODE_NPHCGI) {
         printf("Content-Type: text/html\r\n\r\n");
         printf("<html>\n");
@@ -89,19 +86,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
         printf("</td></tr>\n");
         printf("</table>\n");
         if (logfile != NULL) {
-            if ((cpBuf = ePerl_ReadErrorFile(logfile, scriptfile, scripturl)) != NULL) {
-                printf("<p>");
-                printf("<table bgcolor=\"#e0e0e0\" cellspacing=0 cellpadding=10 border=0>\n");
-                printf("<tr><td bgcolor=\"#c0c0c0\">\n");
-                printf("<font face=\"Arial, Helvetica\"><b>Contents of STDERR channel:</b></font>\n");
-                printf("</td></tr>\n");
-                printf("<tr><td>\n");
-                printf("<pre>\n");
-                printf("%s", cpBuf);
-                printf("</pre>");
-                printf("</td></tr>\n");
-                printf("</table>\n");
-            }
         }
         printf("</blockquote>\n");
         printf("</body>\n");
@@ -110,14 +94,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     else {
         fprintf(stderr, "ePerl:Error: %s\n", ca);
         if (logfile != NULL) {
-            if ((cpBuf = ePerl_ReadErrorFile(logfile, scriptfile, scripturl)) != NULL) {
-                fprintf(stderr, "\n");
-                fprintf(stderr, "---- Contents of STDERR channel: ---------\n");
-                fprintf(stderr, "%s", cpBuf);
-                if (cpBuf[strlen(cpBuf)-1] != '\n')
-                    fprintf(stderr, "\n");
-                fprintf(stderr, "------------------------------------------\n");
-            }
         }
     }
     fflush(stderr);
@@ -133,7 +109,6 @@ void give_usage(char *name)
     fprintf(stderr, "\n");
     fprintf(stderr, "Input Options:\n");
     fprintf(stderr, "  -d, --define=NAME=VALUE   define global Perl variable ($main::name)\n");
-    fprintf(stderr, "  -D, --setenv=NAME=VALUE   define environment variable ($ENV{'name'})\n");
     fprintf(stderr, "  -I, --includedir=PATH     add @INC/#include directory\n");
     fprintf(stderr, "  -B, --block-begin=STR     set begin block delimiter\n");
     fprintf(stderr, "  -E, --block-end=STR       set end block delimiter\n");
@@ -175,10 +150,6 @@ void mysighandler(int rc)
     signal(SIGINT,  SIG_IGN);
     signal(SIGTERM, SIG_IGN);
 
-    /* restore filehandles */
-    IO_restore_stdout();
-    IO_restore_stderr();
-
     /* give interrupt information */
     fprintf(stderr, "ePerl: **INTERRUPT**\n");
 
@@ -197,7 +168,6 @@ void myexit(int rc)
 {
     /* cleanup */
 #ifndef DEBUG_ENABLED
-    remove_mytmpfiles();
 #endif
 
     /* restore signals */
@@ -214,6 +184,69 @@ void myexit(int rc)
     exit(rc);
 }
 
+char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC)
+{
+    char *rc;
+    FILE *fp = NULL;
+    char *cpBuf = NULL;
+    int nBuf;
+    char tmpfile[256], *ptr_tmpfile;
+    int usetmp = 0;
+    int c;
+
+    if (stringEQ(filename, "-")) {
+        /* file is given on stdin */
+        ptr_tmpfile = "ePerl.source";
+        sprintf(tmpfile, "%s", ptr_tmpfile);
+        if ((fp = fopen(tmpfile, "w")) == NULL) {
+            ePerl_SetError("Cannot open temporary source file %s for writing", tmpfile);
+            CU(NULL);
+        }
+        nBuf = 0;
+        while ((c = fgetc(stdin)) != EOF) {
+            fprintf(fp, "%c", c);
+        }
+        fclose(fp);
+        fp = NULL;
+        filename = tmpfile;
+        usetmp = 1;
+    }
+
+    if ((fp = fopen(filename, "r")) == NULL) {
+        ePerl_SetError("Cannot open source file %s for reading", filename);
+        CU(NULL);
+    }
+    fseek(fp, 0, SEEK_END);
+    nBuf = ftell(fp);
+    if (nBuf == 0) {
+        cpBuf = (char *)malloc(sizeof(char) * 1);
+        *cpBuf = NUL;
+    }
+    else {
+        if ((cpBuf = (char *)malloc(sizeof(char) * nBuf+1)) == NULL) {
+            ePerl_SetError("Cannot allocate %d bytes of memory", nBuf);
+            CU(NULL);
+        }
+        fseek(fp, 0, SEEK_SET);
+        if (fread(cpBuf, nBuf, 1, fp) == 0) {
+            ePerl_SetError("Cannot read from file %s", filename);
+            CU(NULL);
+        }
+        cpBuf[nBuf] = '\0';
+    }
+    *cpBufC = cpBuf;
+    *nBufC  = nBuf;
+    RETURN_WVAL(cpBuf);
+
+    CUS:
+    if (cpBuf)
+        free(cpBuf);
+    if (fp)
+        fclose(fp);
+    if (usetmp)
+        unlink(tmpfile);
+    RETURN_EXRC;
+}
 /*
  *  main procedure
  */
@@ -439,22 +472,6 @@ int main(int argc, char **argv, char **env)
         source = argv[optind];
         mode   = (mode == MODE_UNKNOWN ? MODE_FILTER : mode);
 
-        /*  provide flexibility by recognizing "-" for stdin */
-        if (stringEQ(source, "-")) {
-            /* store stdin to tmpfile */
-            source = mytmpfile("ePerl.stdin");
-            if ((fp = fopen(source, "w")) == NULL) {
-                PrintError(mode, source, NULL, NULL, "Cannot open tmpfile `%s' for writing", source);
-                CU(EX_IOERR);
-            }
-            while ((c = fgetc(stdin)) != EOF) {
-                fputc(c, fp);
-            }
-            fclose(fp); fp = NULL;
-
-            /* stdin script implies keeping of cwd */
-            keepcwd = TRUE;
-        }
     }
     /*
      *   Any other calling environment is an error...
@@ -747,9 +764,6 @@ int main(int argc, char **argv, char **env)
         cpScript = cpBuf;
 
     /* now set the additional env vars */
-    env = mysetenv(env, "SCRIPT_SRC_PATH", "%s", abspath(source));
-    env = mysetenv(env, "SCRIPT_SRC_PATH_FILE", "%s", filename(source));
-    env = mysetenv(env, "SCRIPT_SRC_PATH_DIR", "%s", abspath(dirname(source)));
     if ((cpPath = getenv("PATH_INFO")) != NULL) {
         if ((cpHost = getenv("SERVER_NAME")) == NULL)
             cpHost = "localhost";
@@ -759,28 +773,15 @@ int main(int argc, char **argv, char **env)
         snprintf(ca, sizeof(ca), "http://%s%s%s%s",
                 cpHost, cpPort != NULL ? ":" : "", cpPort != NULL ? cpPort : "", cpPath);
         ca[sizeof(ca)-1] = NUL;
-        env = mysetenv(env, "SCRIPT_SRC_URL", "%s", ca);
-        env = mysetenv(env, "SCRIPT_SRC_URL_FILE", "%s", filename(ca));
-        env = mysetenv(env, "SCRIPT_SRC_URL_DIR", "%s", dirname(ca));
     }
     else {
-        env = mysetenv(env, "SCRIPT_SRC_URL", "file://%s", abspath(source));
-        env = mysetenv(env, "SCRIPT_SRC_URL_FILE", "%s", filename(source));
-        env = mysetenv(env, "SCRIPT_SRC_URL_DIR", "file://%s", abspath(source));
     }
 
-    env = mysetenv(env, "SCRIPT_SRC_SIZE", "%d", nBuf);
     stat(source, &st);
-    env = mysetenv(env, "SCRIPT_SRC_MODIFIED", "%d", st.st_mtime);
     cp = ctime(&(st.st_mtime));
     cp[strlen(cp)-1] = NUL;
-    env = mysetenv(env, "SCRIPT_SRC_MODIFIED_CTIME", "%s", cp);
-    env = mysetenv(env, "SCRIPT_SRC_MODIFIED_ISOTIME", "%s", isotime(&(st.st_mtime)));
     if ((pw = getpwuid(st.st_uid)) != NULL)
-        env = mysetenv(env, "SCRIPT_SRC_OWNER", "%s", pw->pw_name);
-    else
-        env = mysetenv(env, "SCRIPT_SRC_OWNER", "unknown-uid-%d", st.st_uid);
-
+    {}
     /* optionally run the ePerl preprocessor */
     if (fPP) {
         /* switch to directory where script stays */
@@ -818,7 +819,7 @@ int main(int argc, char **argv, char **env)
     cpScript = cpBuf2;
 
     /* write buffer to temporary script file */
-    strncpy(perlscript, mytmpfile("ePerl.script"), sizeof(perlscript));
+    strncpy(perlscript, "ePerl.script", sizeof(perlscript));
     perlscript[sizeof(perlscript)-1] = NUL;
 #ifndef DEBUG_ENABLED
     unlink(perlscript);
@@ -864,14 +865,14 @@ int main(int argc, char **argv, char **env)
     }
 
     /* temporary filename for Perl's STDOUT channel */
-    strncpy(perlstdout, mytmpfile("ePerl.stdout"), sizeof(perlstdout));
+    strncpy(perlstdout, "/tmp/ePerl.stdout", sizeof(perlstdout));
     perlstdout[sizeof(perlstdout)-1] = NUL;
 #ifndef DEBUG_ENABLED
     unlink(perlstdout);
 #endif
 
     /* temporary filename for Perl's STDERR channel */
-    strncpy(perlstderr, mytmpfile("ePerl.stderr"), sizeof(perlstderr));
+    strncpy(perlstderr, "ePerl.stderr", sizeof(perlstderr));
     perlstderr[sizeof(perlstderr)-1] = NUL;
 #ifndef DEBUG_ENABLED
     unlink(perlstderr);
@@ -952,11 +953,6 @@ int main(int argc, char **argv, char **env)
         }
         else {
             /* data just goes to stdout */
-            if (fwrite(cpOut, nOut, 1, stdout) != 1) {
-                PrintError(mode, source, NULL, NULL, "%s\n", "Cannot write to stdout");
-                CU(mode == MODE_FILTER ? EX_IOERR : EX_OK);
-            }
-            /* make sure that the data is out before we exit */
             fflush(stdout);
         }
     }

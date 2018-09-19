@@ -96,7 +96,6 @@
     pTHX argument has been introduced in Perl 5.6.0  */
 extern void Perl5_XSInit(pTHX);
 extern void Perl5_ForceUnbufferedStdout(pTHX);
-extern char **Perl5_SetEnvVar(char **env, char *str);
 extern void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue);
 extern char *Perl5_RememberedScalars[1024];
 extern void Perl5_RememberScalar(char *str);

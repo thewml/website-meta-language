@@ -75,33 +75,12 @@ extern char *ePerl_Bristled2Plain(char *cpBuf);
 extern void give_version_extended_perl(void);
 extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
 extern void Perl5_RememberScalar(char *str);
-extern char **Perl5_SetEnvVar(char **env, char *str);
 
 /* eperl_pp.c */
 extern void ePerl_PP_SetError(char *str, ...);
 extern char *ePerl_PP_GetError(void);
 extern char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode);
 extern char *ePerl_PP(char *cpBuf, char **cppINC);
-
-/* eperl_sys.c */
-extern char **mysetenv(char **env, char *var, char *str, ...);
-extern void IO_redirect_stdin(FILE *fp);
-extern void IO_redirect_stdout(FILE *fp);
-extern void IO_redirect_stderr(FILE *fp);
-extern int IO_is_stdin_redirected(void);
-extern int IO_is_stdout_redirected(void);
-extern int IO_is_stderr_redirected(void);
-extern void IO_restore_stdin(void);
-extern void IO_restore_stdout(void);
-extern void IO_restore_stderr(void);
-extern char *mytmpfile(char *id);
-extern void remove_mytmpfiles(void);
-extern char *isotime(time_t *t);
-extern char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC);
-extern char *ePerl_ReadErrorFile(char *filename, char *scriptfile, char *scripturl);
-extern char *filename(char *path);
-extern char *dirname(char *path);
-extern char *abspath(char *path);
 
 /* eperl_debug.c */
 extern int fDebug;
