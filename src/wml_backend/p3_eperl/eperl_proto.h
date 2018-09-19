@@ -103,15 +103,6 @@ extern char *filename(char *path);
 extern char *dirname(char *path);
 extern char *abspath(char *path);
 
-/* eperl_http.c */
-extern char *HTTP_PrintResponseHeaders(char *cpBuf);
-extern void HTTP_StripResponseHeaders(char **cpBuf, int *nBuf);
-extern int HTTP_IsHeaderLine(char *cp1, char *cp2);
-extern int HTTP_HeadersExists(char *cpBuf);
-extern int HTTP_HeaderLineExists(char *cpBuf, char *name);
-extern char *WebTime(void);
-extern FILE *HTTP_openURLasFP(char *url);
-
 /* eperl_debug.c */
 extern int fDebug;
 extern char *cpDebugFile;
