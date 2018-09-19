@@ -117,7 +117,6 @@
  *  Sun Quality Software.  Gotta love it.
  */
 #ifdef SUNOS_LIB_PROTOTYPES
-int getopt (int, char **, char *);
 int strcasecmp (char *, char *);
 int strncasecmp (char *, char *, int);
 int toupper(int);

@@ -38,7 +38,6 @@
 #include "eperl_config.h"
 #include "eperl_global.h"
 #include "eperl_security.h"
-#include "eperl_getopt.h"
 #include "eperl_proto.h"
 
 #define _EPERL_VERSION_C_AS_HEADER_
@@ -236,29 +235,6 @@ void myexit(int rc)
     exit(rc);
 }
 
-struct option options[] = {
-    { "define",         1, NULL, 'd' },
-    { "setenv",         1, NULL, 'D' },
-    { "includedir",     1, NULL, 'I' },
-    { "block-begin",    1, NULL, 'B' },
-    { "block-end",      1, NULL, 'E' },
-    { "nocase",         0, NULL, 'n' },
-    { "keepcwd",        0, NULL, 'k' },
-    { "preprocess",     0, NULL, 'P' },
-    { "convert-entity", 0, NULL, 'C' },
-    { "line-continue",  0, NULL, 'L' },
-    { "tainting",       0, NULL, 'T' },
-    { "warnings",       0, NULL, 'w' },
-    { "debug",          0, NULL, 'x' },
-    { "mode",           1, NULL, 'm' },
-    { "outputfile",     1, NULL, 'o' },
-    { "check",          0, NULL, 'c' },
-    { "license",        0, NULL, 'l' },
-    { "version",        0, NULL, 'v' },
-    { "ingredients",    0, NULL, 'V' },
-    { "help",           0, NULL, 'h' }
-};
-
 /*
  *  main procedure
  */
@@ -324,105 +300,6 @@ int main(int argc, char **argv, char **env)
 
     /*  parse the option arguments */
     opterr = 0;
-    while ((c = getopt_long(argc, argv, ":d:D:I:B:E:nkPCLTwxm:o:crlvVh", options, NULL)) != -1) {
-        if (optarg == NULL)
-            optarg = "(null)";
-        switch (c) {
-            case 'd':
-                Perl5_RememberScalar(optarg);
-                break;
-            case 'D':
-                env = Perl5_SetEnvVar(env, optarg);
-                break;
-            case 'I':
-                RememberINC(optarg);
-                break;
-            case 'B':
-                ePerl_begin_delimiter = strdup(optarg);
-                break;
-            case 'E':
-                ePerl_end_delimiter = strdup(optarg);
-                break;
-            case 'n':
-                fNoCase = TRUE;
-                break;
-            case 'k':
-                keepcwd = TRUE;
-                break;
-            case 'P':
-                fPP = TRUE;
-                break;
-            case 'C':
-                ePerl_convert_entities = TRUE;
-                break;
-            case 'L':
-                ePerl_line_continuation = TRUE;
-                break;
-            case 'T':
-                fTaint = TRUE;
-                break;
-            case 'w':
-                fWarn = TRUE;
-                break;
-            case 'x':
-                fDebug = TRUE;
-                break;
-            case 'm':
-                if (strcasecmp(optarg, "f") == 0     ||
-                    strcasecmp(optarg, "filter") == 0  ) {
-                    mode = MODE_FILTER;
-                }
-                else if (strcasecmp(optarg, "c") == 0   ||
-                         strcasecmp(optarg, "cgi") == 0   ) {
-                    mode = MODE_CGI;
-                }
-                else if (strcasecmp(optarg, "n") == 0      ||
-                         strcasecmp(optarg, "nph") == 0    ||
-                         strcasecmp(optarg, "nphcgi") == 0 ||
-                         strcasecmp(optarg, "nph-cgi") == 0  ) {
-                    mode = MODE_NPHCGI;
-                }
-                else {
-                    PrintError(mode, "", NULL, NULL, "Unknown runtime mode `%s'", optarg);
-                    CU(EX_USAGE);
-                }
-                break;
-            case 'o':
-                outputfile = strdup(optarg);
-                break;
-            case 'c':
-                fCheck = TRUE;
-                break;
-            case 'r':
-                myexit(EX_OK);
-            case 'l':
-                myexit(EX_OK);
-            case 'v':
-                give_version();
-                myexit(EX_OK);
-            case 'V':
-                give_version_extended_perl();
-                myexit(EX_OK);
-            case 'h':
-                give_usage(progname);
-                myexit(EX_OK);
-            case '?':
-                if (isprint(optopt))
-                    fprintf(stderr, "ePerl:Error: Unknown option `-%c'.\n", optopt);
-                else
-                    fprintf(stderr, "ePerl:Error: Unknown option character `\\x%x'.\n", optopt);
-                fprintf(stderr, "Try `%s --help' for more information.\n", progname);
-                myexit(EX_USAGE);
-            case ':':
-                if (isprint(optopt))
-                    fprintf(stderr, "ePerl:Error: Missing argument for option `-%c'.\n", optopt);
-                else
-                    fprintf(stderr, "ePerl:Error: Missing argument for option character `\\x%x'.\n", optopt);
-                fprintf(stderr, "Try `%s --help' for more information.\n", progname);
-                myexit(EX_USAGE);
-        }
-    }
-
     /*
      *  determine source filename and runtime mode
      */

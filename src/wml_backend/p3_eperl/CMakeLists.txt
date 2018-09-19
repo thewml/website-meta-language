@@ -83,7 +83,6 @@ CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
 SET (SOURCES
     eperl_debug.c
-    eperl_getopt.c
     eperl_main.c
     eperl_parse.c
     eperl_perl5.c
