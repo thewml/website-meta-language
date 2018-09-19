@@ -79,9 +79,7 @@ $ENV{LANG} = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
 
-do_system( { cmd => [ 'which',      'perlcritic' ] } );
-do_system( { cmd => [ 'bash',       '-c', q{echo "$PATH"}, ] } );
-do_system( { cmd => [ 'perlcritic', '--version', ] } );
+do_system( { cmd => [ 'bash', '-c', q{echo "$PATH"}, ] } );
 if ($is_interactive)
 {
     system("bash");
@@ -91,13 +89,8 @@ else
     do_system(
         {
             cmd => [
-                'prove',
-                ( $ENV{WML_TEST_QUIET} ? () : ('-v') ),
-                glob(
-                          't'
-                        . $SEP
-                        . '{{02,03,05,06,07,08,09,10,des,std}-,build-process,tidyall}*.t'
-                ),
+                'prove', ( $ENV{WML_TEST_QUIET} ? () : ('-v') ),
+                glob("t${SEP}*.t"),
             ],
         }
     );
