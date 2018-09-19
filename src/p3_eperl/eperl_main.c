@@ -66,11 +66,11 @@ int main(int argc, char **argv, char **env)
 
     if ((fp = fopen(perlscript, "w")) == NULL) {
         fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
-        CU(-1);
+        return -1;
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
         fprintf(stderr, "Cannot write to Perl script file `%s'", perlscript);
-        CU(-1);
+        return -1;
     }
     fclose(fp); fp = NULL;
 
@@ -84,11 +84,5 @@ int main(int argc, char **argv, char **env)
     myargv[myargc++] = perlscript;
 
     rc = Perl5_Run(myargc, myargv, env);
-    if (rc != 0) {
-        CU(-1);
-    }
-
-    CUS: /* the Clean Up Sequence */
-
-    exit(rc);
+    return rc;
 }
