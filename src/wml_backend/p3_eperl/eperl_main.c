@@ -488,7 +488,6 @@ int main(int argc, char **argv, char **env)
     char *cpHost;
     char *cpPort;
     char *cpPath;
-    char *cpCGIgi;
     char *cpCGIpt;
     char *cpCGIqs;
     int fCGIqsEqualChar;
@@ -508,99 +507,6 @@ int main(int argc, char **argv, char **env)
      *  determine source filename and runtime mode
      */
 
-    if ((cpCGIgi = getenv("GATEWAY_INTERFACE")) == NULL)
-        cpCGIgi = "";
-    if ((cpCGIpt = getenv("PATH_TRANSLATED")) == NULL)
-        cpCGIpt = "";
-    if ((cpCGIqs = getenv("QUERY_STRING")) == NULL)
-        cpCGIqs = "";
-    fCGIqsEqualChar = FALSE;
-    if (cpCGIqs != NULL && strchr(cpCGIqs, '=') != NULL)
-        fCGIqsEqualChar = TRUE;
-
-    /*
-     *  Server-Side-Scripting-Language:
-     *
-     *  Request:
-     *      /url/to/nph-eperl/url/to/script.phtml[?query-string]
-     *  Environment:
-     *      GATEWAY_INTERFACE=CGI/1.1
-     *      SCRIPT_NAME=/url/to/nph-eperl
-     *      SCRIPT_FILENAME=/path/to/nph-eperl
-     *      PATH_INFO=/url/to/script.phtml
-     *      PATH_TRANSLATED=/path/to/script.phtml
-     *      a) QUERY_STRING=""
-     *         optind=argc
-     *      b) QUERY_STRING=query-string (containing "=" char)
-     *         optind=argc
-     *      c) QUERY_STRING=query-string (containing NO "=" char)
-     *         optind=argc-1
-     *         argv[optind]=query-string
-     */
-    if (   cpCGIgi[0] != NUL
-        && cpCGIpt[0] != NUL
-        && (   (   optind == argc
-                && (   cpCGIqs[0] == NUL
-                    || fCGIqsEqualChar      ) )
-            || (   optind == argc-1
-                && !fCGIqsEqualChar
-                && stringEQ(argv[optind], cpCGIqs) )      ) ) {
-
-        if (strncasecmp(cpCGIgi, "CGI/1", 5) != 0) {
-            fprintf(stderr, "ePerl:Error: Unknown gateway interface: NOT CGI/1.x\n");
-            CU(EX_IOERR);
-        }
-
-        /*  CGI/1.1 or NPH-CGI/1.1 script,
-            source in PATH_TRANSLATED. */
-        source = cpCGIpt;
-
-        /* set the command line for ``ps'' output */
-        snprintf(ca, sizeof(ca), "%s %s [%sCGI/SSSL]", argv[0], source, 0 ? "NPH-" : "");
-        ca[sizeof(ca)-1] = NUL;
-        argv[0] = strdup(ca);
-    }
-    /*
-     *  Stand-Alone inside Webserver environment:
-     *
-     *  Request:
-     *      /url/to/script.cgi[/path-info][?query-string]
-     *      [script.cgi has shebang #!/path/to/eperl]
-     *  Environment:
-     *      GATEWAY_INTERFACE=CGI/1.1
-     *      SCRIPT_NAME=/url/to/script.cgi
-     *      SCRIPT_FILENAME=/path/to/script.cgi
-     *      PATH_INFO=/path-info
-     *      PATH_TRANSLATED=/path/to/docroot/path-info
-     *      a) QUERY_STRING=""
-     *         optind=argc-1
-     *         argv[optind]=/path/to/script.cgi
-     *      b) QUERY_STRING=query-string (containing "=" char)
-     *         optind=argc-1
-     *         argv[optind]=/path/to/script.cgi
-     *      c) QUERY_STRING=query-string (containing NO "=" char)
-     *         optind=argc-2
-     *         argv[optind]=/path/to/script.cgi
-     *         argv[optind+1]=query-string
-     */
-    else if (   cpCGIgi[0] != NUL
-             && ( (   optind == argc-1
-                   && (   cpCGIqs[0] == NUL
-                       || fCGIqsEqualChar      ) ) ||
-                  (   optind == argc-2
-                   && !fCGIqsEqualChar
-                   && stringEQ(argv[optind+1], cpCGIqs)) ) ) {
-
-        if (strncasecmp(cpCGIgi, "CGI/1", 5) != 0) {
-            fprintf(stderr, "ePerl:Error: Unknown gateway interface: NOT CGI/1.x\n");
-            CU(EX_IOERR);
-        }
-
-        /*  CGI/1.1 or NPH-CGI/1.1 script,
-            source in ARGV */
-        source = argv[optind];
-
-    }
     /*
      *  Stand-Alone outside Webserver environment:
      *
@@ -616,24 +522,7 @@ int main(int argc, char **argv, char **env)
      *      optind=argc-1
      *      argv[optind]=script
      */
-    else if (   cpCGIgi[0] == NUL
-             && cpCGIpt[0] == NUL
-             && cpCGIqs[0] == NUL
-             && optind == argc-1  ) {
-
-        /*  stand-alone filter, source as argument:
-            either manually on the console or via shebang */
-        source = argv[optind];
-    }
-    /*
-     *   Any other calling environment is an error...
-     */
-    else {
-        fprintf(stderr, "ePerl:Error: Missing required file to process\n");
-        fprintf(stderr, "ePerl:Error: Use either a filename, `-' for STDIN or PATH_TRANSLATED.\n");
-        fprintf(stderr, "Try `%s --help' for more information.\n", progname);
-        exit(EX_USAGE);
-    }
+        source = argv[1];
 
     /* CGI modes imply
        - Preprocessor usage
