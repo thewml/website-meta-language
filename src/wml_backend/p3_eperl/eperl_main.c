@@ -29,24 +29,6 @@
  * **  OS Return Values
  * **
  * */
-#define EX__BASE        64      /* base value for error messages */
-#define EX_USAGE        64      /* command line usage error */
-#define EX_DATAERR      65      /* data format error */
-#define EX_NOINPUT      66      /* cannot open input */
-#define EX_NOUSER       67      /* addressee unknown */
-#define EX_NOHOST       68      /* host name unknown */
-#define EX_UNAVAILABLE  69      /* service unavailable */
-#define EX_SOFTWARE     70      /* internal software error */
-#define EX_OSERR        71      /* system error (e.g., can't fork) */
-#define EX_OSFILE       72      /* critical OS file missing */
-#define EX_CANTCREAT    73      /* can't create (user) output file */
-#define EX_IOERR        74      /* input/output error */
-#define EX_TEMPFAIL     75      /* temp failure; user is invited to retry */
-#define EX_PROTOCOL     76      /* remote error in protocol */
-#define EX_NOPERM       77      /* permission denied */
-#define EX_CONFIG       78      /* configuration error */
-#define EX__MAX         78      /* maximum listed value */
-
 /* OK and FAIL exits should ALWAYS exists */
 #ifndef EX_OK
 #define EX_OK   0
@@ -211,14 +193,14 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
        and redirect stdout to the new channel */
     if ((out = fopen(perlstdout, "w")) == NULL) {
         fprintf(stderr, "Cannot open STDOUT file `%s' for writing", perlstdout);
-        CU(mode == 0 ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? -1 : EX_OK);
     }
 
     /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
     if ((er = fopen(perlstderr, "w")) == NULL) {
         fprintf(stderr, "Cannot open STDERR file `%s' for writing", perlstderr);
-        CU(mode == 0 ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? -1 : EX_OK);
     }
 
     my_perl = perl_alloc();
@@ -311,11 +293,11 @@ int main(int argc, char **argv, char **env)
 #endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
         PrintError(mode, "", NULL, NULL, "Cannot open Perl script file `%s' for writing", perlscript);
-        CU(mode == 0 ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? -1 : EX_OK);
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
         PrintError(mode, "", NULL, NULL, "Cannot write to Perl script file `%s'", perlscript);
-        CU(mode == 0 ? EX_IOERR : EX_OK);
+        CU(mode == 0 ? -1 : EX_OK);
     }
     fclose(fp); fp = NULL;
 
@@ -325,7 +307,7 @@ int main(int argc, char **argv, char **env)
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
             PrintError(mode, "", NULL, NULL, "%s\n", "Cannot write");
-            CU(mode == 0 ? EX_IOERR : EX_OK);
+            CU(mode == 0 ? -1 : EX_OK);
         }
         if (cpScript[strlen(cpScript)-1] == '\n')
             fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
