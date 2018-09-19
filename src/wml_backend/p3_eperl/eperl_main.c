@@ -151,11 +151,6 @@ void give_readme(void)
     fprintf(stdout, "%s", ePerl_README);
 }
 
-void give_license(void)
-{
-    fprintf(stdout, "%s", ePerl_LICENSE);
-}
-
 void give_usage(char *name)
 {
     fprintf(stderr, "Usage: %s [options] [scriptfile]\n", name);
@@ -409,7 +404,6 @@ int main(int argc, char **argv, char **env)
                 give_readme();
                 myexit(EX_OK);
             case 'l':
-                give_license();
                 myexit(EX_OK);
             case 'v':
                 give_version();

@@ -44,7 +44,6 @@ extern char *allowed_caller_uid[];
 extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...);
 extern void give_version(void);
 extern void give_readme(void);
-extern void give_license(void);
 extern void give_usage(char *name);
 extern char *RememberedINC[1024];
 extern void RememberINC(char *str);
@@ -125,9 +124,6 @@ extern void Debug(char *str, ...);
 
 /* eperl_readme.c */
 extern char *ePerl_README;
-
-/* eperl_license.c */
-extern char *ePerl_LICENSE;
 
 /*_END_PROTO_*/
 
