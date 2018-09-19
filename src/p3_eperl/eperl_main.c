@@ -10,8 +10,6 @@
 #include <EXTERN.h>
 #include <perl.h>
 
-#include "eperl_perl5_sm.h"
-
 int Perl5_Run(int myargc, char **myargv, char **env)
 {
     int rc;
