@@ -152,17 +152,12 @@ int main(int argc, char **argv, char **env)
 {
     int rc;
     FILE *fp = NULL;
-    char perlscript[1024] = "";
-    char perlstderr[1024] = "";
-    char perlstdout[1024] = "";
+    char *perlscript = "ePerl.script";
     int myargc;
     char *myargv[20];
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
 
 #define mode 0
-    /* convert bristled source to valid Perl code */
-    /* write buffer to temporary script file */
-    strcpy(perlscript, "ePerl.script");
 #ifndef DEBUG_ENABLED
     unlink(perlscript);
 #endif
@@ -193,13 +188,13 @@ int main(int argc, char **argv, char **env)
     }
 
     /* temporary filename for Perl's STDOUT channel */
-    strcpy(perlstdout, "/tmp/ePerl.stdout");
+    char *perlstdout= "/tmp/ePerl.stdout";
 #ifndef DEBUG_ENABLED
     unlink(perlstdout);
 #endif
 
     /* temporary filename for Perl's STDERR channel */
-    strcpy(perlstderr, "ePerl.stderr");
+    char * perlstderr= "ePerl.stderr";
 #ifndef DEBUG_ENABLED
     unlink(perlstderr);
 #endif
