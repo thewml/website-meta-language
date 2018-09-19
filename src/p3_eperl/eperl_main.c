@@ -26,7 +26,6 @@ int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *per
     int rc;
     char *cpBuf = NULL;
     static PerlInterpreter *my_perl = NULL;
-    int size;
 
     my_perl = perl_alloc();
     perl_construct(my_perl);
