@@ -61,18 +61,6 @@ void Perl5_XSInit(pTHX)
 
 /*
 **
-**  Force Perl to use unbuffered I/O
-**
-*/
-void Perl5_ForceUnbufferedStdout(pTHX)
-{
-    dTHR;
-    IoFLAGS(GvIOp(PL_defoutgv)) |= IOf_FLUSH; /* $|=1 */
-    return;
-}
-
-/*
-**
 **  sets a Perl scalar variable
 **
 */
@@ -215,9 +203,6 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
 
     /*  Set the previously remembered Perl 5 scalars (option -d) */
     Perl5_SetRememberedScalars(aTHX);
-
-    /*  Force unbuffered I/O */
-    Perl5_ForceUnbufferedStdout(aTHX);
 
     /*  NOW IT IS TIME to evaluate/execute the script!!! */
     rc = perl_run(my_perl);
