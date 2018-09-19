@@ -88,5 +88,5 @@ INCLUDE (CPack)
 
 ENABLE_TESTING()
 
-ADD_SUBDIRECTORY( wml_backend )
+ADD_SUBDIRECTORY( p3_eperl )
 ADD_SUBDIRECTORY( wml_test )
