@@ -875,14 +875,6 @@ The identification string of the used Perl interpreter library.
 The following built-in images can be accessed via URL
 C</url/to/nph-eperl/>I<NAME>C<.gif>:
 
-=over 4
-
-=item C<powered.gif>
-
-The ``I<powered by ePerl 2.2>''  Feel free to use this on your website.
-
-=back
-
 =head1 AUTHOR
 
   Ralf S. Engelschall

@@ -78,7 +78,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
         cp = getenv("SCRIPT_NAME");
         if (cp == NULL)
             cp = "UNKNOWN_IMG_DIR";
-        printf("<a href=\"http://www.engelschall.com/sw/eperl/\"><img src=\"%s/powered.gif\" alt=\"Powered By ePerl\" align=right border=0></a>\n", cp);
         printf("<table cellspacing=0 cellpadding=0 border=0>\n");
         printf("<tr>\n");
         printf("</tr>\n");
@@ -155,14 +154,6 @@ void give_readme(void)
 void give_license(void)
 {
     fprintf(stdout, "%s", ePerl_LICENSE);
-}
-
-void give_img_powered(void)
-{
-    printf("Content-Type: image/gif\r\n\r\n");
-    if (fwrite(ePerl_POWERED_data, ePerl_POWERED_size, 1, stdout) != 1) {
-        exit(-1);
-    }
 }
 
 void give_usage(char *name)
@@ -650,14 +641,6 @@ int main(int argc, char **argv, char **env)
         ePerl_case_sensitive_delimiters = FALSE;
     else
         ePerl_case_sensitive_delimiters = TRUE;
-
-    /* the built-in GIF images */
-    if ((mode == MODE_CGI || mode == MODE_NPHCGI) && (cp = getenv("PATH_INFO")) != NULL) {
-        if (stringEQ(cp, "/powered.gif")) {
-            give_img_powered();
-            myexit(0);
-        }
-    }
 
     /* CGI modes imply
        - Preprocessor usage

@@ -89,7 +89,6 @@ SET (SOURCES
     eperl_main.c
     eperl_parse.c
     eperl_perl5.c
-    eperl_powered.c
     eperl_pp.c
     eperl_readme.c
     eperl_sys.c
