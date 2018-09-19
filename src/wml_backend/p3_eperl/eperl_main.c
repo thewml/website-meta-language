@@ -1,4 +1,131 @@
-#include "eperl_config.h"
+/*
+ * **
+ * **  Headers from GNU autoconf
+ * **
+ * */
+#include "config_sc.h"
+
+
+/*
+ * **
+ * **  Headers from the Unix system
+ * **
+ * */
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <time.h>
+#include <signal.h>
+#include <pwd.h>
+#include <grp.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/param.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+
+/*
+ * **
+ * **  Missing Prototypes.
+ * **  They are needed to get a clean compile with gcc -Wall.
+ * **
+ * */
+
+/*
+ * **
+ * **  OS Return Values
+ * **
+ * */
+#define EX__BASE        64      /* base value for error messages */
+#define EX_USAGE        64      /* command line usage error */
+#define EX_DATAERR      65      /* data format error */
+#define EX_NOINPUT      66      /* cannot open input */
+#define EX_NOUSER       67      /* addressee unknown */
+#define EX_NOHOST       68      /* host name unknown */
+#define EX_UNAVAILABLE  69      /* service unavailable */
+#define EX_SOFTWARE     70      /* internal software error */
+#define EX_OSERR        71      /* system error (e.g., can't fork) */
+#define EX_OSFILE       72      /* critical OS file missing */
+#define EX_CANTCREAT    73      /* can't create (user) output file */
+#define EX_IOERR        74      /* input/output error */
+#define EX_TEMPFAIL     75      /* temp failure; user is invited to retry */
+#define EX_PROTOCOL     76      /* remote error in protocol */
+#define EX_NOPERM       77      /* permission denied */
+#define EX_CONFIG       78      /* configuration error */
+#define EX__MAX         78      /* maximum listed value */
+
+/* OK and FAIL exits should ALWAYS exists */
+#ifndef EX_OK
+#define EX_OK   0
+#endif
+#ifndef EX_FAIL
+#define EX_FAIL 1
+#endif
+
+
+/*
+ * **
+ * **  ASCII Control Codes
+ * **
+ * */
+#define ASC_NUL '\x00'
+#define ASC_SOH '\x01'
+#define ASC_STX '\x02'
+#define ASC_ETX '\x03'
+#define ASC_EOT '\x04'
+#define ASC_ENQ '\x05'
+#define ASC_ACK '\x06'
+#define ASC_BEL '\x07'
+#define ASC_BS  '\x08'
+#define ASC_HT  '\x09'
+#define ASC_LF  '\x0a'
+#define ASC_VT  '\x0b'
+#define ASC_FF  '\x0c'
+#define ASC_CR  '\x0d'
+#define ASC_SO  '\x0e'
+#define ASC_SI  '\x0f'
+#define ASC_DLE '\x10'
+#define ASC_DC1 '\x11'
+#define ASC_DC2 '\x12'
+#define ASC_DC3 '\x13'
+#define ASC_DC4 '\x14'
+#define ASC_NAK '\x15'
+#define ASC_SYN '\x16'
+#define ASC_ETB '\x17'
+#define ASC_CAN '\x18'
+#define ASC_EM  '\x19'
+#define ASC_SUB '\x1a'
+#define ASC_ESC '\x1b'
+#define ASC_FS  '\x1c'
+#define ASC_GS  '\x1d'
+#define ASC_RS  '\x1e'
+#define ASC_US  '\x1f'
+#define ASC_SP  '\x20'
+#define ASC_DEL '\x7f'
+#define NUL ASC_NUL
+
+#define ASC_QUOTE '\x22'
+#define ASC_NL    ASC_LF
+#define NL        ASC_NL
+
+
+/*
+ * **
+ * **  Boolean Values -- defined in a general and portable way
+ * **
+ * */
+/* typedef enum { false = FALSE, true = TRUE } bool; */
+#undef  TRUE
+#define TRUE  (0 || !(0))
+#undef  FALSE
+#define FALSE (!(TRUE))
+
+
 /*
 **
 **  CU() -- CleanUp Makro (implemented in a safety way)
@@ -90,7 +217,7 @@ void Perl5_SetRememberedScalars(pTHX)
 
     for (i = 0; Perl5_RememberedScalars[i] != NULL; i++) {
         strncpy(ca, Perl5_RememberedScalars[i], 1023);
-        ca[1023] = NUL;
+        ca[1023] = 0;
         cp = strchr(ca, '=');
         if (cp != NULL)
             *cp++ = '\0';
@@ -253,7 +380,133 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
 
 #include <errno.h>
 
-#include "eperl_config.h"
+/*
+**
+**  Headers from GNU autoconf
+**
+*/
+#include "config_sc.h"
+
+
+/*
+**
+**  Headers from the Unix system
+**
+*/
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <time.h>
+#include <signal.h>
+#include <pwd.h>
+#include <grp.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/param.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+
+/*
+**
+**  Missing Prototypes.
+**  They are needed to get a clean compile with gcc -Wall.
+**
+*/
+
+/*
+**
+**  OS Return Values
+**
+*/
+#define EX__BASE        64      /* base value for error messages */
+#define EX_USAGE        64      /* command line usage error */
+#define EX_DATAERR      65      /* data format error */
+#define EX_NOINPUT      66      /* cannot open input */
+#define EX_NOUSER       67      /* addressee unknown */
+#define EX_NOHOST       68      /* host name unknown */
+#define EX_UNAVAILABLE  69      /* service unavailable */
+#define EX_SOFTWARE     70      /* internal software error */
+#define EX_OSERR        71      /* system error (e.g., can't fork) */
+#define EX_OSFILE       72      /* critical OS file missing */
+#define EX_CANTCREAT    73      /* can't create (user) output file */
+#define EX_IOERR        74      /* input/output error */
+#define EX_TEMPFAIL     75      /* temp failure; user is invited to retry */
+#define EX_PROTOCOL     76      /* remote error in protocol */
+#define EX_NOPERM       77      /* permission denied */
+#define EX_CONFIG       78      /* configuration error */
+#define EX__MAX         78      /* maximum listed value */
+
+/* OK and FAIL exits should ALWAYS exists */
+#ifndef EX_OK
+#define EX_OK   0
+#endif
+#ifndef EX_FAIL
+#define EX_FAIL 1
+#endif
+
+
+/*
+**
+**  ASCII Control Codes
+**
+*/
+#define ASC_NUL '\x00'
+#define ASC_SOH '\x01'
+#define ASC_STX '\x02'
+#define ASC_ETX '\x03'
+#define ASC_EOT '\x04'
+#define ASC_ENQ '\x05'
+#define ASC_ACK '\x06'
+#define ASC_BEL '\x07'
+#define ASC_BS  '\x08'
+#define ASC_HT  '\x09'
+#define ASC_LF  '\x0a'
+#define ASC_VT  '\x0b'
+#define ASC_FF  '\x0c'
+#define ASC_CR  '\x0d'
+#define ASC_SO  '\x0e'
+#define ASC_SI  '\x0f'
+#define ASC_DLE '\x10'
+#define ASC_DC1 '\x11'
+#define ASC_DC2 '\x12'
+#define ASC_DC3 '\x13'
+#define ASC_DC4 '\x14'
+#define ASC_NAK '\x15'
+#define ASC_SYN '\x16'
+#define ASC_ETB '\x17'
+#define ASC_CAN '\x18'
+#define ASC_EM  '\x19'
+#define ASC_SUB '\x1a'
+#define ASC_ESC '\x1b'
+#define ASC_FS  '\x1c'
+#define ASC_GS  '\x1d'
+#define ASC_RS  '\x1e'
+#define ASC_US  '\x1f'
+#define ASC_SP  '\x20'
+#define ASC_DEL '\x7f'
+#define NUL ASC_NUL
+
+#define ASC_QUOTE '\x22'
+#define ASC_NL    ASC_LF
+#define NL        ASC_NL
+
+
+/*
+**
+**  Boolean Values -- defined in a general and portable way
+**
+*/
+/* typedef enum { false = FALSE, true = TRUE } bool; */
+#undef  TRUE
+#define TRUE  (0 || !(0))
+#undef  FALSE
+#define FALSE (!(TRUE))
+
 extern int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char *source, char **env, char *perlscript, char *perlstderr, char *perlstdout);
 extern void Perl5_RememberScalar(char *str);
 
