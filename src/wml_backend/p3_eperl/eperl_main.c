@@ -257,19 +257,6 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     return;
 }
 
-char *RememberedINC[1024] = { NULL };
-
-void RememberINC(char *str)
-{
-    int i;
-
-    for (i = 0; RememberedINC[i] != NULL; i++)
-        ;
-    RememberedINC[i++] = strdup(str);
-    RememberedINC[i++] = NULL;
-    return;
-}
-
 /*
  *  main procedure
  */
@@ -333,11 +320,6 @@ int main(int argc, char **argv, char **env)
     myargc = 0;
     /*  - program name and possible -T -w options */
     myargv[myargc++] = argv[0];
-    /*  - previously remembered Perl 5 INC entries (option -I) */
-    for (int i = 0; RememberedINC[i] != NULL; i++) {
-        myargv[myargc++] = "-I";
-        myargv[myargc++] = RememberedINC[i];
-    }
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
 
