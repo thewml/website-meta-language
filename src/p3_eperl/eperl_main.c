@@ -25,32 +25,6 @@
 
 
 /*
- * **
- * **  OS Return Values
- * **
- * */
-/* OK and FAIL exits should ALWAYS exists */
-#ifndef EX_OK
-#define EX_OK   0
-#endif
-#ifndef EX_FAIL
-#define EX_FAIL 1
-#endif
-
-
-/*
- * **
- * **  Boolean Values -- defined in a general and portable way
- * **
- * */
-/* typedef enum { false = FALSE, true = TRUE } bool; */
-#undef  TRUE
-#define TRUE  (0 || !(0))
-#undef  FALSE
-#define FALSE (!(TRUE))
-
-
-/*
 **
 **  CU() -- CleanUp Makro (implemented in a safety way)
 **
@@ -91,14 +65,14 @@ int Perl5_Run(int myargc, char **myargv, int mode, char *source, char **env, cha
        and redirect stdout to the new channel */
     if ((out = fopen(perlstdout, "w")) == NULL) {
         fprintf(stderr, "Cannot open STDOUT file `%s' for writing", perlstdout);
-        CU(mode == 0 ? -1 : EX_OK);
+        CU(mode == 0 ? -1 : 0);
     }
 
     /* open a file for Perl's STDERR channel
        and redirect stderr to the new channel */
     if ((er = fopen(perlstderr, "w")) == NULL) {
         fprintf(stderr, "Cannot open STDERR file `%s' for writing", perlstderr);
-        CU(mode == 0 ? -1 : EX_OK);
+        CU(mode == 0 ? -1 : 0);
     }
 
     my_perl = perl_alloc();
@@ -163,11 +137,11 @@ int main(int argc, char **argv, char **env)
 #endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
         fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
-        CU(mode == 0 ? -1 : EX_OK);
+        CU(mode == 0 ? -1 : 0);
     }
     if (fwrite(cpScript, strlen(cpScript), 1, fp) != 1) {
         fprintf(stderr, "Cannot write to Perl script file `%s'", perlscript);
-        CU(mode == 0 ? -1 : EX_OK);
+        CU(mode == 0 ? -1 : 0);
     }
     fclose(fp); fp = NULL;
 
@@ -177,7 +151,7 @@ int main(int argc, char **argv, char **env)
         if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
         {
             fprintf(stderr, "%s\n", "Cannot write");
-            CU(mode == 0 ? -1 : EX_OK);
+            CU(mode == 0 ? -1 : 0);
         }
         if (cpScript[strlen(cpScript)-1] == '\n')
             fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
@@ -209,7 +183,7 @@ int main(int argc, char **argv, char **env)
     rc = Perl5_Run(myargc, myargv, mode, "", env, perlstderr, perlstdout);
     if (rc != 0) {
         if (rc == -1)
-            CU(EX_OK);
+            CU(0);
         CU(-1);
     }
 
