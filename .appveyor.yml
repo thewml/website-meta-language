@@ -15,7 +15,7 @@ install:
     - 'call .appveyor.cmd perl_setup'
     - '%perl% -V'
     - echo %PATH%
-    - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -s http://cygwin.mirror.constant.com -P cmake -P gcc -P g++ -P glibc-devel -P libdb-devel -P libcrypt-devel -P libncurses-devel -P libgd-devel -P libgdbm-devel -P libpcre-devel -P lynx -P perl -P perl-CPAN -P perl-GD -P perl-devel
+    - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -s http://cygwin.mirror.constant.com -P cmake -P gcc -P g++ -P glibc-devel -P libdb-devel -P libcrypt-devel -P libgdbm-devel -P perl -P perl-CPAN -P perl-devel
     - "%cpanm% -n Getopt::Long Path::Tiny"
 build: off
 test_script:
