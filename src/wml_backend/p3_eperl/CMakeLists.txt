@@ -3,11 +3,6 @@ IF (NOT PERL_FOUND)
     MESSAGE ( FATAL_ERROR "perl must be installed")
 ENDIF(NOT PERL_FOUND)
 
-SET(PATH_PERL ${PERL_EXECUTABLE})
-SET(perl_prog ${PERL_EXECUTABLE})
-# TODO - this is just to get it working - change to something more meaningful
-SET(prefix "/usr")
-
 MACRO(GET_PERL_CONFIG cfg)
     EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
         "-e" "use Config; print \$Config{${cfg}}"
@@ -19,23 +14,6 @@ SET (PERL_CONFIGS archlib libs usedl ccflags optimize ccdlflags ldflags)
 FOREACH (cfg ${PERL_CONFIGS})
     GET_PERL_CONFIG(${cfg})
 ENDFOREACH(cfg)
-
-EXECUTE_PROCESS(COMMAND ${PERL_EXECUTABLE}
-    "-e" "printf '%.3f',\$]"
-    OUTPUT_VARIABLE perl_vers
-)
-
-IF(perl_usedl STREQUAL "define")
-    # Workaround for perl-5.10.0
-    IF (perl_vers LESS 5.010)
-        SET (perl_dla "${perl_archlib}/auto/DynaLoader/DynaLoader.a")
-    ELSE(perl_vers LESS 5.010)
-        SET (perl_dla "")
-    ENDIF(perl_vers LESS 5.010)
-    SET (HAVE_PERL_DYNALOADER 1)
-ELSE(perl_usedl STREQUAL "define")
-    SET (perl_dla "")
-ENDIF(perl_usedl STREQUAL "define")
 
 EXECUTE_PROCESS(COMMAND "whoami"
     OUTPUT_VARIABLE build_user
@@ -65,7 +43,7 @@ SET(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/eperl_perl5_sm.pl")
 SET(HEADER "${CMAKE_CURRENT_BINARY_DIR}/eperl_perl5_sm.h")
 ADD_CUSTOM_COMMAND(
     OUTPUT ${HEADER}
-    COMMAND ${PATH_PERL}
+    COMMAND ${PERL_EXECUTABLE}
     ARGS "${SCRIPT}" "-o" "${HEADER}"
     DEPENDS ${SCRIPT}
     VERBATIM
@@ -85,7 +63,7 @@ SET_TARGET_PROPERTIES(${EXE}
 )
 
 TARGET_LINK_LIBRARIES(${EXE}
-    ${perl_dla} -lperl ${perl_libs}
+    -lperl ${perl_libs}
 )
 
 SET_TARGET_PROPERTIES(${EXE}
