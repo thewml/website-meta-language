@@ -24,7 +24,7 @@
 int Perl5_Run(int myargc, char **myargv, char **env, char *perlstderr, char *perlstdout)
 {
     int rc;
-    static PerlInterpreter *my_perl = NULL;
+    PerlInterpreter *my_perl = NULL;
 
     my_perl = perl_alloc();
     perl_construct(my_perl);
@@ -64,9 +64,6 @@ int main(int argc, char **argv, char **env)
     char *myargv[20];
     char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
 
-#ifndef DEBUG_ENABLED
-    unlink(perlscript);
-#endif
     if ((fp = fopen(perlscript, "w")) == NULL) {
         fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
         CU(-1);
@@ -81,15 +78,9 @@ int main(int argc, char **argv, char **env)
 
     /* temporary filename for Perl's STDOUT channel */
     char *perlstdout= "/tmp/ePerl.stdout";
-#ifndef DEBUG_ENABLED
-    unlink(perlstdout);
-#endif
 
     /* temporary filename for Perl's STDERR channel */
     char * perlstderr= "ePerl.stderr";
-#ifndef DEBUG_ENABLED
-    unlink(perlstderr);
-#endif
 
     /*  create command line...  */
     myargc = 0;
@@ -105,11 +96,5 @@ int main(int argc, char **argv, char **env)
 
     CUS: /* the Clean Up Sequence */
 
-    /* close all still open file handles */
-    if (fp)
-        fclose(fp);
-
     exit(rc);
 }
-
-/*EOF*/
