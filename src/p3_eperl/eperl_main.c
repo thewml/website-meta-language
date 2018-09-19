@@ -77,21 +77,7 @@ int main(int argc, char **argv, char **env)
     }
     fclose(fp); fp = NULL;
 
-    if (1) {
-        fp = stderr;
-        fprintf(fp, "----internally created Perl script-----------------------------------\n");
-        if (fwrite(cpScript, strlen(cpScript)-1, 1, fp) != 1)
-        {
-            fprintf(stderr, "%s\n", "Cannot write");
-            CU(-1);
-        }
-        if (cpScript[strlen(cpScript)-1] == '\n')
-            fprintf(fp, "%c", cpScript[strlen(cpScript)-1]);
-        else
-            fprintf(fp, "%c\n", cpScript[strlen(cpScript)-1]);
-        fprintf(fp, "----internally created Perl script-----------------------------------\n");
-        fp = NULL;
-    }
+    fprintf(stderr, "----internally created Perl script-----------------------------------\n%s\n--end--\n", cpScript);
 
     /* temporary filename for Perl's STDOUT channel */
     char *perlstdout= "/tmp/ePerl.stdout";
