@@ -68,40 +68,6 @@
 #include <EXTERN.h>
 #include <perl.h>
 
-#ifndef dTHR
-#  ifdef WIN32
-#       define dTHR extern int Perl___notused
-#  else
-#       define dTHR extern int errno
-#  endif
-#endif
-
-#ifndef aTHX
-#  define aTHX
-#  define aTHX_
-#  define pTHX void
-#  define pTHX_
-#endif
-
-/*  define the I/O type string for verbosity */
-#ifdef USE_PERLIO
-#  ifdef USE_SFIO
-#    define PERL_IO_LAYER_ID "PerlIO/SfIO"
-#  else
-#    define PERL_IO_LAYER_ID "PerlIO/StdIO"
-#  endif
-#else
-#  define PERL_IO_LAYER_ID "Raw/StdIO"
-#endif
-
-#if (PERL_VERSION < 4) || ((PERL_VERSION == 4) && (PERL_SUBVERSION <= 5))
-#  define PL_curstash curstash
-#endif
-
-#if !defined(WITH_THR) && (PERL_VERSION < 16)
-#  define PL_defoutgv defoutgv
-#endif
-
 /*
  *   Initialization of locales when building a new Perl interpreter.
  *        Perl 5.003 calls perl_init_i18nl14n
