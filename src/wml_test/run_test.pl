@@ -24,6 +24,7 @@ my $SEP = $IS_WIN ? "\\" : '/';
 my $P    = $IS_WIN ? ';'     : ':';
 my $MAKE = $IS_WIN ? 'gmake' : 'make';
 
+$MAKE .= ' VERBOSE=1';
 my $cmake_gen;
 if ($IS_WIN)
 {
