@@ -10,13 +10,11 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use strict;
 use warnings;
 
-use lib "@INSTALLPRIVLIB@";
-use lib "@INSTALLARCHLIB@";
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
 
 use TheWML::Backends::Fixup::Main ();
 TheWML::Backends::Fixup::Main->new( argv => \@ARGV )->main;
-
-exit(0);
 
 ##EOF##
 __END__

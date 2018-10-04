@@ -13,7 +13,7 @@ use warnings;
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
-require TheWML::Backends::IPP::Main;
+use TheWML::Backends::IPP::Main ();
 
 TheWML::Backends::IPP::Main->new( argv => \@ARGV )->main;
 
