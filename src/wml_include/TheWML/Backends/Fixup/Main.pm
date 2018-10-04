@@ -419,4 +419,29 @@ sub verbose
     }
     return;
 }
+
+sub run
+{
+    my ( $self, $opt_S, $opt_F ) = @_;
+
+    my %skips = ( map { $_ => 1 } split( ',', $opt_S ) );
+FIXUP:
+    foreach my $m ( split( ',', $opt_F ) )
+    {
+        if ( exists $skips{$m} )
+        {
+            next FIXUP;
+        }
+        if ( $m =~ /[^a-z]/ )
+        {
+            die "invalid chars in identifier '$m'!";
+        }
+        my $fixup = '_fixup_' . $m;
+        if ( my $ref = $self->can($fixup) )
+        {
+            $ref->($self);
+        }
+    }
+}
+
 1;
