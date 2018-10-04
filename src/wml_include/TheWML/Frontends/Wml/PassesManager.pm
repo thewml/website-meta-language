@@ -267,6 +267,12 @@ sub pass8
             opt      => $opt,
             from     => $from,
             to       => $to,
+            cb       => sub {
+                require TheWML::Backends::HtmlStrip::Main;
+
+                return TheWML::Backends::HtmlStrip::Main->new( argv => [@_] )
+                    ->main;
+            },
         }
     );
 }
