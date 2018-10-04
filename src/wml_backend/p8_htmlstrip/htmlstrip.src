@@ -22,6 +22,9 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            opt_O
+            opt_b
+            opt_o
             opt_v
             )
     },
@@ -42,27 +45,26 @@ sub usage
     die;
 }
 
-use vars (qw( $opt_o $opt_O $opt_b ));
 our $self = TheWML::Backends::HtmlStrip::Main->new;
 $self->opt_v(0);
-$opt_o                       = '-';
-$opt_O                       = 2;
-$opt_b                       = 16384;
+$self->opt_o('-');
+$self->opt_O(2);
+$self->opt_b(16384);
 $Getopt::Long::bundling      = 1;
 $Getopt::Long::getopt_compat = 0;
 if (
     not Getopt::Long::GetOptions(
         "v|verbose"      => sub { my ( undef, $v ) = @_; $self->opt_v($v); },
-        "O|optimize=i"   => \$opt_O,
-        "b|blocksize=i"  => \$opt_b,
-        "o|outputfile=s" => \$opt_o,
+        "O|optimize=i"   => sub { my ( undef, $v ) = @_; $self->opt_O($v); },
+        "b|blocksize=i"  => sub { my ( undef, $v ) = @_; $self->opt_b($v); },
+        "o|outputfile=s" => sub { my ( undef, $v ) = @_; $self->opt_o($v); },
     )
     )
 {
     usage();
 }
-$opt_b = 32766 if $opt_b > 32766;
-$opt_b = 1024 if $opt_b > 0 and $opt_b < 1024;
+$self->opt_b(32766) if $self->opt_b > 32766;
+$self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
 sub verbose
 {
@@ -141,17 +143,17 @@ sub _strip_plain_text
     my ($buf) = @_;
 
     #   Level 0
-    #if ($opt_O >= 0) {
+    #if ($self->opt_O >= 0) {
     #}
     #   Level 1
-    if ( $opt_O >= 1 )
+    if ( $self->opt_O >= 1 )
     {
         #   strip empty lines
         $buf =~ s|\n\s*\n|\n|sg;
     }
 
     #   Level 2
-    if ( $opt_O >= 2 )
+    if ( $self->opt_O >= 2 )
     {
         #   strip multiple whitespaces to single one
         $buf =~ s|(\S+)[ \t]{2,}|$1 |sg;
@@ -161,14 +163,14 @@ sub _strip_plain_text
     }
 
     #   Level 3
-    if ( $opt_O >= 3 )
+    if ( $self->opt_O >= 3 )
     {
         #   strip leading whitespaces
         $buf =~ s|\n\s+|\n|sg;
     }
 
     #   Level 4
-    if ( $opt_O >= 4 )
+    if ( $self->opt_O >= 4 )
     {
         #   strip empty lines again
         $buf =~ s|^\s*$||mg;
@@ -176,7 +178,7 @@ sub _strip_plain_text
     }
 
     #   Level 5
-    if ( $opt_O >= 5 )
+    if ( $self->opt_O >= 5 )
     {
         #   concatenate all lines
         $buf =~ s|\n| |sg;
@@ -211,13 +213,13 @@ sub _strip_html_tag
     my ($buf) = @_;
 
     #   Level 0
-    #if ($opt_O >= 0) {
+    #if ($self->opt_O >= 0) {
     #}
     #   Level 1
-    #if ($opt_O >= 1) {
+    #if ($self->opt_O >= 1) {
     #}
     #   Level 2
-    if ( $opt_O >= 2 )
+    if ( $self->opt_O >= 2 )
     {
         #   strip multiple whitespaces to single one
         $buf =~ s|(\S+)[ \t]{2,}|$1 |mg;
@@ -233,10 +235,10 @@ sub _strip_html_tag
     }
 
     #   Level 3
-    #if ($opt_O >= 3) {
+    #if ($self->opt_O >= 3) {
     #}
     #   Level 4
-    if ( $opt_O >= 4 )
+    if ( $self->opt_O >= 4 )
     {
         #   strip HTML comments
         $buf =~ s|<!--.+?-->||sg;
@@ -246,7 +248,7 @@ sub _strip_html_tag
     }
 
     #   Level 5
-    #if ($opt_O >= 5) {
+    #if ($self->opt_O >= 5) {
     #}
 
     return $buf;
@@ -259,26 +261,26 @@ sub _strip_preformatted
     my ($buf) = @_;
 
     #   Level 0
-    #if ($opt_O >= 0) {
+    #if ($self->opt_O >= 0) {
     #}
     #   Level 1
-    #if ($opt_O >= 1) {
+    #if ($self->opt_O >= 1) {
     #}
     #   Level 2
-    if ( $opt_O >= 2 )
+    if ( $self->opt_O >= 2 )
     {
         #   strip trailing whitespaces on non-empty lines
         $buf =~ s|\S\K[ \t]+\n|\n|sg;
     }
 
     #   Level 3
-    #if ($opt_O >= 3) {
+    #if ($self->opt_O >= 3) {
     #}
     #   Level 4
-    #if ($opt_O >= 4) {
+    #if ($self->opt_O >= 4) {
     #}
     #   Level 5
-    #if ($opt_O >= 5) {
+    #if ($self->opt_O >= 5) {
     #}
 
     return $buf;
@@ -315,12 +317,14 @@ sub _strip_non_preformatted
 #   be changed by the -b flag.
 
 verbose("Main processing");
-my $chunksize = $opt_b;
+my $chunksize = $self->opt_b;
 my $loc       = 0;
 do
 {
     my $NEXT = '';
-    if ( $chunksize > 0 && $chunksize < 32767 && length($INPUT) > $chunksize )
+    if (   $chunksize > 0
+        && $chunksize < 32767
+        && length($INPUT) > $chunksize )
     {
         ( $INPUT, $NEXT ) = ( $INPUT =~ m|^(.{$chunksize})(.*)$|s );
     }
@@ -368,7 +372,7 @@ do
             else
             {
                 $INPUT = $curtag . $epilog . $NEXT;
-                $chunksize += $opt_b;
+                $chunksize += $self->opt_b;
                 last;
             }
 
@@ -396,11 +400,11 @@ do
             {
                 if ( length($INPUT) < $chunksize )
                 {
-                    $chunksize = $opt_b;
+                    $chunksize = $self->opt_b;
                 }
                 else
                 {
-                    $chunksize += $opt_b;
+                    $chunksize += $self->opt_b;
                 }
                 $INPUT .= $NEXT;
             }
@@ -428,7 +432,7 @@ verbose("Fix <suck> special command");
 $OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
 $OUTPUT =~ s|^\n||s;
 
-TheWML::Backends->out( $opt_o, \&error, [$OUTPUT] );
+TheWML::Backends->out( $self->opt_o, \&error, [$OUTPUT] );
 
 ##EOF##
 __END__
