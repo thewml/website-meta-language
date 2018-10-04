@@ -123,13 +123,12 @@ BEGIN { $bytes = 0; }
 sub ProcessImgTag
 {
     my ($attr) = @_;
-    my ( $image,  $width,   $height, $scale );
     my ( $Nwidth, $Nheight, $Pwidth, $Pheight );
 
     if (   $attr =~ m|SRC\s*=\s*"([^"]*)"|is
         or $attr =~ m|SRC\s*=\s*(\S+)|is )
     {
-        $image = $1;
+        my $image = $1;
 
         if (
             my (
@@ -143,9 +142,9 @@ sub ProcessImgTag
             $bytes += $size;
 
             #   add WIDTH and HEIGHT to speed up display
-            $width  = -1;
-            $height = -1;
-            $scale  = 1;
+            my $width  = -1;
+            my $height = -1;
+            my $scale  = 1;
             if (   $attr =~ m/WIDTH\s*=\s*([0-9%]+|\*)/is
                 or $attr =~ m/WIDTH\s*=\s*"([0-9%]+|\*)"/is )
             {
@@ -180,28 +179,20 @@ sub ProcessImgTag
                     if (    ( not( $width eq '*' or $width == -1 ) )
                         and ( $height eq '*' or $height == -1 ) )
                     {
-                        if ( $width == $Pwidth )
-                        {
-                            $Nheight = $Pheight;
-                        }
-                        else
-                        {
-                            $Nheight = int( ( $Pheight / $Pwidth ) * $width );
-                        }
+                        $Nheight =
+                            ( $width == $Pwidth )
+                            ? $Pheight
+                            : int( ( $Pheight / $Pwidth ) * $width );
                     }
 
                     #   height given, width needs completed
                     elsif ( ( not( $height eq '*' or $height == -1 ) )
                         and ( $width eq '*' or $width == -1 ) )
                     {
-                        if ( $height == $Pheight )
-                        {
-                            $Nwidth = $Pwidth;
-                        }
-                        else
-                        {
-                            $Nwidth = int( ( $Pwidth / $Pheight ) * $height );
-                        }
+                        $Nwidth =
+                            ( $height == $Pheight )
+                            ? $Pwidth
+                            : int( ( $Pwidth / $Pheight ) * $height );
                     }
 
                     #   both width and height needs completed
