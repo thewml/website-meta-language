@@ -15,6 +15,18 @@ use lib '@INSTALLARCHLIB@';
 
 use Getopt::Long 2.13;
 
+package TheWML::Backends::HtmlStrip::Main;
+
+use Class::XSAccessor (
+    constructor => 'new',
+    accessors   => +{
+        map { $_ => $_ }
+            qw(
+            opt_v
+            )
+    },
+);
+
 #
 #   process command line
 #
@@ -27,11 +39,12 @@ sub usage
         "  -o, --outputfile=<file>   set output file instead of stdout\n";
     print STDERR "  -O, --optimize=<level>    set optimization/crunch level\n";
     print STDERR "  -v, --verbose             verbose mode\n";
-    exit(1);
+    die;
 }
 
-use vars (qw( $opt_v $opt_o $opt_O $opt_b ));
-$opt_v                       = 0;
+use vars (qw( $opt_o $opt_O $opt_b ));
+our $self = TheWML::Backends::HtmlStrip::Main->new;
+$self->opt_v(0);
 $opt_o                       = '-';
 $opt_O                       = 2;
 $opt_b                       = 16384;
@@ -39,7 +52,7 @@ $Getopt::Long::bundling      = 1;
 $Getopt::Long::getopt_compat = 0;
 if (
     not Getopt::Long::GetOptions(
-        "v|verbose"      => \$opt_v,
+        "v|verbose"      => sub { my ( undef, $v ) = @_; $self->opt_v($v); },
         "O|optimize=i"   => \$opt_O,
         "b|blocksize=i"  => \$opt_b,
         "o|outputfile=s" => \$opt_o,
@@ -54,7 +67,7 @@ $opt_b = 1024 if $opt_b > 0 and $opt_b < 1024;
 sub verbose
 {
     my ($str) = @_;
-    if ($opt_v)
+    if ( $self->opt_v )
     {
         print STDERR "** HTMLstrip:Verbose: $str\n";
     }
@@ -63,8 +76,7 @@ sub verbose
 sub error
 {
     my ($str) = @_;
-    print STDERR "** HTMLstrip:Error: $str\n";
-    exit(1);
+    die "** HTMLstrip:Error: $str\n";
 }
 
 #
@@ -417,8 +429,6 @@ $OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
 $OUTPUT =~ s|^\n||s;
 
 TheWML::Backends->out( $opt_o, \&error, [$OUTPUT] );
-
-exit(0);
 
 ##EOF##
 __END__
