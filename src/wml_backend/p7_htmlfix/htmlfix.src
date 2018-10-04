@@ -95,7 +95,11 @@ if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
 #
 #   process all required fixups
 #
-my $obj = TheWML::Backends::Fixup::Main->new( opt_v=>$opt_v, bytes => 0, _buffer => \$buffer );
+my $obj = TheWML::Backends::Fixup::Main->new(
+    opt_v   => $opt_v,
+    bytes   => 0,
+    _buffer => \$buffer
+);
 my %skips = ( map { $_ => 1 } split( ',', $opt_S ) );
 FIXUP:
 foreach my $m ( split( ',', $opt_F ) )
