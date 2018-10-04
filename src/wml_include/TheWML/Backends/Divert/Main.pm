@@ -1,4 +1,4 @@
-package TheWML::Backends::Divert;
+package TheWML::Backends::Divert::Main;
 
 ##
 ##  divert -- Diversion Filter

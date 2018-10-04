@@ -121,8 +121,8 @@ INSTALL (
 )
 
 INSTALL (
-    FILES "TheWML/Backends/Divert.pm"
-    DESTINATION "${WML_LIB_DIR}/TheWML/Backends"
+    FILES "TheWML/Backends/Divert/Main.pm"
+    DESTINATION "${WML_LIB_DIR}/TheWML/Backends/Divert"
 )
 
 INSTALL (

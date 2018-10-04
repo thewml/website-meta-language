@@ -15,9 +15,9 @@ use lib '@INSTALLARCHLIB@';
 #
 #   create output file
 #
-use TheWML::Backends::Divert ();
+use TheWML::Backends::Divert::Main ();
 
-TheWML::Backends::Divert->new( argv => \@ARGV )->main;
+TheWML::Backends::Divert::Main->new( argv => \@ARGV )->main;
 
 ##EOF##
 __END__
