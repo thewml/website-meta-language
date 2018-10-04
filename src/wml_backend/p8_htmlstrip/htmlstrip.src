@@ -68,7 +68,7 @@ $self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
 sub verbose
 {
-    my ($str) = @_;
+    my ( $self, $str ) = @_;
     if ( $self->opt_v )
     {
         print STDERR "** HTMLstrip:Verbose: $str\n";
@@ -92,7 +92,7 @@ my $INPUT = TheWML::Backends->input( \@ARGV, \&error, \&usage );
 #   global initial stripping
 #
 
-verbose("Strip sharp-like comments");
+$self->verbose("Strip sharp-like comments");
 
 #   strip sharp-like comments
 #$INPUT =~ s|^\s*#.*$||mg;
@@ -140,7 +140,7 @@ sub _nexttoken
 #   preformatted area and outside any HTML tag.
 sub _strip_plain_text
 {
-    my ($buf) = @_;
+    my ( $self, $buf ) = @_;
 
     #   Level 0
     #if ($self->opt_O >= 0) {
@@ -210,7 +210,7 @@ sub _strip_plain_text
 #   preformatted area but inside a HTML tag.
 sub _strip_html_tag
 {
-    my ($buf) = @_;
+    my ( $self, $buf ) = @_;
 
     #   Level 0
     #if ($self->opt_O >= 0) {
@@ -258,7 +258,7 @@ sub _strip_html_tag
 #   <pre>, <xmp> and <nostrip> container tags.
 sub _strip_preformatted
 {
-    my ($buf) = @_;
+    my ( $self, $buf ) = @_;
 
     #   Level 0
     #if ($self->opt_O >= 0) {
@@ -299,15 +299,15 @@ my $OUTPUT = '';
 
 sub _strip_non_preformatted
 {
-    my ($I) = @_;
+    my ( $self, $I ) = @_;
 
     my $O = '';
     while ( $I =~ s|^(.*?)(<.+?>)||s )
     {
         my ( $text, $tag ) = ( $1, $2 );
-        $O .= _strip_plain_text($text) . _strip_html_tag($tag);
+        $O .= $self->_strip_plain_text($text) . $self->_strip_html_tag($tag);
     }
-    $O .= _strip_plain_text($I);
+    $O .= $self->_strip_plain_text($I);
     return $O;
 }
 
@@ -316,7 +316,7 @@ sub _strip_non_preformatted
 #   and CPU time, input is splitted into small chunks whose size may
 #   be changed by the -b flag.
 
-verbose("Main processing");
+$self->verbose("Main processing");
 my $chunksize = $self->opt_b;
 my $loc       = 0;
 do
@@ -356,8 +356,8 @@ do
         if ( $pos < $len )
         {
             my $str = sprintf "found $curtag at position %d", $loc + $pos;
-            verbose($str);
-            my $o = _strip_non_preformatted($prolog);
+            $self->verbose($str);
+            my $o = $self->_strip_non_preformatted($prolog);
             $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
             $OUTPUT .= $o;
 
@@ -378,9 +378,9 @@ do
 
             $str = sprintf "found $endtag at position %d",
                 $loc + $pos + length($body);
-            verbose($str);
+            $self->verbose($str);
             $OUTPUT .= $curtag if ( not $TAGS{$tagname} );
-            $OUTPUT .= _strip_preformatted($body);
+            $OUTPUT .= $self->_strip_preformatted($body);
             $OUTPUT .= $endtag if ( not $TAGS{$tagname} );
             $loc += $pos + length($body) + length($curtag);
             $INPUT = $epilog;
@@ -392,7 +392,7 @@ do
             {
                 $loc += length($1);
                 $INPUT = $2;
-                my $o = _strip_non_preformatted($1);
+                my $o = $self->_strip_non_preformatted($1);
                 $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
                 $OUTPUT .= $o;
             }
@@ -410,7 +410,7 @@ do
             }
             else
             {
-                my $o = _strip_non_preformatted($INPUT);
+                my $o = $self->_strip_non_preformatted($INPUT);
                 $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
                 $OUTPUT .= $o;
                 $INPUT = '';
@@ -428,7 +428,7 @@ do
 #
 #   global final stripping
 #
-verbose("Fix <suck> special command");
+$self->verbose("Fix <suck> special command");
 $OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
 $OUTPUT =~ s|^\n||s;
 
