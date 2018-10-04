@@ -120,7 +120,7 @@ BEGIN { $bytes = 0; }
 #
 #   FIXUP 1: add WIDTH/HEIGHT/ALT attributes to <img>-tags
 #
-sub ProcessImgTag
+sub _process_img_tag
 {
     my ($attr) = @_;
     my ( $Nwidth, $Nheight, $Pwidth, $Pheight );
@@ -273,7 +273,7 @@ sub _fixup_imgsize
     while ( $buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
     {
         my ( $pre, $tag, $attr, $end ) = ( $1, $2, $3, $4 );
-        $bufferN .= $pre . $tag . ProcessImgTag($attr) . $end;
+        $bufferN .= $pre . $tag . _process_img_tag($attr) . $end;
     }
     $buffer = $bufferN . $buffer;
 
@@ -360,7 +360,7 @@ sub _fixup_quotes
 #
 #   FIXUP 6: paragraph indentation
 #
-sub ProcessIndentContainer
+sub _process_indent_container
 {
     my ( $attr, $data ) = @_;
     my ( $num, $size, $pad, $prefix );
@@ -398,7 +398,7 @@ sub _fixup_indent
         while ( $buffer =~ s|^(.*?)<indent([^>]*)>(.*?)</indent>||is )
         {
             my ( $pre, $attr, $data ) = ( $1, $2, $3 );
-            $bufferN .= $pre . ProcessIndentContainer( $attr, $data );
+            $bufferN .= $pre . _process_indent_container( $attr, $data );
         }
         $buffer = $bufferN . $buffer;
     }
@@ -439,7 +439,7 @@ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\L$1\E$2/sg
     return $prefix . $body;
 }
 
-sub ProcessTagConv
+sub _process_tag_conv
 {
     my ( $attr, $data ) = @_;
     my ($case);
@@ -474,7 +474,7 @@ sub _fixup_tagcase
         while ( $buffer =~ s|^(.*?)<tagconv([^>]*)>(.*?)</tagconv>||is )
         {
             my ( $pre, $attr, $data ) = ( $1, $2, $3 );
-            $bufferN .= $pre . ProcessTagConv( $attr, $data );
+            $bufferN .= $pre . _process_tag_conv( $attr, $data );
         }
         $buffer = $bufferN . $buffer;
     }
