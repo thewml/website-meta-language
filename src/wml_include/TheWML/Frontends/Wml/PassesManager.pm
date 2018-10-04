@@ -214,6 +214,12 @@ sub pass5
             opt      => $opt,
             from     => $from,
             to       => $to,
+            cb       => sub {
+                require TheWML::Backends::Divert::Main;
+
+                return TheWML::Backends::Divert::Main->new( argv => [@_] )
+                    ->main;
+            },
         }
     );
 }
@@ -242,6 +248,11 @@ sub pass7
             opt      => $opt,
             from     => $from,
             to       => $to,
+            cb       => sub {
+                require TheWML::Backends::Fixup::Main;
+
+                return TheWML::Backends::Fixup::Main->new( argv => [@_] )->main;
+            },
         }
     );
 }
