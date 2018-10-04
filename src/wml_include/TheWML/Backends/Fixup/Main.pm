@@ -3,6 +3,8 @@ package TheWML::Backends::Fixup::Main;
 use strict;
 use warnings;
 
+use Image::Size ();
+
 use parent 'TheWML::Frontends::Wml::Base';
 
 use Class::XSAccessor (
