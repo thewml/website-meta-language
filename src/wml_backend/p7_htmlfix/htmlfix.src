@@ -1,11 +1,10 @@
 #!@PATH_PERL@
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
-##
+
 ##  htmlfix -- Fixup HTML markup code
 ##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000 Denis Barbier
-##
 
 use strict;
 use warnings;
@@ -14,6 +13,7 @@ use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
 use TheWML::Backends::Fixup::Main ();
+
 TheWML::Backends::Fixup::Main->new( argv => \@ARGV )->main;
 
 ##EOF##
@@ -155,3 +155,4 @@ console.
 =cut
 
 ##EOF##
+# vim:ft=perl
