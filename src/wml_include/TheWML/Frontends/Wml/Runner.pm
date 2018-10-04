@@ -701,7 +701,7 @@ sub _set_src
         $self->_src_istmp(1);
         $self->_src( $self->_tmpdir . "/wml.input.$$.tmp" );
         unlink( $self->_src );
-        io->stdin() > io->file( $self->_src );
+        io->file( $self->_src )->print( io->stdin()->all );
     }
 
     if ( $self->_src_istmp and not -f $self->_src )
@@ -723,7 +723,7 @@ sub _output_and_cleanup
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
     {
-        io->file( $self->_tmp->[3] ) > io('-');
+        print io->file( $self->_tmp->[3] )->all;
     }
 
     $self->_unlink_tmp;
@@ -742,7 +742,7 @@ sub _handle_out_tmp
 
     if ( not $self->_src_istmp )
     {
-        io->file( $self->_src ) > io->file( $self->_tmp->[0] );
+        io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
     }
 
     if ( $self->_out eq '' )

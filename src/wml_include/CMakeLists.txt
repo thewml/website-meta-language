@@ -127,6 +127,11 @@ INSTALL (
 
 INSTALL (
     FILES
+        "TheWML/Backends/Fixup/Main.pm"
+    DESTINATION "${WML_LIB_DIR}/TheWML/Backends/Fixup"
+)
+INSTALL (
+    FILES
         "TheWML/Backends/IPP/Args.pm"
         "TheWML/Backends/IPP/Delimit.pm"
         "TheWML/Backends/IPP/File.pm"

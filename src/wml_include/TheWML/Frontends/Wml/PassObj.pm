@@ -37,6 +37,8 @@ package TheWML::Frontends::Wml::PassObj;
 use strict;
 use warnings;
 
+use Carp::Always;
+
 use Class::XSAccessor (
     constructor => 'new',
     accessors   => +{ map { $_ => $_ } qw( idx cb opt_pass time_ src_cb) }
@@ -94,6 +96,7 @@ sub dosource
         my ( $func, $error ) = precompile( $pkgname, $src );
         if ( $error ne '' )
         {
+            die $error;
             $_pass_mgr->verbose( 9, "precompiling script: error: $error\n" );
         }
         else
