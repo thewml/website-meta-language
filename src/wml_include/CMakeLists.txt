@@ -131,6 +131,10 @@ INSTALL (
     DESTINATION "${WML_LIB_DIR}/TheWML/Backends/Fixup"
 )
 INSTALL (
+    FILES "TheWML/Backends/HtmlStrip/Main.pm"
+    DESTINATION "${WML_LIB_DIR}/TheWML/Backends/HtmlStrip"
+)
+INSTALL (
     FILES
         "TheWML/Backends/IPP/Args.pm"
         "TheWML/Backends/IPP/Delimit.pm"
