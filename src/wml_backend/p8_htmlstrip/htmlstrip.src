@@ -256,7 +256,7 @@ sub _strip_preformatted
     if ( $opt_O >= 2 )
     {
         #   strip trailing whitespaces on non-empty lines
-        $buf =~ s|([^\s]+)[ \t]+\n|$1\n|sg;
+        $buf =~ s|\S\K[ \t]+\n|\n|sg;
     }
 
     #   Level 3
