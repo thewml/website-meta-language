@@ -20,18 +20,13 @@ use Class::XSAccessor (
     },
 );
 
-#
 #   processing loop
-#
 #
 #   Definitions of fixups
 #   Some attention has been paid for efficiency in regular expressions,
 #   this is why they appear more complicated than needed.
-#
 
-#
 #   FIXUP 1: add WIDTH/HEIGHT/ALT attributes to <img>-tags
-#
 sub _process_img_tag
 {
     my ( $self, $attr ) = @_;
@@ -197,9 +192,7 @@ sub _fixup_imgsize
     return;
 }
 
-#
 #   FIXUP 2: add summary attribute to <table>-tags
-#
 sub _fixup_summary
 {
     my ( $self, ) = @_;
@@ -226,9 +219,7 @@ sub _fixup_summary
     return;
 }
 
-#
 #   FIXUP 3: change <center>..</center> to <div align=center>..</div>
-#
 sub _fixup_center
 {
     my ( $self, ) = @_;
@@ -243,9 +234,7 @@ sub _fixup_center
     return;
 }
 
-#
 #   FIXUP 4: fix trailing space in tags
-#
 sub _fixup_space
 {
     my ( $self, ) = @_;
@@ -259,10 +248,8 @@ sub _fixup_space
     return;
 }
 
-#
 #   FIXUP 5: add quotations to attribute values and
 #            add missing '#' char to color attributes
-#
 sub _fixup_quotes
 {
     my ( $self, ) = @_;
@@ -284,9 +271,7 @@ sub _fixup_quotes
     return;
 }
 
-#
 #   FIXUP 6: paragraph indentation
-#
 sub _process_indent_container
 {
     my ( $attr, $data ) = @_;
@@ -335,9 +320,7 @@ sub _fixup_indent
     return;
 }
 
-#
 #   FIXUP 7: out-commenting tags
-#
 sub _fixup_comment
 {
     my ( $self, ) = @_;
@@ -349,9 +332,7 @@ sub _fixup_comment
     return;
 }
 
-#
 #   FIXUP 8: tag case translation
-#
 sub doit_upper
 {
     my ( $prefix, $body ) = @_;
@@ -427,6 +408,7 @@ sub run
 {
     my ( $self, $opt_S, $opt_F ) = @_;
 
+    # process all required fixups
     my %skips = ( map { $_ => 1 } split( ',', $opt_S ) );
 FIXUP:
     foreach my $m ( split( ',', $opt_F ) )
@@ -473,14 +455,13 @@ Fixes are a comma separated list of (default is to process them all)
   comment: out-comment tags
   tagcase: perform tag case-conversion
 EOF
-    exit(1);
+    die;
 }
 
 sub error
 {
     my ($str) = @_;
-    print STDERR "** HTMLfix:Error: $str\n";
-    exit(1);
+    die "** HTMLfix:Error: $str\n";
 }
 
 sub main
@@ -512,21 +493,13 @@ sub main
         usage();
     }
 
-    #
-    #   process command line
-    #
-    #
-    #   read input file
-    #
+    # read input file
     use TheWML::Backends ();
 
     my $buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
 
     if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
 
-    #
-    #   process all required fixups
-    #
     $self->opt_v($opt_v);
     $self->bytes(0);
     $self->_buffer( \$buffer );
