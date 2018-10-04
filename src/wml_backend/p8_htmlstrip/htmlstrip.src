@@ -124,7 +124,7 @@ sub _nexttoken
 
 #   Strip Plain Text, i.e. outside of any
 #   preformatted area and outside any HTML tag.
-sub StripPlainText
+sub _strip_plain_text
 {
     my ($buf) = @_;
 
@@ -194,7 +194,7 @@ sub StripPlainText
 
 #   Strip HTML Tag, i.e. outside of any
 #   preformatted area but inside a HTML tag.
-sub StripHTMLTag
+sub _strip_html_tag
 {
     my ($buf) = @_;
 
@@ -242,7 +242,7 @@ sub StripHTMLTag
 
 #   Strip Preformatted Areas, i.e.  inside
 #   <pre>, <xmp> and <nostrip> container tags.
-sub StripPreformatted
+sub _strip_preformatted
 {
     my ($buf) = @_;
 
@@ -283,18 +283,17 @@ my %TAGS = (
 
 my $OUTPUT = '';
 
-sub StripNonPreformatted
+sub _strip_non_preformatted
 {
     my ($I) = @_;
-    my ($O);
 
-    $O = '';
+    my $O = '';
     while ( $I =~ s|^(.*?)(<.+?>)||s )
     {
-        $O .= &StripPlainText($1);
-        $O .= &StripHTMLTag($2);
+        my ( $text, $tag ) = ( $1, $2 );
+        $O .= _strip_plain_text($text) . _strip_html_tag($tag);
     }
-    $O .= &StripPlainText($I);
+    $O .= _strip_plain_text($I);
     return $O;
 }
 
@@ -342,7 +341,7 @@ do
         {
             my $str = sprintf "found $curtag at position %d", $loc + $pos;
             verbose($str);
-            my $o = StripNonPreformatted($prolog);
+            my $o = _strip_non_preformatted($prolog);
             $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
             $OUTPUT .= $o;
 
@@ -365,7 +364,7 @@ do
                 $loc + $pos + length($body);
             verbose($str);
             $OUTPUT .= $curtag if ( not $TAGS{$tagname} );
-            $OUTPUT .= StripPreformatted($body);
+            $OUTPUT .= _strip_preformatted($body);
             $OUTPUT .= $endtag if ( not $TAGS{$tagname} );
             $loc += $pos + length($body) + length($curtag);
             $INPUT = $epilog;
@@ -377,7 +376,7 @@ do
             {
                 $loc += length($1);
                 $INPUT = $2;
-                my $o = StripNonPreformatted($1);
+                my $o = _strip_non_preformatted($1);
                 $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
                 $OUTPUT .= $o;
             }
@@ -395,7 +394,7 @@ do
             }
             else
             {
-                my $o = StripNonPreformatted($INPUT);
+                my $o = _strip_non_preformatted($INPUT);
                 $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
                 $OUTPUT .= $o;
                 $INPUT = '';
