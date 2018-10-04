@@ -11,6 +11,7 @@ use warnings;
 
 our $VERSION = '0.0.1';
 
+use TheWML::Backends ();
 use Getopt::Long 2.13;
 use IO::Handle 1.15;
 
@@ -65,13 +66,13 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw( _BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
-            _opt_o _opt_q _opt_v _OVRWRITE )
+            _opt_o _opt_q _opt_v _OVRWRITE argv )
     },
 );
 
 sub new
 {
-    my $self = shift->_cons;
+    my $self = shift->_cons(@_);
 
     $self->_init;
 
@@ -89,7 +90,8 @@ sub _init
         local $Getopt::Long::bundling      = 1;
         local $Getopt::Long::getopt_compat = 0;
         if (
-            not Getopt::Long::GetOptions(
+            not Getopt::Long::GetOptionsFromArray(
+                $self->argv,
                 'v|verbose'      => \$opt_v,
                 'q|quiet'        => \$opt_q,
                 'o|outputfile=s' => \$opt_o,
@@ -109,16 +111,17 @@ sub _init
     {
         my $in;
 
-        if ( ( ( @ARGV == 1 ) && ( $ARGV[0] eq q{-} ) ) || ( !@ARGV ) )
+        if (   ( ( @{ $self->argv } == 1 ) && ( $self->argv->[0] eq q{-} ) )
+            || ( !@{ $self->argv } ) )
         {
             $in = IO::Handle->new;
             $self->_filename('STDIN');
             $in->fdopen( fileno(STDIN), 'r' )
                 || $self->error("cannot load STDIN: $!");
         }
-        elsif ( @ARGV == 1 )
+        elsif ( @{ $self->argv } == 1 )
         {
-            open $in, '<', $self->_filename( $ARGV[0] )
+            open $in, '<', $self->_filename( $self->argv->[0] )
                 or $self->error("cannot load @{[$self->_filename]}: $!");
         }
         else
@@ -448,6 +451,17 @@ sub calc_result
     ##           by starting from the main location buffer
     ##
     return $self->ExpandDiversion( $self->_BUFFER->{'main'} );
+}
+
+sub main
+{
+    my ($self) = @_;
+    TheWML::Backends->out(
+        $self->_opt_o(),
+        sub { return $self->error(@_); },
+        [ $self->calc_result ]
+    );
+    return;
 }
 
 1;

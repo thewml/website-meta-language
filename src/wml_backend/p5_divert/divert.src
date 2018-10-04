@@ -1,11 +1,10 @@
 #!@PATH_PERL@ -w
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
-##
+
 ##  divert -- Diversion Filter
 ##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 1999-2001 Denis Barbier, All Rights Reserved.
-##
 
 use strict;
 use warnings;
@@ -16,20 +15,9 @@ use lib '@INSTALLARCHLIB@';
 #
 #   create output file
 #
-use TheWML::Backends;
-use TheWML::Backends::Divert;
+use TheWML::Backends::Divert ();
 
-my $obj = TheWML::Backends::Divert->new;
-TheWML::Backends->out($obj->_opt_o(),
-    sub { return $obj->error(@_); } ,
-    [$obj->calc_result]
-);
-
-#
-#   die gracefully
-#
-exit(0);
-
+TheWML::Backends::Divert->new( argv => \@ARGV )->main;
 
 ##EOF##
 __END__
