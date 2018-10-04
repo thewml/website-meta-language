@@ -130,14 +130,7 @@ sub ProcessImgTag
     {
         my $image = $1;
 
-        if (
-            my (
-                $dev,   $ino,     $mode, $nlink, $uid,
-                $gid,   $rdev,    $size, $atime, $mtime,
-                $ctime, $blksize, $blocks
-            )
-            = stat($image)
-            )
+        if ( my $size = -s $image )
         {
             $bytes += $size;
 
