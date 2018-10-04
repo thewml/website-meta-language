@@ -13,84 +13,8 @@ use warnings;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-use Getopt::Long 2.13;
-
-#
-#   process command line
-#
-sub usage
-{
-    print STDERR <<'EOF';
-Usage: htmlfix [options] [file]
-
-Options:
-  -o, --outputfile=<file>  set output file instead of stdout
-  -F, --fix=<fixes>        select which fix to apply
-  -S, --skip=<fixes>       skip specified fixes
-  -v, --verbose            verbose mode\n
-Fixes are a comma separated list of (default is to process them all)
-  imgalt : add ALT attributes to IMG tags
-  imgsize: add WIDTH/HEIGHT attributes to IMG tags
-  summary: add SUMMARY attribute to TABLE tags
-  center : change proprietary CENTER tag to standard DIV tag
-  space  : fix trailing spaces in tags
-  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes
-  indent : indent paragraphs
-  comment: out-comment tags
-  tagcase: perform tag case-conversion
-EOF
-    exit(1);
-}
-
-use vars qw($opt_v $opt_q);
-$opt_q = 0;
-$opt_v = 0;
-my $opt_o = '-';
-my $opt_F = 'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
-my $opt_S = '';
-$Getopt::Long::bundling      = 1;
-$Getopt::Long::getopt_compat = 0;
-if (
-    not Getopt::Long::GetOptions(
-        "v|verbose"      => \$opt_v,
-        "q"              => \$opt_q,
-        "F|fix=s"        => \$opt_F,
-        "S|skip=s"       => \$opt_S,
-        "o|outputfile=s" => \$opt_o
-    )
-    )
-{
-    usage();
-}
-
-sub error
-{
-    my ($str) = @_;
-    print STDERR "** HTMLfix:Error: $str\n";
-    exit(1);
-}
-
-#
-#   read input file
-#
-use TheWML::Backends              ();
 use TheWML::Backends::Fixup::Main ();
-
-my $buffer = TheWML::Backends->input( \@ARGV, \&error, \&usage );
-
-if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
-
-#
-#   process all required fixups
-#
-my $obj = TheWML::Backends::Fixup::Main->new(
-    opt_v   => $opt_v,
-    bytes   => 0,
-    _buffer => \$buffer
-);
-$obj->run( $opt_S, $opt_F );
-
-TheWML::Backends->out( $opt_o, \&error, [$buffer] );
+TheWML::Backends::Fixup::Main->new( argv => \@ARGV )->main;
 
 exit(0);
 

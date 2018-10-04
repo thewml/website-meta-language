@@ -12,6 +12,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            argv
             opt_v
             bytes
             _buffer
@@ -448,6 +449,90 @@ FIXUP:
     # statistic
     $self->verbose("Total amount of images: @{[$self->bytes]} bytes");
 
+    return;
+}
+
+sub usage
+{
+    print STDERR <<'EOF';
+Usage: htmlfix [options] [file]
+
+Options:
+  -o, --outputfile=<file>  set output file instead of stdout
+  -F, --fix=<fixes>        select which fix to apply
+  -S, --skip=<fixes>       skip specified fixes
+  -v, --verbose            verbose mode\n
+Fixes are a comma separated list of (default is to process them all)
+  imgalt : add ALT attributes to IMG tags
+  imgsize: add WIDTH/HEIGHT attributes to IMG tags
+  summary: add SUMMARY attribute to TABLE tags
+  center : change proprietary CENTER tag to standard DIV tag
+  space  : fix trailing spaces in tags
+  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes
+  indent : indent paragraphs
+  comment: out-comment tags
+  tagcase: perform tag case-conversion
+EOF
+    exit(1);
+}
+
+sub error
+{
+    my ($str) = @_;
+    print STDERR "** HTMLfix:Error: $str\n";
+    exit(1);
+}
+
+sub main
+{
+    my ( $self, $param ) = @_;
+
+    use Getopt::Long 2.13;
+
+    use vars qw($opt_v $opt_q);
+    $opt_q = 0;
+    $opt_v = 0;
+    my $opt_o = '-';
+    my $opt_F =
+        'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
+    my $opt_S = '';
+    $Getopt::Long::bundling      = 1;
+    $Getopt::Long::getopt_compat = 0;
+    if (
+        not Getopt::Long::GetOptionsFromArray(
+            $self->argv,
+            "v|verbose"      => \$opt_v,
+            "q"              => \$opt_q,
+            "F|fix=s"        => \$opt_F,
+            "S|skip=s"       => \$opt_S,
+            "o|outputfile=s" => \$opt_o
+        )
+        )
+    {
+        usage();
+    }
+
+    #
+    #   process command line
+    #
+    #
+    #   read input file
+    #
+    use TheWML::Backends ();
+
+    my $buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
+
+    if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
+
+    #
+    #   process all required fixups
+    #
+    $self->opt_v($opt_v);
+    $self->bytes(0);
+    $self->_buffer( \$buffer );
+    $self->run( $opt_S, $opt_F );
+
+    TheWML::Backends->out( $opt_o, \&error, [$buffer] );
     return;
 }
 
