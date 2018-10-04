@@ -7,12 +7,15 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
 ##
 
+use strict;
+use warnings;
+
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
 require TheWML::Backends::IPP::Main;
 
-TheWML::Backends::IPP::Main->new->main;
+TheWML::Backends::IPP::Main->new( argv => \@ARGV )->main;
 
 ##EOF##
 __END__

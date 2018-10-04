@@ -19,6 +19,7 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             INCLUDES
+            argv
             opt_I
             opt_M
             opt_N
@@ -190,7 +191,8 @@ sub main
     my $opt_o = '-';
     my $opt_n = '';
     if (
-        not Getopt::Long::GetOptions(
+        not Getopt::Long::GetOptionsFromArray(
+            $self->argv,
             "D|define=s@"         => \@opt_D,
             "I|includedir=s@"     => $self->opt_I,
             "M|depend:s"          => $self->_gen_opt('opt_M'),
@@ -210,12 +212,12 @@ sub main
     }
 
     #   Adjust the -M flags
-    if ( $self->opt_M !~ m%^(-|[MD]*)$% && ( !@ARGV ) )
+    if ( $self->opt_M !~ m%^(-|[MD]*)$% && ( !@{ $self->argv } ) )
     {
-        push( @ARGV, $self->opt_M );
+        push( @{ $self->argv }, $self->opt_M );
         $self->opt_M('');
     }
-    usage() if ( !@ARGV );
+    usage() if ( !@{ $self->argv } );
     push( @{ $self->opt_I }, '.' );
     $self->_map( TheWML::Backends::IPP::Map->new( { filenames => \@opt_m } ) );
 
@@ -248,7 +250,7 @@ sub _process_real_files
 {
     my ( $self, $opt_P, $opt_n, $arg ) = @_;
 
-    foreach my $fn (@ARGV)
+    foreach my $fn ( @{ $self->argv } )
     {
         #   create temporary working file
         io()->file( $self->temp_fn )->print( TheWML::Backends->input( [$fn] ) );
@@ -284,7 +286,7 @@ sub _do_output
 
     if ( $self->opt_M ne '-' && $opt_o ne '-' )
     {
-        my @deps = @ARGV;
+        my @deps = @{ $self->argv };
         foreach my $inc ( keys( %{ $self->INCLUDES } ) )
         {
             if ( $self->INCLUDES->{$inc} != 1 or $self->opt_M !~ m|M| )
