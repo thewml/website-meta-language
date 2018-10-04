@@ -1,11 +1,10 @@
 #!@PATH_PERL@
 eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
     if $running_under_some_shell;
-##
+
 ##  htmlstrip -- Strip HTML markup code
 ##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000 Denis Barbier
-##
 
 use strict;
 use warnings;
@@ -13,9 +12,8 @@ use warnings;
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
-use Getopt::Long 2.13;
-
 use TheWML::Backends::HtmlStrip::Main ();
+
 TheWML::Backends::HtmlStrip::Main->new( argv => \@ARGV )->main;
 ##EOF##
 __END__

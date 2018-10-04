@@ -22,6 +22,8 @@ use Class::XSAccessor (
     },
 );
 
+use Getopt::Long;
+
 #
 #   process command line
 #
