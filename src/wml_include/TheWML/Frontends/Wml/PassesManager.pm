@@ -146,7 +146,7 @@ sub _generic_do
     return scalar(
           $self->_opt_s
         ? $self->dosystem("$prog $argv")
-        : $self->pass($pass_idx)->dosource( $self, $prog, $argv )
+        : $self->pass($pass_idx)->dosource( $self, $prog, $argv, $args->{cb} )
     );
 }
 
@@ -160,6 +160,11 @@ sub pass1
             opt      => $opt,
             from     => $from,
             to       => $to,
+            cb       => sub {
+                require TheWML::Backends::IPP::Main;
+
+                return TheWML::Backends::IPP::Main->new( argv => [@_] )->main;
+            },
         }
     );
 }

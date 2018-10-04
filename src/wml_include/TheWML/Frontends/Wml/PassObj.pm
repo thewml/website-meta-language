@@ -78,32 +78,42 @@ sub unquotearg
 
 sub dosource
 {
-    my ( $pass, $_pass_mgr, $prog, $args ) = @_;
+    my ( $pass, $_pass_mgr, $prog, $args, $cb ) = @_;
     $_pass_mgr->verbose( 2, "source: $prog $args\n" );
     $_pass_mgr->verbose( 9, "loading: $prog\n" );
     if ( !defined( $pass->src_cb ) )
     {
-        my $pkgname = basename($prog);
-        if ( $prog !~ m|\A/| )
+        if ( defined $cb )
         {
-            $prog = which($prog);
-        }
-        my $src = io->file($prog)->all;
-        $_pass_mgr->verbose( 9,
-            "loading: succeeded with $prog (" . length($src) . " bytes)\n" );
-
-        $_pass_mgr->verbose( 9, "precompiling script: pkgname=$pkgname\n" );
-        my ( $func, $error ) = precompile( $pkgname, $src );
-        if ( $error ne '' )
-        {
-            die $error;
-            $_pass_mgr->verbose( 9, "precompiling script: error: $error\n" );
+            $pass->src_cb($cb);
         }
         else
         {
-            $_pass_mgr->verbose( 9, "precompiling script: succeeded\n" );
+            my $pkgname = basename($prog);
+            if ( $prog !~ m|\A/| )
+            {
+                $prog = which($prog);
+            }
+            my $src = io->file($prog)->all;
+            $_pass_mgr->verbose( 9,
+                      "loading: succeeded with $prog ("
+                    . length($src)
+                    . " bytes)\n" );
+
+            $_pass_mgr->verbose( 9, "precompiling script: pkgname=$pkgname\n" );
+            my ( $func, $error ) = precompile( $pkgname, $src );
+            if ( $error ne '' )
+            {
+                die $error;
+                $_pass_mgr->verbose( 9,
+                    "precompiling script: error: $error\n" );
+            }
+            else
+            {
+                $_pass_mgr->verbose( 9, "precompiling script: succeeded\n" );
+            }
+            $pass->src_cb($func);
         }
-        $pass->src_cb($func);
     }
 
     $_pass_mgr->verbose( 9, "splitting from args: $args\n" );
