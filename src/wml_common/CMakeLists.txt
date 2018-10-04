@@ -1,5 +1,6 @@
 SET (CPAN_MODULES_TO_CHECK
     "Bit::Vector"
+    "Carp::Always"
     "Class::XSAccessor"
     "File::Which"
     "GD"
