@@ -363,23 +363,22 @@ sub _fixup_quotes
 sub _process_indent_container
 {
     my ( $attr, $data ) = @_;
-    my ( $num, $size, $pad, $prefix );
 
     #   determine amount of padding
-    $num  = 0;
-    $size = 4;
+    my $num  = 0;
+    my $size = 4;
     $attr =~ s/num\s*=\s*"?(\d+)"?/$num = $1, ''/ige;
     $attr =~ s/size\s*=\s*"?(\d+)"?/$size = $1, ''/ige;
 
     #   pad the data
     if ( $num > 0 )
     {
-        $pad = ' ' x ( $num * $size );
+        my $pad = ' ' x ( $num * $size );
         $data =~ s/^/$pad/mg;
     }
     elsif ( $num == 0 )
     {
-        ($prefix) = ( $data =~ m|^\n*([ \t]+)|s );
+        ( my $prefix ) = ( $data =~ m|^\n*([ \t]+)|s );
         if ( length($prefix) > 0 )
         {
             $data =~ s/^$prefix//mg;
@@ -442,10 +441,9 @@ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\L$1\E$2/sg
 sub _process_tag_conv
 {
     my ( $attr, $data ) = @_;
-    my ($case);
 
     #   determine case translation type
-    $case = 'upper';
+    my $case = 'upper';
     $attr =~ s/case\s*=\s*"?(upper|lower)"?/$case = lc($1), ''/ige;
 
     #   and then translate the data
