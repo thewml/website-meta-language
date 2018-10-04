@@ -19,7 +19,8 @@ use Image::Size;
 #
 #   process command line
 #
-sub usage {
+sub usage
+{
     print STDERR <<'EOF';
 Usage: htmlfix [options] [file]
 
@@ -48,33 +49,42 @@ my $opt_o = '-';
 my $opt_F = 'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
 my $opt_S = '';
 my $opt_q;
-$Getopt::Long::bundling = 1;
+$Getopt::Long::bundling      = 1;
 $Getopt::Long::getopt_compat = 0;
-if (not Getopt::Long::GetOptions(
-    "v|verbose" => \$opt_v,
-    "q" => \$opt_q,
-    "F|fix=s" => \$opt_F,
-    "S|skip=s" => \$opt_S,
-    "o|outputfile=s" => \$opt_o)) {
+if (
+    not Getopt::Long::GetOptions(
+        "v|verbose"      => \$opt_v,
+        "q"              => \$opt_q,
+        "F|fix=s"        => \$opt_F,
+        "S|skip=s"       => \$opt_S,
+        "o|outputfile=s" => \$opt_o
+    )
+    )
+{
     usage();
 }
 
-sub verbose {
+sub verbose
+{
     my ($str) = @_;
-    if ($opt_v) {
+    if ($opt_v)
+    {
         print STDERR "** HTMLfix:Verbose: $str\n";
     }
 }
 
-sub error {
+sub error
+{
     my ($str) = @_;
     print STDERR "** HTMLfix:Error: $str\n";
     exit(1);
 }
 
-sub warning {
+sub warning
+{
     my ($str) = @_;
-    if (not $opt_q) {
+    if ( not $opt_q )
+    {
         print STDERR "** HTMLfix:Warning: $str\n";
     }
 
@@ -90,9 +100,9 @@ BEGIN { $buffer = ''; }
 
 use TheWML::Backends;
 
-$buffer = TheWML::Backends->input(\@ARGV, \&error, \&usage);
+$buffer = TheWML::Backends->input( \@ARGV, \&error, \&usage );
 
-if (!defined($buffer)) { die "Egloo Buffer is undef." }
+if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
 
 #
 #   processing loop
@@ -110,100 +120,136 @@ BEGIN { $bytes = 0; }
 #
 #   FIXUP 1: add WIDTH/HEIGHT/ALT attributes to <img>-tags
 #
-sub ProcessImgTag {
+sub ProcessImgTag
+{
     my ($attr) = @_;
-    my ($image, $width, $height, $scale);
-    my ($Nwidth, $Nheight, $Pwidth, $Pheight);
+    my ( $image,  $width,   $height, $scale );
+    my ( $Nwidth, $Nheight, $Pwidth, $Pheight );
 
     if (   $attr =~ m|SRC\s*=\s*"([^"]*)"|is
-            or $attr =~ m|SRC\s*=\s*(\S+)|is    ) {
+        or $attr =~ m|SRC\s*=\s*(\S+)|is )
+    {
         $image = $1;
 
-        if (my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
-                $atime,$mtime,$ctime,$blksize,$blocks) = stat($image))
+        if (
+            my (
+                $dev,   $ino,     $mode, $nlink, $uid,
+                $gid,   $rdev,    $size, $atime, $mtime,
+                $ctime, $blksize, $blocks
+            )
+            = stat($image)
+            )
         {
             $bytes += $size;
 
             #   add WIDTH and HEIGHT to speed up display
             $width  = -1;
             $height = -1;
-            $scale  =  1;
+            $scale  = 1;
             if (   $attr =~ m/WIDTH\s*=\s*([0-9%]+|\*)/is
-                    or $attr =~ m/WIDTH\s*=\s*"([0-9%]+|\*)"/is) {
+                or $attr =~ m/WIDTH\s*=\s*"([0-9%]+|\*)"/is )
+            {
                 $width = $1;
             }
             if (   $attr =~ m/HEIGHT\s*=\s*([0-9%]+|\*)/is
-                    or $attr =~ m/HEIGHT\s*=\s*"([0-9%]+|\*)"/is) {
+                or $attr =~ m/HEIGHT\s*=\s*"([0-9%]+|\*)"/is )
+            {
                 $height = $1;
             }
             if (   $attr =~ s/SCALE\s*=\s*([0-9]+)%//is
-                    or $attr =~ s/SCALE\s*=\s*"([0-9]+)%"//is) {
+                or $attr =~ s/SCALE\s*=\s*"([0-9]+)%"//is )
+            {
                 $scale = $1 / 100;
             }
             if (   $attr =~ s/SCALE\s*=\s*([0-9.]+)//is
-                    or $attr =~ s/SCALE\s*=\s*"([0-9.]+)"//is) {
+                or $attr =~ s/SCALE\s*=\s*"([0-9.]+)"//is )
+            {
                 $scale = $1;
             }
-            if ($width  eq '*' or $width  == -1 or
-                $height eq '*' or $height == -1   ) {
+            if (   $width eq '*'
+                or $width == -1
+                or $height eq '*'
+                or $height == -1 )
+            {
                 my $error;
-                ($Pwidth, $Pheight, $error) = Image::Size::imgsize($image);
-                if (defined($Pwidth) and defined($Pheight)) {
+                ( $Pwidth, $Pheight, $error ) = Image::Size::imgsize($image);
+                if ( defined($Pwidth) and defined($Pheight) )
+                {
 
                     #    width given, height needs completed
-                    if ((not ($width  eq '*' or $width  == -1)) and
-                        ($height eq '*' or $height == -1)     ) {
-                        if ($width == $Pwidth) {
+                    if (    ( not( $width eq '*' or $width == -1 ) )
+                        and ( $height eq '*' or $height == -1 ) )
+                    {
+                        if ( $width == $Pwidth )
+                        {
                             $Nheight = $Pheight;
                         }
-                        else {
-                            $Nheight = int(($Pheight/$Pwidth)*$width);
+                        else
+                        {
+                            $Nheight = int( ( $Pheight / $Pwidth ) * $width );
                         }
                     }
+
                     #   height given, width needs completed
-                    elsif ((not ($height eq '*' or $height == -1)) and
-                        ($width  eq '*' or $width  == -1)     ) {
-                        if ($height == $Pheight) {
+                    elsif ( ( not( $height eq '*' or $height == -1 ) )
+                        and ( $width eq '*' or $width == -1 ) )
+                    {
+                        if ( $height == $Pheight )
+                        {
                             $Nwidth = $Pwidth;
                         }
-                        else {
-                            $Nwidth = int(($Pwidth/$Pheight)*$height);
+                        else
+                        {
+                            $Nwidth = int( ( $Pwidth / $Pheight ) * $height );
                         }
                     }
+
                     #   both width and height needs completed
-                    elsif (($height eq '*' or $height == -1) and
-                        ($width  eq '*' or $width  == -1)    ) {
+                    elsif ( ( $height eq '*' or $height == -1 )
+                        and ( $width eq '*' or $width == -1 ) )
+                    {
                         $Nwidth  = $Pwidth;
                         $Nheight = $Pheight;
                     }
 
                     #   optionally scale the dimensions
-                    if ($scale != 1) {
-                        $Nwidth  = int($Nwidth  * $scale);
-                        $Nheight = int($Nheight * $scale);
+                    if ( $scale != 1 )
+                    {
+                        $Nwidth  = int( $Nwidth * $scale );
+                        $Nheight = int( $Nheight * $scale );
                     }
 
                     #   now set the new values
-                    if ($width eq '*') {
+                    if ( $width eq '*' )
+                    {
                         $attr =~ s|(WIDTH\s*=\s*)\S+|$1$Nwidth|is;
-                        verbose("substituting width for $image: ``width=$Nwidth''");
+                        verbose(
+                            "substituting width for $image: ``width=$Nwidth''");
                     }
-                    elsif ($width == -1) {
+                    elsif ( $width == -1 )
+                    {
                         $attr .= " width=$Nwidth";
                         verbose("adding width for $image: ``width=$Nwidth''");
                     }
-                    if ($height eq '*') {
+                    if ( $height eq '*' )
+                    {
                         $attr =~ s|(HEIGHT\s*=\s*)\S+|$1$Nheight|is;
-                        verbose("substituting height for $image: ``height=$Nheight''");
+                        verbose(
+"substituting height for $image: ``height=$Nheight''"
+                        );
                     }
-                    elsif ($height == -1) {
+                    elsif ( $height == -1 )
+                    {
                         $attr .= " height=$Nheight";
-                        verbose("adding height for $image: ``height=$Nheight''");
+                        verbose(
+                            "adding height for $image: ``height=$Nheight''");
                     }
                 }
-                else {
+                else
+                {
                     #   complain
                     verbose("cannot complete size of $image: $error");
+
                     #   and make sure the =* placeholder constructs are removed
                     $attr =~ s|WIDTH\s*=\s*\*||is;
                     $attr =~ s|HEIGHT\s*=\s*\*||is;
@@ -214,15 +260,19 @@ sub ProcessImgTag {
 
     return $attr;
 }
-sub _fixup_imgalt {
+
+sub _fixup_imgalt
+{
     my $bufferN = '';
 
-    if (!defined($buffer)) { die "CLamm oo Buffer is undef." }
+    if ( !defined($buffer) ) { die "CLamm oo Buffer is undef." }
 
-    while ($buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s) {
-        my ($pre, $tag, $attr, $end) = ($1, $2, $3, $4);
+    while ( $buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
+    {
+        my ( $pre, $tag, $attr, $end ) = ( $1, $2, $3, $4 );
         if (    $attr !~ m|ALT\s*=\s*"[^"]*"|is
-            and $attr !~ m|ALT\s*=\s*\S+|is) {
+            and $attr !~ m|ALT\s*=\s*\S+|is )
+        {
             verbose("adding ALT for image");
             $attr .= ' alt=""';
         }
@@ -232,10 +282,13 @@ sub _fixup_imgalt {
 
     return;
 }
-sub _fixup_imgsize {
+
+sub _fixup_imgsize
+{
     my $bufferN = '';
-    while ($buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s) {
-        my ($pre, $tag, $attr, $end) = ($1, $2, $3, $4);
+    while ( $buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
+    {
+        my ( $pre, $tag, $attr, $end ) = ( $1, $2, $3, $4 );
         $bufferN .= $pre . $tag . ProcessImgTag($attr) . $end;
     }
     $buffer = $bufferN . $buffer;
@@ -246,22 +299,25 @@ sub _fixup_imgsize {
 #
 #   FIXUP 2: add summary attribute to <table>-tags
 #
-sub _fixup_summary {
+sub _fixup_summary
+{
     verbose("adding summary attribute to <table>");
 
-    my $last = 0;
+    my $last    = 0;
     my $bufferN = '';
-    while ($buffer =~ m|\G(.*?)(<[tT][aA][bB][lL][eE])([^>]*?)(/?>)|gs) {
+    while ( $buffer =~ m|\G(.*?)(<[tT][aA][bB][lL][eE])([^>]*?)(/?>)|gs )
+    {
         $last = pos($buffer);
-        my ($pre, $begin, $attr, $end) = ($1, $2, $3, $4);
+        my ( $pre, $begin, $attr, $end ) = ( $1, $2, $3, $4 );
 
         #   add a SUMMARY="" tag to make HTML lints happy
-        if ($attr !~ m|SUMMARY\s*=|i) {
+        if ( $attr !~ m|SUMMARY\s*=|i )
+        {
             $attr .= ' summary=""';
         }
         $bufferN .= $pre . $begin . $attr . $end;
     }
-    $buffer = $bufferN . substr($buffer, $last);
+    $buffer = $bufferN . substr( $buffer, $last );
 
     return;
 }
@@ -269,10 +325,12 @@ sub _fixup_summary {
 #
 #   FIXUP 3: change <center>..</center> to <div align=center>..</div>
 #
-sub _fixup_center {
+sub _fixup_center
+{
     verbose("replacing <center>..</center> by <div align=center>..</div>");
 
-    $buffer =~ s|<[cC][eE][nN][tT][eE][rR]((?:\s[^>ck]*)?)>|<div align="center"$1>|g;
+    $buffer =~
+        s|<[cC][eE][nN][tT][eE][rR]((?:\s[^>ck]*)?)>|<div align="center"$1>|g;
     $buffer =~ s|</[cC][eE][nN][tT][eE][rR]>|</div>|g;
 
     return;
@@ -281,7 +339,8 @@ sub _fixup_center {
 #
 #   FIXUP 4: fix trailing space in tags
 #
-sub _fixup_space {
+sub _fixup_space
+{
     verbose("trailing space in tags");
 
     #   Only space characters are removed, neither tabs nor newlines
@@ -295,30 +354,32 @@ sub _fixup_space {
 #   FIXUP 5: add quotations to attribute values and
 #            add missing '#' char to color attributes
 #
-sub _fixup_quotes {
+sub _fixup_quotes
+{
     verbose("add quotes to attributes");
 
-    my $last = 0;
+    my $last    = 0;
     my $bufferN = '';
-    while ($buffer =~ m|\G(.*?)(<[a-zA-Z_][^>]*>)|sg) {
+    while ( $buffer =~ m|\G(.*?)(<[a-zA-Z_][^>]*>)|sg )
+    {
         $last = pos($buffer);
-        my ($prolog, $tag) = ($1, $2);
+        my ( $prolog, $tag ) = ( $1, $2 );
         $tag =~ s@([A-Za-z_-]+=)([^\s\"\'><\[]+)(\s|/?>)@$1"$2"$3@sg;
         $tag =~ s|([A-Za-z_-]+=")([0-9A-Fa-f]{6}"[\s/>])|$1#$2|sg;
-        $bufferN .= $prolog.$tag;
+        $bufferN .= $prolog . $tag;
     }
-    $buffer = $bufferN . substr($buffer, $last);
+    $buffer = $bufferN . substr( $buffer, $last );
 
     return;
 }
 
-
 #
 #   FIXUP 6: paragraph indentation
 #
-sub ProcessIndentContainer {
-    my ($attr, $data) = @_;
-    my ($num, $size, $pad, $prefix);
+sub ProcessIndentContainer
+{
+    my ( $attr, $data ) = @_;
+    my ( $num, $size, $pad, $prefix );
 
     #   determine amount of padding
     $num  = 0;
@@ -327,26 +388,33 @@ sub ProcessIndentContainer {
     $attr =~ s/size\s*=\s*"?(\d+)"?/$size = $1, ''/ige;
 
     #   pad the data
-    if ($num > 0) {
-        $pad = ' ' x ($num * $size);
+    if ( $num > 0 )
+    {
+        $pad = ' ' x ( $num * $size );
         $data =~ s/^/$pad/mg;
     }
-    elsif ($num == 0) {
-        ($prefix) = ($data =~ m|^\n*([ \t]+)|s);
-        if (length($prefix) > 0) {
+    elsif ( $num == 0 )
+    {
+        ($prefix) = ( $data =~ m|^\n*([ \t]+)|s );
+        if ( length($prefix) > 0 )
+        {
             $data =~ s/^$prefix//mg;
         }
     }
     return $data;
 }
-sub _fixup_indent {
+
+sub _fixup_indent
+{
     verbose("paragraph indentation");
 
-    if ($buffer =~ m|<[iI][nN][dD][eE][nN][tT][\s>]|) {
+    if ( $buffer =~ m|<[iI][nN][dD][eE][nN][tT][\s>]| )
+    {
         my $bufferN = '';
-        while ($buffer =~ s|^(.*?)<indent([^>]*)>(.*?)</indent>||is) {
-            my ($pre, $attr, $data) = ($1, $2, $3);
-            $bufferN .= $pre . ProcessIndentContainer($attr, $data);
+        while ( $buffer =~ s|^(.*?)<indent([^>]*)>(.*?)</indent>||is )
+        {
+            my ( $pre, $attr, $data ) = ( $1, $2, $3 );
+            $bufferN .= $pre . ProcessIndentContainer( $attr, $data );
         }
         $buffer = $bufferN . $buffer;
     }
@@ -357,7 +425,8 @@ sub _fixup_indent {
 #
 #   FIXUP 7: out-commenting tags
 #
-sub _fixup_comment {
+sub _fixup_comment
+{
     verbose("remove commenting tags");
     $buffer =~ s|<[a-zA-Z_][a-zA-Z0-9-]*#.*?>||sg;
     $buffer =~ s|</[a-zA-Z_][a-zA-Z0-9-]*#>||sg;
@@ -368,21 +437,27 @@ sub _fixup_comment {
 #
 #   FIXUP 8: tag case translation
 #
-sub doit_upper {
-    my ($prefix, $body) = @_;
+sub doit_upper
+{
+    my ( $prefix, $body ) = @_;
     $prefix =~ s/^(.+)$/\U$1\E/;
-    $body =~ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\U$1\E$2/sg;
-    return $prefix.$body;
+    $body =~
+s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\U$1\E$2/sg;
+    return $prefix . $body;
 }
 
-sub doit_lower {
-    my ($prefix, $body) = @_;
+sub doit_lower
+{
+    my ( $prefix, $body ) = @_;
     $prefix =~ s/^(.+)$/\L$1\E/;
-    $body =~ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\L$1\E$2/sg;
-    return $prefix.$body;
+    $body =~
+s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\L$1\E$2/sg;
+    return $prefix . $body;
 }
-sub ProcessTagConv {
-    my ($attr, $data) = @_;
+
+sub ProcessTagConv
+{
+    my ( $attr, $data ) = @_;
     my ($case);
 
     #   determine case translation type
@@ -390,26 +465,32 @@ sub ProcessTagConv {
     $attr =~ s/case\s*=\s*"?(upper|lower)"?/$case = lc($1), ''/ige;
 
     #   and then translate the data
-    if ($case eq 'upper') {
+    if ( $case eq 'upper' )
+    {
         $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\U$1\E|sg;
         $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?/?>)|doit_upper($1,$2)|sge;
         $data =~ s|(<\/[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\U$1\E|sg;
     }
-    else {
+    else
+    {
         $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\L$1\E|sg;
         $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?>)|doit_lower($1,$2)|sge;
         $data =~ s|(<\/[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\L$1\E|sg;
     }
     return $data;
 }
-sub _fixup_tagcase {
+
+sub _fixup_tagcase
+{
     verbose("tag case translation");
 
-    if ($buffer =~ m|<[tT][aA][gG][cC][oO][nN][vV][\s>]|) {
+    if ( $buffer =~ m|<[tT][aA][gG][cC][oO][nN][vV][\s>]| )
+    {
         my $bufferN = '';
-        while ($buffer =~ s|^(.*?)<tagconv([^>]*)>(.*?)</tagconv>||is) {
-            my ($pre, $attr, $data) = ($1, $2, $3);
-            $bufferN .= $pre . ProcessTagConv($attr, $data);
+        while ( $buffer =~ s|^(.*?)<tagconv([^>]*)>(.*?)</tagconv>||is )
+        {
+            my ( $pre, $attr, $data ) = ( $1, $2, $3 );
+            $bufferN .= $pre . ProcessTagConv( $attr, $data );
         }
         $buffer = $bufferN . $buffer;
     }
@@ -418,18 +499,19 @@ sub _fixup_tagcase {
 #
 #   process all required fixups
 #
-foreach my $S (split(',', $opt_S)) {
+foreach my $S ( split( ',', $opt_S ) )
+{
     $opt_F =~ s/\b$S\b//;
 }
 
-foreach my $m (split(',', $opt_F)) {
-    if ($m =~ /[^a-z]/) {
+foreach my $m ( split( ',', $opt_F ) )
+{
+    if ( $m =~ /[^a-z]/ )
+    {
         die "invalid chars in identifier '$m'!";
     }
     my $fixup = '_fixup_' . $m;
-    my $ref = __PACKAGE__->can($fixup);
-
-    if ($ref)
+    if ( my $ref = __PACKAGE__->can($fixup) )
     {
         $ref->();
     }
@@ -440,8 +522,7 @@ foreach my $m (split(',', $opt_F)) {
 #
 verbose("Total amount of images: $bytes bytes");
 
-TheWML::Backends->out($opt_o, \&error, [$buffer]);
-
+TheWML::Backends->out( $opt_o, \&error, [$buffer] );
 
 exit(0);
 
