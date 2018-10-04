@@ -499,13 +499,14 @@ sub _fixup_tagcase
 #
 #   process all required fixups
 #
-foreach my $S ( split( ',', $opt_S ) )
-{
-    $opt_F =~ s/\b$S\b//;
-}
-
+my %skips = ( map { $_ => 1 } split( ',', $opt_S ) );
+FIXUP:
 foreach my $m ( split( ',', $opt_F ) )
 {
+    if ( exists $skips{$m} )
+    {
+        next FIXUP;
+    }
     if ( $m =~ /[^a-z]/ )
     {
         die "invalid chars in identifier '$m'!";
