@@ -89,10 +89,6 @@ my $obj = TheWML::Backends::Fixup::Main->new(
     _buffer => \$buffer
 );
 $obj->run( $opt_S, $opt_F );
-#
-#   statistic
-#
-$obj->verbose("Total amount of images: @{[$obj->bytes]} bytes");
 
 TheWML::Backends->out( $opt_o, \&error, [$buffer] );
 

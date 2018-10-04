@@ -444,6 +444,11 @@ FIXUP:
             $ref->($self);
         }
     }
+
+    # statistic
+    $self->verbose("Total amount of images: @{[$self->bytes]} bytes");
+
+    return;
 }
 
 1;
