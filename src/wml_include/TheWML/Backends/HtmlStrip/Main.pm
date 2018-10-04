@@ -13,6 +13,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            argv
             opt_O
             opt_b
             opt_o
@@ -265,7 +266,8 @@ sub main
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
     if (
-        not Getopt::Long::GetOptions(
+        not Getopt::Long::GetOptionsFromArray(
+            $self->argv,
             "v|verbose"     => sub { my ( undef, $v ) = @_; $self->opt_v($v); },
             "O|optimize=i"  => sub { my ( undef, $v ) = @_; $self->opt_O($v); },
             "b|blocksize=i" => sub { my ( undef, $v ) = @_; $self->opt_b($v); },
@@ -279,7 +281,7 @@ sub main
     $self->opt_b(32766) if $self->opt_b > 32766;
     $self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
-    my $INPUT = TheWML::Backends->input( \@ARGV, \&error, \&usage );
+    my $INPUT = TheWML::Backends->input( $self->argv, \&error, \&usage );
 
     #
     #   global initial stripping
