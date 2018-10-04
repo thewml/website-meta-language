@@ -71,17 +71,6 @@ sub error
     exit(1);
 }
 
-sub warning
-{
-    my ($str) = @_;
-    if ( not $opt_q )
-    {
-        print STDERR "** HTMLfix:Warning: $str\n";
-    }
-
-    return;
-}
-
 #
 #   read input file
 #
