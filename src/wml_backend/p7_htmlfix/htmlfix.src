@@ -20,23 +20,25 @@ use Image::Size;
 #   process command line
 #
 sub usage {
-    print STDERR "Usage: htmlfix [options] [file]\n";
-    print STDERR "\n";
-    print STDERR "Options:\n";
-    print STDERR "  -o, --outputfile=<file>  set output file instead of stdout\n";
-    print STDERR "  -F, --fix=<fixes>        select which fix to apply\n";
-    print STDERR "  -S, --skip=<fixes>       skip specified fixes\n";
-    print STDERR "  -v, --verbose            verbose mode\n\n";
-    print STDERR "Fixes are a comma separated list of (default is to process them all)\n";
-    print STDERR "  imgalt : add ALT attributes to IMG tags\n";
-    print STDERR "  imgsize: add WIDTH/HEIGHT attributes to IMG tags\n";
-    print STDERR "  summary: add SUMMARY attribute to TABLE tags\n";
-    print STDERR "  center : change proprietary CENTER tag to standard DIV tag\n";
-    print STDERR "  space  : fix trailing spaces in tags\n";
-    print STDERR "  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes\n";
-    print STDERR "  indent : indent paragraphs\n";
-    print STDERR "  comment: out-comment tags\n";
-    print STDERR "  tagcase: perform tag case-conversion\n";
+    print STDERR <<'EOF';
+Usage: htmlfix [options] [file]
+
+Options:
+  -o, --outputfile=<file>  set output file instead of stdout
+  -F, --fix=<fixes>        select which fix to apply
+  -S, --skip=<fixes>       skip specified fixes
+  -v, --verbose            verbose mode\n
+Fixes are a comma separated list of (default is to process them all)
+  imgalt : add ALT attributes to IMG tags
+  imgsize: add WIDTH/HEIGHT attributes to IMG tags
+  summary: add SUMMARY attribute to TABLE tags
+  center : change proprietary CENTER tag to standard DIV tag
+  space  : fix trailing spaces in tags
+  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes
+  indent : indent paragraphs
+  comment: out-comment tags
+  tagcase: perform tag case-conversion
+EOF
     exit(1);
 }
 
@@ -212,7 +214,7 @@ sub ProcessImgTag {
 
     return $attr;
 }
-sub Fixup_imgalt {
+sub _fixup_imgalt {
     my $bufferN = '';
 
     if (!defined($buffer)) { die "CLamm oo Buffer is undef." }
@@ -230,7 +232,7 @@ sub Fixup_imgalt {
 
     return;
 }
-sub Fixup_imgsize {
+sub _fixup_imgsize {
     my $bufferN = '';
     while ($buffer =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s) {
         my ($pre, $tag, $attr, $end) = ($1, $2, $3, $4);
@@ -244,7 +246,7 @@ sub Fixup_imgsize {
 #
 #   FIXUP 2: add summary attribute to <table>-tags
 #
-sub Fixup_summary {
+sub _fixup_summary {
     verbose("adding summary attribute to <table>");
 
     my $last = 0;
@@ -267,7 +269,7 @@ sub Fixup_summary {
 #
 #   FIXUP 3: change <center>..</center> to <div align=center>..</div>
 #
-sub Fixup_center {
+sub _fixup_center {
     verbose("replacing <center>..</center> by <div align=center>..</div>");
 
     $buffer =~ s|<[cC][eE][nN][tT][eE][rR]((?:\s[^>ck]*)?)>|<div align="center"$1>|g;
@@ -279,7 +281,7 @@ sub Fixup_center {
 #
 #   FIXUP 4: fix trailing space in tags
 #
-sub Fixup_space {
+sub _fixup_space {
     verbose("trailing space in tags");
 
     #   Only space characters are removed, neither tabs nor newlines
@@ -293,7 +295,7 @@ sub Fixup_space {
 #   FIXUP 5: add quotations to attribute values and
 #            add missing '#' char to color attributes
 #
-sub Fixup_quotes {
+sub _fixup_quotes {
     verbose("add quotes to attributes");
 
     my $last = 0;
@@ -337,7 +339,7 @@ sub ProcessIndentContainer {
     }
     return $data;
 }
-sub Fixup_indent {
+sub _fixup_indent {
     verbose("paragraph indentation");
 
     if ($buffer =~ m|<[iI][nN][dD][eE][nN][tT][\s>]|) {
@@ -355,7 +357,7 @@ sub Fixup_indent {
 #
 #   FIXUP 7: out-commenting tags
 #
-sub Fixup_comment {
+sub _fixup_comment {
     verbose("remove commenting tags");
     $buffer =~ s|<[a-zA-Z_][a-zA-Z0-9-]*#.*?>||sg;
     $buffer =~ s|</[a-zA-Z_][a-zA-Z0-9-]*#>||sg;
@@ -400,7 +402,7 @@ sub ProcessTagConv {
     }
     return $data;
 }
-sub Fixup_tagcase {
+sub _fixup_tagcase {
     verbose("tag case translation");
 
     if ($buffer =~ m|<[tT][aA][gG][cC][oO][nN][vV][\s>]|) {
@@ -421,7 +423,10 @@ foreach my $S (split(',', $opt_S)) {
 }
 
 foreach my $m (split(',', $opt_F)) {
-    my $fixup = 'Fixup_' . $m;
+    if ($m =~ /[^a-z]/) {
+        die "invalid chars in identifier '$m'!";
+    }
+    my $fixup = '_fixup_' . $m;
     my $ref = __PACKAGE__->can($fixup);
 
     if ($ref)
