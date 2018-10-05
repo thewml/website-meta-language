@@ -9,8 +9,7 @@ use List::MoreUtils qw(none);
 use Cwd ();
 use File::Path qw/ mkpath rmtree /;
 
-use File::Temp qw/ tempdir /;
-use Path::Tiny qw/ path /;
+use Path::Tiny qw/ path tempdir /;
 
 # Remove WML_TEST_BUILD so we won't run the tests with infinite recursion.
 if ( !delete( $ENV{'WML_TEST_BUILD'} ) )
@@ -49,7 +48,7 @@ sub test_cmd
 }
 
 {
-    my $temp_dir = tempdir( CLEANUP => 1 );
+    my $temp_dir = tempdir( TEMPLATE => 'wml-build-process--XXXXXXXX' );
     my $before_temp_cwd = Cwd::getcwd();
 
     chdir($temp_dir);
@@ -94,8 +93,12 @@ sub test_cmd
     test_cmd( [ "make", "package_source" ] );
 
     local $ENV{WML_TEST_QUIET} = 1;
+
     # TEST
     test_cmd( [ $^X, "../wml_test/run_test.pl" ] );
+
+    # For cleanup of the temp_dir.
+    chdir($before_temp_cwd);
 }
 
 __END__
