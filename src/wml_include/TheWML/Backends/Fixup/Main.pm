@@ -6,9 +6,12 @@ package TheWML::Backends::Fixup::Main;
 
 use strict;
 use warnings;
+use 5.014;
 
-use Getopt::Long ();
-use Image::Size  ();
+use Getopt::Long     ();
+use TheWML::Backends ();
+
+use Image::Size ();
 
 use parent 'TheWML::Frontends::Wml::Base';
 
@@ -24,8 +27,6 @@ use Class::XSAccessor (
             )
     },
 );
-
-use TheWML::Backends ();
 
 #   processing loop
 #

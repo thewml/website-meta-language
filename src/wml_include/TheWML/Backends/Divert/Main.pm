@@ -6,11 +6,34 @@ package TheWML::Backends::Divert::Main;
 
 use strict;
 use warnings;
+use 5.014;
 
-our $VERSION = '0.0.1';
-
-use TheWML::Backends ();
 use Getopt::Long     ();
+use TheWML::Backends ();
+
+use List::Util qw(first min);
+use List::MoreUtils qw(any);
+
+use Class::XSAccessor (
+    constructor => '_cons',
+    accessors   => +{
+        map { $_ => $_ }
+            qw(
+            _BUFFER
+            _OVRWRITE
+            _expand_stack
+            _filename
+            _in_fh
+            _line
+            _loc_stack
+            _location
+            _opt_o
+            _opt_q
+            _opt_v
+            argv
+            )
+    },
+);
 
 sub usage
 {
@@ -54,18 +77,6 @@ sub warning
 
     return;
 }
-
-use List::Util qw(first min);
-use List::MoreUtils qw(any);
-
-use Class::XSAccessor (
-    constructor => '_cons',
-    accessors   => +{
-        map { $_ => $_ }
-            qw( _BUFFER _expand_stack _filename _in_fh _line _loc_stack _location
-            _opt_o _opt_q _opt_v _OVRWRITE argv )
-    },
-);
 
 sub new
 {

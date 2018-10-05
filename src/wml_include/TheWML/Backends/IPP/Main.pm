@@ -4,10 +4,12 @@
 
 package TheWML::Backends::IPP::Main;
 
-use 5.014;
-
 use strict;
 use warnings;
+use 5.014;
+
+use Getopt::Long     ();
+use TheWML::Backends ();
 
 use parent 'TheWML::Frontends::Wml::Base';
 
@@ -30,14 +32,12 @@ use Class::XSAccessor (
     },
 );
 
-use Getopt::Long ();
 use File::Temp qw/tempdir/;
 use File::Spec ();
 
 use IO::All qw/ io /;
 
 use Carp qw( cluck );
-use TheWML::Backends ();
 use TheWML::Backends::IPP::Args qw/ $IDENT_RE /;
 use TheWML::Backends::IPP::Delimit qw/ _delim /;
 use TheWML::Backends::IPP::File ();

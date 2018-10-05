@@ -5,8 +5,10 @@ package TheWML::Backends::ASubst::Main;
 
 use strict;
 use warnings;
+use 5.014;
 
-use Getopt::Long ();
+use Getopt::Long     ();
+use TheWML::Backends ();
 
 use Class::XSAccessor (
     constructor => 'new',
@@ -14,10 +16,6 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             argv
-            opt_O
-            opt_b
-            opt_o
-            opt_v
             )
     },
 );
@@ -77,8 +75,6 @@ sub error
     my ($str) = @_;
     die "** ASubst:Error: $str\n";
 }
-
-use TheWML::Backends ();
 
 #
 #   processing loop

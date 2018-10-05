@@ -8,6 +8,9 @@ use strict;
 use warnings;
 use 5.014;
 
+use Getopt::Long     ();
+use TheWML::Backends ();
+
 use Class::XSAccessor (
     constructor => 'new',
     accessors   => +{
@@ -21,9 +24,6 @@ use Class::XSAccessor (
             )
     },
 );
-
-use Getopt::Long     ();
-use TheWML::Backends ();
 
 #
 #   process command line
