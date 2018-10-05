@@ -120,6 +120,7 @@ INSTALL (
 )
 FOREACH( fn
         "TheWML/Backends.pm"
+        "TheWML/Backends/ASubst/Main.pm"
         "TheWML/Backends/Divert/Main.pm"
         "TheWML/Backends/Fixup/Main.pm"
         "TheWML/Backends/HtmlStrip/Main.pm"
