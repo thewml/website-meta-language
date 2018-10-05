@@ -1,8 +1,6 @@
-##
 ##  IPP -- Include Pre-Processor
 ##  Copyright (c) 1997,1998,1999 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000 Denis Barbier, All Rights Reserved.
-##
 
 package TheWML::Backends::IPP::Main;
 

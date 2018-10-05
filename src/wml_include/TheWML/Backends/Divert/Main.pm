@@ -1,10 +1,8 @@
-package TheWML::Backends::Divert::Main;
-
-##
 ##  divert -- Diversion Filter
 ##  Copyright (c) 1997-2001 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 1999-2001 Denis Barbier, All Rights Reserved.
-##
+
+package TheWML::Backends::Divert::Main;
 
 use strict;
 use warnings;

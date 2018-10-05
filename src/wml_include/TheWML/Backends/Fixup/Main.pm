@@ -1,3 +1,7 @@
+##  htmlfix -- Fixup HTML markup code
+##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved.
+##  Copyright (c) 2000 Denis Barbier
+
 package TheWML::Backends::Fixup::Main;
 
 use strict;
