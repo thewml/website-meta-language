@@ -68,15 +68,10 @@ sub _nexttoken
     my ($buf) = @_;
     my ( $token, $bufN );
 
-    if ( $buf =~ m|^([^<]+?)(<.+)$|s )
+    if ( my ( $s, $e ) = $buf =~ m{\A([^<]+?|<[^>]+>)(<.+)\z}s )
     {
-        $token = $1;
-        $bufN  = $2;
-    }
-    elsif ( $buf =~ m|^(<[^>]+>)(.*)$|s )
-    {
-        $token = $1;
-        $bufN  = $2;
+        $token = $s;
+        $bufN  = $e;
     }
     else
     {
