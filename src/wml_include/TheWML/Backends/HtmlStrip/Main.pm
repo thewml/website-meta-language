@@ -1,8 +1,7 @@
-##
 ##  htmlstrip -- Strip HTML markup code
 ##  Copyright (c) 1997-2000 Ralf S. Engelschall, All Rights Reserved.
 ##  Copyright (c) 2000 Denis Barbier
-##
+
 package TheWML::Backends::HtmlStrip::Main;
 
 use strict;
@@ -258,6 +257,17 @@ sub _strip_non_preformatted
     return $O;
 }
 
+sub _append_non_preformat
+{
+    my ( $self, $out, $in ) = @_;
+
+    my $o = $self->_strip_non_preformatted($in);
+    $o =~ s|\A\n||s if $$out =~ m|\n\z|s;
+    $$out .= $o;
+
+    return;
+}
+
 sub main
 {
     my ($self) = @_;
@@ -320,13 +330,16 @@ sub main
     while ( $run_once || $input )
     {
         $run_once = 0;
+
         my $NEXT = '';
         if (   $chunksize > 0
             && $chunksize < 32767
             && length($input) > $chunksize )
         {
-            ( $input, $NEXT ) = ( $input =~ m|^(.{$chunksize})(.*)$|s );
+            $NEXT = substr( $input, $chunksize );
+            $input = substr( $input, 0, $chunksize );
         }
+
         while (1)
         {
             #   look for a begin tag
@@ -356,9 +369,7 @@ sub main
             {
                 my $str = sprintf "found $curtag at position %d", $loc + $pos;
                 $self->verbose($str);
-                my $o = $self->_strip_non_preformatted($prolog);
-                $o =~ s|^\n||s if $output =~ m|\n$|s;
-                $output .= $o;
+                $self->_append_non_preformat( \$output, $prolog );
 
                 my ( $body, $endtag );
 
@@ -391,9 +402,7 @@ sub main
                 {
                     $loc += length($1);
                     $input = $2;
-                    my $o = $self->_strip_non_preformatted($1);
-                    $o =~ s|^\n||s if $output =~ m|\n$|s;
-                    $output .= $o;
+                    $self->_append_non_preformat( \$output, $1 );
                 }
                 if ($NEXT)
                 {
@@ -409,9 +418,7 @@ sub main
                 }
                 else
                 {
-                    my $o = $self->_strip_non_preformatted($input);
-                    $o =~ s|^\n||s if $output =~ m|\n$|s;
-                    $output .= $o;
+                    $self->_append_non_preformat( \$output, $input );
                     $input = '';
                 }
                 last;
