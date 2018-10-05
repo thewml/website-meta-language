@@ -312,15 +312,16 @@ sub _main_loop
             foreach my $tag ( keys(%TAGS) )
             {
 
-                if ( $input =~ m|^(.*?)(<$tag(?:\s+[^>]*)?>)(.*)$|is )
+                if ( my ( $pro, $tag_body, $epi ) =
+                    $input =~ m|\A(.*?)(<$tag(?:\s+[^>]*)?>)(.*)\z|is )
                 {
-                    my $n = length($1);
+                    my $n = length($pro);
                     if ( $n < $pos )
                     {
                         $pos     = $n;
-                        $prolog  = $1;
-                        $curtag  = $2;
-                        $epilog  = $3;
+                        $prolog  = $pro;
+                        $curtag  = $tag_body;
+                        $epilog  = $epi;
                         $tagname = $tag;
                     }
                 }
