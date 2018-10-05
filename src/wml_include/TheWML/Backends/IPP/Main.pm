@@ -32,9 +32,7 @@ use Class::XSAccessor (
     },
 );
 
-use File::Temp qw/tempdir/;
-use File::Spec ();
-
+use Path::Tiny qw/ tempdir /;
 use IO::All qw/ io /;
 
 use Carp qw( cluck );
@@ -229,9 +227,8 @@ sub main
     $self->_create_initial_argument_vector( \%arg, \@opt_D );
 
     #   process the pre-loaded include files
-    my $tmpdir = tempdir( 'ipp.XXXXXXXX', 'CLEANUP' => 1, )
-        or die "Unable to create temporary directory: $!\n";
-    $self->temp_fn( File::Spec->catfile( $tmpdir, "ipp.$$.tmp" ) );
+    my $tmpdir = tempdir( 'ipp.XXXXXXXX', );
+    $self->temp_fn( $tmpdir->child("ipp.$$.tmp") );
 
     $self->_del_temp;
     $self->_write_includes( \@opt_s, \@opt_i );
