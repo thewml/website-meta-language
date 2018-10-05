@@ -60,8 +60,7 @@ sub verbose
 sub error
 {
     my ($str) = @_;
-    cluck("** IPP:Error: $str");
-    exit(1);
+    die "** IPP:Error: $str";
 }
 
 sub warning
@@ -90,7 +89,7 @@ Options:
   -o, --outputfile=<file>      set output file instead of stdout
   -v, --verbose                verbosity
 EOF
-    exit(1);
+    die;
 }
 
 sub ProcessFile

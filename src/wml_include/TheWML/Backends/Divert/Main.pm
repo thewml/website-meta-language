@@ -46,7 +46,7 @@ Options:
   -v, --verbose            verbose mode
 EOF
 
-    exit 1;
+    die;
 }
 
 sub verbose
@@ -63,8 +63,7 @@ sub verbose
 sub error
 {
     my ( $self, $str ) = @_;
-    STDERR->print("** Divert:Error: $str\n");
-    exit 1;
+    die "** Divert:Error: $str\n";
 }
 
 sub warning
