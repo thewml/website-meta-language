@@ -269,6 +269,22 @@ my %TAGS = (
     "pre"     => 0,
     "xmp"     => 0,
 );
+my $TAGS_RE = join '|', keys %TAGS;
+$TAGS_RE = qr#$TAGS_RE#i;
+
+sub _get_initial_tag
+{
+    my ( $self, $input ) = @_;
+
+    my $len = length($input);
+    if ( my ( $pro, $tag_body, $tagname, $epi ) =
+        $input =~ m|\A(.*?)(<($TAGS_RE)(?:\s+[^>]*)?>)(.*)\z|s )
+    {
+        my $n = length($pro);
+        return ( $n, $pro, $tag_body, $epi, $tagname );
+    }
+    return ($len);
+}
 
 # On large files, benchmarking show that most of the time is spent
 # here because of the complicated regexps.  To minimize memory usage
@@ -300,28 +316,8 @@ sub _main_loop
         {
             #   look for a begin tag
             my $len = length($input);
-            my $pos = $len;
-            my $tagname;
-            my $epilog;
-            my $prolog;
-            my $curtag;
-            foreach my $tag ( keys(%TAGS) )
-            {
-
-                if ( my ( $pro, $tag_body, $epi ) =
-                    $input =~ m|\A(.*?)(<$tag(?:\s+[^>]*)?>)(.*)\z|is )
-                {
-                    my $n = length($pro);
-                    if ( $n < $pos )
-                    {
-                        $pos     = $n;
-                        $prolog  = $pro;
-                        $curtag  = $tag_body;
-                        $epilog  = $epi;
-                        $tagname = $tag;
-                    }
-                }
-            }
+            my ( $pos, $prolog, $curtag, $epilog, $tagname ) =
+                $self->_get_initial_tag($input);
             if ( $pos < $len )
             {
                 my $str = sprintf "found $curtag at position %d", $loc + $pos;
