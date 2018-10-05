@@ -274,6 +274,10 @@ my %TAGS = (
     "xmp"     => 0,
 );
 
+# On large files, benchmarking show that most of the time is spent
+# here because of the complicated regexps.  To minimize memory usage
+# and CPU time, input is splitted into small chunks whose size may
+# be changed by the -b flag.
 sub _main_loop
 {
     my ( $self, $input ) = @_;
@@ -295,6 +299,7 @@ sub _main_loop
             $input = substr( $input, 0, $chunksize );
         }
 
+    PROCESS:
         while (1)
         {
             #   look for a begin tag
@@ -338,7 +343,7 @@ sub _main_loop
                 {
                     $input = $curtag . $epilog . $NEXT;
                     $chunksize += $self->opt_b;
-                    last;
+                    last PROCESS;
                 }
 
                 $str = sprintf "found $endtag at position %d",
@@ -349,7 +354,7 @@ sub _main_loop
                 $output .= $endtag if ( not $TAGS{$tagname} );
                 $loc += $pos + length($body) + length($curtag);
                 $input = $epilog;
-                next;
+                next PROCESS;
             }
             else
             {
@@ -376,7 +381,7 @@ sub _main_loop
                     $self->_append_non_preformat( \$output, $input );
                     $input = '';
                 }
-                last;
+                last PROCESS;
             }
         }
         if ( $NEXT eq '' )
@@ -431,11 +436,6 @@ sub main
                                                   #
                                                   #   Processing Loop
                                                   #
-
-    #   On large files, benchmarking show that most of the time is spent
-    #   here because of the complicated regexps.  To minimize memory usage
-    #   and CPU time, input is splitted into small chunks whose size may
-    #   be changed by the -b flag.
 
     $self->verbose("Main processing");
     my $output = $self->_main_loop($input);
