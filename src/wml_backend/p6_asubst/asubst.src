@@ -29,20 +29,6 @@ sub usage
     print STDERR "  -v, --verbose            verbose mode\n";
     die;
 }
-my $opt_o;
-$Getopt::Long::bundling      = 1;
-$Getopt::Long::getopt_compat = 0;
-if (
-    not Getopt::Long::GetOptions(
-        "v|verbose" => do { my $x; \$x; },
-        "o|outputfile=s" => \$opt_o,
-    )
-    )
-{
-    usage();
-}
-
-$opt_o //= '-';
 
 sub error
 {
@@ -54,8 +40,6 @@ sub error
 #   open input file and read into buffer
 #
 use TheWML::Backends;
-
-my $foo_buffer = TheWML::Backends->input( \@ARGV, \&error, \&usage );
 
 #
 #   processing loop
@@ -282,6 +266,22 @@ sub cnvpost
     return $str;
 }
 
+my $opt_o;
+$Getopt::Long::bundling      = 1;
+$Getopt::Long::getopt_compat = 0;
+if (
+    not Getopt::Long::GetOptions(
+        "v|verbose" => do { my $x; \$x; },
+        "o|outputfile=s" => \$opt_o,
+    )
+    )
+{
+    usage();
+}
+
+$opt_o //= '-';
+
+my $foo_buffer = TheWML::Backends->input( \@ARGV, \&error, \&usage );
 my $rc;
 if ( index( $foo_buffer, '{:' ) != -1 )
 {
