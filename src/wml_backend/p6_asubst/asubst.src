@@ -9,8 +9,8 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 use strict;
 use warnings;
 
-use lib "@INSTALLPRIVLIB@";
-use lib "@INSTALLARCHLIB@";
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
 
 use Getopt::Long 2.13;
 
@@ -19,35 +19,45 @@ my $_my_debug = 0;
 #
 #   process command line
 #
-sub usage {
+sub usage
+{
     print STDERR "Usage: asubst [options] [file]\n";
     print STDERR "\n";
     print STDERR "Options:\n";
-    print STDERR "  -o, --outputfile=<file>  set output file instead of stdout\n";
+    print STDERR
+        "  -o, --outputfile=<file>  set output file instead of stdout\n";
     print STDERR "  -v, --verbose            verbose mode\n";
     exit(1);
 }
 use vars qw/ $opt_v /;
 
-BEGIN { $opt_v = 0;}
+BEGIN { $opt_v = 0; }
 my $opt_o;
-$Getopt::Long::bundling = 1;
+$Getopt::Long::bundling      = 1;
 $Getopt::Long::getopt_compat = 0;
-if (not Getopt::Long::GetOptions(
-    "v|verbose" => \$opt_v,
-    "o|outputfile=s" => \$opt_o,)) {
+if (
+    not Getopt::Long::GetOptions(
+        "v|verbose"      => \$opt_v,
+        "o|outputfile=s" => \$opt_o,
+    )
+    )
+{
     usage();
 }
 
 $opt_o //= '-';
 
-sub verbose {
+sub verbose
+{
     my ($str) = @_;
-    if ($opt_v) {
+    if ($opt_v)
+    {
         print STDERR "** ASubst:Verbose: $str\n";
     }
 }
-sub error {
+
+sub error
+{
     my ($str) = @_;
     print STDERR "** ASubst:Error: $str\n";
     exit(1);
@@ -58,7 +68,7 @@ sub error {
 #
 use TheWML::Backends;
 
-my $foo_buffer = TheWML::Backends->input(\@ARGV, \&error, \&usage);
+my $foo_buffer = TheWML::Backends->input( \@ARGV, \&error, \&usage );
 
 #
 #   processing loop
@@ -68,7 +78,8 @@ my $foo_buffer = TheWML::Backends->input(\@ARGV, \&error, \&usage);
 #
 #  ($rc, $buffer) = ExpandBlock($buffer, \&cnvpre, $startdel, \&cnvin, $enddel, \&cnvpost, $level);
 #
-sub ExpandBlock {
+sub ExpandBlock
+{
     return ExpandBlockMore(@_);
 }
 
@@ -78,126 +89,171 @@ sub ExpandBlock {
 #   input: ... < < > > ... < > < < > < > > ...
 #   inputs for ExpandBlockOne: "... < < > > ...", "< >", "< < > < > > ...", #   ...
 #
-sub ExpandBlockMore {
-    my ($buffer, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level) = @_;
-    my ($rc, $opened, $offset, @segment, $del, $openidx, $closeidx);
-    my ($bufferN, $s, $e, $i, $data);
+sub ExpandBlockMore
+{
+    my ( $buffer, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level ) = @_;
+    my ( $rc, $opened, $offset, @segment, $del, $openidx, $closeidx );
+    my ( $bufferN, $s, $e, $i, $data );
 
     #
     #   first, check for corresponding delimiters
     #   and determine (nested) block segment positions
     #
-    $opened = 0;
-    $offset = 0;
+    $opened  = 0;
+    $offset  = 0;
     @segment = (0);
-    while (1) {
-        $openidx  = index($buffer, $opendel,  $offset);
-        $closeidx = index($buffer, $closedel, $offset);
-        _wml_back_end_asubst_debug(1, "buffer=<>, off=$offset, o=$openidx, c=$closeidx\n");
-        if ($openidx == -1 && $closeidx == -1) {
+    while (1)
+    {
+        $openidx  = index( $buffer, $opendel,  $offset );
+        $closeidx = index( $buffer, $closedel, $offset );
+        _wml_back_end_asubst_debug( 1,
+            "buffer=<>, off=$offset, o=$openidx, c=$closeidx\n" );
+        if ( $openidx == -1 && $closeidx == -1 )
+        {
             #   both not found, stop now
-            push(@segment, length($buffer));
+            push( @segment, length($buffer) );
             last;
         }
-        if ($openidx != -1 && $closeidx != -1) {
+        if ( $openidx != -1 && $closeidx != -1 )
+        {
             #   both found, take closer one
-            ($offset, $del, $opened) = ($openidx < $closeidx ?
-                ($openidx, $opendel, $opened+1) :
-                ($closeidx, $closedel, $opened-1) );
+            ( $offset, $del, $opened ) = (
+                $openidx < $closeidx
+                ? ( $openidx, $opendel, $opened + 1 )
+                : ( $closeidx, $closedel, $opened - 1 )
+            );
         }
-        else {
+        else
+        {
             #   one not found, take other one
-            ($offset, $del, $opened) = ($openidx != -1 ?
-                ($openidx, $opendel, $opened+1) :
-                ($closeidx, $closedel, $opened-1) );
+            ( $offset, $del, $opened ) = (
+                $openidx != -1
+                ? ( $openidx, $opendel, $opened + 1 )
+                : ( $closeidx, $closedel, $opened - 1 )
+            );
         }
-        $offset = $offset+length($del);
+        $offset = $offset + length($del);
+
         #   still reached a complete segment
-        if ($opened == 0) {
-            push(@segment, $offset);
+        if ( $opened == 0 )
+        {
+            push( @segment, $offset );
         }
     }
-    if ($opened != 0) {
-        return (1, "invalid number of opening and closing delimiters");
+    if ( $opened != 0 )
+    {
+        return ( 1, "invalid number of opening and closing delimiters" );
     }
 
     #
     #   now process each segment
     #
     $bufferN = '';
-    for ($i = 0; $i < $#segment; ) {
+    for ( $i = 0 ; $i < $#segment ; )
+    {
         $s = $segment[$i];
-        $e = $segment[$i+1];
+        $e = $segment[ $i + 1 ];
         $i++;
-        $data = substr($buffer, $s, ($e-$s));
+        $data = substr( $buffer, $s, ( $e - $s ) );
         my $rc;
-        ($rc, $data) = ExpandBlockOne($opendel, $closedel, $data, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level);
-        if ($rc != 0) {
-            return ($rc, $data);
+        ( $rc, $data ) = ExpandBlockOne(
+            $opendel, $closedel, $data,    $cnvpre, $opendel,
+            $cnvin,   $closedel, $cnvpost, $level
+        );
+        if ( $rc != 0 )
+        {
+            return ( $rc, $data );
         }
         $bufferN .= $data;
     }
 
-    return (0, $bufferN);
+    return ( 0, $bufferN );
 }
 
 #   This subvariant operates only on a buffer which
 #   contains one block (which can be still nested).
 #   input: "... < < > > ... "
 #
-sub ExpandBlockOne {
-    my ($opendel, $closedel, $buffer, $cnvpre, $startdel, $cnvin, $enddel, $cnvpost, $level) = @_;
-    my ($openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data);
+sub ExpandBlockOne
+{
+    my (
+        $opendel, $closedel, $buffer,  $cnvpre, $startdel,
+        $cnvin,   $enddel,   $cnvpost, $level
+    ) = @_;
+    my ( $openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data );
 
-    $openidx  =  index($buffer,  $opendel);
-    $closeidx = rindex($buffer, $closedel);
+    $openidx = index( $buffer, $opendel );
+    $closeidx = rindex( $buffer, $closedel );
+
     #   either both exist or both not exist
-    if ($openidx == -1 && $closeidx == -1) {
-        if ($level == 0) {
-            $data = $cnvpre->($buffer, $level); # could also be cnvpost..
+    if ( $openidx == -1 && $closeidx == -1 )
+    {
+        if ( $level == 0 )
+        {
+            $data = $cnvpre->( $buffer, $level );    # could also be cnvpost..
         }
-        else {
+        else
+        {
             $data = $buffer;
         }
-        return (0, $data);
+        return ( 0, $data );
     }
-    else {
+    else
+    {
         #   convert prefix
-        $prefix  = $cnvpre->(substr($buffer, 0, $openidx), $level);
-        _wml_back_end_asubst_debug($level, "ExpandBlockOne::prefix", $prefix);
+        $prefix = $cnvpre->( substr( $buffer, 0, $openidx ), $level );
+        _wml_back_end_asubst_debug( $level, "ExpandBlockOne::prefix", $prefix );
 
         #   recursive into the body
-        $inner = substr($buffer, $openidx+length($opendel), $closeidx-($openidx+length($opendel)));
-        _wml_back_end_asubst_debug($level, "ExpandBlockOne::inner", $inner);
-        ($rc, $inner) = ExpandBlockMore($inner, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level+1);
-        _wml_back_end_asubst_debug($level, "ExpandBlockOne::inner", $inner);
-        $inner = $cnvin->($inner, $level+1);
-        _wml_back_end_asubst_debug($level, "ExpandBlockOne::inner", $inner);
+        $inner = substr(
+            $buffer,
+            $openidx + length($opendel),
+            $closeidx - ( $openidx + length($opendel) )
+        );
+        _wml_back_end_asubst_debug( $level, "ExpandBlockOne::inner", $inner );
+        ( $rc, $inner ) = ExpandBlockMore(
+            $inner,    $cnvpre,  $opendel, $cnvin,
+            $closedel, $cnvpost, $level + 1
+        );
+        _wml_back_end_asubst_debug( $level, "ExpandBlockOne::inner", $inner );
+        $inner = $cnvin->( $inner, $level + 1 );
+        _wml_back_end_asubst_debug( $level, "ExpandBlockOne::inner", $inner );
 
         #   convert postfix
-        $postfix = $cnvpost->(substr($buffer, $closeidx+length($closedel), length($buffer)-($closeidx+length($closedel))), $level);
-        _wml_back_end_asubst_debug($level, "ExpandBlockOne::postfix", $postfix);
+        $postfix = $cnvpost->(
+            substr(
+                $buffer,
+                $closeidx + length($closedel),
+                length($buffer) - ( $closeidx + length($closedel) )
+            ),
+            $level
+        );
+        _wml_back_end_asubst_debug( $level, "ExpandBlockOne::postfix",
+            $postfix );
 
-        return ($rc, $prefix . $inner . $postfix);
+        return ( $rc, $prefix . $inner . $postfix );
     }
 }
 
-
 #   A debugging function
-sub _wml_back_end_asubst_debug {
-    my ($level, $name, $str) = @_;
-    my (@o, $l);
+sub _wml_back_end_asubst_debug
+{
+    my ( $level, $name, $str ) = @_;
+    my ( @o, $l );
 
     # return if ($_my_debug == 0);
     return;
 
-    push(@o, "    " x $level . "### $name =\n");
-    if ($str eq '') {
-        push(@o, "    " x $level . "    ||\n");
+    push( @o, "    " x $level . "### $name =\n" );
+    if ( $str eq '' )
+    {
+        push( @o, "    " x $level . "    ||\n" );
     }
-    else {
-        foreach $l (split('\n', $str)) {
-            push(@o, "    " x $level . "    |$l|\n");
+    else
+    {
+        foreach $l ( split( '\n', $str ) )
+        {
+            push( @o, "    " x $level . "    |$l|\n" );
         }
     }
     print STDERR @o;
@@ -205,44 +261,54 @@ sub _wml_back_end_asubst_debug {
     return;
 }
 
-sub cnvpre {
-    my ($str, $level) = @_;
+sub cnvpre
+{
+    my ( $str, $level ) = @_;
 
     return '' if $str eq '';
     return $str;
 }
-sub cnvin {
-    my ($str, $level) = @_;
+
+sub cnvin
+{
+    my ( $str, $level ) = @_;
 
     return '' if $str eq '';
 
     my @SCMD;
-    $str =~ s|\[\[(s(.)[^\2]+?\2[^\2]*?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
-    $str =~ s|\[\[(tr(.)[^\2]+?\2[^\2]+?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
-    foreach my $scmd (@SCMD) {
+    $str =~
+        s|\[\[(s(.)[^\2]+?\2[^\2]*?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
+    $str =~
+        s|\[\[(tr(.)[^\2]+?\2[^\2]+?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
+    foreach my $scmd (@SCMD)
+    {
         eval "\$str =~ $scmd;";
     }
     return $str;
 }
-sub cnvpost {
-    my ($str, $level) = @_;
+
+sub cnvpost
+{
+    my ( $str, $level ) = @_;
 
     return '' if $str eq '';
     return $str;
 }
 
 my $rc;
-if (index($foo_buffer, '{:') != -1) {
-    ($rc, $foo_buffer) = ExpandBlock($foo_buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost, 0);
+if ( index( $foo_buffer, '{:' ) != -1 )
+{
+    ( $rc, $foo_buffer ) =
+        ExpandBlock( $foo_buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost, 0 );
 }
 
-if ($rc) {
+if ($rc)
+{
     print STDERR "aSubst:Error: $foo_buffer\n";
     exit(1);
 }
 
-
-TheWML::Backends->out($opt_o, \&error, [$foo_buffer]);
+TheWML::Backends->out( $opt_o, \&error, [$foo_buffer] );
 
 exit(0);
 
@@ -307,3 +373,4 @@ console.
 =cut
 
 ##EOF##
+# vim:ft=perl
