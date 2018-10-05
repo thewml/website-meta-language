@@ -295,7 +295,8 @@ sub _main_loop
     my ( $self, $input ) = @_;
 
     my $output    = '';
-    my $chunksize = $self->opt_b;
+    my $opt_b     = $self->opt_b;
+    my $chunksize = $opt_b;
     my $loc       = 0;
     my $run_once  = 1;
     while ( $run_once || $input )
@@ -335,7 +336,7 @@ sub _main_loop
                 else
                 {
                     $input = $curtag . $epilog . $NEXT;
-                    $chunksize += $self->opt_b;
+                    $chunksize += $opt_b;
                     last PROCESS;
                 }
 
@@ -361,11 +362,11 @@ sub _main_loop
                 {
                     if ( length($input) < $chunksize )
                     {
-                        $chunksize = $self->opt_b;
+                        $chunksize = $opt_b;
                     }
                     else
                     {
-                        $chunksize += $self->opt_b;
+                        $chunksize += $opt_b;
                     }
                     $input .= $NEXT;
                 }
