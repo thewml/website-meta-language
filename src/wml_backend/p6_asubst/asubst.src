@@ -27,17 +27,14 @@ sub usage
     print STDERR
         "  -o, --outputfile=<file>  set output file instead of stdout\n";
     print STDERR "  -v, --verbose            verbose mode\n";
-    exit(1);
+    die;
 }
-use vars qw/ $opt_v /;
-
-BEGIN { $opt_v = 0; }
 my $opt_o;
 $Getopt::Long::bundling      = 1;
 $Getopt::Long::getopt_compat = 0;
 if (
     not Getopt::Long::GetOptions(
-        "v|verbose"      => \$opt_v,
+        "v|verbose" => do { my $x; \$x; },
         "o|outputfile=s" => \$opt_o,
     )
     )
@@ -47,20 +44,10 @@ if (
 
 $opt_o //= '-';
 
-sub verbose
-{
-    my ($str) = @_;
-    if ($opt_v)
-    {
-        print STDERR "** ASubst:Verbose: $str\n";
-    }
-}
-
 sub error
 {
     my ($str) = @_;
-    print STDERR "** ASubst:Error: $str\n";
-    exit(1);
+    die "** ASubst:Error: $str\n";
 }
 
 #
@@ -305,13 +292,10 @@ if ( index( $foo_buffer, '{:' ) != -1 )
 
 if ($rc)
 {
-    print STDERR "aSubst:Error: $foo_buffer\n";
-    exit(1);
+    die "aSubst:Error: $foo_buffer\n";
 }
 
 TheWML::Backends->out( $opt_o, \&error, [$foo_buffer] );
-
-exit(0);
 
 ##EOF##
 __END__
