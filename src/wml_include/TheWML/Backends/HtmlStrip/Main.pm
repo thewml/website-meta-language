@@ -283,7 +283,7 @@ sub main
     $self->opt_b(32766) if $self->opt_b > 32766;
     $self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
-    my $INPUT = TheWML::Backends->input( $self->argv, \&error, \&usage );
+    my $input = TheWML::Backends->input( $self->argv, \&error, \&usage );
 
     #
     #   global initial stripping
@@ -292,11 +292,11 @@ sub main
     $self->verbose("Strip sharp-like comments");
 
     #   strip sharp-like comments
-    #$INPUT =~ s|^\s*#.*$||mg;
-    $INPUT =~ s/\A(?:(?:[ \t]*)#[^\n]*\n)+//s;    # special  case: at begin
-    $INPUT =~ s/\n[ \t]*#[^\n]*(?=\n)//sg;        # standard case: in the middle
-    $INPUT =~ s/\n[ \t]*#[^\n]*\n?$/\n/s;         # special  case: at end
-    $INPUT =~ s/^([ \t]*)\\(#)/$1$2/mg;           # remove escaping backslash
+    #$input =~ s|^\s*#.*$||mg;
+    $input =~ s/\A(?:(?:[ \t]*)#[^\n]*\n)+//s;    # special  case: at begin
+    $input =~ s/\n[ \t]*#[^\n]*(?=\n)//sg;        # standard case: in the middle
+    $input =~ s/\n[ \t]*#[^\n]*\n?$/\n/s;         # special  case: at end
+    $input =~ s/^([ \t]*)\\(#)/$1$2/mg;           # remove escaping backslash
                                                   #
                                                   #   Processing Loop
                                                   #
@@ -306,7 +306,7 @@ sub main
         "xmp"     => 0,
     );
 
-    my $OUTPUT = '';
+    my $output = '';
 
     #   On large files, benchmarking show that most of the time is spent
     #   here because of the complicated regexps.  To minimize memory usage
@@ -316,19 +316,21 @@ sub main
     $self->verbose("Main processing");
     my $chunksize = $self->opt_b;
     my $loc       = 0;
-    do
+    my $run_once  = 1;
+    while ( $run_once || $input )
     {
+        $run_once = 0;
         my $NEXT = '';
         if (   $chunksize > 0
             && $chunksize < 32767
-            && length($INPUT) > $chunksize )
+            && length($input) > $chunksize )
         {
-            ( $INPUT, $NEXT ) = ( $INPUT =~ m|^(.{$chunksize})(.*)$|s );
+            ( $input, $NEXT ) = ( $input =~ m|^(.{$chunksize})(.*)$|s );
         }
         while (1)
         {
             #   look for a begin tag
-            my $len = length($INPUT);
+            my $len = length($input);
             my $pos = $len;
             my $tagname;
             my $epilog;
@@ -337,7 +339,7 @@ sub main
             foreach my $tag ( keys(%TAGS) )
             {
 
-                if ( $INPUT =~ m|^(.*?)(<$tag(?:\s+[^>]*)?>)(.*)$|is )
+                if ( $input =~ m|^(.*?)(<$tag(?:\s+[^>]*)?>)(.*)$|is )
                 {
                     my $n = length($1);
                     if ( $n < $pos )
@@ -355,8 +357,8 @@ sub main
                 my $str = sprintf "found $curtag at position %d", $loc + $pos;
                 $self->verbose($str);
                 my $o = $self->_strip_non_preformatted($prolog);
-                $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
-                $OUTPUT .= $o;
+                $o =~ s|^\n||s if $output =~ m|\n$|s;
+                $output .= $o;
 
                 my ( $body, $endtag );
 
@@ -368,7 +370,7 @@ sub main
                 }
                 else
                 {
-                    $INPUT = $curtag . $epilog . $NEXT;
+                    $input = $curtag . $epilog . $NEXT;
                     $chunksize += $self->opt_b;
                     last;
                 }
@@ -376,26 +378,26 @@ sub main
                 $str = sprintf "found $endtag at position %d",
                     $loc + $pos + length($body);
                 $self->verbose($str);
-                $OUTPUT .= $curtag if ( not $TAGS{$tagname} );
-                $OUTPUT .= $self->_strip_preformatted($body);
-                $OUTPUT .= $endtag if ( not $TAGS{$tagname} );
+                $output .= $curtag if ( not $TAGS{$tagname} );
+                $output .= $self->_strip_preformatted($body);
+                $output .= $endtag if ( not $TAGS{$tagname} );
                 $loc += $pos + length($body) + length($curtag);
-                $INPUT = $epilog;
+                $input = $epilog;
                 next;
             }
             else
             {
-                if ( $INPUT =~ m|^(.+)(<.*)$|s )
+                if ( $input =~ m|^(.+)(<.*)$|s )
                 {
                     $loc += length($1);
-                    $INPUT = $2;
+                    $input = $2;
                     my $o = $self->_strip_non_preformatted($1);
-                    $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
-                    $OUTPUT .= $o;
+                    $o =~ s|^\n||s if $output =~ m|\n$|s;
+                    $output .= $o;
                 }
                 if ($NEXT)
                 {
-                    if ( length($INPUT) < $chunksize )
+                    if ( length($input) < $chunksize )
                     {
                         $chunksize = $self->opt_b;
                     }
@@ -403,33 +405,33 @@ sub main
                     {
                         $chunksize += $self->opt_b;
                     }
-                    $INPUT .= $NEXT;
+                    $input .= $NEXT;
                 }
                 else
                 {
-                    my $o = $self->_strip_non_preformatted($INPUT);
-                    $o =~ s|^\n||s if $OUTPUT =~ m|\n$|s;
-                    $OUTPUT .= $o;
-                    $INPUT = '';
+                    my $o = $self->_strip_non_preformatted($input);
+                    $o =~ s|^\n||s if $output =~ m|\n$|s;
+                    $output .= $o;
+                    $input = '';
                 }
                 last;
             }
         }
         if ( $NEXT eq '' )
         {
-            $OUTPUT .= $INPUT;
-            $INPUT = '';
+            $output .= $input;
+            $input = '';
         }
-    } while ($INPUT);
+    }
 
     #
     #   global final stripping
     #
     $self->verbose("Fix <suck> special command");
-    $OUTPUT =~ s|\s*<suck(\s*/)?>\s*||isg;
-    $OUTPUT =~ s|^\n||s;
+    $output =~ s|\s*<suck(\s*/)?>\s*||isg;
+    $output =~ s|^\n||s;
 
-    TheWML::Backends->out( $self->opt_o, \&error, [$OUTPUT] );
+    TheWML::Backends->out( $self->opt_o, \&error, [$output] );
     return;
 }
 
