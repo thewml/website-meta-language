@@ -48,26 +48,6 @@ use File::Basename qw/ basename /;
 use File::Which qw/ which /;
 use IO::All qw/ io /;
 
-sub precompile
-{
-    my ( $name, $in ) = @_;
-
-    my $error = '';
-    local $SIG{__WARN__} = sub { $error .= $_[0]; };
-    local $SIG{__DIE__};
-
-    $in =~ s|exit(\s*\(0\))|return$1|sg;
-    $in =~ s|exit(\s*\([^0].*?\))|die$1|sg;
-    eval( "no strict; no warnings; package $name; \$main = sub { \@ARGV = \@_; "
-            . $in
-            . "; return 0; }; package main;" );
-    $error = "$@" if ($@);
-    my $func = eval("no strict; no warnings; \$${name}::main");
-
-    $@ = $error || '';
-    return ( $func, $@ );
-}
-
 #   remove escape backslashes
 sub unquotearg
 {
@@ -83,37 +63,7 @@ sub dosource
     $_pass_mgr->verbose( 9, "loading: $prog\n" );
     if ( !defined( $pass->src_cb ) )
     {
-        if ( defined $cb )
-        {
-            $pass->src_cb($cb);
-        }
-        else
-        {
-            my $pkgname = basename($prog);
-            if ( $prog !~ m|\A/| )
-            {
-                $prog = which($prog);
-            }
-            my $src = io->file($prog)->all;
-            $_pass_mgr->verbose( 9,
-                      "loading: succeeded with $prog ("
-                    . length($src)
-                    . " bytes)\n" );
-
-            $_pass_mgr->verbose( 9, "precompiling script: pkgname=$pkgname\n" );
-            my ( $func, $error ) = precompile( $pkgname, $src );
-            if ( $error ne '' )
-            {
-                die $error;
-                $_pass_mgr->verbose( 9,
-                    "precompiling script: error: $error\n" );
-            }
-            else
-            {
-                $_pass_mgr->verbose( 9, "precompiling script: succeeded\n" );
-            }
-            $pass->src_cb($func);
-        }
+        $pass->src_cb($cb);
     }
 
     $_pass_mgr->verbose( 9, "splitting from args: $args\n" );
