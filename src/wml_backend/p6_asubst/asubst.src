@@ -12,7 +12,7 @@ use warnings;
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
-use Getopt::Long 2.13;
+use Getopt::Long ();
 
 my $_my_debug = 0;
 
@@ -39,7 +39,7 @@ sub error
 #
 #   open input file and read into buffer
 #
-use TheWML::Backends;
+use TheWML::Backends ();
 
 #
 #   processing loop
