@@ -234,6 +234,12 @@ sub pass6
             opt      => $opt,
             from     => $from,
             to       => $to,
+            cb       => sub {
+                require TheWML::Backends::ASubst::Main;
+
+                return TheWML::Backends::ASubst::Main->new( argv => [@_] )
+                    ->main;
+            },
         }
     );
 }
