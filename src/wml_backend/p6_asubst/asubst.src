@@ -74,13 +74,13 @@ my $foo_buffer = TheWML::Backends->input( \@ARGV, \&error, \&usage );
 #   processing loop
 #
 
-#  ExpandBlock -- expand a delimited and perhaps nested block structure
+#  _expand_block -- expand a delimited and perhaps nested block structure
 #
-#  ($rc, $buffer) = ExpandBlock($buffer, \&cnvpre, $startdel, \&cnvin, $enddel, \&cnvpost, $level);
+#  ($rc, $buffer) = _expand_block($buffer, \&cnvpre, $startdel, \&cnvin, $enddel, \&cnvpost, $level);
 #
-sub ExpandBlock
+sub _expand_block
 {
-    return ExpandBlockMore(@_);
+    return _expand_block_more(@_);
 }
 
 #   This subvariant is used to split the input into
@@ -89,7 +89,7 @@ sub ExpandBlock
 #   input: ... < < > > ... < > < < > < > > ...
 #   inputs for ExpandBlockOne: "... < < > > ...", "< >", "< < > < > > ...", #   ...
 #
-sub ExpandBlockMore
+sub _expand_block_more
 {
     my ( $buffer, $cnvpre, $opendel, $cnvin, $closedel, $cnvpost, $level ) = @_;
     my ( $rc, $opened, $offset, @segment, $del, $openidx, $closeidx );
@@ -156,7 +156,7 @@ sub ExpandBlockMore
         $i++;
         $data = substr( $buffer, $s, ( $e - $s ) );
         my $rc;
-        ( $rc, $data ) = ExpandBlockOne(
+        ( $rc, $data ) = _expand_block_one(
             $opendel, $closedel, $data,    $cnvpre, $opendel,
             $cnvin,   $closedel, $cnvpost, $level
         );
@@ -174,7 +174,7 @@ sub ExpandBlockMore
 #   contains one block (which can be still nested).
 #   input: "... < < > > ... "
 #
-sub ExpandBlockOne
+sub _expand_block_one
 {
     my (
         $opendel, $closedel, $buffer,  $cnvpre, $startdel,
@@ -211,7 +211,7 @@ sub ExpandBlockOne
             $closeidx - ( $openidx + length($opendel) )
         );
         _wml_back_end_asubst_debug( $level, "ExpandBlockOne::inner", $inner );
-        ( $rc, $inner ) = ExpandBlockMore(
+        ( $rc, $inner ) = _expand_block_more(
             $inner,    $cnvpre,  $opendel, $cnvin,
             $closedel, $cnvpost, $level + 1
         );
@@ -299,7 +299,8 @@ my $rc;
 if ( index( $foo_buffer, '{:' ) != -1 )
 {
     ( $rc, $foo_buffer ) =
-        ExpandBlock( $foo_buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost, 0 );
+        _expand_block( $foo_buffer, \&cnvpre, '{:', \&cnvin, ':}', \&cnvpost,
+        0 );
 }
 
 if ($rc)
