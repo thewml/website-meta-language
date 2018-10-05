@@ -78,9 +78,6 @@ sub error
     die "** ASubst:Error: $str\n";
 }
 
-#
-#   open input file and read into buffer
-#
 use TheWML::Backends ();
 
 #
@@ -301,21 +298,21 @@ sub main
 
     $opt_o //= '-';
 
-    my $foo_buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
+    my $buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
     my $rc;
-    if ( index( $foo_buffer, '{:' ) != -1 )
+    if ( index( $buffer, '{:' ) != -1 )
     {
-        ( $rc, $foo_buffer ) =
-            $self->_expand_block( $foo_buffer, \&cnvpre, '{:', \&cnvin, ':}',
+        ( $rc, $buffer ) =
+            $self->_expand_block( $buffer, \&cnvpre, '{:', \&cnvin, ':}',
             \&cnvpost, 0 );
     }
 
     if ($rc)
     {
-        die "aSubst:Error: $foo_buffer\n";
+        die "aSubst:Error: $buffer\n";
     }
 
-    TheWML::Backends->out( $opt_o, \&error, [$foo_buffer] );
+    TheWML::Backends->out( $opt_o, \&error, [$buffer] );
 
     return;
 }

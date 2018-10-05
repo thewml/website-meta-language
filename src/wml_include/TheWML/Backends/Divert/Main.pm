@@ -10,8 +10,7 @@ use warnings;
 our $VERSION = '0.0.1';
 
 use TheWML::Backends ();
-use Getopt::Long 2.13;
-use IO::Handle 1.15;
+use Getopt::Long     ();
 
 sub usage
 {

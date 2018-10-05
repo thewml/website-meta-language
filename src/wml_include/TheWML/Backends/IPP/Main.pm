@@ -30,9 +30,9 @@ use Class::XSAccessor (
     },
 );
 
-use Getopt::Long 2.13;
+use Getopt::Long ();
 use File::Temp qw/tempdir/;
-use File::Spec;
+use File::Spec ();
 
 use IO::All qw/ io /;
 

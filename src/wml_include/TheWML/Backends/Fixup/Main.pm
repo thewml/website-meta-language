@@ -7,7 +7,8 @@ package TheWML::Backends::Fixup::Main;
 use strict;
 use warnings;
 
-use Image::Size ();
+use Getopt::Long ();
+use Image::Size  ();
 
 use parent 'TheWML::Frontends::Wml::Base';
 
@@ -23,6 +24,8 @@ use Class::XSAccessor (
             )
     },
 );
+
+use TheWML::Backends ();
 
 #   processing loop
 #
@@ -472,11 +475,8 @@ sub main
 {
     my ( $self, $param ) = @_;
 
-    use Getopt::Long 2.13;
-
-    use vars qw($opt_v $opt_q);
-    $opt_q = 0;
-    $opt_v = 0;
+    my $opt_q = 0;
+    my $opt_v = 0;
     my $opt_o = '-';
     my $opt_F =
         'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
@@ -496,9 +496,6 @@ sub main
     {
         usage();
     }
-
-    # read input file
-    use TheWML::Backends ();
 
     my $buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
 

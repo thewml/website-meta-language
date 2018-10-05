@@ -22,7 +22,8 @@ use Class::XSAccessor (
     },
 );
 
-use Getopt::Long;
+use Getopt::Long     ();
+use TheWML::Backends ();
 
 #
 #   process command line
@@ -53,11 +54,6 @@ sub error
     my ($str) = @_;
     die "** HTMLstrip:Error: $str\n";
 }
-
-#
-#   read input file
-#
-use TheWML::Backends;
 
 #
 #   stripping functions for particular areas
