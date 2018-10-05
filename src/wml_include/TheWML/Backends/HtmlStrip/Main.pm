@@ -6,6 +6,7 @@ package TheWML::Backends::HtmlStrip::Main;
 
 use strict;
 use warnings;
+use 5.014;
 
 use Class::XSAccessor (
     constructor => 'new',
@@ -359,11 +360,11 @@ sub _main_loop
             }
             else
             {
-                if ( $input =~ m|^(.+)(<.*)$|s )
+                if ( $input =~ s|\A(.+)(<)|$2|s )
                 {
-                    $loc += length($1);
-                    $input = $2;
-                    $self->_append_non_preformat( \$output, $1 );
+                    my $prefix = $1;
+                    $loc += length($prefix);
+                    $self->_append_non_preformat( \$output, $prefix );
                 }
                 if ($NEXT)
                 {
