@@ -41,7 +41,16 @@ use parent 'TheWML::Frontends::Wml::Base';
 use Class::XSAccessor (
     accessors => +{
         map { $_ => $_ }
-            qw( _passes _process_argv_cb gen_hostname out_istmp _opt_v _opt_o _opt_s )
+            qw(
+            _gnu_m4
+            _opt_o
+            _opt_s
+            _opt_v
+            _passes
+            _process_argv_cb
+            gen_hostname
+            out_istmp
+            )
     }
 );
 
@@ -50,12 +59,14 @@ use TheWML::Frontends::Wml::PassObj ();
 
 use TheWML::Frontends::Wml::Util qw/ _my_cwd error split_argv /;
 use IO::All qw/ io /;
+use File::Which qw/ which /;
 
 my $RESOLV_FN = '/etc/resolv.conf';
 
 sub new
 {
-    my $self     = bless +{}, shift;
+    my $self = bless +{}, shift;
+    $self->_gnu_m4( scalar( which('gm4') ) // scalar( which('m4') ) );
     my $args     = shift;
     my $__PASSES = [
         sub { return shift->pass1(@_); },
@@ -201,7 +212,9 @@ sub pass4
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
 
-    return scalar $_pass_mgr->dosystem("m4 $opt --prefix-builtins <$from >$to");
+    return
+        scalar $_pass_mgr->dosystem(
+        $_pass_mgr->_gnu_m4() . " $opt --prefix-builtins <$from >$to" );
 }
 
 sub pass5
