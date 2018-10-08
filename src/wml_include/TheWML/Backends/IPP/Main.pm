@@ -48,28 +48,6 @@ sub _sq
 
 # helper functions
 
-sub verbose
-{
-    my ( $self, $level, $str ) = @_;
-    if ( $self->opt_v )
-    {
-        print STDERR ' ' x ( $level * 2 ) . "$str\n";
-    }
-}
-
-sub error
-{
-    my ($str) = @_;
-    die "** IPP:Error: $str";
-}
-
-sub warning
-{
-    my ($str) = @_;
-    print STDERR "** IPP:Warning: $str\n";
-}
-
-# process command line
 sub usage
 {
     print STDERR <<'EOF';
@@ -90,6 +68,27 @@ Options:
   -v, --verbose                verbosity
 EOF
     die;
+}
+
+sub verbose
+{
+    my ( $self, $level, $str ) = @_;
+    if ( $self->opt_v )
+    {
+        print STDERR ' ' x ( $level * 2 ) . "$str\n";
+    }
+}
+
+sub error
+{
+    my ($str) = @_;
+    die "** IPP:Error: $str";
+}
+
+sub warning
+{
+    my ($str) = @_;
+    print STDERR "** IPP:Warning: $str\n";
 }
 
 sub ProcessFile

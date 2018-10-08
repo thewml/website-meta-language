@@ -40,6 +40,12 @@ sub usage
     die;
 }
 
+sub error
+{
+    my ($str) = @_;
+    die "** HTMLstrip:Error: $str\n";
+}
+
 sub verbose
 {
     my ( $self, $str ) = @_;
@@ -47,12 +53,6 @@ sub verbose
     {
         print STDERR "** HTMLstrip:Verbose: $str\n";
     }
-}
-
-sub error
-{
-    my ($str) = @_;
-    die "** HTMLstrip:Error: $str\n";
 }
 
 #

@@ -28,6 +28,36 @@ use Class::XSAccessor (
     },
 );
 
+sub usage
+{
+    print STDERR <<'EOF';
+Usage: htmlfix [options] [file]
+
+Options:
+  -o, --outputfile=<file>  set output file instead of stdout
+  -F, --fix=<fixes>        select which fix to apply
+  -S, --skip=<fixes>       skip specified fixes
+  -v, --verbose            verbose mode\n
+Fixes are a comma separated list of (default is to process them all)
+  imgalt : add ALT attributes to IMG tags
+  imgsize: add WIDTH/HEIGHT attributes to IMG tags
+  summary: add SUMMARY attribute to TABLE tags
+  center : change proprietary CENTER tag to standard DIV tag
+  space  : fix trailing spaces in tags
+  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes
+  indent : indent paragraphs
+  comment: out-comment tags
+  tagcase: perform tag case-conversion
+EOF
+    die;
+}
+
+sub error
+{
+    my ($str) = @_;
+    die "** HTMLfix:Error: $str\n";
+}
+
 #   processing loop
 #
 #   Definitions of fixups
@@ -440,36 +470,6 @@ FIXUP:
     $self->verbose("Total amount of images: @{[$self->bytes]} bytes");
 
     return;
-}
-
-sub usage
-{
-    print STDERR <<'EOF';
-Usage: htmlfix [options] [file]
-
-Options:
-  -o, --outputfile=<file>  set output file instead of stdout
-  -F, --fix=<fixes>        select which fix to apply
-  -S, --skip=<fixes>       skip specified fixes
-  -v, --verbose            verbose mode\n
-Fixes are a comma separated list of (default is to process them all)
-  imgalt : add ALT attributes to IMG tags
-  imgsize: add WIDTH/HEIGHT attributes to IMG tags
-  summary: add SUMMARY attribute to TABLE tags
-  center : change proprietary CENTER tag to standard DIV tag
-  space  : fix trailing spaces in tags
-  quotes : add missing quotes for attributes and missing '#' character\n           to color attributes
-  indent : indent paragraphs
-  comment: out-comment tags
-  tagcase: perform tag case-conversion
-EOF
-    die;
-}
-
-sub error
-{
-    my ($str) = @_;
-    die "** HTMLfix:Error: $str\n";
 }
 
 sub main

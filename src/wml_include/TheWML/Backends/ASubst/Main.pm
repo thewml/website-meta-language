@@ -20,6 +20,23 @@ use Class::XSAccessor (
     },
 );
 
+sub usage
+{
+    print STDERR "Usage: asubst [options] [file]\n";
+    print STDERR "\n";
+    print STDERR "Options:\n";
+    print STDERR
+        "  -o, --outputfile=<file>  set output file instead of stdout\n";
+    print STDERR "  -v, --verbose            verbose mode\n";
+    die;
+}
+
+sub error
+{
+    my ($str) = @_;
+    die "** ASubst:Error: $str\n";
+}
+
 sub cnvpre
 {
     my ( $str, $level ) = @_;
@@ -55,26 +72,6 @@ sub cnvpost
 }
 
 my $_my_debug = 0;
-
-#
-#   process command line
-#
-sub usage
-{
-    print STDERR "Usage: asubst [options] [file]\n";
-    print STDERR "\n";
-    print STDERR "Options:\n";
-    print STDERR
-        "  -o, --outputfile=<file>  set output file instead of stdout\n";
-    print STDERR "  -v, --verbose            verbose mode\n";
-    die;
-}
-
-sub error
-{
-    my ($str) = @_;
-    die "** ASubst:Error: $str\n";
-}
 
 #
 #   processing loop
