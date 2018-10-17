@@ -10,6 +10,8 @@ use 5.014;
 use Getopt::Long     ();
 use TheWML::Backends ();
 
+use parent 'TheWML::Frontends::Wml::Base';
+
 use Class::XSAccessor (
     constructor => 'new',
     accessors   => +{
@@ -31,10 +33,9 @@ sub usage
     die;
 }
 
-sub error
+sub _name
 {
-    my ( $self, $str ) = @_;
-    die "** ASubst:Error: $str\n";
+    return 'ASubst';
 }
 
 sub cnvpre

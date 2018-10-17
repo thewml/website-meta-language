@@ -10,6 +10,12 @@ sub _gen_opt
     return sub { my ( undef, $v ) = @_; $self->$opt($v); },;
 }
 
+sub error
+{
+    my ( $self, $str ) = @_;
+    die "** " . $self->_name() . ":Error: $str\n";
+}
+
 1;
 
 __END__

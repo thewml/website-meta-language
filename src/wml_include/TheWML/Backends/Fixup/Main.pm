@@ -52,10 +52,9 @@ EOF
     die;
 }
 
-sub error
+sub _name
 {
-    my ( $self, $str ) = @_;
-    die "** HTMLfix:Error: $str\n";
+    return 'HTMLfix';
 }
 
 #   processing loop

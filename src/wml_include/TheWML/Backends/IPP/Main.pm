@@ -79,10 +79,9 @@ sub verbose
     }
 }
 
-sub error
+sub _name
 {
-    my ( $self, $str ) = @_;
-    die "** IPP:Error: $str";
+    return 'IPP';
 }
 
 sub warning

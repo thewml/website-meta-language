@@ -11,6 +11,8 @@ use 5.014;
 use Getopt::Long     ();
 use TheWML::Backends ();
 
+use parent 'TheWML::Frontends::Wml::Base';
+
 use List::Util qw(first min);
 use List::MoreUtils qw(any);
 
@@ -60,10 +62,9 @@ sub verbose
     return;
 }
 
-sub error
+sub _name
 {
-    my ( $self, $str ) = @_;
-    die "** Divert:Error: $str\n";
+    return "Divert";
 }
 
 sub warning
