@@ -16,6 +16,15 @@ sub error
     die "** " . $self->_name() . ":Error: $str\n";
 }
 
+sub verbose
+{
+    my ( $self, $str ) = @_;
+    if ( $self->opt_v )
+    {
+        print STDERR "** " . $self->_name . ":Verbose: $str\n";
+    }
+}
+
 1;
 
 __END__

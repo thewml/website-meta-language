@@ -77,6 +77,7 @@ sub verbose
     {
         print STDERR ' ' x ( $level * 2 ) . "$str\n";
     }
+    return;
 }
 
 sub _name

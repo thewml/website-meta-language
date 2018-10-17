@@ -431,16 +431,6 @@ sub _fixup_tagcase
     }
 }
 
-sub verbose
-{
-    my ( $self, $str ) = @_;
-    if ( $self->opt_v )
-    {
-        print STDERR "** HTMLfix:Verbose: $str\n";
-    }
-    return;
-}
-
 sub run
 {
     my ( $self, $opt_S, $opt_F ) = @_;

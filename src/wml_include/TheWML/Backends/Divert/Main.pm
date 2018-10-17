@@ -51,17 +51,6 @@ EOF
     die;
 }
 
-sub verbose
-{
-    my ( $self, $str ) = @_;
-    if ( $self->_opt_v )
-    {
-        STDERR->print("** Divert:Verbose: $str\n");
-    }
-
-    return;
-}
-
 sub _name
 {
     return "Divert";

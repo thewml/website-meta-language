@@ -47,15 +47,6 @@ sub _name
     return 'HTMLstrip';
 }
 
-sub verbose
-{
-    my ( $self, $str ) = @_;
-    if ( $self->opt_v )
-    {
-        print STDERR "** HTMLstrip:Verbose: $str\n";
-    }
-}
-
 #
 #   stripping functions for particular areas
 #
