@@ -81,7 +81,7 @@ sub verbose
 
 sub error
 {
-    my ($str) = @_;
+    my ( $self, $str ) = @_;
     die "** IPP:Error: $str";
 }
 
@@ -137,7 +137,7 @@ sub _create_initial_argument_vector
         $str =~ s=\A(['"])(.*)\1\z=$2=;
         if ( $str !~ s/\A($IDENT_RE)// )
         {
-            error("Bad argument to option `D': $str");
+            $self->error("Bad argument to option `D': $str");
         }
         my $id = $1;
         $arg->{$id} =
@@ -145,7 +145,7 @@ sub _create_initial_argument_vector
             : ( $str =~ m|^=(?:['"]['"])?$| ) ? ''
             : ( $str =~ m|^=(.+)$| )          ? $1
             : ( $str eq '' )                  ? 1
-            :   error("Bad argument to option `D': $str");
+            :   $self->error("Bad argument to option `D': $str");
     }
     return;
 }
@@ -254,7 +254,7 @@ sub _process_real_files
             my $rc = system(
 "$p <$self->temp_fn >$self->temp_fn.f && mv $self->temp_fn.f $self->temp_fn 2>/dev/null"
             );
-            error("Prolog Filter `$p' failed") if ( $rc != 0 );
+            $self->error("Prolog Filter `$p' failed") if ( $rc != 0 );
         }
 
         #   process file via IPP filter
@@ -294,7 +294,7 @@ sub _do_output
                 ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' )
                 : '-'
             ),
-            \&error,
+            sub { return $self->error(@_); },
             [
                 $opt_o . ": \\\n",
                 "\t" . join( " \\\n\t", @deps ) . "\n",
@@ -305,7 +305,11 @@ sub _do_output
     else
     {
         # create output file
-        TheWML::Backends->out( $opt_o, \&error, [ ${ $self->_out_buf_ref } ] );
+        TheWML::Backends->out(
+            $opt_o,
+            sub { return $self->error(@_); },
+            [ ${ $self->_out_buf_ref } ]
+        );
     }
 
     return;

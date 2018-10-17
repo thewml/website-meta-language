@@ -54,7 +54,7 @@ EOF
 
 sub error
 {
-    my ($str) = @_;
+    my ( $self, $str ) = @_;
     die "** HTMLfix:Error: $str\n";
 }
 
@@ -498,7 +498,9 @@ sub main
         usage();
     }
 
-    my $buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
+    my $buffer =
+        TheWML::Backends->input( $self->argv, sub { return $self->error(@_); },
+        , \&usage );
 
     if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
 
@@ -507,7 +509,8 @@ sub main
     $self->_buffer( \$buffer );
     $self->run( $opt_S, $opt_F );
 
-    TheWML::Backends->out( $opt_o, \&error, [$buffer] );
+    TheWML::Backends->out( $opt_o, sub { return $self->error(@_); },
+        , [$buffer] );
     return;
 }
 

@@ -42,7 +42,7 @@ sub usage
 
 sub error
 {
-    my ($str) = @_;
+    my ( $self, $str ) = @_;
     die "** HTMLstrip:Error: $str\n";
 }
 
@@ -409,7 +409,9 @@ sub main
     $self->opt_b(32766) if $self->opt_b > 32766;
     $self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
-    my $input = TheWML::Backends->input( $self->argv, \&error, \&usage );
+    my $input =
+        TheWML::Backends->input( $self->argv, sub { return $self->error(@_); },
+        , \&usage );
 
     #
     #   global initial stripping
@@ -437,7 +439,8 @@ sub main
     $output =~ s|\s*<suck(\s*/)?>\s*||isg;
     $output =~ s|^\n||s;
 
-    TheWML::Backends->out( $self->opt_o, \&error, [$output] );
+    TheWML::Backends->out( $self->opt_o, sub { return $self->error(@_); },
+        , [$output] );
     return;
 }
 

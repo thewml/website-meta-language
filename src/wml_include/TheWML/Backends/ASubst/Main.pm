@@ -33,7 +33,7 @@ sub usage
 
 sub error
 {
-    my ($str) = @_;
+    my ( $self, $str ) = @_;
     die "** ASubst:Error: $str\n";
 }
 
@@ -291,7 +291,9 @@ sub main
 
     $opt_o //= '-';
 
-    my $buffer = TheWML::Backends->input( $self->argv, \&error, \&usage );
+    my $buffer =
+        TheWML::Backends->input( $self->argv, sub { return $self->error(@_); },
+        \&usage );
     my $rc;
     if ( index( $buffer, '{:' ) != -1 )
     {
@@ -305,7 +307,8 @@ sub main
         die "aSubst:Error: $buffer\n";
     }
 
-    TheWML::Backends->out( $opt_o, \&error, [$buffer] );
+    TheWML::Backends->out( $opt_o, sub { return $self->error(@_); },
+        , [$buffer] );
 
     return;
 }
