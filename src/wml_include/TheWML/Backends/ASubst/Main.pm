@@ -308,8 +308,7 @@ sub main
         die "aSubst:Error: $buffer\n";
     }
 
-    TheWML::Backends->out( $opt_o, sub { return $self->error(@_); },
-        , [$buffer] );
+    $self->_out( $opt_o, [$buffer], );
 
     return;
 }

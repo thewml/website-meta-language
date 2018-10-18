@@ -431,8 +431,7 @@ sub main
     $output =~ s|\s*<suck(\s*/)?>\s*||isg;
     $output =~ s|^\n||s;
 
-    TheWML::Backends->out( $self->opt_o, sub { return $self->error(@_); },
-        , [$output] );
+    $self->_out( $self->opt_o, [$output] );
     return;
 }
 

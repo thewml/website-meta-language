@@ -291,13 +291,12 @@ sub _do_output
             }
         }
 
-        TheWML::Backends->out(
+        $self->_out(
             (
                 $self->opt_M =~ /D/
                 ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' )
                 : '-'
             ),
-            sub { return $self->error(@_); },
             [
                 $opt_o . ": \\\n",
                 "\t" . join( " \\\n\t", @deps ) . "\n",

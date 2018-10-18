@@ -453,11 +453,7 @@ sub calc_result
 sub main
 {
     my ($self) = @_;
-    TheWML::Backends->out(
-        $self->_opt_o(),
-        sub { return $self->error(@_); },
-        [ $self->calc_result ]
-    );
+    $self->_out( $self->_opt_o(), [ $self->calc_result ] );
     return;
 }
 

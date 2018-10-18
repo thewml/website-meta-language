@@ -498,8 +498,7 @@ sub main
     $self->_buffer( \$buffer );
     $self->run( $opt_S, $opt_F );
 
-    TheWML::Backends->out( $opt_o, sub { return $self->error(@_); },
-        , [$buffer] );
+    $self->_out( $opt_o, [$buffer] );
     return;
 }
 
