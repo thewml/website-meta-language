@@ -3,6 +3,8 @@ package TheWML::Frontends::Wml::Base;
 use strict;
 use warnings;
 
+use TheWML::Backends ();
+
 sub _gen_opt
 {
     my ( $self, $opt ) = @_;
@@ -23,6 +25,14 @@ sub verbose
     {
         print STDERR "** " . $self->_name . ":Verbose: $str\n";
     }
+}
+
+sub _out
+{
+    my ( $self, $opt_o, $strs ) = @_;
+    TheWML::Backends->out( $opt_o, sub { return $self->error(@_); }, $strs, );
+
+    return;
 }
 
 1;

@@ -89,6 +89,7 @@ sub warning
 {
     my ($str) = @_;
     print STDERR "** IPP:Warning: $str\n";
+    return;
 }
 
 sub _process_file
@@ -307,11 +308,7 @@ sub _do_output
     else
     {
         # create output file
-        TheWML::Backends->out(
-            $opt_o,
-            sub { return $self->error(@_); },
-            [ ${ $self->_out_buf_ref } ]
-        );
+        $self->_out( $opt_o, [ ${ $self->_out_buf_ref } ] );
     }
 
     return;
