@@ -292,9 +292,7 @@ sub main
 
     $opt_o //= '-';
 
-    my $buffer =
-        TheWML::Backends->input( $self->argv, sub { return $self->error(@_); },
-        \&usage );
+    my $buffer = $self->_input;
     my $rc;
     if ( index( $buffer, '{:' ) != -1 )
     {

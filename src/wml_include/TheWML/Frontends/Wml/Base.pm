@@ -35,6 +35,17 @@ sub _out
     return;
 }
 
+sub _input
+{
+    my $self = shift;
+
+    return TheWML::Backends->input(
+        $self->argv,
+        sub { return $self->error(@_); },
+        sub { return $self->usage(@_); },
+    );
+}
+
 1;
 
 __END__

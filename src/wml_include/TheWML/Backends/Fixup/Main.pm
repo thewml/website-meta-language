@@ -487,9 +487,7 @@ sub main
         usage();
     }
 
-    my $buffer =
-        TheWML::Backends->input( $self->argv, sub { return $self->error(@_); },
-        , \&usage );
+    my $buffer = $self->_input;
 
     if ( !defined($buffer) ) { die "Egloo Buffer is undef." }
 

@@ -401,14 +401,9 @@ sub main
     $self->opt_b(32766) if $self->opt_b > 32766;
     $self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
-    my $input =
-        TheWML::Backends->input( $self->argv, sub { return $self->error(@_); },
-        , \&usage );
+    my $input = $self->_input;
 
-    #
     #   global initial stripping
-    #
-
     $self->verbose("Strip sharp-like comments");
 
     #   strip sharp-like comments
