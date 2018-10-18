@@ -10,8 +10,7 @@ use 5.014;
 
 use parent 'TheWML::Frontends::Wml::Base';
 
-use Getopt::Long     ();
-use TheWML::Backends ();
+use Getopt::Long ();
 
 use Class::XSAccessor (
     constructor => 'new',

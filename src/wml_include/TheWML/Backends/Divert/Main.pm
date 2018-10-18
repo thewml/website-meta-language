@@ -8,8 +8,7 @@ use strict;
 use warnings;
 use 5.014;
 
-use Getopt::Long     ();
-use TheWML::Backends ();
+use Getopt::Long ();
 
 use parent 'TheWML::Frontends::Wml::Base';
 
