@@ -370,7 +370,7 @@ sub _fixup_comment
 }
 
 #   FIXUP 8: tag case translation
-sub doit_upper
+sub _doit_upper
 {
     my ( $prefix, $body ) = @_;
     $prefix =~ s/^(.+)$/\U$1\E/;
@@ -379,7 +379,7 @@ s/(\s+[a-zA-Z][a-zA-Z0-9_-]*)(\s*=\s*[^"\s]+|\s*=\s*"[^"]*"|\/?>|\s)/\U$1\E$2/sg
     return $prefix . $body;
 }
 
-sub doit_lower
+sub _doit_lower
 {
     my ( $prefix, $body ) = @_;
     $prefix =~ s/^(.+)$/\L$1\E/;
@@ -400,13 +400,13 @@ sub _process_tag_conv
     if ( $case eq 'upper' )
     {
         $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\U$1\E|sg;
-        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?/?>)|doit_upper($1,$2)|sge;
+        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?/?>)|_doit_upper($1,$2)|sge;
         $data =~ s|(<\/[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\U$1\E|sg;
     }
     else
     {
         $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\L$1\E|sg;
-        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?>)|doit_lower($1,$2)|sge;
+        $data =~ s|(<[a-zA-Z][a-zA-Z0-9_-]*)(\s+.*?>)|_doit_lower($1,$2)|sge;
         $data =~ s|(<\/[a-zA-Z][a-zA-Z0-9_-]*\s*/?>)|\L$1\E|sg;
     }
     return $data;

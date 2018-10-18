@@ -208,7 +208,7 @@ sub _line_do_includes
 
         #   now recurse down
         ${ $self->out } .=
-            $self->_main->ProcessFile( $cmd, _delim($type),
+            $self->_main->_process_file( $cmd, _delim($type),
             $incfile, "", $level + 1, 0, $arg );
         if ( not $self->_main->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
         {

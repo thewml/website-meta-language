@@ -395,7 +395,7 @@ sub _run
     return;
 }
 
-sub ExpandDiversion
+sub _expand_diversion
 {
     my ( $self, $loc ) = @_;
 
@@ -426,7 +426,7 @@ sub ExpandDiversion
     my $data = '';
     foreach my $el ( @{$loc} )
     {
-        $data .= ref($el) ? $self->ExpandDiversion($el) : $el;
+        $data .= ref($el) ? $self->_expand_diversion($el) : $el;
     }
 
     #   we can remove the location from
@@ -447,7 +447,7 @@ sub calc_result
     ##   Pass 2: Recursively expand the location structure
     ##           by starting from the main location buffer
     ##
-    return $self->ExpandDiversion( $self->_BUFFER->{'main'} );
+    return $self->_expand_diversion( $self->_BUFFER->{'main'} );
 }
 
 sub main

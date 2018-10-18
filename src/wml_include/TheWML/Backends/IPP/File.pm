@@ -78,7 +78,7 @@ LS:
         next LS if $arg->{'IPP_THIS'} eq '';
 
         $$out .=
-            $self->_main->ProcessFile( $self->mode, $self->_del,
+            $self->_main->_process_file( $self->mode, $self->_del,
             $arg->{'IPP_THIS'}, "", $self->level, $self->no_id, $arg );
     }
     delete @$arg{qw/IPP_NEXT IPP_THIS IPP_PREV/};
@@ -109,7 +109,7 @@ sub PatternProcess
             {
                 next LS if ( m|/\.+$| or m|^\.+$| );
                 $out .=
-                    $self->_main->ProcessFile( $self->mode, $self->_del,
+                    $self->_main->_process_file( $self->mode, $self->_del,
                     "$dirname/$_$ext", "", $self->level, $self->no_id, $arg );
                 $found = 1;
             }
@@ -206,7 +206,7 @@ sub _find_file
     return $found;
 }
 
-sub ProcessFile
+sub _process_file
 {
     my ( $self, $fn, $realname, $in_arg ) = @_;
 

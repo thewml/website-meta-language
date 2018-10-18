@@ -91,7 +91,7 @@ sub warning
     print STDERR "** IPP:Warning: $str\n";
 }
 
-sub ProcessFile
+sub _process_file
 {
     my ( $self, $mode, $_del, $fn, $realname, $level, $no_id, $in_arg ) = @_;
 
@@ -101,7 +101,7 @@ sub ProcessFile
         level => $level,
         mode  => $mode,
         no_id => $no_id,
-    )->ProcessFile( $fn, $realname, $in_arg );
+    )->_process_file( $fn, $realname, $in_arg );
 }
 
 sub _write_includes
@@ -231,7 +231,9 @@ sub main
     $self->_del_temp;
     $self->_write_includes( \@opt_s, \@opt_i );
     $self->_append(
-        $self->ProcessFile( 'include', _sq(), $self->temp_fn, "", 0, 1, \%arg )
+        $self->_process_file(
+            'include', _sq(), $self->temp_fn, "", 0, 1, \%arg
+        )
     );
     $self->_del_temp;
 
@@ -259,7 +261,7 @@ sub _process_real_files
 
         #   process file via IPP filter
         $self->_append(
-            $self->ProcessFile(
+            $self->_process_file(
                 'include', _sq(),
                 $self->temp_fn, ( $opt_n eq '' ? $fn : $opt_n ),
                 0, 1, $arg
