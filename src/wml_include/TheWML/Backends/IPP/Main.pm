@@ -24,6 +24,7 @@ use Class::XSAccessor (
             opt_M
             opt_N
             opt_S
+            opt_o
             opt_v
             temp_fn
             _map
@@ -183,22 +184,23 @@ sub main
     my @opt_s;
     my @opt_P;
     my @opt_m;
-    my $opt_o = '-';
+    $self->opt_o('-');
     my $opt_n = '';
     if (
         not Getopt::Long::GetOptionsFromArray(
             $self->argv,
-            "D|define=s@"         => \@opt_D,
-            "I|includedir=s@"     => $self->opt_I,
-            "M|depend:s"          => $self->_gen_opt('opt_M'),
-            "N|nosynclines"       => $self->_gen_opt('opt_N'),
-            "v|verbose"           => $self->_gen_opt('opt_v'),
-            "P|prolog=s@"         => \@opt_P,
-            "S|sysincludedir=s@"  => $self->opt_S,
-            "i|includefile=s@"    => \@opt_i,
-            "m|mapfile=s@"        => \@opt_m,
-            "n|inputfile=s"       => \$opt_n,
-            "o|outputfile=s"      => \$opt_o,
+            "D|define=s@"        => \@opt_D,
+            "I|includedir=s@"    => $self->opt_I,
+            "M|depend:s"         => $self->_gen_opt('opt_M'),
+            "N|nosynclines"      => $self->_gen_opt('opt_N'),
+            "v|verbose"          => $self->_gen_opt('opt_v'),
+            "P|prolog=s@"        => \@opt_P,
+            "S|sysincludedir=s@" => $self->opt_S,
+            "i|includefile=s@"   => \@opt_i,
+            "m|mapfile=s@"       => \@opt_m,
+            "n|inputfile=s"      => \$opt_n,
+            "o|outputfile=s" =>
+                sub { my ( undef, $v ) = @_; $self->opt_o($v); },
             "s|sysincludefile=s@" => \@opt_s,
         )
         )
@@ -239,7 +241,7 @@ sub main
     $self->_del_temp;
 
     $self->_process_real_files( \@opt_P, $opt_n, \%arg );
-    $self->_do_output( $opt_o, );
+    $self->_do_output;
 }
 
 sub _process_real_files
@@ -278,9 +280,9 @@ sub _process_real_files
 
 sub _do_output
 {
-    my ( $self, $opt_o, ) = @_;
+    my ($self) = @_;
 
-    if ( $self->opt_M ne '-' && $opt_o ne '-' )
+    if ( $self->opt_M ne '-' && $self->opt_o ne '-' )
     {
         my @deps = @{ $self->argv };
         foreach my $inc ( keys( %{ $self->INCLUDES } ) )
@@ -294,11 +296,11 @@ sub _do_output
         $self->_out(
             (
                 $self->opt_M =~ /D/
-                ? ( ( $opt_o =~ s#\..*\z##mrs ) . '.d' )
+                ? ( ( $self->opt_o =~ s#\..*\z##mrs ) . '.d' )
                 : '-'
             ),
             [
-                $opt_o . ": \\\n",
+                $self->opt_o . ": \\\n",
                 "\t" . join( " \\\n\t", @deps ) . "\n",
 
             ]
@@ -307,7 +309,7 @@ sub _do_output
     else
     {
         # create output file
-        $self->_out( $opt_o, [ ${ $self->_out_buf_ref } ] );
+        $self->_out( $self->opt_o, [ ${ $self->_out_buf_ref } ] );
     }
 
     return;
