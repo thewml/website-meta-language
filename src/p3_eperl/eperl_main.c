@@ -49,7 +49,7 @@ int main(int argc, char **argv, char **env)
     FILE *fp = NULL;
     char *perlscript = "ePerl.script";
     char *myargv[20];
-    char *cpScript = "print \"foo\";\nprint \"\\n\";\n";
+    char *cpScript = "print \"foo\";\nprint \"\\n\";";
 
     if ((fp = fopen(perlscript, "w")) == NULL) {
         fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
