@@ -68,120 +68,122 @@ sub _process_img_tag
     my ( $self, $attr ) = @_;
     my ( $Nwidth, $Nheight, $Pwidth, $Pheight );
 
-    if (   $attr =~ m|SRC\s*=\s*"([^"]*)"|is
-        or $attr =~ m|SRC\s*=\s*(\S+)|is )
+    if (
+        not(   $attr =~ m|SRC\s*=\s*"([^"]*)"|is
+            or $attr =~ m|SRC\s*=\s*(\S+)|is )
+        )
     {
-        my $image = $1;
+        return $attr;
+    }
+    my $image = $1;
 
-        if ( my $size = -s $image )
+    if ( my $size = -s $image )
+    {
+        $self->bytes( $self->bytes() + $size );
+
+        #   add WIDTH and HEIGHT to speed up display
+        my $width  = -1;
+        my $height = -1;
+        my $scale  = 1;
+        if (   $attr =~ m/WIDTH\s*=\s*([0-9%]+|\*)/is
+            or $attr =~ m/WIDTH\s*=\s*"([0-9%]+|\*)"/is )
         {
-            $self->bytes( $self->bytes() + $size );
+            $width = $1;
+        }
+        if (   $attr =~ m/HEIGHT\s*=\s*([0-9%]+|\*)/is
+            or $attr =~ m/HEIGHT\s*=\s*"([0-9%]+|\*)"/is )
+        {
+            $height = $1;
+        }
+        if (   $attr =~ s/SCALE\s*=\s*([0-9]+)%//is
+            or $attr =~ s/SCALE\s*=\s*"([0-9]+)%"//is )
+        {
+            $scale = $1 / 100;
+        }
+        if (   $attr =~ s/SCALE\s*=\s*([0-9.]+)//is
+            or $attr =~ s/SCALE\s*=\s*"([0-9.]+)"//is )
+        {
+            $scale = $1;
+        }
+        if (   $width eq '*'
+            or $width == -1
+            or $height eq '*'
+            or $height == -1 )
+        {
+            my $error;
+            ( $Pwidth, $Pheight, $error ) = Image::Size::imgsize($image);
+            if ( defined($Pwidth) and defined($Pheight) )
+            {
 
-            #   add WIDTH and HEIGHT to speed up display
-            my $width  = -1;
-            my $height = -1;
-            my $scale  = 1;
-            if (   $attr =~ m/WIDTH\s*=\s*([0-9%]+|\*)/is
-                or $attr =~ m/WIDTH\s*=\s*"([0-9%]+|\*)"/is )
-            {
-                $width = $1;
-            }
-            if (   $attr =~ m/HEIGHT\s*=\s*([0-9%]+|\*)/is
-                or $attr =~ m/HEIGHT\s*=\s*"([0-9%]+|\*)"/is )
-            {
-                $height = $1;
-            }
-            if (   $attr =~ s/SCALE\s*=\s*([0-9]+)%//is
-                or $attr =~ s/SCALE\s*=\s*"([0-9]+)%"//is )
-            {
-                $scale = $1 / 100;
-            }
-            if (   $attr =~ s/SCALE\s*=\s*([0-9.]+)//is
-                or $attr =~ s/SCALE\s*=\s*"([0-9.]+)"//is )
-            {
-                $scale = $1;
-            }
-            if (   $width eq '*'
-                or $width == -1
-                or $height eq '*'
-                or $height == -1 )
-            {
-                my $error;
-                ( $Pwidth, $Pheight, $error ) = Image::Size::imgsize($image);
-                if ( defined($Pwidth) and defined($Pheight) )
+                #    width given, height needs completed
+                if (    ( not( $width eq '*' or $width == -1 ) )
+                    and ( $height eq '*' or $height == -1 ) )
                 {
-
-                    #    width given, height needs completed
-                    if (    ( not( $width eq '*' or $width == -1 ) )
-                        and ( $height eq '*' or $height == -1 ) )
-                    {
-                        $Nheight =
-                            ( $width == $Pwidth )
-                            ? $Pheight
-                            : int( ( $Pheight / $Pwidth ) * $width );
-                    }
-
-                    #   height given, width needs completed
-                    elsif ( ( not( $height eq '*' or $height == -1 ) )
-                        and ( $width eq '*' or $width == -1 ) )
-                    {
-                        $Nwidth =
-                            ( $height == $Pheight )
-                            ? $Pwidth
-                            : int( ( $Pwidth / $Pheight ) * $height );
-                    }
-
-                    #   both width and height needs completed
-                    elsif ( ( $height eq '*' or $height == -1 )
-                        and ( $width eq '*' or $width == -1 ) )
-                    {
-                        $Nwidth  = $Pwidth;
-                        $Nheight = $Pheight;
-                    }
-
-                    #   optionally scale the dimensions
-                    if ( $scale != 1 )
-                    {
-                        $Nwidth  = int( $Nwidth * $scale );
-                        $Nheight = int( $Nheight * $scale );
-                    }
-
-                    #   now set the new values
-                    if ( $width eq '*' )
-                    {
-                        $attr =~ s|(WIDTH\s*=\s*)\S+|$1$Nwidth|is;
-                        $self->verbose(
-                            "substituting width for $image: ``width=$Nwidth''");
-                    }
-                    elsif ( $width == -1 )
-                    {
-                        $attr .= " width=$Nwidth";
-                        $self->verbose(
-                            "adding width for $image: ``width=$Nwidth''");
-                    }
-                    if ( $height eq '*' )
-                    {
-                        $attr =~ s|(HEIGHT\s*=\s*)\S+|$1$Nheight|is;
-                        $self->verbose(
-"substituting height for $image: ``height=$Nheight''"
-                        );
-                    }
-                    elsif ( $height == -1 )
-                    {
-                        $attr .= " height=$Nheight";
-                        $self->verbose(
-                            "adding height for $image: ``height=$Nheight''");
-                    }
+                    $Nheight =
+                        ( $width == $Pwidth )
+                        ? $Pheight
+                        : int( ( $Pheight / $Pwidth ) * $width );
                 }
-                else
+
+                #   height given, width needs completed
+                elsif ( ( not( $height eq '*' or $height == -1 ) )
+                    and ( $width eq '*' or $width == -1 ) )
                 {
-                    #   complain
-                    $self->verbose("cannot complete size of $image: $error");
-
-                    #   and make sure the =* placeholder constructs are removed
-                    $attr =~ s|WIDTH\s*=\s*\*||is;
-                    $attr =~ s|HEIGHT\s*=\s*\*||is;
+                    $Nwidth =
+                        ( $height == $Pheight )
+                        ? $Pwidth
+                        : int( ( $Pwidth / $Pheight ) * $height );
                 }
+
+                #   both width and height needs completed
+                elsif ( ( $height eq '*' or $height == -1 )
+                    and ( $width eq '*' or $width == -1 ) )
+                {
+                    $Nwidth  = $Pwidth;
+                    $Nheight = $Pheight;
+                }
+
+                #   optionally scale the dimensions
+                if ( $scale != 1 )
+                {
+                    $Nwidth  = int( $Nwidth * $scale );
+                    $Nheight = int( $Nheight * $scale );
+                }
+
+                #   now set the new values
+                if ( $width eq '*' )
+                {
+                    $attr =~ s|(WIDTH\s*=\s*)\S+|$1$Nwidth|is;
+                    $self->verbose(
+                        "substituting width for $image: ``width=$Nwidth''");
+                }
+                elsif ( $width == -1 )
+                {
+                    $attr .= " width=$Nwidth";
+                    $self->verbose(
+                        "adding width for $image: ``width=$Nwidth''");
+                }
+                if ( $height eq '*' )
+                {
+                    $attr =~ s|(HEIGHT\s*=\s*)\S+|$1$Nheight|is;
+                    $self->verbose(
+                        "substituting height for $image: ``height=$Nheight''");
+                }
+                elsif ( $height == -1 )
+                {
+                    $attr .= " height=$Nheight";
+                    $self->verbose(
+                        "adding height for $image: ``height=$Nheight''");
+                }
+            }
+            else
+            {
+                #   complain
+                $self->verbose("cannot complete size of $image: $error");
+
+                #   and make sure the =* placeholder constructs are removed
+                $attr =~ s|WIDTH\s*=\s*\*||is;
+                $attr =~ s|HEIGHT\s*=\s*\*||is;
             }
         }
     }
