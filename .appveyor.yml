@@ -19,5 +19,4 @@ install:
     - "%cpanm% -n Getopt::Long Path::Tiny"
 build: off
 test_script:
-    - xcopy /i /q /s c:\Projects\website-meta-language c:\cygwin64\home\appveyor\website-meta-language && %perl% -E "use strict;use warnings;use autodie;$ENV{WMLOPTS}='--passoption 3,-x'; $ENV{PERL_MM_USE_DEFAULT}=1;chdir(qq($ENV{HOME}/website-meta-language)); mkdir('build');chdir('build'); system($^X, '../src/wml_test/run_test.pl') and die $!;"
-
+    - xcopy /i /q /s c:\Projects\website-meta-language c:\cygwin64\home\appveyor\website-meta-language && %perl% appveyor.pl

@@ -30,7 +30,7 @@ if ($IS_WIN)
 {
     $cmake_gen = 'MSYS Makefiles';
 }
-my $tatzer_dir =  path($0)->parent->parent->absolute ;
+my $tatzer_dir = path($0)->parent->parent->absolute;
 my $script_dir = path(__FILE__)->parent->absolute;
 my $myprefix   = Path::Tiny->cwd->child(qw(tests installation));
 
@@ -40,15 +40,27 @@ if ( !-e $myprefix )
 {
     rmtree( [$build_dir] );
     if (
-        do_system(
+        0
+        ? do_system(
             {
                 cmd => [
-"cd . && mkdir $build_dir && cd $build_dir && cmake "
+                          "cd . && mkdir $build_dir && cd $build_dir && cmake "
                         . ( defined($cmake_gen) ? qq#-G "$cmake_gen"# : "" )
                         . " -DCMAKE_INSTALL_PREFIX=$myprefix $tatzer_dir && $MAKE && $MAKE install"
                 ]
             }
         )
+        : do
+        {
+            my $p = "$myprefix/lib/wml/exec";
+            do_system(
+                {
+                    cmd => [
+"mkdir -p $p && gcc -o $p/wml_p3_eperl ../src/p3_eperl/eperl_main.c `perl -MExtUtils::Embed -e ccopts -e ldopts`"
+                    ]
+                },
+            );
+        }
         )
     {
         rmtree( [$myprefix] );
