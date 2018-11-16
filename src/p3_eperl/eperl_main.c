@@ -51,7 +51,7 @@ int main(int argc, char **argv, char **env)
     FILE *fp = NULL;
     char *perlscript = "ePerl.script";
     char *myargv[20];
-    char *cpScript = "print \"foo\";\nprint \"\\n\";";
+    char *cpScript = "print \"foo\";\nprint \"\\n\";\0";
 
     if ((fp = fopen(perlscript, "w")) == NULL) {
         fprintf(stderr, "Cannot open Perl script file `%s' for writing", perlscript);
@@ -71,7 +71,11 @@ int main(int argc, char **argv, char **env)
     }
     fprintf(stderr, "----written Perl script-----------------------------------\n");
     while (!feof(fp)) {
-        fprintf(stderr, "%c", fgetc(fp));
+        int c = fgetc(fp);
+        if (c < 0) {
+            break;
+        }
+        fprintf(stderr, "%c", (unsigned char)c);
     }
     fclose(fp); fp = NULL;
     fprintf(stderr, "\n\n end of----written Perl script-----------------------------------\n");
