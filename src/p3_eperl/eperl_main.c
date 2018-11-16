@@ -6,7 +6,9 @@
 
 /*  first include the standard Perl
  *      includes designed for embedding   */
+#if 0
 #define PERL_NO_GET_CONTEXT     /* for efficiency reasons, see perlguts(3) */
+#endif
 #include <EXTERN.h>
 #include <perl.h>
 
@@ -63,6 +65,16 @@ int main(int argc, char **argv, char **env)
 
     fprintf(stderr, "----internally created Perl script-----------------------------------\n%s\n--end--\n", cpScript);
 
+    if ((fp = fopen(perlscript, "r")) == NULL) {
+        fprintf(stderr, "Cannot open Perl script file `%s' for reading", perlscript);
+        return -1;
+    }
+    fprintf(stderr, "----written Perl script-----------------------------------\n");
+    while (!feof(fp)) {
+        fprintf(stderr, "%c", fgetc(fp));
+    }
+    fclose(fp); fp = NULL;
+    fprintf(stderr, "\n\n end of----written Perl script-----------------------------------\n");
     /*  create command line...  */
     int myargc = 0;
     /*  - program name and possible -T -w options */
