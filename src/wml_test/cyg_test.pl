@@ -32,7 +32,7 @@ if ( !-e $myprefix )
             do_system(
                 {
                     cmd => [
-"mkdir -p $p && gcc -o $p/wml_p3_eperl ../src/p3_eperl/eperl_main.c `perl -MExtUtils::Embed -e ccopts -e ldopts`"
+"mkdir -p $p && gcc -Wall -Wextra -o $p/wml_p3_eperl ../src/p3_eperl/eperl_main.c `perl -MExtUtils::Embed -e ccopts -e ldopts`"
                     ]
                 },
             );
