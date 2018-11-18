@@ -85,7 +85,7 @@ int main(int argc, char **argv, char **env)
     myargv[myargc++] = argv[0];
     /*  - and the script itself  */
     myargv[myargc++] = perlscript;
-    myargv[myargc++] = NULL;
+    myargv[myargc] = NULL;
 
     const int rc = Perl5_Run(myargc, myargv, env);
     return rc;
