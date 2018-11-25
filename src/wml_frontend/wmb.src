@@ -154,7 +154,7 @@ if ( $hostname =~ m|^[a-zA-Z0-9_-]+$| and -f "/etc/resolv.conf" )
 $version = `wml -V3 2>&1`;
 $version =~ s|^.*?(Built)|Used WML System:\n$1|s;
 
-$editor = $ENV{'EDITOR'} || 'vi';
+$editor    = $ENV{'EDITOR'} || 'vi';
 $editoropt = '';
 if ( $editor =~ m|^vim?| )
 {

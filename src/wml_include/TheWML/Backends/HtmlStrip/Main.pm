@@ -68,8 +68,8 @@ sub _nexttoken
 
     if ( length($token) > 80 )
     {
-        my $x = substr( $token, 0, 80 );
-        my $i = rindex( $x, ' ' );
+        my $x    = substr( $token, 0, 80 );
+        my $i    = rindex( $x, ' ' );
         my $bufN = substr( $token, $i ) . $bufN;
         $token = substr( $token, 0, $i );
     }
@@ -295,7 +295,7 @@ sub _main_loop
             && $chunksize < 32767
             && length($input) > $chunksize )
         {
-            $NEXT = substr( $input, $chunksize );
+            $NEXT  = substr( $input, $chunksize );
             $input = substr( $input, 0, $chunksize );
         }
 

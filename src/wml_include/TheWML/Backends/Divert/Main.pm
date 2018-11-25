@@ -307,7 +307,7 @@ sub _handle_plain_text
     ##
 
     #   calculate the minimum amount of plain characters we can skip
-    my $l = length( ${$remain_ref} );
+    my $l  = length( ${$remain_ref} );
     my $i1 = index( ${$remain_ref}, '<<' );
     $i1 = $l if $i1 == -1;
 

@@ -137,7 +137,7 @@ sub _adjust_opt_D
                 canonize_path( \$path, $reldir );
             }
             $path = '""' if ( $path eq '' );
-            $d = "$var=$path";
+            $d    = "$var=$path";
         }
         elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
         {

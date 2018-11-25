@@ -80,7 +80,7 @@ WMLRC_LINES:
     $wml_rc_fh->close;
     my @opt_I_OLD = @{ $self->_main->_opt_I };
     $self->_main->_opt_I( [] );
-    my $dnew = $self->_main->_process_options( \@aa, [] );
+    my $dnew      = $self->_main->_process_options( \@aa, [] );
     my @opt_I_NEW = @opt_I_OLD;
 
     #   adjust -D options
@@ -95,7 +95,7 @@ WMLRC_LINES:
                 canonize_path( \$path, $reldir );
             }
             $path = q/""/ if ( $path eq '' );
-            $d = "$var=$path";
+            $d    = "$var=$path";
         }
         elsif ( $d =~ m|^([A-Za-z0-9_]+)$| )
         {

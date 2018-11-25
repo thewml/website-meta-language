@@ -255,7 +255,7 @@ sub _handle_opt_M_stdin
     {
         return;
     }
-    my $o = '"' . join( ' ', @{ $self->_out_filenames } ) . '"';
+    my $o        = '"' . join( ' ', @{ $self->_out_filenames } ) . '"';
     my $opt_pass = '';
     foreach my $aa ( @{ $self->_opt_W } )
     {
@@ -299,7 +299,7 @@ sub _calc_passes_idxs
     my $pass_str = join( '', @{ $self->_opt_p } );
     $pass_str =~ s|,||g;
     $pass_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
-    my $_SORT = ( $pass_str =~ s/!$// );
+    my $_SORT        = ( $pass_str =~ s/!$// );
     my @_passes_idxs = split( '', $pass_str );
     if ( !$_SORT )
     {

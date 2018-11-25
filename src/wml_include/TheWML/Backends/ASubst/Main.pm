@@ -189,7 +189,7 @@ sub _expand_block_one
     ) = @_;
     my ( $openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data );
 
-    $openidx = index( $buffer, $opendel );
+    $openidx  = index( $buffer, $opendel );
     $closeidx = rindex( $buffer, $closedel );
 
     #   either both exist or both not exist
@@ -281,7 +281,7 @@ sub main
     if (
         not Getopt::Long::GetOptionsFromArray(
             $self->argv,
-            "v|verbose" => do { my $x; \$x; },
+            "v|verbose"      => do { my $x; \$x; },
             "o|outputfile=s" => \$opt_o,
         )
         )

@@ -86,7 +86,7 @@ sub new
                 TheWML::Frontends::Wml::PassObj->new(
                     idx => ( $_ + 1 ),
                     cb  => $__PASSES->[$_]
-                    )
+                )
                 }
                 keys @$__PASSES
 

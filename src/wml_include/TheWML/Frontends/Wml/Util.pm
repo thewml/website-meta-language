@@ -120,7 +120,7 @@ sub user_record
 {
     my ($uid) = @_;
 
-    my @pwinfo = getpwuid($uid);
+    my @pwinfo   = getpwuid($uid);
     my $username = $pwinfo[0] || 'UNKNOWN-USERNAME';
     make_shell_safe( \$username );
     my $realname = $pwinfo[6] || 'UNKNOWN-REALNAME';
