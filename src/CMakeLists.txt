@@ -86,11 +86,25 @@ ENDIF ()
 
 INCLUDE (CPack)
 
+SET (CPAN_MODULES_TO_CHECK
+    "Bit::Vector"
+    "Carp::Always"
+    "Class::XSAccessor"
+    "File::Which"
+    "GD"
+    "Getopt::Long"
+    "Image::Size"
+    "IO::All"
+    "Path::Tiny"
+    "Term::ReadKey"
+    )
+
+CHECK_FOR_MULTIPLE_PERL_MODULES(${CPAN_MODULES_TO_CHECK})
+
 ENABLE_TESTING()
 
 ADD_SUBDIRECTORY( wml_aux )
 ADD_SUBDIRECTORY( wml_backend )
-ADD_SUBDIRECTORY( wml_common )
 ADD_SUBDIRECTORY( wml_docs )
 ADD_SUBDIRECTORY( wml_frontend )
 ADD_SUBDIRECTORY( wml_test )
