@@ -172,8 +172,8 @@ sub setup {
 
     #   process command line arguments and
     #   read input file
-    use TheWML::Backends;
-    my $INPUT = TheWML::Backends->input(\@ARGV, \&error, \&usage);
+    use TheWML::CmdLine::IO;
+    my $INPUT = TheWML::CmdLine::IO->input(\@ARGV, \&usage);
 
     #   add additional options
     $INPUT =~ s|^%!slice\s+(.*?)\n|push(@ARGV, split(' ', $1)), ''|egim;

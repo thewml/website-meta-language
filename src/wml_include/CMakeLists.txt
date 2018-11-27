@@ -119,7 +119,6 @@ INSTALL (
     DESTINATION "${WML_LIB_DIR}/TheWML"
 )
 FOREACH( fn
-        "TheWML/Backends.pm"
         "TheWML/Backends/ASubst/Main.pm"
         "TheWML/Backends/Divert/Main.pm"
         "TheWML/Backends/Fixup/Main.pm"
@@ -131,6 +130,7 @@ FOREACH( fn
         "TheWML/Backends/IPP/Main.pm"
         "TheWML/Backends/IPP/Map.pm"
         "TheWML/CmdLine/Base.pm"
+        "TheWML/CmdLine/IO.pm"
         "TheWML/Frontends/Wml/OptD.pm"
         "TheWML/Frontends/Wml/PassObj.pm"
         "TheWML/Frontends/Wml/PassesManager.pm"

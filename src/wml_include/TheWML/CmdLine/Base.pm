@@ -3,7 +3,7 @@ package TheWML::CmdLine::Base;
 use strict;
 use warnings;
 
-use TheWML::Backends ();
+use TheWML::CmdLine::IO ();
 
 sub _gen_opt
 {
@@ -30,7 +30,7 @@ sub verbose
 sub _out
 {
     my ( $self, $opt_o, $strs ) = @_;
-    TheWML::Backends->out( $opt_o, $strs, );
+    TheWML::CmdLine::IO->out( $opt_o, $strs, );
 
     return;
 }
@@ -39,7 +39,7 @@ sub _input
 {
     my $self = shift;
 
-    return TheWML::Backends->input( $self->argv,
+    return TheWML::CmdLine::IO->input( $self->argv,
         sub { return $self->usage(@_); },
     );
 }

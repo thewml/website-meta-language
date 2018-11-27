@@ -8,8 +8,8 @@ use strict;
 use warnings;
 use 5.014;
 
-use Getopt::Long     ();
-use TheWML::Backends ();
+use Getopt::Long        ();
+use TheWML::CmdLine::IO ();
 
 use parent 'TheWML::CmdLine::Base';
 
@@ -251,7 +251,8 @@ sub _process_real_files
     foreach my $fn ( @{ $self->argv } )
     {
         #   create temporary working file
-        io()->file( $self->temp_fn )->print( TheWML::Backends->input( [$fn] ) );
+        io()->file( $self->temp_fn )
+            ->print( TheWML::CmdLine::IO->input( [$fn] ) );
 
         #   apply prolog filters
         foreach my $p (@$opt_P)

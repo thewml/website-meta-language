@@ -1,4 +1,4 @@
-package TheWML::Backends;
+package TheWML::CmdLine::IO;
 
 use strict;
 use warnings;
