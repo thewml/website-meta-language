@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use 5.014;
 
-use parent 'TheWML::Frontends::Wml::Base';
+use parent 'TheWML::CmdLine::Base';
 
 use Getopt::Long ();
 

@@ -130,7 +130,7 @@ FOREACH( fn
         "TheWML/Backends/IPP/Line.pm"
         "TheWML/Backends/IPP/Main.pm"
         "TheWML/Backends/IPP/Map.pm"
-        "TheWML/Frontends/Wml/Base.pm"
+        "TheWML/CmdLine/Base.pm"
         "TheWML/Frontends/Wml/OptD.pm"
         "TheWML/Frontends/Wml/PassObj.pm"
         "TheWML/Frontends/Wml/PassesManager.pm"

@@ -15,7 +15,7 @@ use 5.014;
 use strict;
 use warnings;
 
-use parent 'TheWML::Frontends::Wml::Base';
+use parent 'TheWML::CmdLine::Base';
 
 use Class::XSAccessor (
     accessors => +{

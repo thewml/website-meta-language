@@ -9,7 +9,7 @@ use 5.014;
 
 use Getopt::Long ();
 
-use parent 'TheWML::Frontends::Wml::Base';
+use parent 'TheWML::CmdLine::Base';
 
 use Class::XSAccessor (
     constructor => 'new',

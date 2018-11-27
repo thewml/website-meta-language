@@ -12,7 +12,7 @@ use Getopt::Long ();
 
 use Image::Size ();
 
-use parent 'TheWML::Frontends::Wml::Base';
+use parent 'TheWML::CmdLine::Base';
 
 use Class::XSAccessor (
     constructor => 'new',

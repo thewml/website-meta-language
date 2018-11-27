@@ -36,7 +36,7 @@ package TheWML::Frontends::Wml::PassesManager;
 use strict;
 use warnings;
 
-use parent 'TheWML::Frontends::Wml::Base';
+use parent 'TheWML::CmdLine::Base';
 
 use Class::XSAccessor (
     accessors => +{
