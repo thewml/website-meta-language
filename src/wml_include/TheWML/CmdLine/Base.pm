@@ -30,7 +30,7 @@ sub verbose
 sub _out
 {
     my ( $self, $opt_o, $strs ) = @_;
-    TheWML::Backends->out( $opt_o, sub { return $self->error(@_); }, $strs, );
+    TheWML::Backends->out( $opt_o, $strs, );
 
     return;
 }
@@ -39,9 +39,7 @@ sub _input
 {
     my $self = shift;
 
-    return TheWML::Backends->input(
-        $self->argv,
-        sub { return $self->error(@_); },
+    return TheWML::Backends->input( $self->argv,
         sub { return $self->usage(@_); },
     );
 }
