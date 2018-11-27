@@ -1,4 +1,3 @@
-Cygwin users need to cd into config and type "make" before building wml.
-
-Alternatively, you can nullify the SUBDIRS variable in
-wml_backend/p2_mp4h/modules/Makefile.
+See "INSTALL" but note that ePerl may currently malfunction on cygwin due to this bug
+- https://rt.perl.org/SelfService/Display.html?id=133661 . Any insights for fixing
+it will be appreciated.
