@@ -194,6 +194,10 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     }
     IO_redirect_stderr(er);
 
+    /* See https://rt.perl.org/Public/Bug/Display.html?id=133661 .
+     * Thanks to Tony Cook .
+     * */
+    PERL_SYS_INIT3(&myargc, &myargv, &env);
     my_perl = perl_alloc();
     perl_construct(my_perl);
     perl_init_i18nl10n(1);
