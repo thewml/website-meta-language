@@ -16,6 +16,10 @@ int Perl5_Run(int myargc, char **myargv, char **env)
 {
     int rc;
     PerlInterpreter *my_perl = NULL;
+    /* See https://rt.perl.org/Public/Bug/Display.html?id=133661
+     * Thanks to Tony Cook
+     * */
+    PERL_SYS_INIT3(&myargc, &myargv, &env);
 
     my_perl = perl_alloc();
     perl_construct(my_perl);
