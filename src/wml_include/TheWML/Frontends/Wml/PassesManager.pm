@@ -364,14 +364,14 @@ sub _display_times
         );
     }
 
-    $timestr = sprintf( '%4.2f | ', $at - $pt ) . $timestr;
-    $timestr .= sprintf( '| %6.2f', $at );
-    $_pass_mgr->verbose( 1, "Processing time (seconds):\n" );
-    $_pass_mgr->verbose( 1,
-        "main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL\n" );
-    $_pass_mgr->verbose( 1,
-        "---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------\n" );
-    $_pass_mgr->verbose( 1, "$timestr\n" );
+    $timestr =
+        sprintf( '%4.2f | ', $at - $pt ) . $timestr . sprintf( '| %6.2f', $at );
+    $_pass_mgr->verbose( 1, <<"EOF");
+Processing time (seconds):
+main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL
+---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------
+$timestr
+EOF
 }
 
 sub _fix_verbose_level
