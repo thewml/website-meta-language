@@ -508,6 +508,30 @@ sub pass2
 ##  Pass 3: Output generation
 ##
 ##
+sub _calc_entry_output_params
+{
+    my ($entry) = @_;
+    if ( $entry =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)@(.+)$| )
+    {
+        # full syntax
+        return ( $1, $2, $3 );
+    }
+    elsif ( $entry =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
+    {
+        # only slice and file
+        return ( $1, $2, '' );
+    }
+    elsif ( $entry =~ m|^([^@]+)@(.+)$| )
+    {
+        # only file and chmod
+        return ( 'ALL', $1, $2 );
+    }
+    else
+    {
+        # only file
+        return ( 'ALL', $entry, '' );
+    }
+}
 
 sub pass3
 {
@@ -532,29 +556,7 @@ sub pass3
                 ( $modifier =~ m/$_(\d+)/ ) and $status->{$_} = $1;
             }
         }
-        my ( $slice, $outfile, $chmod ) = sub {
-            if ( $entry =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)@(.+)$| )
-            {
-                # full syntax
-                return ( $1, $2, $3 );
-            }
-            elsif ( $entry =~ m|^([_A-Z0-9~!+u%n\-\\^x*{}()@]+):(.+)$| )
-            {
-                # only slice and file
-                return ( $1, $2, '' );
-            }
-            elsif ( $entry =~ m|^([^@]+)@(.+)$| )
-            {
-                # only file and chmod
-                return ( 'ALL', $1, $2 );
-            }
-            else
-            {
-                # only file
-                return ( 'ALL', $entry, '' );
-            }
-            }
-            ->();
+        my ( $slice, $outfile, $chmod ) = _calc_entry_output_params($entry);
         verbose(
             "    file `$outfile': sliceterm='$slice', chmodopts='$chmod'\n");
 
