@@ -45,6 +45,7 @@ use SliceTermParser;
 
 use Getopt::Long 2.13;
 use Bit::Vector 5.0;
+use List::Util qw/ first max /;
 
 my $slice_version = {
     'v_hex'   => 0x103208,
@@ -233,12 +234,10 @@ sub pass1
 
     #   allocate the next free level starting from 1
     my $alloclevel = sub {
-        my ($i);
-
-        for ( $i = 0 ; $i <= $CURRENT_LEVEL_SET->Max() ; $i++ )
-        {
-            last if ( not $CURRENT_LEVEL_SET->bit_test($i) );
-        }
+        my $max = $CURRENT_LEVEL_SET->Max();
+        my $i =
+            ( ( first { !$CURRENT_LEVEL_SET->bit_test($_) } ( 0 .. $max ) )
+            // max( 0, $max + 1 ) );
         $CURRENT_LEVEL_SET->Bit_On($i);
         return $i + 1;
     };
