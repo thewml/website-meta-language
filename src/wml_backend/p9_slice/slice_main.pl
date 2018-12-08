@@ -391,9 +391,6 @@ sub pass1
 sub pass2
 {
     my ($CFG) = @_;
-
-    my ( $n, $asc, $slice, $set, $setA );
-
     verbose("\nPass 2: Calculation of slice sets\n\n");
 
     #  convert ASCII set representation string into internal set object
@@ -423,14 +420,14 @@ sub pass2
         }
     };
 
-    $n    = length( $CFG->{INPUT}->{PLAIN} ) + 1;
-    $set  = new Bit::Vector($n);                    # working set
-    $setA = new Bit::Vector($n);                    # "all" set
+    my $n    = length( $CFG->{INPUT}->{PLAIN} ) + 1;
+    my $set  = new Bit::Vector($n);                    # working set
+    my $setA = new Bit::Vector($n);                    # "all" set
 
     #   restore slice names
     foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
     {
-        $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
+        my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         delete $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $slice =~ s|:\d+$||g;
         $CFG->{SLICE}->{SET}->{ASC}->{$slice} .=
@@ -440,7 +437,7 @@ sub pass2
     #   convert ASCII representation to real internal set objects
     foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
     {
-        $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
+        my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $set->Empty();
         $asc2set->( $asc, $set );
         $CFG->{SLICE}->{SET}->{OBJ}->{$slice} = $set->Clone();
@@ -455,9 +452,9 @@ sub pass2
     for my $i ( 1 .. $CFG->{SLICE}->{MAXLEVEL} )
     {
         $set->Empty();
-        foreach $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
+        foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
         {
-            $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
+            my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
             $asc2set->( $asc, $set, $i, 1 )
                 ;    # load $set with entries of level $i
             $setA->Union( $setA, $set );    # add to $setA these entries
@@ -473,9 +470,9 @@ sub pass2
         $CFG->{SLICE}->{SET}->{OBJ}->{'UNDEF0'};
 
     #   define the various slice areas which are not overwritten
-    foreach $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
+    foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
     {
-        $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
+        my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $set->Empty();
         $asc2set->( $asc, $set );
         my $L = $CFG->{SLICE}->{MINLEVELS}->{$slice};
@@ -488,7 +485,7 @@ sub pass2
 
     if ( $CFG->{OPT}->{X} )
     {
-        foreach $slice ( sort( keys( %{ $CFG->{SLICE}->{SET}->{OBJ} } ) ) )
+        foreach my $slice ( sort( keys( %{ $CFG->{SLICE}->{SET}->{OBJ} } ) ) )
         {
             $set = $CFG->{SLICE}->{SET}->{OBJ}->{$slice};
             if ( $set->Norm > 0 )
