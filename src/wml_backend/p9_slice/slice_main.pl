@@ -59,9 +59,9 @@ my $slice_version = {
 
 sub verbose
 {
-    my ($str) = @_;
+    my ( $self, $str ) = @_;
 
-    if ( $main::CFG->{OPT}->{X} )
+    if ( $self->{OPT}->{X} )
     {
         $str =~ s|^|** Slice:Verbose: |mg;
         print STDERR $str;
@@ -225,7 +225,7 @@ sub setup
 sub pass1
 {
     my ($CFG) = @_;
-    verbose("\nPass 1: Determine delimiters\n\n");
+    $CFG->verbose("\nPass 1: Determine delimiters\n\n");
 
     my @CURRENT_SLICE_NAMES;
     my %CURRENT_LEVEL_BRAIN;
@@ -307,7 +307,7 @@ sub pass1
                 : $CFG->{SLICE}->{MAXLEVEL}
             );
 
-            verbose("    slice `$name': begin at $pos, level $L\n");
+            $CFG->verbose("    slice `$name': begin at $pos, level $L\n");
 
             ++$open;
         }
@@ -340,7 +340,7 @@ sub pass1
             # now end entry with :END
             $CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} .= ":$pos";
 
-            verbose("    slice `$name': end at $pos, level $L\n");
+            $CFG->verbose("    slice `$name': end at $pos, level $L\n");
 
             ++$pos;
             --$open;
@@ -403,7 +403,7 @@ sub _asc2set
 sub pass2
 {
     my ($CFG) = @_;
-    verbose("\nPass 2: Calculation of slice sets\n\n");
+    $CFG->verbose("\nPass 2: Calculation of slice sets\n\n");
 
     my $n    = length( $CFG->{INPUT}->{PLAIN} ) + 1;
     my $set  = new Bit::Vector($n);                    # working set
@@ -474,11 +474,12 @@ sub pass2
             $set = $CFG->{SLICE}->{SET}->{OBJ}->{$slice};
             if ( $set->Norm > 0 )
             {
-                verbose( "    slice `$slice': " . $set->to_ASCII() . "\n" );
+                $CFG->verbose(
+                    "    slice `$slice': " . $set->to_ASCII() . "\n" );
             }
             else
             {
-                verbose("    slice `$slice': -Empty-\n");
+                $CFG->verbose("    slice `$slice': -Empty-\n");
             }
         }
     }
@@ -514,7 +515,7 @@ sub pass3
 {
     my ($CFG) = @_;
 
-    verbose("\nPass 3: Output generation\n\n");
+    $CFG->verbose("\nPass 3: Output generation\n\n");
 
     foreach my $entry ( @{ $CFG->{OPT}->{O} } )
     {
@@ -534,7 +535,7 @@ sub pass3
             }
         }
         my ( $slice, $outfile, $chmod ) = _calc_entry_output_params($entry);
-        verbose(
+        $CFG->verbose(
             "    file `$outfile': sliceterm='$slice', chmodopts='$chmod'\n");
 
         #   parse the sliceterm and create corresponding
@@ -552,13 +553,13 @@ sub pass3
         #   just debugging...
         if ( $CFG->{OPT}->{X} )
         {
-            verbose("        calculated Perl 5 set term:\n");
-            verbose("        ----\n");
+            $CFG->verbose("        calculated Perl 5 set term:\n");
+            $CFG->verbose("        ----\n");
             my $x = $cmds;
             $x =~ s|\n+$||;
             $x =~ s|\n|\n        |g;
-            verbose("        $x\n");
-            verbose("        ----\n");
+            $CFG->verbose("        $x\n");
+            $CFG->verbose("        ----\n");
         }
 
         #   now evaluate the Bit::Vector statements
@@ -608,7 +609,7 @@ sub pass3
 
 use vars (qw( $CFG ));
 
-$CFG = {};
+$CFG = bless {}, 'main';
 
 setup($CFG);
 pass1($CFG);
