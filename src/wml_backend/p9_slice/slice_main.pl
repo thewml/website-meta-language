@@ -611,10 +611,10 @@ use vars (qw( $CFG ));
 
 $CFG = bless {}, 'main';
 
-setup($CFG);
-pass1($CFG);
-pass2($CFG);
-pass3($CFG);
+$CFG->setup;
+$CFG->pass1;
+$CFG->pass2;
+$CFG->pass3;
 
 exit(0);
 
