@@ -405,70 +405,71 @@ sub pass2
     my ($CFG) = @_;
     $CFG->verbose("\nPass 2: Calculation of slice sets\n\n");
 
-    my $n    = length( $CFG->{INPUT}->{PLAIN} ) + 1;
-    my $set  = new Bit::Vector($n);                    # working set
-    my $setA = new Bit::Vector($n);                    # "all" set
+    my $n       = length( $CFG->{INPUT}->{PLAIN} ) + 1;
+    my $set     = new Bit::Vector($n);                    # working set
+    my $setA    = new Bit::Vector($n);                    # "all" set
+    my $ASC_SET = $CFG->{SLICE}->{SET}->{ASC};
+    my $OBJ_SET = $CFG->{SLICE}->{SET}->{OBJ};
 
     #   restore slice names
-    foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
+    foreach my $slice ( keys( %{$ASC_SET} ) )
     {
-        my $asc = delete $CFG->{SLICE}->{SET}->{ASC}->{$slice};
+        my $asc = delete $ASC_SET->{$slice};
         $slice =~ s%:\d+\z%%g;
-        $CFG->{SLICE}->{SET}->{ASC}->{$slice} .=
-            ( $CFG->{SLICE}->{SET}->{ASC}->{"$slice"} ? ',' : '' ) . $asc;
+        $ASC_SET->{$slice} .=
+            ( $ASC_SET->{"$slice"} ? ',' : '' ) . $asc;
     }
 
     #   convert ASCII representation to real internal set objects
-    foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
+    foreach my $slice ( keys( %{$ASC_SET} ) )
     {
         $set->Empty();
-        _asc2set( $CFG->{SLICE}->{SET}->{ASC}->{$slice}, $set );
-        $CFG->{SLICE}->{SET}->{OBJ}->{$slice} = $set->Clone();
+        _asc2set( $ASC_SET->{$slice}, $set );
+        $OBJ_SET->{$slice} = $set->Clone();
     }
 
     #   define the various (un)defined slice areas
     $set->Fill();
-    $CFG->{SLICE}->{SET}->{OBJ}->{'UNDEF0'} = $set->Clone();
+    $OBJ_SET->{'UNDEF0'} = $set->Clone();
     $set->Empty();
-    $CFG->{SLICE}->{SET}->{OBJ}->{'DEF0'} = $set->Clone();
+    $OBJ_SET->{'DEF0'} = $set->Clone();
     $setA->Empty();
     for my $i ( 1 .. $CFG->{SLICE}->{MAXLEVEL} )
     {
         $set->Empty();
-        foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
+        foreach my $slice ( keys( %{$ASC_SET} ) )
         {
-            _asc2set( $CFG->{SLICE}->{SET}->{ASC}->{$slice}, $set, $i, 1 )
+            _asc2set( $ASC_SET->{$slice}, $set, $i, 1 )
                 ;    # load $set with entries of level $i
             $setA->Union( $setA, $set );    # add to $setA these entries
         }
-        $CFG->{SLICE}->{SET}->{OBJ}->{"DEF$i"} = $set->Clone();
+        $OBJ_SET->{"DEF$i"} = $set->Clone();
         $set->Complement($set);
-        $CFG->{SLICE}->{SET}->{OBJ}->{"UNDEF$i"} = $set->Clone();
+        $OBJ_SET->{"UNDEF$i"} = $set->Clone();
     }
-    $CFG->{SLICE}->{SET}->{OBJ}->{'DEF'} = $setA->Clone();
+    $OBJ_SET->{'DEF'} = $setA->Clone();
     $setA->Complement($setA);
-    $CFG->{SLICE}->{SET}->{OBJ}->{'UNDEF'} = $setA->Clone();
-    $CFG->{SLICE}->{SET}->{OBJ}->{'ALL'} =
-        $CFG->{SLICE}->{SET}->{OBJ}->{'UNDEF0'};
+    $OBJ_SET->{'UNDEF'} = $setA->Clone();
+    $OBJ_SET->{'ALL'}   = $OBJ_SET->{'UNDEF0'};
 
     #   define the various slice areas which are not overwritten
-    foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
+    foreach my $slice ( keys( %{$ASC_SET} ) )
     {
         $set->Empty();
-        _asc2set( $CFG->{SLICE}->{SET}->{ASC}->{$slice}, $set );
+        _asc2set( $ASC_SET->{$slice}, $set );
         my $L = $CFG->{SLICE}->{MINLEVELS}->{$slice};
         for my $i ( ( $L + 1 ) .. $CFG->{SLICE}->{MAXLEVEL} )
         {
-            $set->Difference( $set, $CFG->{SLICE}->{SET}->{OBJ}->{"DEF$i"} );
+            $set->Difference( $set, $OBJ_SET->{"DEF$i"} );
         }
-        $CFG->{SLICE}->{SET}->{OBJ}->{"NOV_$slice"} = $set->Clone();
+        $OBJ_SET->{"NOV_$slice"} = $set->Clone();
     }
 
     if ( $CFG->{OPT}->{X} )
     {
-        foreach my $slice ( sort( keys( %{ $CFG->{SLICE}->{SET}->{OBJ} } ) ) )
+        foreach my $slice ( sort( keys( %{$OBJ_SET} ) ) )
         {
-            $set = $CFG->{SLICE}->{SET}->{OBJ}->{$slice};
+            $set = $OBJ_SET->{$slice};
             if ( $set->Norm > 0 )
             {
                 $CFG->verbose(
