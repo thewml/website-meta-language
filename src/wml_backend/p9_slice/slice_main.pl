@@ -513,8 +513,6 @@ sub pass3
 {
     my ($CFG) = @_;
 
-    my ( $start, $min, $max );
-
     verbose("\nPass 3: Output generation\n\n");
 
     foreach my $entry ( @{ $CFG->{OPT}->{O} } )
@@ -589,14 +587,14 @@ sub pass3
         my $set;
         eval "$cmds; \$set = $var";
 
-        $start = 0;
-        my $out = '';
+        my $start = 0;
+        my $out   = '';
         if ( defined($set) )
         {
             #   now scan the set and write out characters
             #   which have a corresponding bit set.
             while (( $start < $set->Size() )
-                && ( ( $min, $max ) = $set->Interval_Scan_inc($start) ) )
+                && ( my ( $min, $max ) = $set->Interval_Scan_inc($start) ) )
             {
                 $out .=
                     substr( $CFG->{INPUT}->{PLAIN}, $min, ( $max - $min + 1 ) );
