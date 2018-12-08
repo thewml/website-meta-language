@@ -221,24 +221,15 @@ sub setup
     $CFG->{SLICE}->{MAXLEVEL}  = 0;     # maximum slice level
 }
 
-##
-##
 ##  Pass 1: Determine delimiters
-##
-##
-
 sub pass1
 {
     my ($CFG) = @_;
-
-    my ( @CURRENT_SLICE_NAMES, %CURRENT_LEVEL_BRAIN, $CURRENT_LEVEL_SET );
-    my ( $INPUT, $prolog, $pos, $inputpos, $prev, $name, $namex, $L, $open );
-
     verbose("\nPass 1: Determine delimiters\n\n");
 
-    @CURRENT_SLICE_NAMES = ();
-    %CURRENT_LEVEL_BRAIN = ();
-    $CURRENT_LEVEL_SET   = new Bit::Vector(512);
+    my @CURRENT_SLICE_NAMES;
+    my %CURRENT_LEVEL_BRAIN;
+    my $CURRENT_LEVEL_SET = new Bit::Vector(512);
 
     #   allocate the next free level starting from 1
     my $alloclevel = sub {
@@ -259,10 +250,10 @@ sub pass1
         $CURRENT_LEVEL_SET->Bit_Off( $i - 1 );
     };
 
-    $INPUT = $CFG->{INPUT}->{SRC};
-    $open  = 0;
-    $pos   = 0;
-    $prev  = 0;
+    my $INPUT = $CFG->{INPUT}->{SRC};
+    my $open  = 0;
+    my $pos   = 0;
+    my $prev  = 0;
     while (
         $INPUT =~ m/
              (?=[\[:])                 #  Consider only sequences beginning
@@ -279,9 +270,9 @@ sub pass1
             #
             #   begin delimiter found
             #
-            $name     = $1;
-            $inputpos = pos($INPUT);
-            $prolog =
+            my $name     = $1;
+            my $inputpos = pos($INPUT);
+            my $prolog =
                 substr( $INPUT, $prev, $inputpos - $prev - length($name) - 2 );
 
             #   add prolog
@@ -291,12 +282,12 @@ sub pass1
             $pos += length($prolog);
             $prev = $inputpos;
 
-            $L = $alloclevel->();    # allocate next free level
+            my $L = $alloclevel->();    # allocate next free level
 
             push( @CURRENT_SLICE_NAMES, $name )
-                ;                    # remember name  for end delimiter
+                ;                       # remember name  for end delimiter
             $CURRENT_LEVEL_BRAIN{"$name"} .=
-                ":$L";               # remember level for end delimiter
+                ":$L";                  # remember level for end delimiter
             $CFG->{SLICE}->{MINLEVELS}->{"$name"} //= '';
             if (   $CFG->{SLICE}->{MINLEVELS}->{"$name"} eq ''
                 or $CFG->{SLICE}->{MINLEVELS}->{"$name"} > $L )
@@ -318,16 +309,16 @@ sub pass1
 
             verbose("    slice `$name': begin at $pos, level $L\n");
 
-            $open++;
+            ++$open;
         }
         elsif ( $open > 0 )
         {
             #
             #   end delimiter found
             #
-            $name     = ( $2 // '' );
-            $inputpos = pos($INPUT);
-            $prolog =
+            my $name     = ( $2 // '' );
+            my $inputpos = pos($INPUT);
+            my $prolog =
                 substr( $INPUT, $prev, $inputpos - $prev - length($name) - 2 );
 
             #   add prolog
@@ -337,12 +328,12 @@ sub pass1
             $pos += length($prolog) - 1;
             $prev = $inputpos;
 
-            $namex = pop(@CURRENT_SLICE_NAMES);    # take remembered name
-            $name  = $namex
+            my $namex = pop(@CURRENT_SLICE_NAMES);    # take remembered name
+            $name = $namex
                 if ( $name eq '' );    # fill name because of shortcut syntax
             $CURRENT_LEVEL_BRAIN{"$name"} =~
                 s|:(\d+)$||;           # take remembered level
-            $L = $1;
+            my $L = $1;
 
             $clearlevel->($L);         # de-allocate level
 
@@ -351,8 +342,8 @@ sub pass1
 
             verbose("    slice `$name': end at $pos, level $L\n");
 
-            $pos++;
-            $open--;
+            ++$pos;
+            --$open;
         }
     }
 
@@ -368,8 +359,7 @@ sub pass1
         {
             if ( $CURRENT_LEVEL_SET->bit_test($i) )
             {
-                my $name;
-                foreach $name ( keys(%CURRENT_LEVEL_BRAIN) )
+                foreach my $name ( keys(%CURRENT_LEVEL_BRAIN) )
                 {
                     if ( $CURRENT_LEVEL_BRAIN{$name} == ( $i + 1 ) )
                     {
@@ -382,12 +372,7 @@ sub pass1
     }
 }
 
-##
-##
 ##  Pass 2: Calculation of slice sets
-##
-##
-
 sub pass2
 {
     my ($CFG) = @_;
@@ -500,11 +485,7 @@ sub pass2
     }
 }
 
-##
-##
 ##  Pass 3: Output generation
-##
-##
 sub _calc_entry_output_params
 {
     my ($entry) = @_;
