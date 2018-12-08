@@ -273,6 +273,7 @@ sub pass1
                       /gx
         )
     {
+
         if ( defined($1) )
         {
             #
@@ -309,10 +310,11 @@ sub pass1
                 . "$L:$pos";
 
             #  adjust notice about highest level
-            $CFG->{SLICE}->{MAXLEVEL} =
-                ( $CFG->{SLICE}->{MAXLEVEL} < $L
+            $CFG->{SLICE}->{MAXLEVEL} = (
+                  $CFG->{SLICE}->{MAXLEVEL} < $L
                 ? $L
-                : $CFG->{SLICE}->{MAXLEVEL} );
+                : $CFG->{SLICE}->{MAXLEVEL}
+            );
 
             verbose("    slice `$name': begin at $pos, level $L\n");
 
@@ -511,10 +513,7 @@ sub pass3
 {
     my ($CFG) = @_;
 
-    my ( $status, $modifier, $out );
-    my ( $set,    $cmds,     $var );
-    my ( $start,  $min,      $max );
-    my ($entry);
+    my ( $start, $min, $max );
 
     verbose("\nPass 3: Output generation\n\n");
 
@@ -526,10 +525,10 @@ sub pass3
         #     w: a wildcard set does not match
         #     z: result is empty
         #     s: result is only composed of whitespaces
-        $status = $CFG->{OPT}->{Y};
+        my $status = $CFG->{OPT}->{Y};
         if ( $entry =~ s|\#([suwz\d]+)$|| )
         {
-            $modifier = $1;
+            my $modifier = $1;
             foreach (qw(u w z s))
             {
                 ( $modifier =~ m/$_(\d+)/ ) and $status->{$_} = $1;
@@ -563,7 +562,7 @@ sub pass3
 
         #   parse the sliceterm and create corresponding
         #   Perl 5 statement containing Bit::Vector calls
-        ( $cmds, $var ) = SliceTerm::Parse( $slice, $status );
+        my ( $cmds, $var ) = SliceTerm::Parse( $slice, $status );
         $var //= '';
 
         #   skip file if requested by options
@@ -587,10 +586,11 @@ sub pass3
 
         #   now evaluate the Bit::Vector statements
         #   and move result to $set
+        my $set;
         eval "$cmds; \$set = $var";
 
         $start = 0;
-        $out   = '';
+        my $out = '';
         if ( defined($set) )
         {
             #   now scan the set and write out characters
