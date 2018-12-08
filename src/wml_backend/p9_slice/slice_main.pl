@@ -412,9 +412,8 @@ sub pass2
     #   restore slice names
     foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
     {
-        my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
-        delete $CFG->{SLICE}->{SET}->{ASC}->{$slice};
-        $slice =~ s|:\d+$||g;
+        my $asc = delete $CFG->{SLICE}->{SET}->{ASC}->{$slice};
+        $slice =~ s%:\d+\z%%g;
         $CFG->{SLICE}->{SET}->{ASC}->{$slice} .=
             ( $CFG->{SLICE}->{SET}->{ASC}->{"$slice"} ? ',' : '' ) . $asc;
     }
@@ -422,9 +421,8 @@ sub pass2
     #   convert ASCII representation to real internal set objects
     foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
     {
-        my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $set->Empty();
-        _asc2set( $asc, $set );
+        _asc2set( $CFG->{SLICE}->{SET}->{ASC}->{$slice}, $set );
         $CFG->{SLICE}->{SET}->{OBJ}->{$slice} = $set->Clone();
     }
 
@@ -439,8 +437,8 @@ sub pass2
         $set->Empty();
         foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
         {
-            my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
-            _asc2set( $asc, $set, $i, 1 );  # load $set with entries of level $i
+            _asc2set( $CFG->{SLICE}->{SET}->{ASC}->{$slice}, $set, $i, 1 )
+                ;    # load $set with entries of level $i
             $setA->Union( $setA, $set );    # add to $setA these entries
         }
         $CFG->{SLICE}->{SET}->{OBJ}->{"DEF$i"} = $set->Clone();
@@ -456,9 +454,8 @@ sub pass2
     #   define the various slice areas which are not overwritten
     foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
     {
-        my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $set->Empty();
-        _asc2set( $asc, $set );
+        _asc2set( $CFG->{SLICE}->{SET}->{ASC}->{$slice}, $set );
         my $L = $CFG->{SLICE}->{MINLEVELS}->{$slice};
         for my $i ( ( $L + 1 ) .. $CFG->{SLICE}->{MAXLEVEL} )
         {
