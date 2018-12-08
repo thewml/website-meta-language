@@ -609,29 +609,15 @@ sub pass3
             main::error("Execution stopped\n") if $status->{z} > 2;
             next if $status->{z} == 2;
         }
-        if ( $status->{s} > 0 and ( $out eq '' or $out !~ m/\S/ ) )
+        if ( $status->{'s'} > 0 and ( $out eq '' or $out !~ m/\S/ ) )
         {
             printwarning("Whitespace only: skip generation of $outfile\n");
-            main::error("Execution stopped\n") if $status->{s} > 2;
-            next if $status->{s} == 2;
+            main::error("Execution stopped\n") if $status->{'s'} > 2;
+            next if $status->{'s'} == 2;
         }
 
-        #   open output file
-        if ( $outfile eq '-' )
-        {
-            print $out;
-        }
-        else
-        {
-            open( OUT, ">$outfile" )
-                or main::error("Unable to write into $outfile: $!\n");
-            print OUT $out
-                or main::fileerror( $outfile,
-                "Unable to write into $outfile: $!\n" );
-            close(OUT)
-                or
-                main::fileerror( $outfile, "Unable to close $outfile: $!\n" );
-        }
+        use TheWML::CmdLine::IO ();
+        TheWML::CmdLine::IO->out( $outfile, [$out] );
 
         #   additionally run chmod on the output file
         if ( $outfile ne '-' and $chmod ne '' and -f $outfile )
