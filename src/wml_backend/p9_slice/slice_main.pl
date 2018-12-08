@@ -196,16 +196,17 @@ sub setup
 
     #   setup the $CFG hash
     $CFG->{INPUT}          = {};
-    $CFG->{INPUT}->{SRC}   = $INPUT;      # original source
-    $CFG->{INPUT}->{PLAIN} = '';          # source without slice delimiters
-    $CFG->{OPT}            = {};
-    $CFG->{OPT}->{X}       = $opt_v;      # option -v
-    $CFG->{OPT}->{O}       = [@opt_o];    # options -o
-    $CFG->{OPT}->{Y}       = {
-        'u' => 0,
-        'w' => 0,
-        'z' => 0,
-        's' => 0,
+    $CFG->{INPUT}->{SRC}   = $INPUT;    # original source
+    $CFG->{INPUT}->{PLAIN} = '';        # source without slice delimiters
+    $CFG->{OPT}            = {
+        X => $opt_v,
+        O => [@opt_o],
+        Y => {
+            'u' => 0,
+            'w' => 0,
+            'z' => 0,
+            's' => 0,
+        }
     };
     my $modifier = $opt_y;
 
@@ -354,7 +355,7 @@ sub pass1
     {
         my $i;
         my $err = '';
-        for ( $i = 0 ; $i <= $CURRENT_LEVEL_SET->Max() ; $i++ )
+        for my $i ( 0 .. $CURRENT_LEVEL_SET->Max() )
         {
             if ( $CURRENT_LEVEL_SET->bit_test($i) )
             {
