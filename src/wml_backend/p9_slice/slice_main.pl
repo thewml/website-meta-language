@@ -372,38 +372,38 @@ sub pass1
     }
 }
 
+sub _asc2set
+{
+    my ( $asc, $set, $onlylevel, $notcleared ) = @_;
+    my ( $i, $I, $internal, $from, $to, $level );
+
+    $onlylevel  //= '';
+    $notcleared //= 0;
+
+    $set->Empty() if ( not $notcleared );
+    return $set
+        if ( $asc =~ m|^\d+:0:-1$| );    # string represents the empty set
+
+    #   split out the interval substrings
+    my @I = ($asc);
+    @I = split( ',', $asc ) if ( index( $asc, ',' ) > 0 );
+
+    #   iterate over each interval and
+    #   set the corresponding elements in the set
+    foreach my $interval (@I)
+    {
+        ( $level, $from, $to ) = ( $interval =~ m|^(\d+):(\d+):(\d+)$| );
+        next if ( ( $onlylevel ne '' ) and ( $level != $onlylevel ) );
+        next if ( $from > $to );
+        $set->Interval_Fill( $from, $to );
+    }
+}
+
 ##  Pass 2: Calculation of slice sets
 sub pass2
 {
     my ($CFG) = @_;
     verbose("\nPass 2: Calculation of slice sets\n\n");
-
-    #  convert ASCII set representation string into internal set object
-    my $asc2set = sub {
-        my ( $asc, $set, $onlylevel, $notcleared ) = @_;
-        my ( $i, $I, $internal, $from, $to, $level );
-
-        $onlylevel  //= '';
-        $notcleared //= 0;
-
-        $set->Empty() if ( not $notcleared );
-        return $set
-            if ( $asc =~ m|^\d+:0:-1$| );    # string represents the empty set
-
-        #   split out the interval substrings
-        my @I = ($asc);
-        @I = split( ',', $asc ) if ( index( $asc, ',' ) > 0 );
-
-        #   iterate over each interval and
-        #   set the corresponding elements in the set
-        foreach my $interval (@I)
-        {
-            ( $level, $from, $to ) = ( $interval =~ m|^(\d+):(\d+):(\d+)$| );
-            next if ( ( $onlylevel ne '' ) and ( $level != $onlylevel ) );
-            next if ( $from > $to );
-            $set->Interval_Fill( $from, $to );
-        }
-    };
 
     my $n    = length( $CFG->{INPUT}->{PLAIN} ) + 1;
     my $set  = new Bit::Vector($n);                    # working set
@@ -424,7 +424,7 @@ sub pass2
     {
         my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $set->Empty();
-        $asc2set->( $asc, $set );
+        _asc2set( $asc, $set );
         $CFG->{SLICE}->{SET}->{OBJ}->{$slice} = $set->Clone();
     }
 
@@ -440,8 +440,7 @@ sub pass2
         foreach my $slice ( keys( %{ $CFG->{SLICE}->{SET}->{ASC} } ) )
         {
             my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
-            $asc2set->( $asc, $set, $i, 1 )
-                ;    # load $set with entries of level $i
+            _asc2set( $asc, $set, $i, 1 );  # load $set with entries of level $i
             $setA->Union( $setA, $set );    # add to $setA these entries
         }
         $CFG->{SLICE}->{SET}->{OBJ}->{"DEF$i"} = $set->Clone();
@@ -459,7 +458,7 @@ sub pass2
     {
         my $asc = $CFG->{SLICE}->{SET}->{ASC}->{$slice};
         $set->Empty();
-        $asc2set->( $asc, $set );
+        _asc2set( $asc, $set );
         my $L = $CFG->{SLICE}->{MINLEVELS}->{$slice};
         for my $i ( ( $L + 1 ) .. $CFG->{SLICE}->{MAXLEVEL} )
         {
