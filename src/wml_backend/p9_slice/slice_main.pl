@@ -10,6 +10,7 @@ use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 
 use SliceTermParser;
+use TheWML::CmdLine::IO ();
 
 ##         _ _
 ##     ___| (_) ___ ___
@@ -89,16 +90,6 @@ sub error
     exit(1);
 }
 
-sub fileerror
-{
-    my $file = shift;
-    my ($str) = @_;
-
-    printerror($str);
-    unlink $file;
-    exit(1);
-}
-
 sub printwarning
 {
     my ($str) = @_;
@@ -111,23 +102,24 @@ sub printwarning
 
 sub usage
 {
-    print STDERR "Usage: slice [options] [file]\n";
-    print STDERR "\n";
-    print STDERR "Options:\n";
-    print STDERR "  -o, --outputfile=FILESPEC  create output file(s)\n";
-    print STDERR "  -y, --output-policy=STRING set default output policy\n";
-    print STDERR "  -v, --verbose              enable verbose mode\n";
-    print STDERR "  -V, --version              display version string\n";
-    print STDERR "  -h, --help                 display usage page\n";
-    print STDERR "\n";
-    print STDERR "FILESPEC format:\n";
-    print STDERR "\n";
-    print STDERR "  [SLICETERM:]PATH[\@CHMODOPT]\n";
-    print STDERR "\n";
-    print STDERR "  SLICETERM ..... a set-theory term describing the slices\n";
-    print STDERR "  PATH .......... a filesystem path to the outputfile\n";
-    print STDERR "  CHMODOPT ...... permission change options for 'chmod'\n";
-    print STDERR "\n";
+    print STDERR <<'EOF';
+Usage: slice [options] [file]
+
+Options:
+  -o, --outputfile=FILESPEC  create output file(s)
+  -y, --output-policy=STRING set default output policy
+  -v, --verbose              enable verbose mode
+  -V, --version              display version string
+  -h, --help                 display usage page
+
+FILESPEC format:
+
+  [SLICETERM:]PATH[@CHMODOPT]
+
+  SLICETERM ..... a set-theory term describing the slices
+  PATH .......... a filesystem path to the outputfile
+  CHMODOPT ...... permission change options for 'chmod'
+EOF
     exit(1);
 }
 
@@ -175,19 +167,18 @@ sub setup
         exit(0);
     }
     $SIG{'__WARN__'} = undef;
-    usage($0) if ($opt_h);
-    hello()   if ($opt_V);
+    usage() if ($opt_h);
+    hello() if ($opt_V);
 
     #   process command line arguments and
     #   read input file
-    use TheWML::CmdLine::IO;
     my $INPUT = TheWML::CmdLine::IO->input( \@ARGV, \&usage );
 
     #   add additional options
     $INPUT =~ s|^%!slice\s+(.*?)\n|push(@ARGV, split(' ', $1)), ''|egim;
     if ( not Getopt::Long::GetOptions(@options_list) )
     {
-        usage();
+        usage;
     }
     if ( $#opt_o == -1 )
     {
@@ -210,17 +201,21 @@ sub setup
     };
     my $modifier = $opt_y;
 
-    foreach (qw(u w z s))
+    foreach my $opt (qw(u w z s))
     {
-        ( $modifier =~ m/$_(\d+)/ ) and $CFG->{OPT}->{Y}->{$_} = $1;
+        if ( $modifier =~ m/\Q$opt\E(\d+)/ )
+        {
+            $CFG->{OPT}->{Y}->{$opt} = $1;
+        }
     }
-    $CFG->{SLICE}               = {};
-    $CFG->{SLICE}->{SET}        = {};
-    $CFG->{SLICE}->{SET}->{ASC} = {};    # slice set, represented in ASCII
-    $CFG->{SLICE}->{SET}->{OBJ} =
-        {};    # slice set, represented as Bit::Vector object
-    $CFG->{SLICE}->{MINLEVELS} = {};    # slice min levels
-    $CFG->{SLICE}->{MAXLEVEL}  = 0;     # maximum slice level
+    $CFG->{SLICE} = {
+        SET => {
+            ASC => {},    # slice set, represented in ASCII
+            OBJ => {},    # slice set, represented as Bit::Vector object
+        },
+        MINLEVELS => {},    # slice min levels
+        MAXLEVEL  => 0,     # maximum slice level
+    };
 }
 
 ##  Pass 1: Determine delimiters
@@ -594,7 +589,6 @@ sub pass3
             next if $status->{'s'} == 2;
         }
 
-        use TheWML::CmdLine::IO ();
         TheWML::CmdLine::IO->out( $outfile, [$out] );
 
         #   additionally run chmod on the output file
