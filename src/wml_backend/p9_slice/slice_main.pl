@@ -150,7 +150,7 @@ sub setup
     $opt_v = 0;
     $opt_y = '';
     @opt_o = ();
-    my (@options_list) = (
+    my @options_list = (
         "v|verbose", "V|version",
         "h|help",    "o|outputfile=s@",
         "y|output-policy=s",
@@ -370,8 +370,6 @@ sub pass1
 sub _asc2set
 {
     my ( $asc, $set, $onlylevel, $notcleared ) = @_;
-    my ( $i, $I, $internal, $from, $to, $level );
-
     $onlylevel  //= '';
     $notcleared //= 0;
 
@@ -387,7 +385,7 @@ sub _asc2set
     #   set the corresponding elements in the set
     foreach my $interval (@I)
     {
-        ( $level, $from, $to ) = ( $interval =~ m|^(\d+):(\d+):(\d+)$| );
+        my ( $level, $from, $to ) = ( $interval =~ m|^(\d+):(\d+):(\d+)$| );
         next if ( ( $onlylevel ne '' ) and ( $level != $onlylevel ) );
         next if ( $from > $to );
         $set->Interval_Fill( $from, $to );
