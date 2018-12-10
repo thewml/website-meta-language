@@ -203,7 +203,7 @@ sub setup
 
     foreach my $opt (qw(u w z s))
     {
-        if ( $modifier =~ m/\Q$opt\E(\d+)/ )
+        if ( $modifier =~ m/\Q$opt\E([0-9]+)/ )
         {
             $CFG->{OPT}->{Y}->{$opt} = $1;
         }
@@ -226,7 +226,7 @@ sub pass1
 
     my @CURRENT_SLICE_NAMES;
     my %CURRENT_LEVEL_BRAIN;
-    my $CURRENT_LEVEL_SET = new Bit::Vector(512);
+    my $CURRENT_LEVEL_SET = Bit::Vector->new(512);
 
     #   allocate the next free level starting from 1
     my $alloclevel = sub {
@@ -327,7 +327,7 @@ sub pass1
             $name = $namex
                 if ( $name eq '' );    # fill name because of shortcut syntax
             $CURRENT_LEVEL_BRAIN{"$name"} =~
-                s|:(\d+)$||;           # take remembered level
+                s|:([0-9]+)\z||;       # take remembered level
             my $L = $1;
 
             $clearlevel->($L);         # de-allocate level
@@ -375,7 +375,7 @@ sub _asc2set
 
     $set->Empty() if ( not $notcleared );
     return $set
-        if ( $asc =~ m|^\d+:0:-1$| );    # string represents the empty set
+        if ( $asc =~ m|\A[0-9]+:0:-1\z| );    # string represents the empty set
 
     #   split out the interval substrings
     my @I = ($asc);
@@ -385,7 +385,8 @@ sub _asc2set
     #   set the corresponding elements in the set
     foreach my $interval (@I)
     {
-        my ( $level, $from, $to ) = ( $interval =~ m|^(\d+):(\d+):(\d+)$| );
+        my ( $level, $from, $to ) =
+            ( $interval =~ m|\A([0-9]+):([0-9]+):([0-9]+)\z| );
         next if ( ( $onlylevel ne '' ) and ( $level != $onlylevel ) );
         next if ( $from > $to );
         $set->Interval_Fill( $from, $to );
@@ -399,8 +400,8 @@ sub pass2
     $CFG->verbose("\nPass 2: Calculation of slice sets\n\n");
 
     my $n       = length( $CFG->{INPUT}->{PLAIN} ) + 1;
-    my $set     = new Bit::Vector($n);                    # working set
-    my $setA    = new Bit::Vector($n);                    # "all" set
+    my $set     = Bit::Vector->new($n);                   # working set
+    my $setA    = Bit::Vector->new($n);                   # "all" set
     my $ASC_SET = $CFG->{SLICE}->{SET}->{ASC};
     my $OBJ_SET = $CFG->{SLICE}->{SET}->{OBJ};
 
@@ -408,7 +409,7 @@ sub pass2
     foreach my $slice ( keys( %{$ASC_SET} ) )
     {
         my $asc = delete $ASC_SET->{$slice};
-        $slice =~ s%:\d+\z%%g;
+        $slice =~ s%:[0-9]+\z%%g;
         $ASC_SET->{$slice} .=
             ( $ASC_SET->{"$slice"} ? ',' : '' ) . $asc;
     }
@@ -517,12 +518,12 @@ sub pass3
         #     z: result is empty
         #     s: result is only composed of whitespaces
         my $status = $CFG->{OPT}->{Y};
-        if ( $entry =~ s|\#([suwz\d]+)$|| )
+        if ( $entry =~ s|\#([suwz0-9]+)\z|| )
         {
             my $modifier = $1;
             foreach (qw(u w z s))
             {
-                ( $modifier =~ m/$_(\d+)/ ) and $status->{$_} = $1;
+                ( $modifier =~ m/$_([0-9]+)/ ) and $status->{$_} = $1;
             }
         }
         my ( $slice, $outfile, $chmod ) = _calc_entry_output_params($entry);
