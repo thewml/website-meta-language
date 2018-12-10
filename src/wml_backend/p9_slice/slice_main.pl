@@ -377,13 +377,10 @@ sub _asc2set
     return $set
         if ( $asc =~ m|\A[0-9]+:0:-1\z| );    # string represents the empty set
 
-    #   split out the interval substrings
-    my @I = ($asc);
-    @I = split( ',', $asc ) if ( index( $asc, ',' ) > 0 );
-
     #   iterate over each interval and
     #   set the corresponding elements in the set
-    foreach my $interval (@I)
+    foreach my $interval (
+        ( index( $asc, ',' ) > 0 ) ? split( ',', $asc ) : ($asc) )
     {
         my ( $level, $from, $to ) =
             ( $interval =~ m|\A([0-9]+):([0-9]+):([0-9]+)\z| );
