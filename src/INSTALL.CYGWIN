@@ -1,3 +1,5 @@
-See "INSTALL" but note that ePerl may currently malfunction on cygwin due to this bug
-- https://rt.perl.org/SelfService/Display.html?id=133661 . Any insights for fixing
-it will be appreciated.
+See "INSTALL" .
+
+Note that ePerl used to malfunction on cygwin due to this issue
+- https://rt.perl.org/Public/Bug/Display.html?id=133661 . However, it was resolved and
+everything should hopefully be OK now.
