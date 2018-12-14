@@ -8,6 +8,27 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.8.1 to 2.10.0:
+
+  *) Fix the tests and code on Win64/appveyor/cygwin.
+
+  *) Better portability to FreeBSD.
+
+  *) Remove some old files and code that were no longer needed.
+
+  *) Refactoring and cleanup - more wml_include/**.pm .
+  *) Extract wml_include/TheWML/* - Perl 5 API to some of the tools, which
+  allows one to process more than one input file per process.
+
+  *) Install wml-params-conf for easily bootstrapping "use lib" in perl 5.
+
+  *) Move repo to https://github.com/thewml/website-meta-language , add
+  Travis-CI and currently failing AppVeyor configurations.
+
+  *) Restore the wml_p2_mp4h.1 man page.
+
+  *) Cleanups to the perl code.
+
   Changes between 2.8.0 to 2.8.1:
 
   *) Fix the tests in the packaged tarballs.
