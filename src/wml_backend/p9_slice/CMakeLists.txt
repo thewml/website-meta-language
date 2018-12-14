@@ -7,16 +7,7 @@ SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
 
 SET (yytab_base "SliceTermParser.pm")
 
-SET (yyperl "${CMAKE_CURRENT_SOURCE_DIR}/slice_term.pl")
 SET (yytab "${CMAKE_CURRENT_SOURCE_DIR}/${yytab_base}")
-
-ADD_CUSTOM_COMMAND(
-    OUTPUT "${yyperl}"
-    COMMAND "${PERL_EXECUTABLE}"
-    ARGS "-lap" "${CMAKE_CURRENT_SOURCE_DIR}/etc/p1.pl" "<" "${yytab}"
-        ">" "${yyperl}"
-    DEPENDS "${yytab}"
-)
 
 ADD_CUSTOM_COMMAND(
     OUTPUT "${yytab}"
