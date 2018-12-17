@@ -51,6 +51,7 @@ SET (base_with_ver "${CPACK_PACKAGE_NAME}-[0-9]+\\\\.[0-9]+\\\\.[0-9]+")
 
 SET(CPACK_SOURCE_IGNORE_FILES
     "~$"
+    "/\\\\.tidyall\\\\.d/"
     "/t/t/.*\\\\.exe$"
     "/tags$"
 )
