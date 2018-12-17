@@ -8,6 +8,15 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.10.0 to 2.10.1:
+
+  *) Avoid including .tidyall.d in the tarball:
+  https://github.com/thewml/website-meta-language/issues/3 - thanks to
+  @xtaran.
+
+  *) Disable tidyall.t by default (opt in using WML_TEST_TIDY)
+  https://github.com/thewml/website-meta-language/issues/4
+
   Changes between 2.8.1 to 2.10.0:
 
   *) Fix the tests and code on Win64/appveyor/cygwin.
