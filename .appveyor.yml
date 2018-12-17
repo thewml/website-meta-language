@@ -38,6 +38,7 @@ build: off
 test_script:
     - set HARNESS_BREAK=1
     - set FCS_USE_TEST_RUN=1
+    - set WML_TEST_TIDY=1
     # - 'set "PATH=C:\cygwin64\usr\local\bin;C:\cygwin64\bin;%PATH%"'
     # - 'call .appveyor.cmd local_lib'
     - xcopy /i /q /s c:\Projects\website-meta-language c:\cygwin64\home\appveyor\website-meta-language && %perl% -E "use strict;use warnings;use autodie;$ENV{PERL_MM_USE_DEFAULT}=1;chdir(qq($ENV{HOME}/website-meta-language)); mkdir('build');chdir('build'); system($^X, '../src/wml_test/run_test.pl') and die $!;"
