@@ -8,6 +8,26 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.10.1 to 2.12.0:
+
+  *) Fix the exit code return of pass1/IPP so it will return 0.
+  https://github.com/thewml/website-meta-language/issues/11
+
+  *) Deprecate wmu (WML upgrade utility)
+  https://github.com/thewml/website-meta-language/issues/5
+
+  *) Update the maintainer email in the wmb util.
+  https://github.com/thewml/website-meta-language/issues/8
+
+  *) Fix object (not-)quoting in IPP pass
+  https://github.com/thewml/website-meta-language/issues/12
+
+  *) Fix wmk under "use strict;"
+  https://github.com/thewml/website-meta-language/issues/10
+
+  *) Thanks to Axel Beckert ( https://github.com/xtaran ;
+  https://axel.beckert.ch/ ).
+
   Changes between 2.10.0 to 2.10.1:
 
   *) Avoid including .tidyall.d in the tarball:
