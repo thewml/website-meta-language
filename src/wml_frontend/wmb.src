@@ -36,6 +36,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##
 
 require 5.003;
+use Path::Tiny qw/ path /;
 
 BEGIN { $^W = 0; }    # get rid of nasty warnings
 
@@ -297,19 +298,13 @@ if ( $rc =~ m|[yY]| )
     close(FP);
 
     $subject = "BUG REPORT: Website META Language $VERSION";
-    $to      = 'sw-wml@engelschall.com';
+    $to      = 'shlomif@cpan.org';
     $maileropt =~ s|%r|$replyto|g;
     $maileropt =~ s|%s|$subject|g;
     $maileropt =~ s|%t|$to|g;
     $maileropt =~ s|%F|$tmpfile2|g;
 
-    open( IN, "<$tmpfile" );
-    $msg = '';
-    while (<IN>)
-    {
-        $msg .= $_;
-    }
-    close(IN);
+    $msg = path($tmpfile)->slurp;
     $msg =~ s|^.+--.+?\-\+\n_|_|s;
 
     open( OUT, ">$tmpfile2" );
