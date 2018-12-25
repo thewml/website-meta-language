@@ -43,7 +43,7 @@ use 5.014;
 
 BEGIN { $^W = 0; }    # get rid of nasty warnings
 
-$VERSION = "@WML_VERSION@";
+my $VERSION = "@WML_VERSION@";
 
 use Term::Cap;
 use Getopt::Long 2.13;
@@ -59,7 +59,17 @@ if ( $ENV{'PATH'} !~ m|@bindir@| )
     $ENV{'PATH'} = '@bindir@:' . $ENV{'PATH'};
 }
 
-$WML = $ENV{'WML'} || '@bindir@/wml';
+my $WML = $ENV{'WML'} || '@bindir@/wml';
+
+my $bold;
+my $norm;
+my $term;
+our $opt_h;
+our @opt_A_CUR;
+our @opt_F_CUR;
+our @opt_x_CUR;
+our @opt_X_CUR;
+our $opt_o_CUR;
 
 eval "\$term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }";
 if ($@)
@@ -148,36 +158,36 @@ sub error
 }
 
 #   save argument line
-@ARGVLINE = @ARGV;
+my @ARGVLINE = @ARGV;
 
 #   WMk options
-$opt_a = 0;
-@opt_A = ('*.wml');
-@opt_F = ();
-@opt_o = ();
-@opt_x = ();
-@opt_X = ();
-$opt_f = 0;
-$opt_r = 0;
-$opt_n = 0;
+our $opt_a = 0;
+our @opt_A = ('*.wml');
+our @opt_F = ();
+our @opt_o = ();
+our @opt_x = ();
+our @opt_X = ();
+our $opt_f = 0;
+our $opt_r = 0;
+our $opt_n = 0;
 
 #   WML options are read from the command line
-@opt_I = ();
-@opt_i = ();
-@opt_D = ();
-$opt_O = '';
-@opt_P = ();
-@opt_E = ();
-$opt_t = 0;
-@opt_p = ();
-@opt_W = ();
-$opt_M = '-';
-$opt_s = 0;
-$opt_v = -1;
-$opt_q = 0;
-$opt_h = 0;
-$opt_V = -1;
-$opt_z = 0;
+our @opt_I = ();
+our @opt_i = ();
+our @opt_D = ();
+our $opt_O = '';
+our @opt_P = ();
+our @opt_E = ();
+our $opt_t = 0;
+our @opt_p = ();
+our @opt_W = ();
+our $opt_M = '-';
+our $opt_s = 0;
+our $opt_v = -1;
+our $opt_q = 0;
+our $opt_h = 0;
+our $opt_V = -1;
+our $opt_z = 0;
 
 &ProcessOptions();
 
@@ -230,53 +240,53 @@ sub addquotedarg
     return ' -' . $flag . ' "' . &quotearg($arg) . '"';
 }
 
-$Oq = '';
+my $Oq = '';
 $Oq = ' -q' if ($opt_q);
 
-$Oz = '';
+my $Oz = '';
 $Oz = ' -z' if ($opt_z);
 
-$Ov = '';
+my $Ov = '';
 $Ov = ' -v' if ( $opt_v == 0 );
 $Ov = ' -v' . $opt_v if ( $opt_v > 0 );
 
-$Op = '';
+my $Op = '';
 foreach $a (@opt_p) { $Op .= ' -p' . $a; }
 
-$OW = '';
+my $OW = '';
 foreach $a (@opt_W) { $OW .= &addquotedarg( 'W', $a ); }
 
-$OD = '';
+my $OD = '';
 foreach $a (@opt_D) { $OD .= &addquotedarg( 'D', $a ); }
 
-$OP = '';
+my $OP = '';
 foreach $a (@opt_P) { $OP .= &addquotedarg( 'P', $a ); }
 
-$OE = '';
+my $OE = '';
 foreach $a (@opt_E) { $OE .= &addquotedarg( 'E', $a ); }
 
-$OM = '';
+my $OM = '';
 $OM = " -M$opt_M" if ( $opt_M ne '-' );
 
-$Ot = '';
+my $Ot = '';
 $Ot = ' -t' if ($opt_t);
 
-$Or = '';
+my $Or = '';
 $Or = ' -r' if ($opt_r);
 
-$Os = '';
+my $Os = '';
 $Os = ' -s' if ($opt_s);
 
-$OI = '';
+my $OI = '';
 foreach $a (@opt_I) { $OI .= &addquotedarg( 'I', $a ); }
 
-$Oi = '';
+my $Oi = '';
 foreach $a (@opt_i) { $Oi .= &addquotedarg( 'i', $a ); }
 
-$OO = '';
+my $OO = '';
 $OO = ' -O' . $opt_O if ( $opt_O ne '' );
 
-$wml_cmd =
+my $wml_cmd =
       "$WML -n"
     . $Oq
     . $Oz
@@ -293,7 +303,7 @@ $wml_cmd =
     . $OI
     . $Oi
     . $OO;
-$wml_ipp =
+my $wml_ipp =
       "$WML -n -MM"
     . $Oq
     . $Oz
@@ -311,7 +321,7 @@ $wml_ipp =
     . $Oi
     . $OO;
 
-$Oo = '';
+my $Oo = '';
 foreach $a (@opt_o) { $Oo .= ' -o' . $a; }
 
 #   store initial working directory
@@ -329,8 +339,9 @@ if ( -f "$home/.wmkrc" )
 }
 
 #    this variable is defined in read_rcfile
-$matchF = '';
+my $matchF = '';
 
+my @P;
 #   set the path to act on
 if ( $#ARGV == -1 )
 {
@@ -340,7 +351,7 @@ else
 {
     @P = @ARGV;
 }
-foreach $p (@P)
+foreach my $p (@P)
 {
     if ( -d $p )
     {
@@ -354,7 +365,7 @@ foreach $p (@P)
             &read_rcfile();
             chdir($cwd);
 
-            @dirs = ();
+            my @dirs = ();
 
             sub wanted
             {
@@ -363,37 +374,37 @@ foreach $p (@P)
                     || push( @dirs, $File::Find::name ) );
             }
             File::Find::find( \&wanted, $p );
-            $dirC = '';
-            foreach $dir (@dirs)
+            my $dirC = '';
+            foreach my $dir (@dirs)
             {
                 $dir =~ s|\n$||;
                 chdir($dir);
                 &read_rcfile() if $dir ne $p;
-                @files = &determine_files();
+                my @files = &determine_files();
                 if ( $#files > -1 )
                 {
                     #   a little bit verbosity
                     if ( $dirC ne $dir )
                     {
                         $dirC   = $dir;
-                        $dirtxt = canon_path($dir);
+                        my $dirtxt = canon_path($dir);
                         if ( $dirtxt ne '.' )
                         {
                             print STDERR "${bold}[$dirtxt]${norm}\n";
                         }
                     }
-                    foreach $exec (@opt_x_CUR)
+                    foreach my $exec (@opt_x_CUR)
                     {
-                        $rc = system($exec);
+                        my $rc = system($exec);
                         error("prolog failed: $exec") if $rc != 0;
                     }
-                    foreach $file (@files)
+                    foreach my $file (@files)
                     {
                         &process_file( "$dir/$file", $dir, $file );
                     }
-                    foreach $exec (@opt_X_CUR)
+                    foreach my $exec (@opt_X_CUR)
                     {
-                        $rc = system($exec);
+                        my $rc = system($exec);
                         error("epilog failed: $exec") if $rc != 0;
                     }
                 }
@@ -408,19 +419,19 @@ foreach $p (@P)
             chdir($p);
             &read_rcfile();
             next if $p =~ m#^${matchF}$#;
-            @files = &determine_files();
-            foreach $exec (@opt_x_CUR)
+            my @files = &determine_files();
+            foreach my $exec (@opt_x_CUR)
             {
-                $rc = system($exec);
+                my $rc = system($exec);
                 error("prolog failed: $exec") if $rc != 0;
             }
-            foreach $file (@files)
+            foreach my $file (@files)
             {
                 &process_file( "$p/$file", $p, $file );
             }
-            foreach $exec (@opt_X_CUR)
+            foreach my $exec (@opt_X_CUR)
             {
-                $rc = system($exec);
+                my $rc = system($exec);
                 error("epilog failed: $exec") if $rc != 0;
             }
             chdir($cwd);
@@ -457,11 +468,11 @@ foreach $p (@P)
 sub read_rcfile
 {
     my ( $cwd, $dir, @DIR );
-    @opt_A_SAV = @opt_A;
-    @opt_F_SAV = @opt_F;
-    @opt_x_SAV = @opt_x;
-    @opt_X_SAV = @opt_X;
-    @opt_o_SAV = @opt_o;
+    our @opt_A_SAV = @opt_A;
+    our @opt_F_SAV = @opt_F;
+    our @opt_x_SAV = @opt_x;
+    our @opt_X_SAV = @opt_X;
+    our @opt_o_SAV = @opt_o;
     @opt_A_CUR = @opt_A;
     @opt_F_CUR = @opt_F;
     @opt_x_CUR = @opt_x;
@@ -561,7 +572,7 @@ sub determine_files
     %files  = ();
     foreach $fileA (@filesA)
     {
-        $ok = 1;
+        my $ok = 1;
         foreach $fileF (@filesF)
         {
             if ( $fileA eq $fileF )
@@ -653,6 +664,7 @@ sub process_file
     $opts =~ s|\s+$||;
 
     #   determine if invocation can be skipped
+    my $skipable;
     if ( not $opt_f )
     {
         my @outfiles = ();
@@ -675,7 +687,7 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@outfiles, $1), ''|sge;
         print STDERR "$wml_cmd $opts $file\n";
         if ( not $opt_n )
         {
-            $rc = system("$wml_cmd $opts $file");
+            my  $rc = system("$wml_cmd $opts $file");
             error("Error in WML (rc=$rc)") if $rc != 0;
         }
     }
