@@ -50,7 +50,7 @@ __END__
 
 =head1 NAME
 
-WMu - Website META Language Upgrade Utility
+WMu - Website META Language Upgrade Utility (DEPRECATED!)
 
 =head1 VERSION
 
@@ -59,30 +59,15 @@ WMu - Website META Language Upgrade Utility
 =head1 SYNOPSIS
 
 B<wmu>
-[B<-V>]
-[B<-h>]
 
 =head1 DESCRIPTION
 
-This is the upgrade utility for the Website META Language. It automatically
-determines if a new WML release exists, fetches it via HTTP, extracts the
-distribution, builds the systems and installs it. Each of these steps just
-have to interactively accepted by a keystroke.
+This was the upgrade utility for the Website META Language.
 
-=head1 OPTIONS
-
-=over 4
-
-=item B<-V>, B<--version>
-
-Gives the version identification string of WMd. Use this to determine the
-version of a installed WML toolkit.
-
-=item B<-h>, B<--help>
-
-Prints the usage summary page.
-
-=back
+wmu, the wml upgrade utility has been deprecated. Just go to
+https://github.com/thewml/website-meta-language/releases and download the latest
+source tarball and build and install it using cmake, or use your operating
+system's package manager.
 
 =head1 AUTHOR
 
@@ -90,9 +75,10 @@ Prints the usage summary page.
  rse@engelschall.com
  www.engelschall.com
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml(1)
 
 =cut
+
 # vim: ft=perl
