@@ -269,14 +269,18 @@ sub _handle_opt_M_stdin
         $rc = $_pass_mgr->pass1( $_pass_mgr->pass(1)->opt_pass() . $opt_pass,
             $self->_src, $o, $self->_tmp->[2] );
     };
-    if ( $rc != 0 )
+    if ( defined $rc )
     {
-        $self->_unlink_tmp;
-        die +( $rc % 256 != 0 )
-            ? sprintf( "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n",
-            1, $rc % 256, $rc / 256 )
-            : sprintf( "** WML:Break: Error in Pass %d (rc=%d).\n", 1,
-            $rc / 256 );
+        if ( $rc != 0 )
+        {
+            $self->_unlink_tmp;
+            die +( $rc % 256 != 0 )
+                ? sprintf(
+                "** WML:Break: Error in Pass %d (status=%d, rc=%d).\n",
+                1, $rc % 256, $rc / 256 )
+                : sprintf( "** WML:Break: Error in Pass %d (rc=%d).\n",
+                1, $rc / 256 );
+        }
     }
     return;
 }
