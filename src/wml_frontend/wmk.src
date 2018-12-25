@@ -247,7 +247,7 @@ my $Oz = '';
 $Oz = ' -z' if ($opt_z);
 
 my $Ov = '';
-$Ov = ' -v' if ( $opt_v == 0 );
+$Ov = ' -v'          if ( $opt_v == 0 );
 $Ov = ' -v' . $opt_v if ( $opt_v > 0 );
 
 my $Op = '';
@@ -342,6 +342,7 @@ if ( -f "$home/.wmkrc" )
 my $matchF = '';
 
 my @P;
+
 #   set the path to act on
 if ( $#ARGV == -1 )
 {
@@ -386,7 +387,7 @@ foreach my $p (@P)
                     #   a little bit verbosity
                     if ( $dirC ne $dir )
                     {
-                        $dirC   = $dir;
+                        $dirC = $dir;
                         my $dirtxt = canon_path($dir);
                         if ( $dirtxt ne '.' )
                         {
@@ -478,6 +479,7 @@ sub read_rcfile
     @opt_x_CUR = @opt_x;
     @opt_X_CUR = @opt_X;
     $opt_o_CUR = '';
+
     if ( not $opt_r )
     {
         ( $cwd = Cwd::cwd ) =~ s|/$||;
@@ -687,7 +689,7 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@outfiles, $1), ''|sge;
         print STDERR "$wml_cmd $opts $file\n";
         if ( not $opt_n )
         {
-            my  $rc = system("$wml_cmd $opts $file");
+            my $rc = system("$wml_cmd $opts $file");
             error("Error in WML (rc=$rc)") if $rc != 0;
         }
     }
