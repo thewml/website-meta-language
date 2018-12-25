@@ -242,6 +242,10 @@ sub main
 
     $self->_process_real_files( \@opt_P, $opt_n, \%arg );
     $self->_do_output;
+
+    # See https://github.com/thewml/website-meta-language/issues/11
+    # Exit code.
+    return 0;
 }
 
 sub _process_real_files
