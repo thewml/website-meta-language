@@ -258,7 +258,15 @@ sub _process_real_files
         foreach my $p (@$opt_P)
         {
             my $rc = system(
-"$p <".$self->temp_fn." >".$self->temp_fn.".f && mv ".$self->temp_fn.".f ".$self->temp_fn." 2>/dev/null"
+                "$p <".
+                $self->temp_fn.
+                " >".
+                $self->temp_fn.
+                ".f && mv ".
+                $self->temp_fn.
+                ".f ".
+                $self->temp_fn.
+                " 2>/dev/null"
             );
             $self->error("Prolog Filter `$p' failed") if ( $rc != 0 );
         }
