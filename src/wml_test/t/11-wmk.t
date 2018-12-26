@@ -70,7 +70,7 @@ is ((scalar `$wmk a.wml 2>&1`),
     "wmk 2"
 );
 
-my $tmpfile1 = WmlTest::tmpfile(<<'EOT_IN');
+$tmpfile1 = WmlTest::tmpfile(<<'EOT_IN');
 Hello
 EOT_IN
 my $tmpfile2 = WmlTest::tmpfile(<<'EOT_IN');
