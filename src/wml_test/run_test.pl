@@ -32,7 +32,7 @@ my $is_interactive;
 GetOptions( 'interactive!' => \$is_interactive, );
 
 my $IS_WIN = ( $^O eq "MSWin32" );
-my $SEP = $IS_WIN ? "\\" : '/';
+my $SEP    = $IS_WIN ? "\\" : '/';
 
 # %ENV path separator
 my $P    = $IS_WIN ? ';'     : ':';
@@ -73,7 +73,7 @@ my $P5L = $ENV{PERL5LIB} ? $ENV{PERL5LIB} . $P : $P;
 $ENV{PERL5LIB}              = "$myprefix/lib/perl5$P$P5L$script_dir";
 $ENV{QUAD_PRES_NO_HOME_LIB} = 1;
 $ENV{PATH}                  = "$myprefix/bin$P$ENV{PATH}";
-$ENV{WML}                   = "$myprefix/bin/wml -q -W1-N";
+$ENV{WML}                   = "$myprefix/bin/wml -q -W1,-N";
 $ENV{LANG}                  = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
@@ -95,7 +95,7 @@ else
                 glob(
                           't'
                         . $SEP
-                        . '{{02,03,05,06,07,08,09,10,des,std}-,build-process,tidyall}*.t'
+                        . '{{02,03,05,06,07,08,09,10,11,des,std}-,build-process,tidyall}*.t'
                 ),
             ],
         }

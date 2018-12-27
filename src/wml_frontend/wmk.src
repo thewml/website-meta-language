@@ -49,6 +49,7 @@ use Term::Cap;
 use Getopt::Long 2.13;
 use Cwd;
 use File::Find;
+use Time::HiRes qw/ stat /;
 
 ##
 ##  INIT
@@ -718,7 +719,7 @@ sub skipable
         {
             if ( -f $incl )
             {
-                @OS = stat(_);
+                @OS = stat($incl);
                 if ( $IS[9] < $OS[9] )
                 {    # 9=mtime
                     $IS[9] = $OS[9];
@@ -731,7 +732,7 @@ sub skipable
     {
         if ( -f $outfile )
         {
-            @OS = stat(_);
+            @OS = stat($outfile);
             if ( $IS[9] >= $OS[9] )
             {    # 9=mtime
                 $skipable = 0;
