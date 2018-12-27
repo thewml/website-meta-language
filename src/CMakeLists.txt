@@ -98,6 +98,7 @@ SET (CPAN_MODULES_TO_CHECK
     "IO::All"
     "Path::Tiny"
     "Term::ReadKey"
+    "Time::HiRes"
     )
 
 CHECK_FOR_MULTIPLE_PERL_MODULES(${CPAN_MODULES_TO_CHECK})
