@@ -23,15 +23,20 @@ if ($INSTALLPRIVLIB)
     print "@INSTALLPRIVLIB@";
     print "\n";
 }
-__END__
 
 =head1 NAME
 
-wml-params-conf
+wml-params-conf - displays configuration parameters for the wml installation.
 
 =head1 SYNOPSIS
 
     use lib do { my $s = `wml-params-conf --show-privlib`; chomp $s; $s;}
+
+=head1 OPTIONS
+
+=head2 --show-privlib
+
+Outputs the private library path followed by a newline.
 
 =head1 COPYRIGHT & LICENSE
 
