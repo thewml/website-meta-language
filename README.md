@@ -1,6 +1,6 @@
 This is the repository for Website Meta Language:
 
-- http://www.shlomifish.org/open-source/projects/website-meta-language/
+- https://www.shlomifish.org/open-source/projects/website-meta-language/
 
 More info can be found under the [src/](https://github.com/thewml/website-meta-language/tree/master/src)
 sub-directory.
@@ -23,7 +23,7 @@ template system or a preprocessor.
 
 # See Also
 
-* [Latemp](http://web-cpan.shlomifish.org/latemp/) - a static site generator
+* [Latemp](https://web-cpan.shlomifish.org/latemp/) - a static site generator
 based on Website Meta Language (similar to the relationship between
 [LaTeX](https://en.wikipedia.org/wiki/LaTeX) above [TeX](https://en.wikipedia.org/wiki/TeX) ) - the link contains some further reflection on the contemporary
 situation of choosing a static site generator.
