@@ -67,7 +67,7 @@ modules/njs/javascript.mp4h
 modules/njs/mp4h-js.c
 modules/njs/mp4h-js.h
 modules/njs/mp4h-js.jsi
-mp4h-config.src
+mp4h-config.sh.in
 packages/Makefile.in
 packages/WML/Makefile.in
 packages/WML/href.src
