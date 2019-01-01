@@ -22,10 +22,7 @@ sub build_info
 {
     return <<'EOF';
 Built Environment:
-    Host: @built_system@
     Perl: @perlvers@ (@perlprog@)
-    User: @built_user@
-    Date: @built_date@
 Built Location:
     Prefix: @prefix@
     BinDir: @bindir@
