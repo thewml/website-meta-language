@@ -6,6 +6,7 @@ use warnings;
 use Getopt::Long;
 use File::Temp qw/tempdir/;
 use File::Copy;
+use File::Basename;
 
 my ($src, $dest, $sect, $center, $release);
 
@@ -45,13 +46,23 @@ if (!defined($release))
 
 my $dir = tempdir( CLEANUP => 1);
 
-my $pod = "$dir/Hoola.pod";
+my $pod;
+if ($src =~ m(/wml_include/)) {
+    $pod = $src;
+    $pod =~ s(^.*/wml_include/)(wml::);
+    $pod =~ s(/)(::)g;
+    $pod =~ s(\.(src|pl|pm|pod)$)();
+} else {
+    $pod = basename($src, '.src', '.pl', '.pm', '.pod');
+}
+$pod = "$pod.pod";
 
 if (! -e $src)
 {
     die "Cannot find '$src'";
 }
-copy($src, $pod);
+copy($src, "$dir/$pod");
+chdir($dir);
 
 if(
 system(
