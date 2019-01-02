@@ -17,7 +17,7 @@ if ( !delete( $ENV{'WML_TEST_BUILD'} ) )
     plan skip_all => "Skipping because WML_TEST_BUILD is not set";
 }
 
-plan tests => 7;
+plan tests => 9;
 
 # Change directory to the Freecell Solver base distribution directory.
 my $src_path =
@@ -48,13 +48,25 @@ sub test_cmd
 }
 
 {
-    my $temp_dir = tempdir( TEMPLATE => 'wml-build-process--XXXXXXXX' );
+    my $temp_dir        = tempdir( TEMPLATE => 'wml-build-process--XXXXXXXX' );
     my $before_temp_cwd = Cwd::getcwd();
 
     chdir($temp_dir);
 
     # TEST
     test_cmd( [ "cmake", $src_path ], "cmake succeeded" );
+
+    # TEST
+    test_cmd( [ "make", "all" ], "make all is successful" );
+    {
+        open my $in, "man ./wml_frontend/wmk.1 | cat |"
+            or die "Cannot open $! !";
+        local $/;
+        my $text = <$in>;
+
+        # TEST
+        unlike( $text, qr/\@WML_VERSION/, "WML_VERSION was expanded" );
+    }
 
     # TEST
     test_cmd( [ "make", "package_source" ],
