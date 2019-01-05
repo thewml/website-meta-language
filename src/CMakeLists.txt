@@ -96,6 +96,7 @@ SET (CPAN_MODULES_TO_CHECK
     "Getopt::Long"
     "Image::Size"
     "IO::All"
+    "List::MoreUtils"
     "Path::Tiny"
     "Term::ReadKey"
     "Time::HiRes"
