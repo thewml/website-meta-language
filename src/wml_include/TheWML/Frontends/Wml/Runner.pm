@@ -689,7 +689,7 @@ sub _set_src
     my ( $self, ) = @_;
 
     # set the input file
-    $self->_src( $self->_argv->[0] );
+    $self->_src( $self->_argv->[0] // '' );
 
     # if no inputfile is given, WML reads from stdin and forces quiet mode
     if ( $self->_src eq '' )
@@ -845,7 +845,7 @@ sub run_with_ARGV
 
     my @temp_argv = @{ $self->_argv };
     $self->_process_options( \@temp_argv, [] );
-    $self->_src( $temp_argv[0] );
+    $self->_src( $temp_argv[0] // '-' );
 
     #   reset with defaults (except $self->_opt_r and $_pass_mgr->_opt_v())
     $self->_reset_opts;
