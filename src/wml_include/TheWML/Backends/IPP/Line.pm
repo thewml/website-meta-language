@@ -148,6 +148,7 @@ sub _process_line
 
     #   Implicit Variables
     $$l =~ s|__LINE__|$self->line_idx|eg;
+    $arg->{'IPP_SRC_REALNAME'} //= '';
     if ( $level == 0 and $arg->{'IPP_SRC_REALNAME'} ne '' )
     {
         $arg->{'IPP_SRC_REALNAME'} = './' . $arg->{'IPP_SRC_REALNAME'}

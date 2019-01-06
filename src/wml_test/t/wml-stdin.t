@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More tests => 4;
 use File::Temp qw/ tempdir tempfile /;
 
 my $dir = tempdir( CLEANUP => 1 );
@@ -28,6 +28,20 @@ sub tmpfile
     # TEST
     like( $output, qr#\A[\s\n\r]{0,10}\z#ms,
         "empty output and no warnings when accepting empty input from stdin" );
+
+    # TEST
+    is( $rc, 0, "success exit" );
+}
+
+{
+    my $foo_fn = tmpfile("foo\n");
+    my $output = `$ENV{WML} < $foo_fn 2>&1`;
+    my $rc     = $?;
+
+    # TEST
+    like( $output, qr#\Afoo[\s\n\r]{0,10}\z#ms,
+        "correct output and no warnings when accepting small input from stdin"
+    );
 
     # TEST
     is( $rc, 0, "success exit" );
