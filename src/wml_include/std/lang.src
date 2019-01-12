@@ -263,7 +263,7 @@ can use the C<short> attribute to C<E<lt>lang:newE<gt>>
  <lang:new id=en short>
  <lang:new id=de short>
 
-when then leads to the defintion of the shortcut variants:
+when then leads to the definition of the shortcut variants:
 
  <en>...</en>
  <de>...</de>
@@ -312,7 +312,7 @@ tag expands the value without the star or an alternative value which can be
 appended with ``|alt-value''.
 
 The C<E<lt>lang:star:slice:E<gt>> is another variant to help writing
-multi-lingual files quickly. It must come after all occurences of
+multi-lingual files quickly. It must come after all occurrences of
 C<E<lt>lang:newE<gt>> tags.
 
   <lang:star:slice: index.html.*>

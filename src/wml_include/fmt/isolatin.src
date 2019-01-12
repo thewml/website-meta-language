@@ -139,7 +139,7 @@ characters to their corresponding HTML entities. Note that this is not really
 necessary because HTML 3.2 states that every browser has to understand
 ISO-Latin-1 characters. So there is no real need to encode them with this
 container tag. But it is safe, because the result is 7Bit which can be
-transfered over more mediums then the 8 Bit version with ISO-Latin-1
+transferred over more mediums then the 8 Bit version with ISO-Latin-1
 characters.
 
 When adding the C<global> argument, the complete document gets automatically

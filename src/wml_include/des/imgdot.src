@@ -137,7 +137,7 @@ includes this image with appropriate C<width> and C<height> attributes. The
 visual result is a invisible reserved space of size C<width>XC<height>.
 Alternatively this tag can create the image with the requested size instead of
 scaling the 1pt image (see the C<noscale> attribute below). This approach is
-more safe (all browsers support this) but wastes bandwith and increases page
+more safe (all browsers support this) but wastes bandwidth and increases page
 load time.
 
 =head1 ATTRIBUTES

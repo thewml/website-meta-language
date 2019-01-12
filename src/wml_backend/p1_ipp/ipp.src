@@ -170,7 +170,7 @@ using the C<#depends> variant , e.g.
   #depends "*/*.dat"
   #depends <file>
 
-The contents of the file is not inserted, only informations about
+The contents of the file is not inserted, only information about
 dependencies are updated.
 
 =head2 B<Input Line Synchronization>
@@ -326,7 +326,7 @@ when the variable SHORTENING is set.
 
 =head2 B<End-Of-Line Continuation>
 
-It removes all occurences of the pattern
+It removes all occurrences of the pattern
 
   \<whitespace>*<newline><whitespace>*
 

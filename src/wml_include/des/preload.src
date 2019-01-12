@@ -68,7 +68,7 @@ only to a 1 pixel in display.
 
 Advantage: Works for all browsers.
 
-Disadvantage: This approach has the nasty side-effect of an occuring 1 pixel
+Disadvantage: This approach has the nasty side-effect of an occurring 1 pixel
 in display because C<width=0 height=0> does not work as expected in most
 browsers (especially in Netscape 4.x). So, position your C<E<lt>preloadE<gt>>
 tag somewhere it does not destroy the look and feel of your page.

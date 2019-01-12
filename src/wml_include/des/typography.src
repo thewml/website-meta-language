@@ -400,7 +400,7 @@ the standard HTML C<E<lt>h1E<gt>> does, i.e. it renders the text in Helvetica
 and used better whitespaces around it. Actually it does not create any
 whitespace above it, but the correct one below it. This way you can create the
 leading whitespace your own (which is usually different according to the
-context) but get nice trailing whitespace (which has to be choosen carefully
+context) but get nice trailing whitespace (which has to be chosen carefully
 to make the headline and the following paragraph one unit).  In german this is
 called `Überschrift' hence the alias C<E<lt>ueE<gt>>.
 
@@ -420,7 +420,7 @@ sub-headline as the standard HTML C<E<lt>h2E<gt>> does, i.e. it renders the
 text in Helvetica and used better whitespaces around it. Actually it does not
 create any whitespace above it, but the correct one below it. This way you can
 create the leading whitespace your own (which is usually different according
-to the context) but get nice trailing whitespace (which has to be choosen
+to the context) but get nice trailing whitespace (which has to be chosen
 carefully to make the headline and the following paragraph one unit).  In
 german this is called `Zwischenüberschrift' hence the alias C<E<lt>zwueE<gt>>.
 

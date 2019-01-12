@@ -880,7 +880,7 @@ input files
 
 =head1 CAVEAT
 
-Auto-adjusted variables specfied as B<-DNAME~PATH> on the F<wmk>
+Auto-adjusted variables specified as B<-DNAME~PATH> on the F<wmk>
 command-line will not necessarily have the same effect as a similar
 definition in a F<./.wmlrc> file.  This is because, when processing
 sub-directories, F<wmk> changes its working directory to each of those

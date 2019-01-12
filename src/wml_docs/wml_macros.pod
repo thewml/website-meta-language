@@ -590,7 +590,7 @@ code or not.
 
 One problem is that ePerl commands cannot be nested, according to its
 documentation.  So our first try is to count nested levels and print
-ePerl delimeters when in outer mode only.
+ePerl delimiters when in outer mode only.
 
 Input:
 
