@@ -13,7 +13,7 @@ If you are building from the repository, you also need to put the
 module +Shlomif_Common.cmake+ from
 https://bitbucket.org/shlomif/shlomif-cmake-modules in the CMake path.
 
-See also Requirements below for a list of dependencies.
+Also see "Requirements" below for a list of dependencies.
 
 Next, run:
 
@@ -50,7 +50,7 @@ This will build and install WML and its related programs.
        installation WML occupies approximately 3 MB of disk space.
 
     o  Perl Interpreter:
-       Make sure you have Perl 5.008 or later already installed on your
+       Make sure you have Perl 5.14.0 or later already installed on your
        system. You can find the homepages of Perl on
        <URL:http://www.perl.com/> and <URL:http://www.perl.org/> .
 
@@ -76,16 +76,17 @@ This will build and install WML and its related programs.
        S-Lang installed. The modern BSD-variants like FreeBSD and NetBSD
        already have NCurses, of course.
 
-    o  Needed perl modules:
+    o  Needed perl ( CPAN ) modules:
            - Carp::Always
            - Class::XSAccessor
+           - Curses
            - File::Which
            - GD
            - IO::All
            - Path::Tiny
-           - Curses
 
-    o On Debian also following libraries are needed:
+    o The following libraries are also needed (listed as the Debian package names,
+    change according to your OS's conventions) :
            - libgd-dev libdb5.3-dev libncurses-dev libpcre3-dev libperl-dev
 
  3. Configuring the source tree
