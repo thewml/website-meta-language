@@ -55,7 +55,7 @@ exist:
  Internal: P1
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::std::box(3),
 wml::std::case(3),

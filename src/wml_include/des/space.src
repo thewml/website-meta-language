@@ -81,7 +81,7 @@ This pushs over contained body X pixels to the right.
 
  Internal: P1, P2, wml::des::imgdot (WML)
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::des::imgdot(3)
 

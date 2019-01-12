@@ -152,7 +152,7 @@ found:
  Internal: P1, P2, P3
  External: LWP::Simple::get (P5M) | lynx (PATH) | wget (PATH) | fetch (PATH)
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 LWP::Simple(3), lynx(1), wget(1), fetch(1)
 

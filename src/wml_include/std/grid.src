@@ -333,7 +333,7 @@ set the height of the cell. Default is no specified height.
  Internal: P1, P2, P3, P5
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML E<lt>C<table>E<gt>-tag.
 

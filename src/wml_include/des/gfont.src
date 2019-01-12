@@ -322,7 +322,7 @@ The ``I<ATTR>=I<STR>'' pairs are passed along to the C<E<lt>imgE<gt>> HTML tag.
  Internal: P1, P2, P3, Image::Size (P5M)
  External: gfont (PATH)
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML C<E<lt>fontE<gt>> tag,
 gfont(1),

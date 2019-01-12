@@ -464,7 +464,7 @@ and its color may be defined.
 
  Internal: P1, P2, P3, P8
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML C<E<lt>fontE<gt>> and C<E<lt>brE<gt>> tags.
 

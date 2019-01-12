@@ -36,7 +36,7 @@ exist:
  Internal: P1
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::mod::MakeMaker(3),
 wml::mod::version(3).

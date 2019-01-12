@@ -37,7 +37,7 @@ Perl 5 modules of WML which stay below F<@libdir@@libsubdir@/perl/>.
 
 P3
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml_p3_eperl(1), perl(1)
 

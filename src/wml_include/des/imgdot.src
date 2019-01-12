@@ -217,7 +217,7 @@ The ``I<ATTR>=I<STR>'' pairs are passed along to the C<E<lt>imgE<gt>> HTML tag.
 
  Internal: P1, P2, P3
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML E<lt>C<img>E<gt> tag.
 

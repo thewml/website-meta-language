@@ -103,7 +103,7 @@ F<./foo/./bar/../quux//> is F<foo/quux/>.
  Internal: P1, P3
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 perl(1)
 

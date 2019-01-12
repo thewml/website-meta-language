@@ -38,7 +38,7 @@ all includes with prefix B<wml::imp>.  The following files currently exist:
  Internal: P1
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::imp::csmap(3),
 wml::imp::fsview(3),

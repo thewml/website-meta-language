@@ -66,6 +66,13 @@ This is just a WML wrapper for interfacing the wml_aux_freetable(1) utility
 which converts its advanced table syntax to plain HTML table markup code. See
 wml_aux_freetable(1) for more details.
 
+=head1 CAVEATS
+ 
+An error is reported if C<xtable> body contains ePerl code, so the
+special variable C<IPP_NOSYNCLINES> has to be written onto C<#include>
+lines (see wml_p1_ipp(1)), and macros expanded by C<wml_p2_mp4h>(1)
+must not print ePerl code.
+ 
 =head1 AUTHOR
 
  Ralf S. Engelschall
@@ -77,7 +84,7 @@ wml_aux_freetable(1) for more details.
  Internal: P1, P2, P3, wml_aux_freetable (PATH)
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml_aux_freetable(1),
 HTML C<E<lt>tableE<gt>> tag.

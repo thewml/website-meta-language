@@ -43,7 +43,7 @@ exist:
  Internal: P1
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::sys::bootp3(3),
 wml::sys::bootp4(3),

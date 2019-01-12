@@ -48,7 +48,7 @@ wml::imp::csmap - Import External Server-Side Map as Inlined Client-Side Map
 
 This tag converts a externally stored server-side map (either NCSA or CERN
 format) to an inlined client-side map. This is done via the external program
-wml_aux_map2html(1).
+wml_aux_map2html(3).
 
 =head1 AUTHOR
 
@@ -61,7 +61,7 @@ wml_aux_map2html(1).
  Internal: P1, P2, P3
  External: wml_aux_map2html (PATH)
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml_aux_map2html(3)
 

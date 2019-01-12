@@ -51,7 +51,7 @@ currently exist:
  Internal: P1
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::des::gfont(3),
 wml::des::imgbg(3),

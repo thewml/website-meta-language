@@ -195,7 +195,7 @@ any output:
  logo "php" instead. Expect that the logo "php3" will be removed in
  future releases.
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml(1)
 

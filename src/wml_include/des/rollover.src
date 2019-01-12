@@ -155,7 +155,7 @@ and C<E<lt>imgE<gt>> HTML tags.
  Internal: P1, P2
  External: JavaScript (BROWSER)
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML 3.2 C<E<lt>imgE<gt>> and C<E<lt>aE<gt>> tags,
 JavaScript: http://home.netscape.com/eng/mozilla/3.0/handbook/javascript/

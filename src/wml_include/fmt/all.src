@@ -47,7 +47,7 @@ exist:
  Internal: P1
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::fmt::isolatin(3),
 wml::fmt::verbatim(3),

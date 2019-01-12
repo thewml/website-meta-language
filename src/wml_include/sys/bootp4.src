@@ -36,7 +36,7 @@ Include some macros definitions to deal with GNU m4 quoting.
 
 P4
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml_p4_gm4(1), m4(1)
 

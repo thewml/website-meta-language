@@ -108,7 +108,7 @@ gets expanded to
  Internal: P1, P2
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML C<E<lt>aE<gt>> and C<E<lt>imgE<gt>> tags.
 

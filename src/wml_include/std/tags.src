@@ -407,7 +407,7 @@ some help to insert C<E<lt>sync-linesE<gt>> before ePerl code.
  Internal: P1, P2, P3, P4, P6
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml(1)
 

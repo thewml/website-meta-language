@@ -99,7 +99,7 @@ only for those who support the C<Image> object (currently NS/3, NS/4, IE/4).
  Internal: P1, P2
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml::std::tags(3)
 HTML 3.2 C<E<lt>imgE<gt>> tag.

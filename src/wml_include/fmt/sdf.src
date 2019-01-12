@@ -125,7 +125,7 @@ F<sdf2html> filter.
  Internal: P1, P2, P3
  External: sdf
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 sdf(1), http://www.mincom.com/mtr/sdf/
 

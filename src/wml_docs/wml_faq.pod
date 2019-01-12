@@ -390,7 +390,7 @@ debugging.
 
 =back
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 wml_intro(7),
 wml_tutorial(7),

@@ -33,6 +33,9 @@
   *) wmk timestamp granularity.
   https://github.com/thewml/website-meta-language/issues/16 .
 
+  *) Fix man page sections and see also
+  https://salsa.debian.org/debian/wml/blob/master/debian/patches/fix-man-page-sections-and-see-also.diff
+
   *) Thanks to Axel Beckert ( @xtaran ).
 
   Changes between 2.10.1 to 2.12.0:
