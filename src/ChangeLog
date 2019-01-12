@@ -8,6 +8,33 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.12.0 to 2.12.1:
+
+  *) Fix warnings on stdin input.
+  https://ci.appveyor.com/project/shlomif/patsolve
+
+  *) Run the tidyall tests only when WML_TEST_TIDY is set.
+
+  *) Check for missing deps.
+
+  *) Expand @WML_VERSION@ in the man pages.
+  https://github.com/thewml/website-meta-language/issues/22 .
+
+  *) Drop hardcoded date, user and host strings in wml
+  Drop those lines where configure inserts hardcoded build date, user
+  name and host name to make the build more easily reproducible.
+  See https://reproducible-builds.org/ for the background.
+
+  *) Better man pages titles.
+
+  *) Fix empty --help in wml-params-conf .
+  https://github.com/thewml/website-meta-language/issues/16 .
+
+  *) wmk timestamp granularity.
+  https://github.com/thewml/website-meta-language/issues/16 .
+
+  *) Thanks to Axel Beckert ( @xtaran ).
+
   Changes between 2.10.1 to 2.12.0:
 
   *) Fix the exit code return of pass1/IPP so it will return 0.
