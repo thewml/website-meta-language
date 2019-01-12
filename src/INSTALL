@@ -13,6 +13,8 @@ If you are building from the repository, you also need to put the
 module +Shlomif_Common.cmake+ from
 https://bitbucket.org/shlomif/shlomif-cmake-modules in the CMake path.
 
+See also Requirements below for a list of dependencies.
+
 Next, run:
 
     mkdir build
@@ -73,6 +75,18 @@ This will build and install WML and its related programs.
        under SunOS and other old BSD-based systems you really need NCurses or
        S-Lang installed. The modern BSD-variants like FreeBSD and NetBSD
        already have NCurses, of course.
+
+    o  Needed perl modules:
+           - Carp::Always
+           - Class::XSAccessor
+           - File::Which
+           - GD
+           - IO::All
+           - Path::Tiny
+           - Curses
+
+    o On Debian also following libraries are needed:
+           - libgd-perl libncurses-dev libpcre++-dev
 
  3. Configuring the source tree
     ---------------------------
