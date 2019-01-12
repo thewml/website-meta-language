@@ -88,6 +88,7 @@ This will build and install WML and its related programs.
     o The following libraries are also needed (listed as the Debian package names,
     change according to your OS's conventions) :
            - libgd-dev libdb5.3-dev libncurses-dev libpcre3-dev libperl-dev
+           - libgdbm-dev libgdbm-compat-dev
 
  3. Configuring the source tree
     ---------------------------
