@@ -31,7 +31,7 @@ particular core language. For maximum power WML additionally ships
 with a well-suited set of include files which provide higher-level
 features build on top of the backends core languages. While not
 trivial and idiot proof WML provides most of the core features real
-[hackers](https://en.wikipedia.org/wiki/Hacker) always wanted for HTML generation.
+<a href="https://en.wikipedia.org/wiki/Hacker">hackers</a> always wanted for HTML generation.
 </p>
 
 </blockquote>
