@@ -4,12 +4,10 @@ use strict;
 use warnings;
 
 use Test::More;
-use File::Spec ();
 use List::MoreUtils qw(none);
-use Cwd ();
 use File::Path qw/ mkpath rmtree /;
 
-use Path::Tiny qw/ path tempdir /;
+use Path::Tiny qw/ cwd path tempdir /;
 
 # Remove WML_TEST_BUILD so we won't run the tests with infinite recursion.
 if ( !delete( $ENV{'WML_TEST_BUILD'} ) )
@@ -48,7 +46,7 @@ sub test_cmd
 
 {
     my $temp_dir        = tempdir( TEMPLATE => 'wml-build-process--XXXXXXXX' );
-    my $before_temp_cwd = Cwd::getcwd();
+    my $before_temp_cwd = cwd;
 
     chdir($temp_dir);
 
@@ -73,8 +71,7 @@ sub test_cmd
 
     my ($version) =
         map { /\ASET *\( *VERSION *"([0-9\.]+)" *\)\z/ ? ($1) : () }
-        path( File::Spec->catfile( $src_path, "CMakeLists.txt" ) )
-        ->lines_utf8( { chomp => 1 } );
+        $src_path->child("CMakeLists.txt")->lines_utf8( { chomp => 1 } );
 
     my $base     = "wml-$version";
     my $tar_arc  = "$base.tar";
@@ -90,7 +87,7 @@ sub test_cmd
     # TEST
     ok( scalar( -d $base ), "The directory was created" );
 
-    my $orig_cwd = Cwd::getcwd();
+    my $orig_cwd = cwd;
 
     chdir($base);
 
