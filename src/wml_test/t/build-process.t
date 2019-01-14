@@ -4,9 +4,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use List::MoreUtils qw(none);
-use File::Path qw/ mkpath rmtree /;
-
 use Path::Tiny qw/ cwd path tempdir /;
 
 # Remove WML_TEST_BUILD so we won't run the tests with infinite recursion.
