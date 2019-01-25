@@ -15,7 +15,7 @@ if ( !delete( $ENV{'WML_TEST_BUILD'} ) )
 plan tests => 9;
 
 # Change directory to the Freecell Solver base distribution directory.
-my $src_path = path($0)->parent->parent->parent->absolute;
+my $src_path = path($0)->parent(3)->absolute;
 
 sub test_cmd
 {

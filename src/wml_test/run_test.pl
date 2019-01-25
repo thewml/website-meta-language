@@ -4,17 +4,7 @@ use strict;
 use warnings;
 
 use Getopt::Long qw/ GetOptions /;
-
-use File::Glob;
-
-use File::Basename qw(dirname);
-use File::Spec;
-
-use Cwd ();
-use IO::All qw / io /;
-
-use File::Path qw / rmtree /;
-use Path::Tiny qw/ path /;
+use Path::Tiny qw/ cwd path /;
 
 sub do_system
 {
@@ -43,15 +33,15 @@ if ($IS_WIN)
 {
     $cmake_gen = 'MSYS Makefiles';
 }
-my $tatzer_dir = File::Spec->rel2abs( path($0)->parent->parent->stringify );
-my $script_dir = File::Spec->rel2abs( dirname(__FILE__) );
-my $myprefix   = Cwd::getcwd() . "/tests/installation";
+my $tatzer_dir = path($0)->parent(2)->absolute;
+my $script_dir = path(__FILE__)->parent->absolute;
+my $myprefix   = cwd()->child(qw/ tests installation /);
 
-my $build_dir = "FOO";
+my $build_dir = path("./FOO")->absolute;
 
 if ( !-e $myprefix )
 {
-    rmtree( [$build_dir] );
+    $build_dir->remove_tree;
     if (
         do_system(
             {
@@ -64,7 +54,7 @@ if ( !-e $myprefix )
         )
         )
     {
-        rmtree( [$myprefix] );
+        $myprefix->remove_tree;
         die "cmake Failed";
     }
 }
