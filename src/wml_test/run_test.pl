@@ -82,11 +82,7 @@ else
             cmd => [
                 'prove',
                 ( $ENV{WML_TEST_QUIET} ? () : ('-v') ),
-                glob(
-                          't'
-                        . $SEP
-                        . '{[0-9],{des,std}-,build-process,tidyall,wml-stdin}*.t'
-                ),
+                glob( 't' . $SEP . '*.t' ),
             ],
         }
     );
