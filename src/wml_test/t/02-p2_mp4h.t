@@ -15,7 +15,7 @@ my $pass = 2;
 
 {
 
-my $in1 = <<'EOT_IN';
+    my $in1 = <<'EOT_IN';
 <set-var array = "value-zero
 value-one
 value-two">
@@ -36,7 +36,7 @@ value-two">
 <sort array numeric=true><foreach x array> <get-var x></foreach>
 EOT_IN
 
-my $out1 = <<'EOT_OUT';
+    my $out1 = <<'EOT_OUT';
 
 
 The value of array[0] is `value-zero'.
@@ -50,28 +50,28 @@ The value of array[2] is `value-two'.
   1 2 3 4 20
 EOT_OUT
 
-#    Arrays
+    #    Arrays
     # TEST*2
-WmlTest::generic($pass, $in1, $out1, '');
+    WmlTest::generic( $pass, $in1, $out1, '' );
 
 }
 
 {
 
-#    Arithmetic operators
-my $in1 = <<'EOT_IN';
+    #    Arithmetic operators
+    my $in1 = <<'EOT_IN';
 <set-var i=10><decrement i by=4><get-var i>
 <multiply 2.3 8 3>
 <divide -4.0 10>
 EOT_IN
-my $out1 = <<'EOT_OUT';
+    my $out1 = <<'EOT_OUT';
 6
 55.200000
 -0.400000
 EOT_OUT
 
     # TEST*2
-WmlTest::generic($pass, $in1 , $out1, '', );
+    WmlTest::generic( $pass, $in1, $out1, '', );
 }
 
 {
@@ -89,7 +89,7 @@ WmlTest::generic($pass, $in1 , $out1, '', );
 <subst-in-string "abc" "([a-z])" "\1 ">
 EOT_IN
 
-    my $WS = ' ';
+    my $WS   = ' ';
     my $out1 = <<"EOT_OUT";
 This Is A List
 true
@@ -106,7 +106,7 @@ EOT_OUT
 
     #    String operators
     # TEST*2
-    WmlTest::generic($pass, $in1 , $out1, '', );
+    WmlTest::generic( $pass, $in1, $out1, '', );
 }
 WmlTest::cleanup();
 

@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 
-
 use WmlTest;
 WmlTest::init();
 
@@ -10,7 +9,7 @@ use Test::More tests => 2;
 
 my $pass = "1-9";
 
-WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::std::tags
 <define-tag nesting endtag=required whitespace=delete>
 <perl>

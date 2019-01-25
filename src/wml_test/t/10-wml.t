@@ -27,7 +27,7 @@ foo bar baz quux
 EOT_OUT
 
     # TEST*2
-    WmlTest::generic($pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2=');
+    WmlTest::generic( $pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2=' );
 }
 
 {
@@ -48,7 +48,8 @@ EOT_IN
 EOT_OUT
 
     # TEST*2
-    WmlTest::generic($pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2= -DROOT=.', );
+    WmlTest::generic( $pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2= -DROOT=.',
+    );
 }
 
 WmlTest::cleanup();

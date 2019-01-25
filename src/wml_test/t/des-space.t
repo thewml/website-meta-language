@@ -27,11 +27,11 @@ my $conf;
 
 =cut
 
-
 # TEST*2
-if ($png_support) {
-#   PNG support available
-WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+if ($png_support)
+{
+    #   PNG support available
+    WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::space
 <space format=png width=6 height=4>
 <space format=gif width=6>
@@ -43,9 +43,11 @@ EOT_IN
 <img src="imgdot-1x1-transp-ffffff.gif" alt="" width="1" height="4" align="bottom" border="0">
 <img src="imgdot-1x1-transp-ffffff.gif" alt="" width="1" height="1" align="bottom" border="0">
 EOT_OUT
-} else {
-#   PNG support unavailable
-WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+}
+else
+{
+    #   PNG support unavailable
+    WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::space
 <space format=gif width=6>
 <space height=4>

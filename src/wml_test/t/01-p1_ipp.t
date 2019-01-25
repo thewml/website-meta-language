@@ -10,19 +10,19 @@ WmlTest::init();
 #
 #   TEST 1-4: throughput
 #
-my $temp_fn_1 = WmlTest::tmpfile_with_name('a', <<'EOT');
+my $temp_fn_1 = WmlTest::tmpfile_with_name( 'a', <<'EOT');
 a1
 #include 'b'
 a2
 EOT
 
-WmlTest::tmpfile_with_name('b', <<'EOT');
+WmlTest::tmpfile_with_name( 'b', <<'EOT');
 b1
 #include 'c'
 b2
 EOT
 
-WmlTest::tmpfile_with_name('c', <<'EOT');
+WmlTest::tmpfile_with_name( 'c', <<'EOT');
 c
 EOT
 
@@ -37,13 +37,10 @@ EOT
 my $temp_fn_3 = WmlTest::tmpfile();
 
 # TEST
-ok (!system("$ENV{WML} -p1 $temp_fn_1 >$temp_fn_3"),
-    "System 1"
-);
+ok( !system("$ENV{WML} -p1 $temp_fn_1 >$temp_fn_3"), "System 1" );
+
 # TEST
-ok (!system("cmp $temp_fn_2 $temp_fn_3"),
-    "System 2"
-);
+ok( !system("cmp $temp_fn_2 $temp_fn_3"), "System 2" );
 
 $temp_fn_1 = WmlTest::tmpfile(<<'EOT');
 #include "b" bar=1
@@ -52,7 +49,7 @@ baz=$(baz)
 # comment
 EOT
 
-WmlTest::tmpfile_with_name('b',<<'EOT');
+WmlTest::tmpfile_with_name( 'b', <<'EOT');
 bar=$(bar)
 __END__
 skipped
@@ -64,15 +61,9 @@ foo=1 baz=
 EOT
 
 # TEST
-ok (!system("$ENV{WML} -p1 -Dfoo=1 $temp_fn_1 >$temp_fn_3"),
-    "WML System 3",
-);
+ok( !system("$ENV{WML} -p1 -Dfoo=1 $temp_fn_1 >$temp_fn_3"), "WML System 3", );
 
 # TEST
-ok (!system("cmp $temp_fn_2 $temp_fn_3"),
-    "CMP System 4",
-);
+ok( !system("cmp $temp_fn_2 $temp_fn_3"), "CMP System 4", );
 
 WmlTest::cleanup();
-
-

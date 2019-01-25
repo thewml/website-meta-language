@@ -85,7 +85,7 @@ else
                 glob(
                           't'
                         . $SEP
-                        . '{{02,03,05,06,07,08,09,10,11,12,des,std}-,build-process,tidyall,wml-stdin}*.t'
+                        . '{{01,02,03,05,06,07,08,09,10,11,12,des,std}-,build-process,tidyall,wml-stdin}*.t'
                 ),
             ],
         }

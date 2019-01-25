@@ -9,7 +9,7 @@ WmlTest::init();
 
 my $pass = "1-9";
 
-WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::navbar
 <navbar:define name=test>
 <navbar:button id=foo url="foo.html" txt="foo">
@@ -20,7 +20,7 @@ EOT_IN
 <a href="foo.html" onmouseover="self.status = 'foo.html'; return true" onmouseout="self.status = ''; return true" onfocus="self.status = 'foo.html'; return true" onblur="self.status = ''; return true">foo</a><a href="bar.html" onmouseover="self.status = 'bar.html'; return true" onmouseout="self.status = ''; return true" onfocus="self.status = 'bar.html'; return true" onblur="self.status = ''; return true">bar</a>
 EOT_OUT
 
-WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::navbar
 <navbar:define name=test>
 <navbar:button id=foo url="foo.html" txt="foo">

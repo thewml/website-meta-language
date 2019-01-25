@@ -57,7 +57,7 @@ my $out = <<'EOT_OUT';
 EOT_OUT
 
 # TEST*2
-WmlTest::generic($pass, $in, $out, '');
+WmlTest::generic( $pass, $in, $out, '' );
 
 WmlTest::cleanup();
 

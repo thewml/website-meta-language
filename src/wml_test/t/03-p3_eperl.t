@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 
-
 use WmlTest;
 WmlTest::init();
 
@@ -14,7 +13,7 @@ use Test::More tests => 2;
 
 my $pass = 3;
 
-WmlTest::generic($pass, <<'EOT_IN', <<'EOT_OUT', '');
+WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 <:
     print "foo";
 :>

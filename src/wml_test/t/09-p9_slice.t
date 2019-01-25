@@ -29,12 +29,13 @@ en
 EOT_IN
 
 # TEST
-ok (!system("$ENV{WML} -p$pass $tmpfile1 >a"), "wml");
-# TEST
-ok (!system("cmp $tmpfile2 b"), "cmp");
+ok( !system("$ENV{WML} -p$pass $tmpfile1 >a"), "wml" );
 
-WmlTest::add_files( "b");
-WmlTest::add_files( "a");
+# TEST
+ok( !system("cmp $tmpfile2 b"), "cmp" );
+
+WmlTest::add_files("b");
+WmlTest::add_files("a");
 
 WmlTest::cleanup();
 
