@@ -17,19 +17,13 @@ use Path::Tiny qw/path/;
 my %BOOL_OPTS_WITH_FALSE_DEFAULTS =
     ( 'omit-frame' => 'OPTIMIZATION_OMIT_FRAME_POINTER', );
 
-my %TRUE_BOOL_OPTS = ( 'test-suite' => 'FCS_WITH_TEST_SUITE', );
+my %TRUE_BOOL_OPTS = ();
 
 my %INT_OPTS = ( 'pack-size' => 'FCS_IA_PACK_SIZE', );
 
 my %STR_OPTS = (
     'arch'   => { param => 'CPU_ARCH', },
     'prefix' => { param => 'CMAKE_INSTALL_PREFIX', },
-    (
-        map {
-            my ( $key, $param ) = @$_;
-            ( $key => +{ prefix => "${param}_", param => $param } )
-        } ( [ 'p|pos' => 'BHS_STATE_STORAGE' ], )
-    ),
 );
 
 my @BOOL_OPTS_WITH_FALSE_DEFAULTS__KEYS = keys %BOOL_OPTS_WITH_FALSE_DEFAULTS;
@@ -55,7 +49,6 @@ $STR_OPTS{'prefix'}{value} = '/usr';
 
 my $build_type = "debug";
 my $generate_what;
-my $build_static_lib      = 0;
 my $with_context_var      = 1;
 my $max_bench_threads_num = 4;
 my $link_to_static        = 0;
@@ -78,10 +71,10 @@ sub set_hash
 set_hash();
 
 my %themes = (
-    tt         => [qw(-r --notest-suite --static)],
+    tt         => [qw(-r --static)],
     bench      => [qw(-l tt --omit-frame)],
     fc_bench   => [qw(-l bench)],
-    testing    => [qw(--rwd --dbm=kaztree --test-suite)],
+    testing    => [qw(--rwd)],
     pysol_defs => [],
 );
 
@@ -249,7 +242,6 @@ GetOptions(
     },
     'gen=s'                   => \$generate_what,
     'tokyo'                   => sub { return set_both("TOKYO_CAB_HASH"); },
-    'static'                  => \$build_static_lib,
     'with-ctx-var!'           => \$with_context_var,
     'max-bench-threads-num=i' => \$max_bench_threads_num,
     'static!'                 => \$link_to_static,
@@ -293,34 +285,29 @@ my @cmd = (
     ( defined($generate_what) ? ( "-G", $generate_what ) : () ),
     "-DCMAKE_BUILD_TYPE=$build_type",
     "-DDATADIR=$STR_OPTS{prefix}{value}/share",
-    ( ( !$build_static_lib ) ? ("-DBUILD_STATIC_LIBRARY=") : () ),
     (
-        map
-        {
+        map {
             $bool_opts_with_false_defaults__values{$_}
                 ? ( "-D" . $BOOL_OPTS_WITH_FALSE_DEFAULTS{$_} . "=1" )
                 : ()
         } @BOOL_OPTS_WITH_FALSE_DEFAULTS__KEYS
     ),
     (
-        map
-        {
-            '-D'
+        map {
+                  '-D'
                 . $TRUE_BOOL_OPTS{$_} . '='
                 . ( $true_bool_opts__values{$_} ? '1' : '' )
         } @TRUE_BOOL_KEYS
     ),
     (
-        map
-        {
+        map {
             defined( $int_opts__values{$_} )
                 ? ( "-D" . $INT_OPTS{$_} . "=" . $int_opts__values{$_} )
                 : ()
         } @INT_OPS__KEYS
     ),
     (
-        map
-        {
+        map {
             my $k = $_;
             my $r = $STR_OPTS{$k};
             my $v = $r->{value};
