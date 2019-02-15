@@ -78,7 +78,7 @@ char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
     char *cpBuf;
     char caName[1024];
     char caArg[1024];
-    char caStr[1024];
+    char caStr[1500];
     int n;
     int l1;
     int l2;

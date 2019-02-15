@@ -51,7 +51,7 @@ char **mysetenv(char **env, char *var, char *str, ...)
 {
     va_list ap;
     char ca[1024];
-    char ca2[1024];
+    char ca2[1500];
     char *cp;
     int i;
     char **envN;
