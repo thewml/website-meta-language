@@ -1,6 +1,6 @@
-:
+#!/usr/bin/env perl
 eval 'exec perl -S $0 ${1+"$@"}'
-    if $running_under_some_shell;
+    if $::_running_under_some_shell;
 
 #
 #  wml1to2 --  Upgrade input files from WML 1.x to WML 2.x
@@ -32,13 +32,13 @@ sub WarnIfPresent {
 }
 
 if ($#ARGV == -1) {
-    &usage;
+    usage;
     exit(1);
 }
 
 foreach (@ARGV) {
     if (m/^-/) {
-        &usage;
+        usage;
         exit(1);
     } elsif (! -f) {
         print STDERR "File " . $_ . " not found: skipped\n";
@@ -93,12 +93,12 @@ foreach (@ARGV) {
     s|:(\!?[a-zA-Z][a-zA-Z0-9_]*\!?#})|:#$1|g;
 
     #      Detect possible cause of problems
-    &WarnIfPresent('define-container', $_);
-    &WarnIfPresent('<define-function', $_);
-    &WarnIfPresent('<defun', $_);
-    &WarnIfPresent('<defweakmacro', $_);
-    &WarnIfPresent('<div', $_);
-    &WarnIfPresent('<%%eval', $_);
+    WarnIfPresent('define-container', $_);
+    WarnIfPresent('<define-function', $_);
+    WarnIfPresent('<defun', $_);
+    WarnIfPresent('<defweakmacro', $_);
+    WarnIfPresent('<div', $_);
+    WarnIfPresent('<%%eval', $_);
 
     $text = $_;
 
@@ -194,4 +194,3 @@ C<{#NAME#:> and C<:#NAME#}>.
  barbier@engelschall.com
 
 =cut
-
