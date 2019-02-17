@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#! /usr/bin/env perl
 #
 # tkwmd -- Tk frontend for the Website Meta Language Documentation
 #
@@ -12,11 +12,13 @@
 #    will be helpful.
 #
 
+use strict;
+use warnings;
+
 use Tk;
 require Tk::ErrorDialog;
 require Tk::ROText;
 use subs qw/printman/;
-use strict;
 no strict "refs";
 
 my $tkwmd_version = '0.1';
