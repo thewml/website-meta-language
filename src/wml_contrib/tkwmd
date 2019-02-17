@@ -83,7 +83,7 @@ add_doc_menu('Basics',
 add_doc_menu('References',
     qw(wml_std_html40 wml_std_html32 wml_std_html20 wml_std_css1
        wml_std_css2 wml_std_csspos));
-add_doc_menu('Frontends', qw(wml wmk wmd wmb wmu));
+add_doc_menu('Frontends', qw(wml wmk wmd wmb));
 add_doc_menu('Backends',
     qw(wml_p1_ipp wml_p2_mhc wml_p3_eperl wml_p4_gm4 wml_p5_divert
        wml_p6_asubst wml_p7_htmlfix wml_p8_htmlstrip wml_p9_slice));
