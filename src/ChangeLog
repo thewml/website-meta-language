@@ -8,6 +8,12 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.12.2 to 2.12.3:
+
+  *) Fix some GCC warnings.
+
+  *) Minor fixes to wml_contrib/* - thanks to @xtaran
+
   Changes between 2.12.1 to 2.12.2:
 
   *) Document dependencies in INSTALL
