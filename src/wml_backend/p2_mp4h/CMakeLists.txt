@@ -111,7 +111,36 @@ SET (PACKAGE_STRING "\"${PACKAGE_RAW} ${VERSION_RAW}\"")
 SET (MP4HLIBDIR "${CMAKE_INSTALL_PREFIX}/lib/mp4h")
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
+INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/src" )
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 ADD_SUBDIRECTORY( lib )
 ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( "doc" )
+
+
+SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/intl")
+SET (modbase "gettext")
+add_library(
+    "gettext"
+    MODULE
+    "${module}/${modbase}.c"
+    )
+
+install(
+    FILES
+    "${module}/${modbase}.src"
+    DESTINATION
+    "${MP4HLIBDIR}/intl/${modbase}.mp4hp"
+    )
+install(
+    FILES
+    "${module}/${modbase}.mp4h"
+    DESTINATION
+    "${MP4HLIBDIR}"
+    )
+install(
+    TARGETS
+        "gettext"
+    DESTINATION
+    "${MP4HLIBDIR}"
+    )
