@@ -118,29 +118,30 @@ ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( "doc" )
 
 
-SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/intl")
+SET (modbase1 "intl")
+SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/${modbase1}")
 SET (modbase "gettext")
 add_library(
-    "gettext"
+    "${modbase}"
     MODULE
     "${module}/${modbase}.c"
-    )
+)
 
 install(
     FILES
-    "${module}/${modbase}.src"
+        "${module}/${modbase}.src"
     DESTINATION
-    "${MP4HLIBDIR}/intl/${modbase}.mp4hp"
-    )
+       "${MP4HLIBDIR}/${modbase1}/${modbase}.mp4hp"
+)
 install(
     FILES
-    "${module}/${modbase}.mp4h"
+        "${module}/${modbase}.mp4h"
     DESTINATION
-    "${MP4HLIBDIR}"
-    )
+        "${MP4HLIBDIR}"
+)
 install(
     TARGETS
-        "gettext"
+        "${modbase}"
     DESTINATION
-    "${MP4HLIBDIR}"
-    )
+        "${MP4HLIBDIR}"
+)
