@@ -118,11 +118,7 @@ char *mktemp ();
 # endif
 #endif
 
-#if HAVE_LOCALE_H
-# include <locale.h>
-#else
-# define setlocale(Category, Locale)
-#endif
+#include <locale.h>
 
 #ifdef ENABLE_NLS
 #include <libintl.h>
