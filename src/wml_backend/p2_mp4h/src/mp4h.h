@@ -46,42 +46,12 @@
 
 /* An ANSI string.h and pre-ANSI memory.h might conflict.  */
 
-#if defined (HAVE_STRING_H) || defined (STDC_HEADERS)
-# include <string.h>
+#include <string.h>
 # if !defined (STDC_HEADERS) && defined (HAVE_MEMORY_H)
 #  include <memory.h>
 # endif
-/* This is for obstack code -- should live in obstack.h.  */
-# ifndef bcopy
-#  define bcopy(S, D, N) memcpy ((D), (S), (N))
-# endif
-#else
-# include <strings.h>
-# ifndef memcpy
-#  define memcpy(D, S, N) bcopy((S), (D), (N))
-# endif
-# ifndef strchr
-#  define strchr(S, C) index ((S), (C))
-# endif
-# ifndef strrchr
-#  define strrchr(S, C) rindex ((S), (C))
-# endif
-# ifndef bcopy
-void bcopy ();
-# endif
-#endif
 
-#ifdef STDC_HEADERS
 # include <stdlib.h>
-#else /* not STDC_HEADERS */
-
-voidstar malloc ();
-voidstar realloc ();
-char *getenv ();
-double atof ();
-long strtol ();
-
-#endif /* STDC_HEADERS */
 
 /* Some systems do not define EXIT_*, even with STDC_HEADERS.  */
 #ifndef EXIT_SUCCESS
@@ -92,9 +62,6 @@ long strtol ();
 #endif
 
 #include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>

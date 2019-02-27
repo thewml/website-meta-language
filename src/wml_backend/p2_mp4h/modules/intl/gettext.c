@@ -33,6 +33,8 @@
 #undef MP4H_MODULE
 
 #include <libintl.h>
+/* For strlen() */
+#include <string.h>
 
 #define mp4h_macro_table                gettext_LTX_mp4h_macro_table
 #define mp4h_init_module                gettext_LTX_mp4h_init_module
