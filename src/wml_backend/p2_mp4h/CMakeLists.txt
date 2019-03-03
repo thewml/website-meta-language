@@ -119,30 +119,32 @@ ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( "doc" )
 
 
-SET (modbase1 "intl")
-SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/${modbase1}")
-SET (modbase "gettext")
-add_library(
-    "${modbase}"
-    MODULE
-    "${module}/${modbase}.c"
-)
-
-install(
-    FILES
-        "${module}/${modbase}.src"
-    DESTINATION
-       "${MP4HLIBDIR}/${modbase1}/${modbase}.mp4hp"
-)
-install(
-    FILES
-        "${module}/${modbase}.mp4h"
-    DESTINATION
-        "${MP4HLIBDIR}"
-)
-install(
-    TARGETS
+IF (NOT WIN32)
+    SET (modbase1 "intl")
+    SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/${modbase1}")
+    SET (modbase "gettext")
+    add_library(
         "${modbase}"
-    DESTINATION
-        "${MP4HLIBDIR}"
-)
+        MODULE
+        "${module}/${modbase}.c"
+    )
+
+    install(
+        FILES
+            "${module}/${modbase}.src"
+        DESTINATION
+           "${MP4HLIBDIR}/${modbase1}/${modbase}.mp4hp"
+    )
+    install(
+        FILES
+            "${module}/${modbase}.mp4h"
+        DESTINATION
+            "${MP4HLIBDIR}"
+    )
+    install(
+        TARGETS
+            "${modbase}"
+        DESTINATION
+            "${MP4HLIBDIR}"
+    )
+ENDIF()
