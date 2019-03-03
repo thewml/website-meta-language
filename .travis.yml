@@ -25,6 +25,7 @@ dist: xenial
 install:
     - cpanm local::lib
     - eval "$(perl -Mlocal::lib=$HOME/perl_modules)"
+    - cpanm --notest Net::SSLeay
     - cpanm --notest Bit::Vector Carp::Always Class::XSAccessor File::Which GD Getopt::Long IO::All Image::Size Path::Tiny Perl::Critic Perl::Tidy Test::Code::TidyAll Term::ReadKey
 language: perl
 script:
