@@ -119,7 +119,7 @@ ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( "doc" )
 
 
-IF (NOT WIN32)
+IF (NOT (WIN32 OR CYGWIN))
     SET (modbase1 "intl")
     SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/${modbase1}")
     SET (modbase "gettext")
