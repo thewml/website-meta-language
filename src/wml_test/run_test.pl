@@ -48,7 +48,7 @@ if ( !-e $myprefix )
                 cmd => [
 "cd . && mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
                         . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
-                        . " --prefix=$myprefix && $MAKE && $MAKE install"
+                        . " --prefix=$myprefix && $MAKE VERBOSE=1 && $MAKE install"
                 ]
             }
         )
