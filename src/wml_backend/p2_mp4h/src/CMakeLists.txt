@@ -12,7 +12,9 @@ SET(mp4h_SRCS
    devel.c
    freeze.c
    input.c
+   ltdl.c
    macro.c
+   module.c
    mp4h.c
    output.c
    path.c
@@ -25,7 +27,7 @@ FIND_LIBRARY(LIBPCRE_LIB pcre)
 
 FIND_LIBM()
 
-TARGET_LINK_LIBRARIES(mp4h ${MATH_LIB_LIST} ${LIBPCRE_LIB} mp4h_lib)
+TARGET_LINK_LIBRARIES(mp4h ${MATH_LIB_LIST} ${LIBPCRE_LIB} mp4h_lib dl)
 
 SET_TARGET_PROPERTIES(mp4h
     PROPERTIES OUTPUT_NAME "wml_p2_mp4h"

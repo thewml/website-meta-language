@@ -6,6 +6,8 @@ SET (PACKAGE_VERSION "\"${VERSION_RAW}\"")
 
 SET (PACKAGE_DATE "\"19-Jan-2008\"")
 
+CHECK_INCLUDE_FILE("dirent.h" HAVE_DIRENT_H)
+SET (LTDL_OBJDIR "./lt")
 # CHECK_INCLUDE_FILE("stdarg.h" HAVE_STDARG_H)
 # CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 # CHECK_INCLUDE_FILE("stdio.h" HAVE_STDIO_H)
@@ -113,11 +115,6 @@ SET (MP4HLIBDIR "${CMAKE_INSTALL_PREFIX}/lib/mp4h")
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/lib" )
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/src" )
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
-ADD_SUBDIRECTORY( lib )
-ADD_SUBDIRECTORY( src )
-ADD_SUBDIRECTORY( "doc" )
-
 
 IF (NOT (WIN32 OR CYGWIN))
     SET (modbase1 "intl")
@@ -128,12 +125,15 @@ IF (NOT (WIN32 OR CYGWIN))
         MODULE
         "${module}/${modbase}.c"
     )
+set_target_properties("${modbase}" PROPERTIES PREFIX "")
 
     install(
         FILES
             "${module}/${modbase}.src"
         DESTINATION
-           "${MP4HLIBDIR}/${modbase1}/${modbase}.mp4hp"
+           "${MP4HLIBDIR}/${modbase1}"
+       RENAME
+           "${modbase}.mp4hp"
     )
     install(
         FILES
@@ -145,6 +145,16 @@ IF (NOT (WIN32 OR CYGWIN))
         TARGETS
             "${modbase}"
         DESTINATION
-            "${MP4HLIBDIR}"
+            "${MP4HLIBDIR}/${modbase1}"
+        RENAME
+            "${modbase}.so"
     )
+    SET(WITH_MODULES 1)
+    SET(HAVE_LIBDL 1)
+ELSE()
 ENDIF()
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+ADD_SUBDIRECTORY( lib )
+ADD_SUBDIRECTORY( src )
+ADD_SUBDIRECTORY( "doc" )
+
