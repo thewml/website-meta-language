@@ -36,9 +36,12 @@
 /* For strlen() */
 #include <string.h>
 
+#if 0
+#error fo
 #define mp4h_macro_table                gettext_LTX_mp4h_macro_table
 #define mp4h_init_module                gettext_LTX_mp4h_init_module
 #define mp4h_finish_module              gettext_LTX_mp4h_finish_module
+#endif
 
 module_init_t mp4h_init_module;         /* initialisation function */
 module_finish_t mp4h_finish_module;     /* cleanup function */

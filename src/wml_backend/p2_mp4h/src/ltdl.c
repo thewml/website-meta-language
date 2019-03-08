@@ -1000,6 +1000,9 @@ sys_dl_sym (loader_data, module, symbol)
      lt_module module;
      const char *symbol;
 {
+#if 0
+  fprintf(stderr, "dlsym(%s)\n", symbol);
+#endif
   lt_ptr address = dlsym (module, symbol);
 
   if (!address)
