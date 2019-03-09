@@ -116,43 +116,46 @@ INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/lib" )
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/src" )
 
-IF (NOT (WIN32 OR CYGWIN))
-    SET (modbase1 "intl")
-    SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/${modbase1}")
-    SET (modbase "gettext")
-    add_library(
-        "${modbase}"
-        MODULE
-        "${module}/${modbase}.c"
-    )
-set_target_properties("${modbase}" PROPERTIES PREFIX "")
-
-    install(
-        FILES
-            "${module}/${modbase}.src"
-        DESTINATION
-           "${MP4HLIBDIR}/${modbase1}"
-       RENAME
-           "${modbase}.mp4hp"
-    )
-    install(
-        FILES
-            "${module}/${modbase}.mp4h"
-        DESTINATION
-            "${MP4HLIBDIR}"
-    )
-    install(
-        TARGETS
+MACRO (_gen_mod modbase1 modbase with_mp4h)
+    IF (NOT (WIN32 OR CYGWIN))
+        SET (module "${CMAKE_CURRENT_SOURCE_DIR}/modules/${modbase1}")
+        add_library(
             "${modbase}"
-        DESTINATION
-            "${MP4HLIBDIR}/${modbase1}"
-        RENAME
-            "${modbase}.so"
-    )
-    SET(WITH_MODULES 1)
-    SET(HAVE_LIBDL 1)
-ELSE()
-ENDIF()
+            MODULE
+            "${module}/${modbase}.c"
+        )
+        set_target_properties("${modbase}" PROPERTIES PREFIX "")
+
+        install(
+            FILES
+                "${module}/${modbase}.src"
+            DESTINATION
+               "${MP4HLIBDIR}/${modbase1}"
+           RENAME
+               "${modbase}.mp4hp"
+        )
+        if (with_mp4h)
+        install(
+            FILES
+                "${module}/${modbase}.mp4h"
+            DESTINATION
+                "${MP4HLIBDIR}"
+        )
+        endif()
+        install(
+            TARGETS
+                "${modbase}"
+            DESTINATION
+                "${MP4HLIBDIR}/${modbase1}"
+        )
+        SET(WITH_MODULES 1)
+        SET(HAVE_LIBDL 1)
+    ENDIF()
+ENDMACRO()
+
+_gen_mod("intl" "gettext" TRUE)
+_gen_mod("system" "exec" "")
+_gen_mod("system" "sh" "")
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 ADD_SUBDIRECTORY( lib )
 ADD_SUBDIRECTORY( src )
