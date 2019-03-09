@@ -8,6 +8,10 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.12.3 to 2.14.0:
+
+  *) Restore the mp4h modules functionality on Unix-like OSes.
+
   Changes between 2.12.2 to 2.12.3:
 
   *) Fix some GCC warnings.
