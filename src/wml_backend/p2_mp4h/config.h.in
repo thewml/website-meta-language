@@ -41,22 +41,22 @@
 #cmakedefine HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the `argz_append' function. */
-#cmakedefine HAVE_ARGZ_APPEND 1
+#cmakedefine HAVE_ARGZ_APPEND ${HAVE_ARGZ_APPEND}
 
 /* Define to 1 if you have the `argz_create_sep' function. */
-#cmakedefine HAVE_ARGZ_CREATE_SEP 1
+#cmakedefine HAVE_ARGZ_CREATE_SEP ${HAVE_ARGZ_CREATE_SEP}
 
 /* Define to 1 if you have the <argz.h> header file. */
-#cmakedefine HAVE_ARGZ_H 1
+#cmakedefine HAVE_ARGZ_H ${HAVE_ARGZ_H}
 
 /* Define to 1 if you have the `argz_insert' function. */
-#cmakedefine HAVE_ARGZ_INSERT 1
+#cmakedefine HAVE_ARGZ_INSERT ${HAVE_ARGZ_INSERT}
 
 /* Define to 1 if you have the `argz_next' function. */
-#cmakedefine HAVE_ARGZ_NEXT 1
+#cmakedefine HAVE_ARGZ_NEXT ${HAVE_ARGZ_NEXT}
 
 /* Define to 1 if you have the `argz_stringify' function. */
-#cmakedefine HAVE_ARGZ_STRINGIFY 1
+#cmakedefine HAVE_ARGZ_STRINGIFY ${HAVE_ARGZ_STRINGIFY}
 
 /* Define to 1 if you have the <assert.h> header file. */
 #cmakedefine HAVE_ASSERT_H 1
@@ -425,7 +425,9 @@
 #undef const
 
 /* Define to a type to use for `error_t' if it is not otherwise available. */
-#undef error_t
+#if !HAVE_ARGZ_H
+typedef int error_t;
+#endif
 
 /* Define as `__inline' if that's what the C compiler calls it, or to nothing
    if it is not supported. */
