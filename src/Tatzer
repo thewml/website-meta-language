@@ -9,10 +9,8 @@
 use strict;
 use warnings;
 
-use File::Path qw(rmtree);
-use File::Basename qw(dirname);
-use Getopt::Long;
-use Path::Tiny qw/path/;
+use Getopt::Long qw/ GetOptions /;
+use Path::Tiny qw/ path /;
 
 my %BOOL_OPTS_WITH_FALSE_DEFAULTS =
     ( 'omit-frame' => 'OPTIMIZATION_OMIT_FRAME_POINTER', );
@@ -267,12 +265,11 @@ if (@ARGV)
 }
 else
 {
-    $path_to_source_dir = dirname($0);
+    $path_to_source_dir = path($0)->parent;
 }
 
 # This cache is sometimes causing problems.
 unlink("CMakeCache.txt");
-rmtree( [ '_Inline', 't/_Inline' ] );
 unlink( glob("*.so") );
 
 my @cmd = (
@@ -316,14 +313,11 @@ my @cmd = (
     ),
 );
 
-if ( defined($path_to_source_dir) )
-{
-    push @cmd, $path_to_source_dir;
-}
+push @cmd, $path_to_source_dir;
 
 print( join( " ", @cmd ), "\n" );
 my $exit_code = system(@cmd);
-exit($exit_code);
+exit( $exit_code ? 1 : 0 );
 
 __END__
 
