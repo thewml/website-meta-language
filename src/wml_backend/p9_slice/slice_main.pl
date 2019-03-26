@@ -10,5 +10,5 @@ use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 use TheWML::Backends::Slice::Main;
 
-TheWML::Backends::Slice::Main->new->run;
+TheWML::Backends::Slice::Main->new( argv => [@ARGV] )->main;
 

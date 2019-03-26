@@ -6,7 +6,20 @@ use warnings;
 use SliceTermParser;
 use TheWML::CmdLine::IO ();
 
-use Class::XSAccessor ( constructor => 'new', );
+use Class::XSAccessor (
+    constructor => 'new',
+    accessors   => +{
+        map { $_ => $_ }
+            qw(
+            argv
+            opt_O
+            opt_b
+            opt_o
+            opt_v
+            )
+    },
+);
+
 ##         _ _
 ##     ___| (_) ___ ___
 ##    / __| | |/ __/ _ \
@@ -138,6 +151,7 @@ use vars qw( $opt_h $opt_y $opt_V $opt_v @opt_o );
 sub setup
 {
     my ($CFG) = @_;
+    my $self = $CFG;
 
     #   parse command line options
     $opt_h = 0;
@@ -156,7 +170,7 @@ sub setup
 
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
-    if ( not Getopt::Long::GetOptions(@options_list) )
+    if ( not Getopt::Long::GetOptionsFromArray( $self->argv, @options_list ) )
     {
         print STDERR "Try `$0 --help' for more information.\n";
         exit(0);
@@ -167,11 +181,12 @@ sub setup
 
     #   process command line arguments and
     #   read input file
-    my $INPUT = TheWML::CmdLine::IO->input( \@ARGV, \&usage );
+    my $INPUT = TheWML::CmdLine::IO->input( $self->argv, \&usage );
 
     #   add additional options
-    $INPUT =~ s|^%!slice\s+(.*?)\n|push(@ARGV, split(' ', $1)), ''|egim;
-    if ( not Getopt::Long::GetOptions(@options_list) )
+    $INPUT =~
+        s|^%!slice\s+(.*?)\n|push(@{$self->argv}, split(' ', $1)), ''|egim;
+    if ( not Getopt::Long::GetOptionsFromArray( $self->argv, @options_list ) )
     {
         usage;
     }
@@ -591,7 +606,7 @@ sub pass3
     }
 }
 
-sub run
+sub main
 {
     my $CFG = shift;
 
