@@ -530,7 +530,7 @@ sub pass3
 
         #   parse the sliceterm and create corresponding
         #   Perl 5 statement containing Bit::Vector calls
-        my ( $cmds, $var ) = SliceTerm::Parse( $slice, $status );
+        my ( $cmds, $var ) = SliceTerm::Parse( $CFG, $slice, $status );
         $var //= '';
 
         #   skip file if requested by options

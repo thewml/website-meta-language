@@ -27,9 +27,9 @@ my $YYMAXTOKEN;
 %right '!' '~'
 
 %%
-expr:   SLICE           { $$ = newvar($1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
+expr:   SLICE           { $$ = newvar($s->[0], $1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
 
-    |   SLICE '@'       { $$ = newvar($1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
+    |   SLICE '@'       { $$ = newvar($s->[0], $1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
 
     |   '!' expr        { $$ = $2; push(@OUT, $2."->Complement(".$2.");"); }
     |   '~' expr        { $$ = $2; push(@OUT, $2."->Complement(".$2.");"); }
@@ -53,16 +53,16 @@ expr:   SLICE           { $$ = newvar($1); push(@OUT, "my ".$$." = \$CFG->{SLICE
 #   create new set variable
 my $tmpcnt = 0;
 sub newvar {
-    my ($name) = @_;
+    my ($CFG, $name) = @_;
     my ($tmp);
 
-    if ($main::CFG->{SLICE}->{SET}->{OBJ}->{"$name"} eq '') {
+    if ($CFG->{SLICE}->{SET}->{OBJ}->{"$name"} eq '') {
         main::printwarning("no such slice '$name'\n") if $undef;
         #    The $undef string is caught by caller, it is used
         #    to trap warnings depending on the -y command line flag.
         die $undef."\n" if $undef > 1;
-        $main::CFG->{SLICE}->{SET}->{OBJ}->{"$name"} =
-                $main::CFG->{SLICE}->{SET}->{OBJ}->{DEF0}->Clone;
+        $CFG->{SLICE}->{SET}->{OBJ}->{"$name"} =
+                $CFG->{SLICE}->{SET}->{OBJ}->{DEF0}->Clone;
     }
     $tmp = sprintf("\$T%03d", $tmpcnt++);
     return $tmp;
@@ -70,9 +70,10 @@ sub newvar {
 
 #   the lexical scanner
 sub yylex {
-    my ($s) = @_;
+    my ($ctx) = @_;
     my ($c, $val);
 
+    my ($CFG, $s) = @$ctx;
     #   ignore whitespaces
     $$s =~ s|^\s+||;
 
@@ -100,7 +101,7 @@ sub yylex {
 
             my $slice;
             my @slices = ();
-            foreach $slice (keys(%{$main::CFG->{SLICE}->{SET}->{ASC}})) {
+            foreach $slice (keys(%{$CFG->{SLICE}->{SET}->{ASC}})) {
                 if ($slice =~ m|^$pat$|) {
                     push(@slices, $slice) unless &$sub_excl($slice);
                 }
@@ -143,7 +144,7 @@ sub yyerror {
 package SliceTerm;
 
 sub Parse {
-    my ($str, $status) = @_;
+    my ($CFG, $str, $status) = @_;
     my($p, $var, $cmds);
 
     @SliceTermParser::OUT = ();
@@ -151,7 +152,7 @@ sub Parse {
     $SliceTermParser::wildcard = $status->{w};
     $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
     # $p->yyclearin;
-    eval {$var = $p->yyparse(\$str);};
+    eval {$var = $p->yyparse([$CFG, \$str]);};
     if ($@ =~ s/^(\d)$//) {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
