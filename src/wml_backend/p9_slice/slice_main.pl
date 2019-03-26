@@ -249,13 +249,14 @@ sub pass1
     my $open  = 0;
     my $pos   = 0;
     my $prev  = 0;
+    my $ID_RE = qr/[A-Z][_A-Z0-9]*/;
     while (
         $INPUT =~ m/
              (?=[\[:])                 #  Consider only sequences beginning
                                        #  with `[' or `:'
-             (?:\[([A-Z][_A-Z0-9]*):   #  Begin delimiter
+             (?:\[($ID_RE):   #  Begin delimiter
                       |
-             :([A-Z][_A-Z0-9]*)?\])    #  End delimiter
+             :($ID_RE)?\])    #  End delimiter
                       /gx
         )
     {
