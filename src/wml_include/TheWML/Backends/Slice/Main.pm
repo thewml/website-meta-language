@@ -11,6 +11,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            _CFG
             argv
             )
     },
@@ -146,8 +147,8 @@ use vars qw( $opt_h $opt_y $opt_V $opt_v @opt_o );
 
 sub setup
 {
-    my ($CFG) = @_;
-    my $self = $CFG;
+    my ($self) = @_;
+    $self->_CFG( +{} );
 
     #   parse command line options
     $opt_h = 0;
@@ -192,10 +193,10 @@ sub setup
     }
 
     #   setup the $CFG hash
-    $CFG->{INPUT}          = {};
-    $CFG->{INPUT}->{SRC}   = $INPUT;    # original source
-    $CFG->{INPUT}->{PLAIN} = '';        # source without slice delimiters
-    $CFG->{OPT}            = {
+    $self->_CFG->{INPUT}          = {};
+    $self->_CFG->{INPUT}->{SRC}   = $INPUT;    # original source
+    $self->_CFG->{INPUT}->{PLAIN} = '';        # source without slice delimiters
+    $self->_CFG->{OPT}            = {
         X => $opt_v,
         O => [@opt_o],
         Y => {
@@ -211,10 +212,10 @@ sub setup
     {
         if ( $modifier =~ m/\Q$opt\E([0-9]+)/ )
         {
-            $CFG->{OPT}->{Y}->{$opt} = $1;
+            $self->_CFG->{OPT}->{Y}->{$opt} = $1;
         }
     }
-    $CFG->{SLICE} = {
+    $self->_CFG->{SLICE} = {
         SET => {
             ASC => {},    # slice set, represented in ASCII
             OBJ => {},    # slice set, represented as Bit::Vector object
@@ -227,8 +228,8 @@ sub setup
 ##  Pass 1: Determine delimiters
 sub pass1
 {
-    my ($CFG) = @_;
-    $CFG->verbose("\nPass 1: Determine delimiters\n\n");
+    my ($self) = @_;
+    $self->verbose("\nPass 1: Determine delimiters\n\n");
 
     my @CURRENT_SLICE_NAMES;
     my %CURRENT_LEVEL_BRAIN;
@@ -251,7 +252,7 @@ sub pass1
         $CURRENT_LEVEL_SET->Bit_Off( $i - 1 );
     };
 
-    my $INPUT = $CFG->{INPUT}->{SRC};
+    my $INPUT = $self->_CFG->{INPUT}->{SRC};
     my $open  = 0;
     my $pos   = 0;
     my $prev  = 0;
@@ -278,7 +279,7 @@ sub pass1
                 substr( $INPUT, $prev, $inputpos - $prev - length($name) - 2 );
 
             #   add prolog
-            $CFG->{INPUT}->{PLAIN} .= $prolog;
+            $self->_CFG->{INPUT}->{PLAIN} .= $prolog;
 
             #   and store position of next character in input datas
             $pos += length($prolog);
@@ -290,26 +291,26 @@ sub pass1
                 ;                       # remember name  for end delimiter
             $CURRENT_LEVEL_BRAIN{"$name"} .=
                 ":$L";                  # remember level for end delimiter
-            $CFG->{SLICE}->{MINLEVELS}->{"$name"} //= '';
-            if (   $CFG->{SLICE}->{MINLEVELS}->{"$name"} eq ''
-                or $CFG->{SLICE}->{MINLEVELS}->{"$name"} > $L )
+            $self->_CFG->{SLICE}->{MINLEVELS}->{"$name"} //= '';
+            if (   $self->_CFG->{SLICE}->{MINLEVELS}->{"$name"} eq ''
+                or $self->_CFG->{SLICE}->{MINLEVELS}->{"$name"} > $L )
             {
-                $CFG->{SLICE}->{MINLEVELS}->{"$name"} = $L;
+                $self->_CFG->{SLICE}->{MINLEVELS}->{"$name"} = $L;
             }
 
             #  now begin entry with LEVEL:START
-            $CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} .=
-                ( $CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} ? ',' : '' )
+            $self->_CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} .=
+                ( $self->_CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} ? ',' : '' )
                 . "$L:$pos";
 
             #  adjust notice about highest level
-            $CFG->{SLICE}->{MAXLEVEL} = (
-                  $CFG->{SLICE}->{MAXLEVEL} < $L
+            $self->_CFG->{SLICE}->{MAXLEVEL} = (
+                  $self->_CFG->{SLICE}->{MAXLEVEL} < $L
                 ? $L
-                : $CFG->{SLICE}->{MAXLEVEL}
+                : $self->_CFG->{SLICE}->{MAXLEVEL}
             );
 
-            $CFG->verbose("    slice `$name': begin at $pos, level $L\n");
+            $self->verbose("    slice `$name': begin at $pos, level $L\n");
 
             ++$open;
         }
@@ -324,7 +325,7 @@ sub pass1
                 substr( $INPUT, $prev, $inputpos - $prev - length($name) - 2 );
 
             #   add prolog
-            $CFG->{INPUT}->{PLAIN} .= $prolog;
+            $self->_CFG->{INPUT}->{PLAIN} .= $prolog;
 
             #   and store position of next character in input datas
             $pos += length($prolog) - 1;
@@ -340,9 +341,9 @@ sub pass1
             $clearlevel->($L);         # de-allocate level
 
             # now end entry with :END
-            $CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} .= ":$pos";
+            $self->_CFG->{SLICE}->{SET}->{ASC}->{"$name:$L"} .= ":$pos";
 
-            $CFG->verbose("    slice `$name': end at $pos, level $L\n");
+            $self->verbose("    slice `$name': end at $pos, level $L\n");
 
             ++$pos;
             --$open;
@@ -350,7 +351,7 @@ sub pass1
     }
 
     # add all remaining input
-    $CFG->{INPUT}->{PLAIN} .= substr( $INPUT, $prev );
+    $self->_CFG->{INPUT}->{PLAIN} .= substr( $INPUT, $prev );
 
     #   check: were all opened slices really closed?
     if ( $CURRENT_LEVEL_SET->Norm > 0 )
@@ -400,14 +401,14 @@ sub _asc2set
 ##  Pass 2: Calculation of slice sets
 sub pass2
 {
-    my ($CFG) = @_;
-    $CFG->verbose("\nPass 2: Calculation of slice sets\n\n");
+    my ($self) = @_;
+    $self->verbose("\nPass 2: Calculation of slice sets\n\n");
 
-    my $n       = length( $CFG->{INPUT}->{PLAIN} ) + 1;
-    my $set     = Bit::Vector->new($n);                   # working set
-    my $setA    = Bit::Vector->new($n);                   # "all" set
-    my $ASC_SET = $CFG->{SLICE}->{SET}->{ASC};
-    my $OBJ_SET = $CFG->{SLICE}->{SET}->{OBJ};
+    my $n       = length( $self->_CFG->{INPUT}->{PLAIN} ) + 1;
+    my $set     = Bit::Vector->new($n);                          # working set
+    my $setA    = Bit::Vector->new($n);                          # "all" set
+    my $ASC_SET = $self->_CFG->{SLICE}->{SET}->{ASC};
+    my $OBJ_SET = $self->_CFG->{SLICE}->{SET}->{OBJ};
 
     #   restore slice names
     foreach my $slice ( keys( %{$ASC_SET} ) )
@@ -432,7 +433,7 @@ sub pass2
     $set->Empty();
     $OBJ_SET->{'DEF0'} = $set->Clone();
     $setA->Empty();
-    for my $i ( 1 .. $CFG->{SLICE}->{MAXLEVEL} )
+    for my $i ( 1 .. $self->_CFG->{SLICE}->{MAXLEVEL} )
     {
         $set->Empty();
         foreach my $slice ( keys( %{$ASC_SET} ) )
@@ -455,27 +456,27 @@ sub pass2
     {
         $set->Empty();
         _asc2set( $ASC_SET->{$slice}, $set );
-        my $L = $CFG->{SLICE}->{MINLEVELS}->{$slice};
-        for my $i ( ( $L + 1 ) .. $CFG->{SLICE}->{MAXLEVEL} )
+        my $L = $self->_CFG->{SLICE}->{MINLEVELS}->{$slice};
+        for my $i ( ( $L + 1 ) .. $self->_CFG->{SLICE}->{MAXLEVEL} )
         {
             $set->Difference( $set, $OBJ_SET->{"DEF$i"} );
         }
         $OBJ_SET->{"NOV_$slice"} = $set->Clone();
     }
 
-    if ( $CFG->{OPT}->{X} )
+    if ( $self->_CFG->{OPT}->{X} )
     {
         foreach my $slice ( sort( keys( %{$OBJ_SET} ) ) )
         {
             $set = $OBJ_SET->{$slice};
             if ( $set->Norm > 0 )
             {
-                $CFG->verbose(
+                $self->verbose(
                     "    slice `$slice': " . $set->to_ASCII() . "\n" );
             }
             else
             {
-                $CFG->verbose("    slice `$slice': -Empty-\n");
+                $self->verbose("    slice `$slice': -Empty-\n");
             }
         }
     }
@@ -509,11 +510,11 @@ sub _calc_entry_output_params
 
 sub pass3
 {
-    my ($CFG) = @_;
+    my ($self) = @_;
 
-    $CFG->verbose("\nPass 3: Output generation\n\n");
+    $self->verbose("\nPass 3: Output generation\n\n");
 
-    foreach my $entry ( @{ $CFG->{OPT}->{O} } )
+    foreach my $entry ( @{ $self->_CFG->{OPT}->{O} } )
     {
 
         #   determine skip options:
@@ -521,7 +522,7 @@ sub pass3
         #     w: a wildcard set does not match
         #     z: result is empty
         #     s: result is only composed of whitespaces
-        my $status = $CFG->{OPT}->{Y};
+        my $status = $self->_CFG->{OPT}->{Y};
         if ( $entry =~ s|\#([suwz0-9]+)\z|| )
         {
             my $modifier = $1;
@@ -531,12 +532,12 @@ sub pass3
             }
         }
         my ( $slice, $outfile, $chmod ) = _calc_entry_output_params($entry);
-        $CFG->verbose(
+        $self->verbose(
             "    file `$outfile': sliceterm='$slice', chmodopts='$chmod'\n");
 
         #   parse the sliceterm and create corresponding
         #   Perl 5 statement containing Bit::Vector calls
-        my ( $cmds, $var ) = SliceTerm::Parse( $CFG, $slice, $status );
+        my ( $cmds, $var ) = SliceTerm::Parse( $self->_CFG, $slice, $status );
         $var //= '';
 
         #   skip file if requested by options
@@ -547,16 +548,18 @@ sub pass3
         }
 
         #   just debugging...
-        if ( $CFG->{OPT}->{X} )
+        if ( $self->_CFG->{OPT}->{X} )
         {
-            $CFG->verbose("        calculated Perl 5 set term:\n");
-            $CFG->verbose("        ----\n");
+            $self->verbose("        calculated Perl 5 set term:\n");
+            $self->verbose("        ----\n");
             my $x = $cmds;
             $x =~ s|\n+$||;
             $x =~ s|\n|\n        |g;
-            $CFG->verbose("        $x\n");
-            $CFG->verbose("        ----\n");
+            $self->verbose("        $x\n");
+            $self->verbose("        ----\n");
         }
+
+        my $CFG = $self->_CFG;
 
         #   now evaluate the Bit::Vector statements
         #   and move result to $set
@@ -572,8 +575,8 @@ sub pass3
             while (( $start < $set->Size() )
                 && ( my ( $min, $max ) = $set->Interval_Scan_inc($start) ) )
             {
-                $out .=
-                    substr( $CFG->{INPUT}->{PLAIN}, $min, ( $max - $min + 1 ) );
+                $out .= substr( $self->_CFG->{INPUT}->{PLAIN},
+                    $min, ( $max - $min + 1 ) );
                 $start = $max + 2;
             }
         }
@@ -604,12 +607,12 @@ sub pass3
 
 sub main
 {
-    my $CFG = shift;
+    my $self = shift;
 
-    $CFG->setup;
-    $CFG->pass1;
-    $CFG->pass2;
-    $CFG->pass3;
+    $self->setup;
+    $self->pass1;
+    $self->pass2;
+    $self->pass3;
 
     return 0;
 }
