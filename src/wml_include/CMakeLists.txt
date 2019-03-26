@@ -94,7 +94,7 @@ FOREACH (base ${myfiles})
     LIST (APPEND preproc_target_dests "${dest}")
     INSTALL (
         FILES "${dest}"
-        DESTINATION "${WML_LIB_DIR}/include/"
+        DESTINATION "${PKGDATADIR}/include/"
         RENAME "${destbase}"
     )
     STRING (REPLACE "/" "::" dest_man "wml/${base}")
@@ -116,7 +116,7 @@ PREPROCESS_PATH_PERL_WITH_FULL_NAMES("preprocess_perl_include_config" "${CMAKE_C
 INSTALL (
     FILES
         "${CMAKE_CURRENT_BINARY_DIR}/TheWML/Config.pm"
-    DESTINATION "${WML_LIB_DIR}/TheWML"
+    DESTINATION "${PKGDATADIR}/TheWML"
 )
 FOREACH( fn
         "TheWML/Backends/ASubst/Main.pm"
@@ -143,7 +143,7 @@ FOREACH( fn
     get_filename_component(_dir "${fn}" DIRECTORY)
     INSTALL(
         FILES "${fn}"
-        DESTINATION "${WML_LIB_DIR}/${_dir}"
+        DESTINATION "${PKGDATADIR}/${_dir}"
     )
 ENDFOREACH()
 

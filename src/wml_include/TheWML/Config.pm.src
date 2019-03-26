@@ -8,6 +8,7 @@ use parent 'Exporter';
 our @EXPORT_OK = (qw(libdir));
 
 sub bindir   { return '@bindir@'; }
+sub datadir  { return '@INSTALLPRIVLIB@'; }
 sub libdir   { return '@libdir@'; }
 sub mandir   { return '@mandir@'; }
 sub prefix   { return '@prefix@'; }

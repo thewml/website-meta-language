@@ -41,7 +41,7 @@ MACRO(PREPROCESS_PATH_PERL_WITH_FULL_NAMES__AND_WITH_POD TARGET_NAME SOURCE DEST
             "--subst" "libdir=${CMAKE_INSTALL_PREFIX}/${WML_LIB_DIR}"
             "--subst" "mandir=${CMAKE_INSTALL_PREFIX}/share/man"
             "--subst" "PATH_PERL=${PERL_EXECUTABLE}"
-            "--subst" "INSTALLPRIVLIB=${CMAKE_INSTALL_PREFIX}/${WML_LIB_DIR}"
+            "--subst" "INSTALLPRIVLIB=${PKGDATADIR}"
             "--subst" "INSTALLARCHLIB=${CMAKE_INSTALL_PREFIX}/${WML_LIB_DIR}"
             "--discardpod=0"
         COMMAND chmod ARGS "a+x" "${DEST}"

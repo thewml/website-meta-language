@@ -631,11 +631,12 @@ sub _calc_passes_options
     my ($self)    = @_;
     my $_pass_mgr = $self->_pass_mgr;
     my $libdir    = TheWML::Config::libdir();
+    my $datadir   = TheWML::Config::datadir();
     my ( $defipp, $defmp4h, $defeperl, $defgm4 ) = $self->_calc_default_opts();
 
     #   determine preloads
     my $preload = join '', map {
-        ( -f "$libdir/include/sys/bootp$_.wml" and /\A[34]\z/ )
+        ( -f "$datadir/include/sys/bootp$_.wml" and /\A[34]\z/ )
             ? " -s 'sys/bootp$_.wml'"
             : ''
     } @{ $self->_passes_idxs };
@@ -645,7 +646,7 @@ sub _calc_passes_options
 
     my $arr = [
         (
-                  "$defipp $verbose -S $libdir/include -n @{[$self->_src]} "
+                  "$defipp $verbose -S $datadir/include -n @{[$self->_src]} "
                 . ( join '', map { " -I $_" } @{ $self->_opt_I } )
                 . " $preload "
                 . (
