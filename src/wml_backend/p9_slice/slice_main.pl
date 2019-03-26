@@ -8,7 +8,7 @@ use warnings;
 #   bootstrapping private installed modules
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
-use TheWML::Backends::Slice::Main;
+use TheWML::Backends::Slice::Main ();
 
 TheWML::Backends::Slice::Main->new( argv => [@ARGV] )->main;
 

@@ -3,7 +3,7 @@ package TheWML::Backends::Slice::Main;
 use strict;
 use warnings;
 
-use SliceTermParser;
+use SliceTermParser     ();
 use TheWML::CmdLine::IO ();
 
 use Class::XSAccessor (
