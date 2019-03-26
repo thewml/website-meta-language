@@ -90,6 +90,7 @@ sub _populate_opt_D
         "WML_GEN_HOSTNAME=@{[$_pass_mgr->gen_hostname]}",
         'WML_LOC_PREFIX=' . TheWML::Config::prefix(),
         "WML_LOC_BINDIR=" . $self->_main->bindir,
+        "WML_LOC_DATADIR=" . TheWML::Config::datadir(),
         "WML_LOC_LIBDIR=" . TheWML::Config::libdir(),
         'WML_LOC_MANDIR=' . TheWML::Config::mandir(),
         "WML_VERSION=@{[TheWML::Config::_VERSION]}",

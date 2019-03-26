@@ -56,7 +56,7 @@ IF("${_pos}" EQUAL "0")
 ENDIF()
 
 SET (WML_LIB_DIR "${WML_LIB_DIR_BASE}/wml")
-SET (WML_DATA_DIR "${WML_LIB_DIR}/data")
+SET (WML_DATA_DIR "${PKGDATADIR}/data")
 SET (WML_LIBEXE_DIR "${WML_LIB_DIR}/exec/")
 
 # This is the equivalent to perform a "make dist"/"make distdir" etc.
