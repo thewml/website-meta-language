@@ -12,10 +12,6 @@ use Class::XSAccessor (
         map { $_ => $_ }
             qw(
             argv
-            opt_O
-            opt_b
-            opt_o
-            opt_v
             )
     },
 );
