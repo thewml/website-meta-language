@@ -18,7 +18,7 @@ ADD_CUSTOM_COMMAND(
 )
 
 INSTALL (
-    FILES "${yytab_base}"
+    FILES "${yytab}"
     DESTINATION "${WML_LIB_DIR}"
 )
 
@@ -36,7 +36,7 @@ INST_RENAME_POD2MAN(
 
 ADD_CUSTOM_TARGET(
     "${BASENAME}_pod" ALL
-    DEPENDS ${pod_dests}
+    DEPENDS ${pod_dests} ${yytab}
 )
 
 INSTALL(

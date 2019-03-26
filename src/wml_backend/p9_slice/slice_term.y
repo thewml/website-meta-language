@@ -7,8 +7,14 @@
 
 package SliceTermParser;
 {
-    no strict;
-    no warnings;
+    use strict;
+    use warnings;
+my $YYTABLESIZE;
+my $YYMAXTOKEN;
+    my $YYERRCODE;
+    my (@yylhs, @yylen, @yyname, $YYFINAL, @yygindex, @yycheck, @yytable, @yyrule);
+    my (@yydgoto, @yyrindex, @yysindex, @yydefred);
+    use vars qw/ $undef @OUT $SLICE /;
 %}
 
 %token SLICE
@@ -45,7 +51,7 @@ expr:   SLICE           { $$ = newvar($1); push(@OUT, "my ".$$." = \$CFG->{SLICE
 %%
 
 #   create new set variable
-$tmpcnt = 0;
+my $tmpcnt = 0;
 sub newvar {
     my ($name) = @_;
     my ($tmp);
@@ -64,17 +70,17 @@ sub newvar {
 
 #   the lexical scanner
 sub yylex {
-    local (*s) = @_;
+    my ($s) = @_;
     my ($c, $val);
 
     #   ignore whitespaces
-    $s =~ s|^\s+||;
+    $$s =~ s|^\s+||;
 
     #   recognize end of string
-    return 0 if ($s eq '');
+    return (0, 0) if ($$s eq '');
 
     #   found a token
-    if ($s =~ s|^([_A-Z0-9*{}]+)||) {
+    if ($$s =~ s|^([_A-Z0-9*{}]+)||) {
         $val = $1;
 
         #   if its a wildcarded slice name we have
@@ -103,8 +109,8 @@ sub yylex {
                 $val = $slices[0];
             }
             elsif ($#slices > 0) {
-                $s = join('u', @slices).')'.$s;
-                return ord('(');
+                $$s = join('u', @slices).')'.$$s;
+                return( ord('('), 0);
             }
             else {
                 main::printwarning("no existing slice matches `$val'\n") if $SliceTermParser::wildcard;
@@ -117,15 +123,15 @@ sub yylex {
     }
 
     #   else give back one plain character
-    $c = substr($s, 0, 1);
-    $s = substr($s, 1);
-    return ord($c);
+    $c = substr($$s, 0, 1);
+    $$s = substr($$s, 1);
+    return (ord($c), 0);
 }
 
 #   and error function
 sub yyerror {
     my ($msg, $s) = @_;
-    die "$msg at $s.\n";
+    die "$msg at $$s.\n";
 }
 
 #
@@ -137,14 +143,15 @@ sub yyerror {
 package SliceTerm;
 
 sub Parse {
-    local($str, $status) = @_;
+    my ($str, $status) = @_;
     my($p, $var, $cmds);
 
     @SliceTermParser::OUT = ();
     $SliceTermParser::undef = $status->{u};
     $SliceTermParser::wildcard = $status->{w};
     $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
-    eval {$var = $p->yyparse(*str);};
+    # $p->yyclearin;
+    eval {$var = $p->yyparse(\$str);};
     if ($@ =~ s/^(\d)$//) {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
