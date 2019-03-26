@@ -62,6 +62,7 @@ use IO::All qw/ io /;
 use File::Which qw/ which /;
 
 my $RESOLV_FN = '/etc/resolv.conf';
+my $EXEC_DIR  = "@{[TheWML::Config::libdir()]}/exec";
 
 sub new
 {
@@ -152,7 +153,7 @@ sub _generic_do
     my $from     = $args->{from};
     my $to       = $args->{to};
 
-    my $prog = "@{[TheWML::Config::libdir()]}/exec/$EXE";
+    my $prog = "$EXEC_DIR/$EXE";
     my $argv = "$opt -o $to $from";
     return scalar(
           $self->_opt_s
@@ -185,8 +186,7 @@ sub pass2
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     my $cwd = _my_cwd;
     my $rc  = $_pass_mgr->dosystem(
-"@{[TheWML::Config::libdir()]}/exec/wml_p2_mp4h $opt -I '$cwd' $from >$tmp"
-    );
+        "$EXEC_DIR/wml_p2_mp4h $opt -I '$cwd' $from >$tmp");
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
@@ -204,8 +204,7 @@ sub pass3
 
     return
         scalar $_pass_mgr->dosystem(
-"@{[TheWML::Config::libdir()]}/exec/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to"
-        );
+        "$EXEC_DIR/wml_p3_eperl $opt -P -k -B '<:' -E ':>' $from >$to");
 }
 
 sub pass4
@@ -316,9 +315,7 @@ sub pass9
 
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
-    return
-        scalar $_pass_mgr->dosystem(
-        "@{[TheWML::Config::libdir()]}/exec/wml_p9_slice $opt $from");
+    return scalar $_pass_mgr->dosystem("$EXEC_DIR/wml_p9_slice $opt $from");
 }
 
 sub _read_slices
@@ -330,9 +327,9 @@ sub _read_slices
         or error("Unable to load $from: $!");
     while ( my $l = <$slice_fh> )
     {
-        if ( $l =~ m|%!slice\s+(.*)$| )
+        if ( my ($argv) = $l =~ m|%!slice\s+(.*)$| )
         {
-            push( @ret, split_argv($1) );
+            push( @ret, split_argv($argv) );
         }
     }
     close($slice_fh)
