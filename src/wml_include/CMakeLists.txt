@@ -129,6 +129,7 @@ FOREACH( fn
         "TheWML/Backends/IPP/Line.pm"
         "TheWML/Backends/IPP/Main.pm"
         "TheWML/Backends/IPP/Map.pm"
+        "TheWML/Backends/Slice/Main.pm"
         "TheWML/CmdLine/Base.pm"
         "TheWML/CmdLine/IO.pm"
         "TheWML/Frontends/Wml/OptD.pm"
