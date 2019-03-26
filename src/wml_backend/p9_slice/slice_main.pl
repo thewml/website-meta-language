@@ -596,9 +596,7 @@ sub pass3
     }
 }
 
-use vars (qw( $CFG ));
-
-$CFG = bless {}, 'main';
+my $CFG = bless {}, 'main';
 
 $CFG->setup;
 $CFG->pass1;
