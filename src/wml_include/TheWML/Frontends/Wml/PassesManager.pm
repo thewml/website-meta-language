@@ -315,7 +315,20 @@ sub pass9
 
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
-    return scalar $_pass_mgr->dosystem("$EXEC_DIR/wml_p9_slice $opt $from");
+    return $_pass_mgr->_generic_do(
+        {
+            pass_idx => 9,
+            EXE      => 'wml_p9_slice',
+            opt      => $opt,
+            from     => $from,
+            to       => $to,
+            cb       => sub {
+                require TheWML::Backends::Slice::Main;
+
+                return TheWML::Backends::Slice::Main->new( argv => [@_] )->main;
+            },
+        }
+    );
 }
 
 sub _read_slices
