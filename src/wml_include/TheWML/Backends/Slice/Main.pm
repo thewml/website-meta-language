@@ -579,18 +579,7 @@ sub pass3
         #   and move result to $set
         foreach my $cmd (@$cmds)
         {
-            if ( ref $cmd )
-            {
-                $cmd->( $self, $CFG );
-            }
-            else
-            {
-                eval $cmd;
-                if ($@)
-                {
-                    die $@;
-                }
-            }
+            $cmd->( $self, $CFG );
         }
         my $set = $self->_get_var($var);
 

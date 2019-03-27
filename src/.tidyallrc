@@ -7,4 +7,4 @@ ignore =
 ; select = **/*.{pl,pm,t}
 ; ignore = **/*
 select = wml_include/**/*.pm
-ignore = wml_include/TheWML/Backends/ASubst/Main.pm wml_include/TheWML/Backends/Slice/Main.pm
+ignore = wml_include/TheWML/Backends/ASubst/Main.pm
