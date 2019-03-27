@@ -413,6 +413,15 @@ sub _set_var
     return $self->_vars->{$name} = $val;
 }
 
+sub _mutate_var
+{
+    my ( $self, $v1, $op, $v3 ) = @_;
+
+    $self->_get_var($v1)->$op( $self->_get_var($v1), $self->_get_var($v3) );
+
+    return;
+}
+
 ##  Pass 2: Calculation of slice sets
 sub pass2
 {

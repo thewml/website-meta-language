@@ -291,28 +291,28 @@ if ($p->{yyn} == 4) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
 }
 if ($p->{yyn} == 5) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->ExclusiveOr($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
 }
 if ($p->{yyn} == 6) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->ExclusiveOr($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
 }
 if ($p->{yyn} == 7) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Difference($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Difference', $v3); }); }
 }
 if ($p->{yyn} == 8) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Difference($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Difference', $v3); }); }
 }
 if ($p->{yyn} == 9) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Intersection($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var( $v1, 'Intersection', $v3); }); }
 }
 if ($p->{yyn} == 10) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Intersection($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Intersection', $v3); }); }
 }
 if ($p->{yyn} == 11) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Union($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Union', $v3); }); }
 }
 if ($p->{yyn} == 12) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Union($self->_get_var($v1),$self->_get_var($v3));return;}); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Union', $v3); }); }
 }
 if ($p->{yyn} == 13) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-1]; }
