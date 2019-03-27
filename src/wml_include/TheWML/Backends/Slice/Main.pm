@@ -413,6 +413,15 @@ sub _set_var
     return $self->_vars->{$name} = $val;
 }
 
+sub _complement_var
+{
+    my ( $self, $v1 ) = @_;
+
+    $self->_get_var($v1)->Complement( $self->_get_var($v1) );
+
+    return;
+}
+
 sub _mutate_var
 {
     my ( $self, $v1, $op, $v3 ) = @_;

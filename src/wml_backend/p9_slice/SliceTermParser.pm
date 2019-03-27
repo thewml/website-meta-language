@@ -285,10 +285,10 @@ if ($p->{yyn} == 2) {
 { $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-1]; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
 }
 if ($p->{yyn} == 3) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
 }
 if ($p->{yyn} == 4) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
 }
 if ($p->{yyn} == 5) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }

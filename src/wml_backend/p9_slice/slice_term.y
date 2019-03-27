@@ -30,8 +30,8 @@ package SliceTermParser;
 %%
 expr:   SLICE           { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{$src}->Clone); return;}); }
     |  SLICE '@'          { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
-    |   '!' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
-    |   '~' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
+    |   '!' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
+    |   '~' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
     |   expr 'x' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
     |   expr '^' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
 
