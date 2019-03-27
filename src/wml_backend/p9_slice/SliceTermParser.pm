@@ -279,10 +279,10 @@ yyloop: while(1)
     $p->{yym} = $yylen[$p->{yyn}];
     $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}+1-$p->{yym}];
 if ($p->{yyn} == 1) {
-{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$p->{yyval}."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'".$p->{yyvs}->[$p->{yyvsp}-0]."'}->Clone);"); }
+{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{$src}->Clone); return;}); }
 }
 if ($p->{yyn} == 2) {
-{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$p->{yyval}."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$p->{yyvs}->[$p->{yyvsp}-1]."'}->Clone);"); }
+{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-1]; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
 }
 if ($p->{yyn} == 3) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)"."->Complement("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }

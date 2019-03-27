@@ -28,10 +28,8 @@ package SliceTermParser;
 %right '!' '~'
 
 %%
-expr:   SLICE           { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$$."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone);"); }
-
-    |   SLICE '@'       { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$$."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone);"); }
-
+expr:   SLICE           { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{$src}->Clone); return;}); }
+    |  SLICE '@'          { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
     |   '!' expr        { $$ = $2; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$2."%)"."->Complement("."\$self->_get_var(q%".$2."%)".");"); }
     |   '~' expr        { $$ = $2; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$2."%)"."->Complement("."\$self->_get_var(q%".$2."%)".");"); }
 
