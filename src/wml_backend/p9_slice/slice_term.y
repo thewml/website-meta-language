@@ -28,25 +28,23 @@ package SliceTermParser;
 %right '!' '~'
 
 %%
-expr:   SLICE           { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
+expr:   SLICE           { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$$."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone);"); }
 
-    |   SLICE '@'       { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
+    |   SLICE '@'       { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$$."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone);"); }
 
-    |   '!' expr        { $$ = $2; push(@{$p->{_OUT}}, $2."->Complement(".$2.");"); }
-    |   '~' expr        { $$ = $2; push(@{$p->{_OUT}}, $2."->Complement(".$2.");"); }
+    |   '!' expr        { $$ = $2; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$2."%)"."->Complement("."\$self->_get_var(q%".$2."%)".");"); }
+    |   '~' expr        { $$ = $2; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$2."%)"."->Complement("."\$self->_get_var(q%".$2."%)".");"); }
 
-    |   expr 'x' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->ExclusiveOr(".$1.",".$3.");"); }
-    |   expr '^' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->ExclusiveOr(".$1.",".$3.");"); }
+    |   expr 'x' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->ExclusiveOr("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr '^' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->ExclusiveOr("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
 
-    |   expr '\\' expr  { $$ = $1; push(@{$p->{_OUT}}, $1."->Difference(".$1.",".$3.");"); }
-    |   expr '-' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Difference(".$1.",".$3.");"); }
+    |   expr '\\' expr  { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Difference("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr '-' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Difference("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
 
-    |   expr 'n' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Intersection(".$1.",".$3.");"); }
-    |   expr '%' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Intersection(".$1.",".$3.");"); }
-
-    |   expr 'u' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Union(".$1.",".$3.");"); }
-    |   expr '+' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Union(".$1.",".$3.");"); }
-
+    |   expr 'n' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Intersection("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr '%' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Intersection("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr 'u' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Union("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr '+' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Union("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
     |   '(' expr ')'    { $$ = $2; }
     ;
 %%

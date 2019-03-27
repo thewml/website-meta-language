@@ -11,6 +11,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            _vars
             _CFG
             argv
             )
@@ -398,6 +399,20 @@ sub _asc2set
     }
 }
 
+sub _get_var
+{
+    my ( $self, $name ) = @_;
+
+    return $self->_vars->{$name};
+}
+
+sub _set_var
+{
+    my ( $self, $name, $val ) = @_;
+
+    return $self->_vars->{$name} = $val;
+}
+
 ##  Pass 2: Calculation of slice sets
 sub pass2
 {
@@ -560,11 +575,16 @@ sub pass3
         }
 
         my $CFG = $self->_CFG;
+        $self->_vars( {} );
 
         #   now evaluate the Bit::Vector statements
         #   and move result to $set
         my $set;
-        eval "$cmds; \$set = $var";
+        eval "$cmds; \$set = \$self->_get_var(q%$var%)";
+        if ($@)
+        {
+            die $@;
+        }
 
         my $start = 0;
         my $out   = '';

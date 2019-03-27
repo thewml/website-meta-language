@@ -279,40 +279,40 @@ yyloop: while(1)
     $p->{yym} = $yylen[$p->{yyn}];
     $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}+1-$p->{yym}];
 if ($p->{yyn} == 1) {
-{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); push(@{$p->{_OUT}}, "my ".$p->{yyval}." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$p->{yyvs}->[$p->{yyvsp}-0]."'}->Clone;"); }
+{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$p->{yyval}."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'".$p->{yyvs}->[$p->{yyvsp}-0]."'}->Clone);"); }
 }
 if ($p->{yyn} == 2) {
-{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); push(@{$p->{_OUT}}, "my ".$p->{yyval}." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$p->{yyvs}->[$p->{yyvsp}-1]."'}->Clone;"); }
+{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); push(@{$p->{_OUT}}, "\$self->_set_var(q%".$p->{yyval}."% , \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$p->{yyvs}->[$p->{yyvsp}-1]."'}->Clone);"); }
 }
 if ($p->{yyn} == 3) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-0]."->Complement(".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)"."->Complement("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 4) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-0]."->Complement(".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)"."->Complement("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 5) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->ExclusiveOr(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->ExclusiveOr("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 6) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->ExclusiveOr(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->ExclusiveOr("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 7) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Difference(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->Difference("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 8) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Difference(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->Difference("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 9) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Intersection(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->Intersection("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 10) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Intersection(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->Intersection("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 11) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Union(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->Union("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 12) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Union(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)"."->Union("."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-2]."%)".","."\$self->_get_var(q%".$p->{yyvs}->[$p->{yyvsp}-0]."%)".");"); }
 }
 if ($p->{yyn} == 13) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-1]; }
