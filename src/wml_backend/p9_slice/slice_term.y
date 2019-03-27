@@ -146,19 +146,18 @@ package SliceTerm;
 
 sub Parse {
     my ($CFG, $str, $status) = @_;
-    my($p, $var, $cmds);
 
     $SliceTermParser::wildcard = $status->{w};
-    $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
+    my $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
     $p->{_OUT} = [];
     $p->{_undef} = $status->{u};
     # $p->yyclearin;
-    eval {$var = $p->yyparse([$CFG, \$str]);};
+    my $var = eval {$p->yyparse([$CFG, \$str]);};
     if ($@ =~ s/^(\d)$//) {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
     }
-    $cmds = join("\n", @{$p->{_OUT}}) . "\n";
+    my $cmds = join("\n", @{$p->{_OUT}}) . "\n";
 
     return ($cmds, $var);
 }
