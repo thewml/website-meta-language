@@ -116,7 +116,7 @@ $YYMAXTOKEN=257;
 @yyrule = (
 "\$accept : expr",
 "expr : SLICE",
-"expr : SLICE '@'",
+"expr : SLICE '\@'",
 "expr : '!' expr",
 "expr : '~' expr",
 "expr : expr 'x' expr",
