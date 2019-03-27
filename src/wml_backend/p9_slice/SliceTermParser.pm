@@ -467,9 +467,7 @@ sub Parse {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
     }
-    my $cmds = join("\n", @{$p->{_OUT}}) . "\n";
-
-    return ($cmds, $var);
+    return ($p->{_OUT}, $var);
 }
 
 }

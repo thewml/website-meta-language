@@ -568,8 +568,6 @@ sub pass3
             $self->verbose("        calculated Perl 5 set term:\n");
             $self->verbose("        ----\n");
             my $x = $cmds;
-            $x =~ s|\n+$||;
-            $x =~ s|\n|\n        |g;
             $self->verbose("        $x\n");
             $self->verbose("        ----\n");
         }
@@ -579,12 +577,15 @@ sub pass3
 
         #   now evaluate the Bit::Vector statements
         #   and move result to $set
-        my $set;
-        eval "$cmds; \$set = \$self->_get_var(q%$var%)";
-        if ($@)
+        foreach my $cmd (@$cmds)
         {
-            die $@;
+            eval $cmd;
+            if ($@)
+            {
+                die $@;
+            }
         }
+        my $set = $self->_get_var($var);
 
         my $start = 0;
         my $out   = '';
