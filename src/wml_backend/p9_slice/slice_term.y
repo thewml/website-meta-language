@@ -15,7 +15,7 @@ package SliceTermParser;
     my $YYERRCODE;
     my (@yylhs, @yylen, @yyname, $YYFINAL, @yygindex, @yycheck, @yytable, @yyrule);
     my (@yydgoto, @yyrindex, @yysindex, @yydefred);
-    use vars qw/ $undef $SLICE /;
+    use vars qw/ $SLICE /;
 %}
 
 %token SLICE
@@ -28,9 +28,9 @@ package SliceTermParser;
 %right '!' '~'
 
 %%
-expr:   SLICE           { $$ = newvar($s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
+expr:   SLICE           { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
 
-    |   SLICE '@'       { $$ = newvar($s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
+    |   SLICE '@'       { $$ = newvar($p, $s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
 
     |   '!' expr        { $$ = $2; push(@{$p->{_OUT}}, $2."->Complement(".$2.");"); }
     |   '~' expr        { $$ = $2; push(@{$p->{_OUT}}, $2."->Complement(".$2.");"); }
@@ -54,14 +54,14 @@ expr:   SLICE           { $$ = newvar($s->[0], $1); push(@{$p->{_OUT}}, "my ".$$
 #   create new set variable
 my $tmpcnt = 0;
 sub newvar {
-    my ($CFG, $name) = @_;
+    my ($p, $CFG, $name) = @_;
     my ($tmp);
 
     if ($CFG->{SLICE}->{SET}->{OBJ}->{"$name"} eq '') {
-        main::printwarning("no such slice '$name'\n") if $undef;
-        #    The $undef string is caught by caller, it is used
+        main::printwarning("no such slice '$name'\n") if $p->{_undef};
+        #    The $p->{_undef} string is caught by caller, it is used
         #    to trap warnings depending on the -y command line flag.
-        die $undef."\n" if $undef > 1;
+        die $p->{_undef}."\n" if $p->{_undef} > 1;
         $CFG->{SLICE}->{SET}->{OBJ}->{"$name"} =
                 $CFG->{SLICE}->{SET}->{OBJ}->{DEF0}->Clone;
     }
@@ -148,10 +148,10 @@ sub Parse {
     my ($CFG, $str, $status) = @_;
     my($p, $var, $cmds);
 
-    $SliceTermParser::undef = $status->{u};
     $SliceTermParser::wildcard = $status->{w};
     $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
     $p->{_OUT} = [];
+    $p->{_undef} = $status->{u};
     # $p->yyclearin;
     eval {$var = $p->yyparse([$CFG, \$str]);};
     if ($@ =~ s/^(\d)$//) {
