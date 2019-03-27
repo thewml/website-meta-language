@@ -16,7 +16,7 @@ package SliceTermParser;
     my $YYERRCODE;
     my (@yylhs, @yylen, @yyname, $YYFINAL, @yygindex, @yycheck, @yytable, @yyrule);
     my (@yydgoto, @yyrindex, @yysindex, @yydefred);
-    use vars qw/ $undef @OUT $SLICE /;
+    use vars qw/ $undef $SLICE /;
 $SLICE=257;
 $YYERRCODE=256;
 @yylhs = (                                               -1,
@@ -279,40 +279,40 @@ yyloop: while(1)
     $p->{yym} = $yylen[$p->{yyn}];
     $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}+1-$p->{yym}];
 if ($p->{yyn} == 1) {
-{ $p->{yyval} = newvar($s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); push(@OUT, "my ".$p->{yyval}." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$p->{yyvs}->[$p->{yyvsp}-0]."'}->Clone;"); }
+{ $p->{yyval} = newvar($s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); push(@{$p->{_OUT}}, "my ".$p->{yyval}." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$p->{yyvs}->[$p->{yyvsp}-0]."'}->Clone;"); }
 }
 if ($p->{yyn} == 2) {
-{ $p->{yyval} = newvar($s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); push(@OUT, "my ".$p->{yyval}." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$p->{yyvs}->[$p->{yyvsp}-1]."'}->Clone;"); }
+{ $p->{yyval} = newvar($s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); push(@{$p->{_OUT}}, "my ".$p->{yyval}." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$p->{yyvs}->[$p->{yyvsp}-1]."'}->Clone;"); }
 }
 if ($p->{yyn} == 3) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-0]."->Complement(".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-0]."->Complement(".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 4) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-0]."->Complement(".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-0]."->Complement(".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 5) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->ExclusiveOr(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->ExclusiveOr(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 6) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->ExclusiveOr(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->ExclusiveOr(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 7) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->Difference(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Difference(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 8) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->Difference(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Difference(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 9) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->Intersection(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Intersection(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 10) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->Intersection(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Intersection(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 11) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->Union(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Union(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 12) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@OUT, $p->{yyvs}->[$p->{yyvsp}-2]."->Union(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; push(@{$p->{_OUT}}, $p->{yyvs}->[$p->{yyvsp}-2]."->Union(".$p->{yyvs}->[$p->{yyvsp}-2].",".$p->{yyvs}->[$p->{yyvsp}-0].");"); }
 }
 if ($p->{yyn} == 13) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-1]; }
@@ -459,17 +459,17 @@ sub Parse {
     my ($CFG, $str, $status) = @_;
     my($p, $var, $cmds);
 
-    @SliceTermParser::OUT = ();
     $SliceTermParser::undef = $status->{u};
     $SliceTermParser::wildcard = $status->{w};
     $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
+    $p->{_OUT} = [];
     # $p->yyclearin;
     eval {$var = $p->yyparse([$CFG, \$str]);};
     if ($@ =~ s/^(\d)$//) {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
     }
-    $cmds = join("\n", @SliceTermParser::OUT) . "\n";
+    $cmds = join("\n", @{$p->{_OUT}}) . "\n";
 
     return ($cmds, $var);
 }

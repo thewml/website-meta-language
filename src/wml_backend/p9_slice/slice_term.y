@@ -15,7 +15,7 @@ package SliceTermParser;
     my $YYERRCODE;
     my (@yylhs, @yylen, @yyname, $YYFINAL, @yygindex, @yycheck, @yytable, @yyrule);
     my (@yydgoto, @yyrindex, @yysindex, @yydefred);
-    use vars qw/ $undef @OUT $SLICE /;
+    use vars qw/ $undef $SLICE /;
 %}
 
 %token SLICE
@@ -28,24 +28,24 @@ package SliceTermParser;
 %right '!' '~'
 
 %%
-expr:   SLICE           { $$ = newvar($s->[0], $1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
+expr:   SLICE           { $$ = newvar($s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'".$1."'}->Clone;"); }
 
-    |   SLICE '@'       { $$ = newvar($s->[0], $1); push(@OUT, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
+    |   SLICE '@'       { $$ = newvar($s->[0], $1); push(@{$p->{_OUT}}, "my ".$$." = \$CFG->{SLICE}->{SET}->{OBJ}->{'NOV_".$1."'}->Clone;"); }
 
-    |   '!' expr        { $$ = $2; push(@OUT, $2."->Complement(".$2.");"); }
-    |   '~' expr        { $$ = $2; push(@OUT, $2."->Complement(".$2.");"); }
+    |   '!' expr        { $$ = $2; push(@{$p->{_OUT}}, $2."->Complement(".$2.");"); }
+    |   '~' expr        { $$ = $2; push(@{$p->{_OUT}}, $2."->Complement(".$2.");"); }
 
-    |   expr 'x' expr   { $$ = $1; push(@OUT, $1."->ExclusiveOr(".$1.",".$3.");"); }
-    |   expr '^' expr   { $$ = $1; push(@OUT, $1."->ExclusiveOr(".$1.",".$3.");"); }
+    |   expr 'x' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->ExclusiveOr(".$1.",".$3.");"); }
+    |   expr '^' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->ExclusiveOr(".$1.",".$3.");"); }
 
-    |   expr '\\' expr  { $$ = $1; push(@OUT, $1."->Difference(".$1.",".$3.");"); }
-    |   expr '-' expr   { $$ = $1; push(@OUT, $1."->Difference(".$1.",".$3.");"); }
+    |   expr '\\' expr  { $$ = $1; push(@{$p->{_OUT}}, $1."->Difference(".$1.",".$3.");"); }
+    |   expr '-' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Difference(".$1.",".$3.");"); }
 
-    |   expr 'n' expr   { $$ = $1; push(@OUT, $1."->Intersection(".$1.",".$3.");"); }
-    |   expr '%' expr   { $$ = $1; push(@OUT, $1."->Intersection(".$1.",".$3.");"); }
+    |   expr 'n' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Intersection(".$1.",".$3.");"); }
+    |   expr '%' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Intersection(".$1.",".$3.");"); }
 
-    |   expr 'u' expr   { $$ = $1; push(@OUT, $1."->Union(".$1.",".$3.");"); }
-    |   expr '+' expr   { $$ = $1; push(@OUT, $1."->Union(".$1.",".$3.");"); }
+    |   expr 'u' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Union(".$1.",".$3.");"); }
+    |   expr '+' expr   { $$ = $1; push(@{$p->{_OUT}}, $1."->Union(".$1.",".$3.");"); }
 
     |   '(' expr ')'    { $$ = $2; }
     ;
@@ -148,17 +148,17 @@ sub Parse {
     my ($CFG, $str, $status) = @_;
     my($p, $var, $cmds);
 
-    @SliceTermParser::OUT = ();
     $SliceTermParser::undef = $status->{u};
     $SliceTermParser::wildcard = $status->{w};
     $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
+    $p->{_OUT} = [];
     # $p->yyclearin;
     eval {$var = $p->yyparse([$CFG, \$str]);};
     if ($@ =~ s/^(\d)$//) {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
     }
-    $cmds = join("\n", @SliceTermParser::OUT) . "\n";
+    $cmds = join("\n", @{$p->{_OUT}}) . "\n";
 
     return ($cmds, $var);
 }
