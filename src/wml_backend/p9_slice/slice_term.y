@@ -6,11 +6,12 @@
 ##
 
 package SliceTermParser;
+
 {
     use strict;
     use warnings;
-my $YYTABLESIZE;
-my $YYMAXTOKEN;
+    my $YYTABLESIZE;
+    my $YYMAXTOKEN;
     my $YYERRCODE;
     my (@yylhs, @yylen, @yyname, $YYFINAL, @yygindex, @yycheck, @yytable, @yyrule);
     my (@yydgoto, @yyrindex, @yysindex, @yydefred);
