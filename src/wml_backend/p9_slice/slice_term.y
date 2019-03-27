@@ -32,16 +32,16 @@ expr:   SLICE           { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1
     |  SLICE '@'          { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
     |   '!' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
     |   '~' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_get_var($src)->Complement($self->_get_var($src)); return; }); }
-    |   expr 'x' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->ExclusiveOr("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
-    |   expr '^' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->ExclusiveOr("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr 'x' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->ExclusiveOr($self->_get_var($v1),$self->_get_var($v3));return;}); }
+    |   expr '^' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->ExclusiveOr($self->_get_var($v1),$self->_get_var($v3));return;}); }
 
-    |   expr '\\' expr  { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Difference("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
-    |   expr '-' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Difference("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr '\\' expr  { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Difference($self->_get_var($v1),$self->_get_var($v3));return;}); }
+    |   expr '-' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Difference($self->_get_var($v1),$self->_get_var($v3));return;}); }
 
-    |   expr 'n' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Intersection("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
-    |   expr '%' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Intersection("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
-    |   expr 'u' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Union("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
-    |   expr '+' expr   { $$ = $1; push(@{$p->{_OUT}}, "\$self->_get_var(q%".$1."%)"."->Union("."\$self->_get_var(q%".$1."%)".","."\$self->_get_var(q%".$3."%)".");"); }
+    |   expr 'n' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Intersection($self->_get_var($v1),$self->_get_var($v3));return;}); }
+    |   expr '%' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Intersection($self->_get_var($v1),$self->_get_var($v3));return;}); }
+    |   expr 'u' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Union($self->_get_var($v1),$self->_get_var($v3));return;}); }
+    |   expr '+' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;$self->_get_var($v1)->Union($self->_get_var($v1),$self->_get_var($v3));return;}); }
     |   '(' expr ')'    { $$ = $2; }
     ;
 %%
