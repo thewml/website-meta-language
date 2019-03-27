@@ -74,7 +74,7 @@ sub yylex {
     my ($ctx) = @_;
     my ($c, $val);
 
-    my ($CFG, $s) = @$ctx;
+    my ($CFG, $s, $wildcard) = @$ctx;
     #   ignore whitespaces
     $$s =~ s|^\s+||;
 
@@ -115,10 +115,10 @@ sub yylex {
                 return( ord('('), 0);
             }
             else {
-                main::printwarning("no existing slice matches `$val'\n") if $SliceTermParser::wildcard;
+                main::printwarning("no existing slice matches `$val'\n") if $wildcard;
                 #    The $wildcard string is caught by caller, it is used
                 #    to trap warnings depending on the -y command line flag.
-                die $SliceTermParser::wildcard."\n" if $SliceTermParser::wildcard > 1;
+                die $wildcard."\n" if $wildcard > 1;
             }
         }
         return ($SLICE, $val);
@@ -147,12 +147,11 @@ package SliceTerm;
 sub Parse {
     my ($CFG, $str, $status) = @_;
 
-    $SliceTermParser::wildcard = $status->{w};
     my $p = SliceTermParser->new(\&SliceTermParser::yylex, \&SliceTermParser::yyerror, 0);
     $p->{_OUT} = [];
     $p->{_undef} = $status->{u};
     # $p->yyclearin;
-    my $var = eval {$p->yyparse([$CFG, \$str]);};
+    my $var = eval {$p->yyparse([$CFG, \$str, $status->{w}]);};
     if ($@ =~ s/^(\d)$//) {
         main::error("Execution stopped\n") if $1 > 2;
         return ();
