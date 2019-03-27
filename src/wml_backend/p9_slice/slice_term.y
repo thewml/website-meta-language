@@ -15,7 +15,7 @@ package SliceTermParser;
     my $YYERRCODE;
     my (@yylhs, @yylen, @yyname, $YYFINAL, @yygindex, @yycheck, @yytable, @yyrule);
     my (@yydgoto, @yyrindex, @yysindex, @yydefred);
-    use vars qw/ $SLICE /;
+    my $SLICE ;
 %}
 
 %token SLICE
@@ -121,7 +121,7 @@ sub yylex {
                 die $SliceTermParser::wildcard."\n" if $SliceTermParser::wildcard > 1;
             }
         }
-        return ($SliceTermParser::SLICE, $val);
+        return ($SLICE, $val);
     }
 
     #   else give back one plain character
