@@ -58,6 +58,7 @@ sub cnvin
         s|\[\[(tr(.)[^\2]+?\2[^\2]+?\2[igosme]*?)\]\]|push(@SCMD, $1), ''|sge;
     foreach my $scmd (@SCMD)
     {
+        ## no critic (ProhibitStringyEval)
         eval "\$str =~ $scmd;";
     }
     return $str;
@@ -100,7 +101,7 @@ sub _expand_block_more
         $cnvin, $closedel, $cnvpost, $level
     ) = @_;
     my ( $rc, $opened, $offset, @segment, $del, $openidx, $closeidx );
-    my ( $bufferN, $s, $e, $i, $data );
+    my ( $bufferN, $s, $e, $data );
 
     #
     #   first, check for corresponding delimiters
@@ -156,11 +157,10 @@ sub _expand_block_more
     #   now process each segment
     #
     $bufferN = '';
-    for ( $i = 0 ; $i < $#segment ; )
+    for ( my $i = 0 ; $i < $#segment ; )
     {
-        $s = $segment[$i];
-        $e = $segment[ $i + 1 ];
-        $i++;
+        $s    = $segment[$i];
+        $e    = $segment[ ++$i ];
         $data = substr( $buffer, $s, ( $e - $s ) );
         my $rc;
         ( $rc, $data ) = $self->_expand_block_one(
@@ -250,7 +250,7 @@ sub _expand_block_one
 sub _wml_back_end_asubst_debug
 {
     my ( $self, $level, $name, $str ) = @_;
-    my ( @o, $l );
+    my (@o);
 
     # return if ($_my_debug == 0);
     return;
@@ -262,7 +262,7 @@ sub _wml_back_end_asubst_debug
     }
     else
     {
-        foreach $l ( split( '\n', $str ) )
+        foreach my $l ( split( '\n', $str ) )
         {
             push( @o, "    " x $level . "    |$l|\n" );
         }
