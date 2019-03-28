@@ -457,6 +457,7 @@ sub _push_mutate {
     $p->_out(sub{my ($self)=@_;return $self->_mutate_var(@args);});
     return;
 }
+
 #
 #  The top-level function which gets called by the user
 #
