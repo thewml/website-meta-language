@@ -285,10 +285,10 @@ if ($p->{yyn} == 2) {
 { $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-1]; $p->_out(sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
 }
 if ($p->{yyn} == 3) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];$p->_out( sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; $p->_push_complement($p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 4) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];$p->_out( sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; $p->_push_complement($p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 5) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'ExclusiveOr', $p->{yyvs}->[$p->{yyvsp}-0]); }
@@ -450,6 +450,11 @@ sub yyerror {
 sub _out {
     my ($p, $item) = @_;
     push(@{$p->{_OUT}}, $item);
+    return;
+}
+sub _push_complement {
+    my ($p, $v) = @_;
+    $p->_out(sub{my ($self)=@_;return $self->_complement_var($v);});
     return;
 }
 sub _push_mutate {

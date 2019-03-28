@@ -30,8 +30,8 @@ package SliceTermParser;
 %%
 expr:   SLICE           { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; $p->_out(sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{$src}->Clone); return;}); }
     |  SLICE '@'          { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; $p->_out(sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
-    |   '!' expr        { $$ = $2; my $src = $2;$p->_out( sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
-    |   '~' expr        { $$ = $2; my $src = $2;$p->_out( sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
+    |   '!' expr        { $$ = $2; $p->_push_complement($2); }
+    |   '~' expr        { $$ = $2; $p->_push_complement($2); }
     |   expr 'x' expr   { $$ = $1; $p->_push_mutate($1, 'ExclusiveOr', $3); }
     |   expr '^' expr   { $$ = $1; $p->_push_mutate($1, 'ExclusiveOr', $3); }
     |   expr '\\' expr  { $$ = $1; $p->_push_mutate($1, 'Difference', $3); }
@@ -132,6 +132,11 @@ sub yyerror {
 sub _out {
     my ($p, $item) = @_;
     push(@{$p->{_OUT}}, $item);
+    return;
+}
+sub _push_complement {
+    my ($p, $v) = @_;
+    $p->_out(sub{my ($self)=@_;return $self->_complement_var($v);});
     return;
 }
 sub _push_mutate {
