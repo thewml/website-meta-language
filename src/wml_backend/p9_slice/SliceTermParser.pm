@@ -291,28 +291,28 @@ if ($p->{yyn} == 4) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
 }
 if ($p->{yyn} == 5) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'ExclusiveOr', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 6) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'ExclusiveOr', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 7) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Difference', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'Difference', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 8) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Difference', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'Difference', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 9) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var( $v1, 'Intersection', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'Intersection', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 10) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Intersection', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'Intersection', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 11) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Union', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'Union', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 12) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; my $v1 = $p->{yyvs}->[$p->{yyvsp}-2];my $v3=$p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Union', $v3); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'Union', $p->{yyvs}->[$p->{yyvsp}-0]); }
 }
 if ($p->{yyn} == 13) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-1]; }
@@ -447,6 +447,11 @@ sub yyerror {
     die "$msg at $$s.\n";
 }
 
+sub _push_mutate {
+    my ($p, @args) = @_;
+    push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var(@args);});
+    return;
+}
 #
 #  The top-level function which gets called by the user
 #

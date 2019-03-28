@@ -32,16 +32,14 @@ expr:   SLICE           { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1
     |  SLICE '@'          { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
     |   '!' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
     |   '~' expr        { $$ = $2; my $src = $2;push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
-    |   expr 'x' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
-    |   expr '^' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'ExclusiveOr', $v3); }); }
-
-    |   expr '\\' expr  { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Difference', $v3); }); }
-    |   expr '-' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Difference', $v3); }); }
-
-    |   expr 'n' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var( $v1, 'Intersection', $v3); }); }
-    |   expr '%' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Intersection', $v3); }); }
-    |   expr 'u' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Union', $v3); }); }
-    |   expr '+' expr   { $$ = $1; my $v1 = $1;my $v3=$3;push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var($v1, 'Union', $v3); }); }
+    |   expr 'x' expr   { $$ = $1; $p->_push_mutate($1, 'ExclusiveOr', $3); }
+    |   expr '^' expr   { $$ = $1; $p->_push_mutate($1, 'ExclusiveOr', $3); }
+    |   expr '\\' expr  { $$ = $1; $p->_push_mutate($1, 'Difference', $3); }
+    |   expr '-' expr   { $$ = $1; $p->_push_mutate($1, 'Difference', $3); }
+    |   expr 'n' expr   { $$ = $1; $p->_push_mutate($1, 'Intersection', $3); }
+    |   expr '%' expr   { $$ = $1; $p->_push_mutate($1, 'Intersection', $3); }
+    |   expr 'u' expr   { $$ = $1; $p->_push_mutate($1, 'Union', $3); }
+    |   expr '+' expr   { $$ = $1; $p->_push_mutate($1, 'Union', $3); }
     |   '(' expr ')'    { $$ = $2; }
     ;
 %%
@@ -131,6 +129,11 @@ sub yyerror {
     die "$msg at $$s.\n";
 }
 
+sub _push_mutate {
+    my ($p, @args) = @_;
+    push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var(@args);});
+    return;
+}
 #
 #  The top-level function which gets called by the user
 #
