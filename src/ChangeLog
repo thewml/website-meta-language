@@ -1,12 +1,17 @@
 
-  C H A N G E L O G
-  =================
+  CHANGELOG
+  =========
 
   This file summarizes *all* types of changes to the WML sources,
   i.e. changes between each patchlevel (1.x.y->1.x.(y+1) and
   1.x.y->1.(x+1).0). Take this logfile for concrete and detailed
   information about every single change.
   ___________________________________________________________________________
+
+  Changes between 2.16.0 to 2.18.0:
+
+  *) Refactored the p9_slice code to avoid global state and eval and allow
+  lazy loading it like the other perl passes.
 
   Changes between 2.14.0 to 2.16.0:
 
