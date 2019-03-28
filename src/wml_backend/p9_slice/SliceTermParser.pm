@@ -279,16 +279,16 @@ yyloop: while(1)
     $p->{yym} = $yylen[$p->{yyn}];
     $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}+1-$p->{yym}];
 if ($p->{yyn} == 1) {
-{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-0]; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{$src}->Clone); return;}); }
+{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-0]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-0]; $p->_out(sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{$src}->Clone); return;}); }
 }
 if ($p->{yyn} == 2) {
-{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-1]; push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
+{ $p->{yyval} = newvar($p, $s->[0], $p->{yyvs}->[$p->{yyvsp}-1]); my $t = $p->{yyval}; my $src = $p->{yyvs}->[$p->{yyvsp}-1]; $p->_out(sub { my ($self, $CFG) = @_; $self->_set_var($t , $CFG->{SLICE}->{SET}->{OBJ}->{'NOV_'.$src}->Clone); return;}); }
 }
 if ($p->{yyn} == 3) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];$p->_out( sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
 }
 if ($p->{yyn} == 4) {
-{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];push(@{$p->{_OUT}}, sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
+{ $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-0]; my $src = $p->{yyvs}->[$p->{yyvsp}-0];$p->_out( sub { my ($self, $CFG) = @_; return $self->_complement_var($src); }); }
 }
 if ($p->{yyn} == 5) {
 { $p->{yyval} = $p->{yyvs}->[$p->{yyvsp}-2]; $p->_push_mutate($p->{yyvs}->[$p->{yyvsp}-2], 'ExclusiveOr', $p->{yyvs}->[$p->{yyvsp}-0]); }
@@ -447,9 +447,14 @@ sub yyerror {
     die "$msg at $$s.\n";
 }
 
+sub _out {
+    my ($p, $item) = @_;
+    push(@{$p->{_OUT}}, $item);
+    return;
+}
 sub _push_mutate {
     my ($p, @args) = @_;
-    push(@{$p->{_OUT}}, sub{my ($self)=@_;return $self->_mutate_var(@args);});
+    $p->_out(sub{my ($self)=@_;return $self->_mutate_var(@args);});
     return;
 }
 #
