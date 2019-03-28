@@ -9,6 +9,8 @@ sub-directory.
 
 [![Build Status](https://travis-ci.org/thewml/website-meta-language.svg?branch=master)](https://travis-ci.org/thewml/website-meta-language) - https://travis-ci.org/thewml/website-meta-language
 
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/6lu0eehx3ywgeab4?svg=true)](https://ci.appveyor.com/project/shlomif/website-meta-language) - https://ci.appveyor.com/project/shlomif/website-meta-language
+
 # What is it?
 
 Website Meta Language is an offline HTML preprocessor, which dates back to
