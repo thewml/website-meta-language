@@ -55,6 +55,7 @@ CONFIGURE_FILE(
 SET (dirs_to_make )
 SET (preproc_target_dests )
 SET (include_pods_dests )
+SET (batch_list )
 
 FOREACH (base ${myfiles})
 
@@ -91,6 +92,7 @@ FOREACH (base ${myfiles})
             "--output" "${dest}"
         DEPENDS "${src}"
     )
+    LIST (APPEND batch_list "${src}" "${dest}")
     LIST (APPEND preproc_target_dests "${dest}")
     INSTALL (
         FILES "${dest}"
@@ -110,6 +112,7 @@ FOREACH (base ${myfiles})
         "${dest_man}"
     )
 ENDFOREACH(base)
+EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/batch-preprocess-perl-source.pl" ${batch_list})
 
 FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/TheWML/Frontends/Wml/")
 PREPROCESS_PATH_PERL_WITH_FULL_NAMES("preprocess_perl_include_config" "${CMAKE_CURRENT_SOURCE_DIR}/TheWML/Config.pm.src" "${CMAKE_CURRENT_BINARY_DIR}/TheWML/Config.pm")
