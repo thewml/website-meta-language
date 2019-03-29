@@ -96,9 +96,6 @@
 /* Define to 1 if you have the `fgets_unlocked' function. */
 #cmakedefine HAVE_FGETS_UNLOCKED 1
 
-/* Define to 1 if you have the `getcwd' function. */
-#cmakedefine HAVE_GETCWD 1
-
 /* Define to 1 if you have the `getc_unlocked' function. */
 #cmakedefine HAVE_GETC_UNLOCKED 1
 

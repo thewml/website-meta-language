@@ -122,12 +122,7 @@ char *alloca ();
 # endif
 # define tfind __tfind
 #else
-# if !defined HAVE_GETCWD
-char *getwd ();
-#  define getcwd(buf, max) getwd (buf)
-# else
 char *getcwd ();
-# endif
 # ifndef HAVE_STPCPY
 static char *stpcpy PARAMS ((char *dest, const char *src));
 # endif

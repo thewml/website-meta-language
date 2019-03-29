@@ -41,7 +41,6 @@ SET (FUNCTIONS_TO_CHECK
     feof_unlocked
     fgets_unlocked
     getc_unlocked
-    getcwd
     getegid
     geteuid
     getgid
