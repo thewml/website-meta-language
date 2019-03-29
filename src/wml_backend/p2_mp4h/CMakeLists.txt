@@ -69,9 +69,6 @@ SET (FUNCTIONS_TO_CHECK
     stpcpy
     strcasecmp
     strerror
-    strrchr
-    strtol
-    strtoul
     tmpfile
     tsearch
     vprintf

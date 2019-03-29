@@ -510,12 +510,7 @@ _nl_load_domain (domain_file, domainbinding)
 	  nplurals += 9;
 	  while (*nplurals != '\0' && isspace (*nplurals))
 	    ++nplurals;
-#if defined HAVE_STRTOUL || defined _LIBC
 	  n = strtoul (nplurals, &endp, 10);
-#else
-	  for (endp = nplurals, n = 0; *endp >= '0' && *endp <= '9'; endp++)
-	    n = n * 10 + (*endp - '0');
-#endif
 	  domain->nplurals = n;
 	  if (nplurals == endp)
 	    goto no_plural;
