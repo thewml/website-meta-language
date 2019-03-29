@@ -363,11 +363,7 @@ char *ePerl_ReadErrorFile(char *filename, char *scriptfile, char *scripturl)
     cpBuf[nBuf] = '\0';
     for (cp = cpBuf; cp < cpBuf+nBuf; ) {
         if ((cp = strstr(cp, scriptfile)) != NULL) {
-#ifdef HAVE_MEMMOVE
             (void)memmove(cp+strlen(scripturl), cp+strlen(scriptfile), strlen(cp+strlen(scriptfile))+1);
-#else
-            (void)bcopy(cp+strlen(scriptfile), cp+strlen(scripturl), strlen(cp+strlen(scriptfile))+1);
-#endif
             (void)memcpy(cp, scripturl, strlen(scripturl));
             cp += strlen(scripturl);
             continue;

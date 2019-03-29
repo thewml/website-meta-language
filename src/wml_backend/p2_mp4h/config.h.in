@@ -58,12 +58,6 @@
 /* Define to 1 if you have the `argz_stringify' function. */
 #cmakedefine HAVE_ARGZ_STRINGIFY ${HAVE_ARGZ_STRINGIFY}
 
-/* Define to 1 if you have the <assert.h> header file. */
-#cmakedefine HAVE_ASSERT_H 1
-
-/* Define to 1 if you have the `bcopy' function. */
-#cmakedefine HAVE_BCOPY 1
-
 /* Define to 1 if you have the <ctype.h> header file. */
 #cmakedefine HAVE_CTYPE_H 1
 

@@ -71,11 +71,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #  include <argz.h>
 #endif
 
-#if HAVE_ASSERT_H
-#  include <assert.h>
-#else
-#  define assert(arg)	((void) 0)
-#endif
+#include <assert.h>
 
 #include "ltdl.h"
 
@@ -294,68 +290,6 @@ strrchr(str, ch)
 
 # endif
 #endif
-
-/* NOTE:  Neither bcopy nor the memcpy implementation below can
-          reliably handle copying in overlapping areas of memory.  Use
-          memmove (for which there is a fallback implmentation below)
-	  if you need that behaviour.  */
-#if ! HAVE_MEMCPY
-
-#  if HAVE_BCOPY
-#    define memcpy(dest, src, size)	bcopy (src, dest, size)
-#  else
-#    define memcpy rpl_memcpy
-
-static lt_ptr memcpy LT_PARAMS((lt_ptr dest, const lt_ptr src, size_t size));
-
-static lt_ptr
-memcpy (dest, src, size)
-     lt_ptr dest;
-     const lt_ptr src;
-     size_t size;
-{
-  size_t i = 0;
-
-  for (i = 0; i < size; ++i)
-    {
-      dest[i] = src[i];
-    }
-
-  return dest;
-}
-
-#  endif /* !HAVE_BCOPY */
-#endif   /* !HAVE_MEMCPY */
-
-#if ! HAVE_MEMMOVE
-#  define memmove rpl_memmove
-
-static lt_ptr memmove LT_PARAMS((lt_ptr dest, const lt_ptr src, size_t size));
-
-static lt_ptr
-memmove (dest, src, size)
-     lt_ptr dest;
-     const lt_ptr src;
-     size_t size;
-{
-  size_t i;
-
-  if (dest < src)
-    for (i = 0; i < size; ++i)
-      {
-	dest[i] = src[i];
-      }
-  else if (dest > src)
-    for (i = size -1; i >= 0; --i)
-      {
-	dest[i] = src[i];
-      }
-
-  return dest;
-}
-
-#endif /* !HAVE_MEMMOVE */
-
 
 /* According to Alexandre Oliva <oliva@lsd.ic.unicamp.br>,
     ``realloc is not entirely portable''
