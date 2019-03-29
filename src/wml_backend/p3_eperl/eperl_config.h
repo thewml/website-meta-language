@@ -56,9 +56,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_TIME_H
 #include <time.h>
-#endif
 #ifdef HAVE_SIGNAL_H
 #include <signal.h>
 #endif

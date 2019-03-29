@@ -61,7 +61,6 @@ SET (INCLUDE_FILES_TO_CHECK
     sys/param.h
     sys/socket.h
     sys/types.h
-    time.h
     unistd.h
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})

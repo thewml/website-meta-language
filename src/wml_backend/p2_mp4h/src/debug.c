@@ -31,12 +31,7 @@
 #include "mp4h.h"
 
 #include <sys/stat.h>
-
-#ifdef HAVE_STDARG_H
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 /* File for debugging output.  */
 FILE *debug = NULL;
@@ -242,17 +237,9 @@ debug_message_prefix (void)
 | function trace_format ().  Understands only %S, %s and %d.           |
 `---------------------------------------------------------------------*/
 
-#ifdef HAVE_STDARG_H
 static void
 trace_format (const char *fmt, ...)
-#else
-static void
-trace_format (...)
-#endif
 {
-#ifndef HAVE_STDARG_H
-  const char *fmt;
-#endif
   va_list args;
   char ch;
 
@@ -262,12 +249,7 @@ trace_format (...)
   int slen;
   int maxlen;
 
-#ifdef HAVE_STDARG_H
   va_start (args, fmt);
-#else
-  va_start (args);
-  fmt = va_arg (args, const char *);
-#endif
 
   while (TRUE)
     {

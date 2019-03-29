@@ -58,7 +58,7 @@ void xfree (void *p);
    The caller may set it to some other value.  */
 int xmalloc_exit_failure = EXIT_FAILURE;
 
-#if defined(HAVE_STDARG_H) && (defined(HAVE_VPRINTF) || defined(HAVE_DOPRNT))
+#if (defined(HAVE_VPRINTF) || defined(HAVE_DOPRNT))
 void error (int, int, const char *, ...);
 #else
 void error ();

@@ -23,7 +23,6 @@ SET (INCLUDE_FILES_TO_CHECK
     ndir.h
     nl/types.h
     pwd.h
-    stdarg.h
     stddef.h
     sys/dir.h
     sys/dl.h
@@ -31,7 +30,6 @@ SET (INCLUDE_FILES_TO_CHECK
     sys/param.h
     sys/times.h
     sys/types.h
-    time.h
     unistd.h
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})

@@ -58,15 +58,9 @@ extern void error_at_line (int, int, const char *,
 extern void (*error_print_progname) (void);
 
 #else
-# ifdef HAVE_STDARG_H
 void error (int, int, const char *, ...);
 void error_at_line (int, int, const char *, unsigned int, const char *, ...);
 extern void (*error_print_progname) (void);
-# else
-void error ();
-void error_at_line ();
-extern void (*error_print_progname) ();
-# endif
 #endif
 
 /* This variable is incremented each time `error' is called.  */
