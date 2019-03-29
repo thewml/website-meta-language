@@ -40,12 +40,8 @@
 # define va_dcl char *a1, *a2, *a3, *a4, *a5, *a6, *a7, *a8;
 #endif
 
-#if STDC_HEADERS || _LIBC
-# include <stdlib.h>
-# include <string.h>
-#else
-void exit ();
-#endif
+#include <stdlib.h>
+#include <string.h>
 
 #include "error.h"
 

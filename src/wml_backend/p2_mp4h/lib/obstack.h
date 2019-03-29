@@ -140,16 +140,8 @@ extern "C" {
 # endif
 #endif
 
-#if defined _LIBC || defined HAVE_STRING_H
-# include <string.h>
-# define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
-#else
-# ifdef memcpy
-#  define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
-# else
-#  define _obstack_memcpy(To, From, N) bcopy ((From), (To), (N))
-# endif
-#endif
+#include <string.h>
+#define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
 
 struct _obstack_chunk		/* Lives at front of each chunk. */
 {

@@ -40,15 +40,9 @@ extern int errno;
 # include <limits.h>
 #endif
 
-#ifdef STDC_HEADERS
-# include <stddef.h>
-# include <stdlib.h>
-# include <string.h>
-#else
-# ifndef NULL
-#  define NULL 0
-# endif
-#endif
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef USE_NUMBER_GROUPING
 # include "../locale/localeinfo.h"

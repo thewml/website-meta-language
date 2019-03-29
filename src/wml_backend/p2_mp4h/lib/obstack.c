@@ -91,7 +91,7 @@ void (*obstack_alloc_failed_handler) () = print_and_abort;
 #endif
 
 /* Exit value used when `print_and_abort' is used.  */
-#if defined __GNU_LIBRARY__ || defined HAVE_STDLIB_H
+#if defined __GNU_LIBRARY__
 #include <stdlib.h>
 #endif
 #ifndef EXIT_FAILURE

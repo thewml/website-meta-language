@@ -19,11 +19,7 @@
 # include <config.h>
 #endif
 
-#if defined(STDC_HEADERS) || defined(HAVE_STRING_H)
-# include <string.h>
-#else
-# include <strings.h>
-#endif
+#include <string.h>
 
 #if defined (__STDC__) && __STDC__
 char *xmalloc (size_t);

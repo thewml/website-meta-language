@@ -8,9 +8,6 @@ SET (PACKAGE_DATE "\"19-Jan-2008\"")
 
 CHECK_INCLUDE_FILE("dirent.h" HAVE_DIRENT_H)
 SET (LTDL_OBJDIR "./lt")
-# CHECK_INCLUDE_FILE("stdarg.h" HAVE_STDARG_H)
-# CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
-# CHECK_INCLUDE_FILE("stdio.h" HAVE_STDIO_H)
 
 SET (INCLUDE_FILES_TO_CHECK
     alloca.h
@@ -34,10 +31,6 @@ SET (INCLUDE_FILES_TO_CHECK
     stdarg.h
     stddef.h
     stdint.h
-    stdio.h
-    stdlib.h
-    string.h
-    strings.h
     strings.h
     sys/dir.h
     sys/dl.h
@@ -50,9 +43,6 @@ SET (INCLUDE_FILES_TO_CHECK
     unistd.h
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})
-
-SET (REQUIRED_STDC_HEADERS float.h string.h stdlib.h stdarg.h)
-CHECK_INCLUDE_FILES("${REQUIRED_STDC_HEADERS}" STDC_HEADERS)
 
 SET (FUNCTIONS_TO_CHECK
     __argz_count

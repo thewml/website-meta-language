@@ -59,10 +59,6 @@ SET (INCLUDE_FILES_TO_CHECK
     netinet/in.h
     pwd.h
     signal.h
-    stdarg.h
-    stdio.h
-    stdlib.h
-    string.h
     sys/param.h
     sys/socket.h
     sys/stat.h

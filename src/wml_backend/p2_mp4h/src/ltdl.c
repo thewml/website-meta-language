@@ -33,25 +33,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #  include <unistd.h>
 #endif
 
-#if HAVE_STDIO_H
-#  include <stdio.h>
-#endif
-
-#if HAVE_STDLIB_H
-#  include <stdlib.h>
-#endif
-
-#if HAVE_STRING_H
-#  include <string.h>
-#else
-#  if HAVE_STRINGS_H
-#    include <strings.h>
-#  endif
-#endif
-
-#if HAVE_CTYPE_H
-#  include <ctype.h>
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #if HAVE_MALLOC_H
 #  include <malloc.h>
