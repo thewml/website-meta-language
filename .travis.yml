@@ -20,6 +20,7 @@ cache:
     ccache: true
     directories:
         - $HOME/perl_modules
+        - $HOME/tidyall.d
 os: linux
 dist: xenial
 install:
@@ -31,4 +32,4 @@ language: perl
 script:
     - mkdir build
     - cd build
-    - WML_TEST_BUILD=1 WML_TEST_TIDY=1 perl ../src/wml_test/run_test.pl
+    - WML_TEST_BUILD=1 WML_TEST_TIDY=1 TIDYALL_DATA_DIR=$HOME/tidyall.d perl ../src/wml_test/run_test.pl
