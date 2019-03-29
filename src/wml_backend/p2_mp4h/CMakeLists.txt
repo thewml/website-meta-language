@@ -68,7 +68,6 @@ SET (FUNCTIONS_TO_CHECK
     setlocale
     stpcpy
     strcasecmp
-    strerror
     tmpfile
     tsearch
     vprintf

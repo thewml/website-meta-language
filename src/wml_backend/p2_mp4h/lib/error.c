@@ -85,25 +85,6 @@ extern char *program_name;
 
 # ifdef HAVE_STRERROR_R
 #  define __strerror_r strerror_r
-# else
-#  if HAVE_STRERROR
-#   ifndef strerror		/* On some systems, strerror is a macro */
-char *strerror ();
-#   endif
-#  else
-static char *
-private_strerror (errnum)
-     int errnum;
-{
-  extern char *sys_errlist[];
-  extern int sys_nerr;
-
-  if (errnum > 0 && errnum <= sys_nerr)
-    return _(sys_errlist[errnum]);
-  return _("Unknown system error");
-}
-#   define strerror private_strerror
-#  endif /* HAVE_STRERROR */
 # endif	/* HAVE_STRERROR_R */
 #endif	/* not _LIBC */
 
