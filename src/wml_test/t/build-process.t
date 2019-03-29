@@ -22,21 +22,19 @@ sub test_cmd
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     my ( $cmd, $blurb ) = @_;
 
-    my @cmd = ( ref($cmd) eq "ARRAY" ) ? @$cmd : $cmd;
-
     # These environment variables confuse the input for the harness.
     my $sys_ret = do
     {
         local %ENV = %ENV;
         delete( $ENV{HARNESS_VERBOSE} );
 
-        system(@cmd);
+        system(@$cmd);
     };
 
     if ( !ok( !$sys_ret, $blurb ) )
     {
         Carp::confess( "Command ["
-                . join( " ", ( map { qq/"$_"/ } @cmd ) )
+                . join( " ", ( map { qq/"$_"/ } @$cmd ) )
                 . "] failed! $!." );
     }
 }
