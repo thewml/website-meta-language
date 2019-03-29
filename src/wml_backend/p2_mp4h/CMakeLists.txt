@@ -62,8 +62,6 @@ SET (FUNCTIONS_TO_CHECK
     getuid
     iconv
     index
-    memcpy
-    memmove
     mempcpy
     mkstemp
     munmap
@@ -74,8 +72,6 @@ SET (FUNCTIONS_TO_CHECK
     setlocale
     stpcpy
     strcasecmp
-    strchr
-    strcmp
     strdup
     strerror
     strrchr

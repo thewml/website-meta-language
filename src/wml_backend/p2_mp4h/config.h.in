@@ -157,12 +157,6 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
 
-/* Define to 1 if you have the `memcpy' function. */
-#cmakedefine HAVE_MEMCPY 1
-
-/* Define to 1 if you have the `memmove' function. */
-#cmakedefine HAVE_MEMMOVE 1
-
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
 
@@ -226,12 +220,6 @@
 
 /* Define to 1 if you have the `strcasecmp' function. */
 #cmakedefine HAVE_STRCASECMP 1
-
-/* Define to 1 if you have the `strchr' function. */
-#cmakedefine HAVE_STRCHR 1
-
-/* Define to 1 if you have the `strcmp' function. */
-#cmakedefine HAVE_STRCMP 1
 
 /* Define to 1 if you have the `strdup' function. */
 #cmakedefine HAVE_STRDUP 1

@@ -26,9 +26,6 @@
 /*  define if libdmalloc.a is available */
 #undef HAVE_DMALLOC
 
-/* Define if you have the memmove function.  */
-#cmakedefine HAVE_MEMMOVE
-
 /* Define if you have the setegid function.  */
 #cmakedefine HAVE_SETEGID
 

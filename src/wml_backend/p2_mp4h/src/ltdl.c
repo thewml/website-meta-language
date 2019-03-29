@@ -199,62 +199,6 @@ strdup(str)
 }
 
 
-#if ! HAVE_STRCMP
-
-#undef strcmp
-#define strcmp rpl_strcmp
-
-static int strcmp LT_PARAMS((const char *str1, const char *str2));
-
-static int
-strcmp (str1, str2)
-     const char *str1;
-     const char *str2;
-{
-  if (str1 == str2)
-    return 0;
-  if (str1 == 0)
-    return -1;
-  if (str2 == 0)
-    return 1;
-
-  for (;*str1 && *str2; ++str1, ++str2)
-    {
-      if (*str1 != *str2)
-	break;
-    }
-
-  return (int)(*str1 - *str2);
-}
-#endif
-
-
-#if ! HAVE_STRCHR
-
-#  if HAVE_INDEX
-#    define strchr index
-#  else
-#    define strchr rpl_strchr
-
-static const char *strchr LT_PARAMS((const char *str, int ch));
-
-static const char*
-strchr(str, ch)
-     const char *str;
-     int ch;
-{
-  const char *p;
-
-  for (p = str; *p != (char)ch && *p != LT_EOS_CHAR; ++p)
-    /*NOWORK*/;
-
-  return (*p == (char)ch) ? p : 0;
-}
-
-#  endif
-#endif /* !HAVE_STRCHR */
-
-
 #if ! HAVE_STRRCHR
 
 #  if HAVE_RINDEX
