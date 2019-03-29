@@ -12,7 +12,7 @@ if ( !delete( $ENV{'WML_TEST_BUILD'} ) )
     plan skip_all => "Skipping because WML_TEST_BUILD is not set";
 }
 
-plan tests => 9;
+plan tests => 7;
 
 # Change directory to the Freecell Solver base distribution directory.
 my $src_path = path($0)->parent(3)->absolute;
@@ -77,23 +77,14 @@ sub test_cmd
     # archive. So we don't have to rename it.
 
     # TEST
-    test_cmd( [ "tar", "-xvf", $arc_name ], "Unpacking the arc name" );
+    test_cmd( [ "tar", "-xf", $arc_name ], "Unpacking the arc name" );
 
     # TEST
     ok( scalar( -d $base ), "The directory was created" );
 
-    my $orig_cwd = cwd;
-
     chdir($base);
-
     mkdir("build");
     chdir("build");
-
-    # TEST
-    test_cmd( [ "cmake", ".." ], "CMaking in the unpacked dir" );
-
-    # TEST
-    test_cmd( [ "make", "package_source" ] );
 
     local $ENV{WML_TEST_QUIET} = 1;
 
