@@ -46,12 +46,12 @@ if ( !defined($release) )
 my $dir = tempdir( CLEANUP => 1 );
 
 my $pod;
-if ( $src =~ m(/wml_include/) )
+if ( $src =~ m%/wml_include/% )
 {
     $pod = $src;
-    $pod =~ s(^.*/wml_include/)(wml::);
-    $pod =~ s(/)(::)g;
-    $pod =~ s(\.(src|pl|pm|pod)$)();
+    $pod =~ s%\A.*/wml_include/%wml::%ms;
+    $pod =~ s%/%::%g;
+    $pod =~ s%\.(?:src|pl|pm|pod)\z%%;
 }
 else
 {
