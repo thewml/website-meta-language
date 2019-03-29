@@ -221,9 +221,6 @@
 /* Define to 1 if you have the `strcasecmp' function. */
 #cmakedefine HAVE_STRCASECMP 1
 
-/* Define to 1 if you have the `strdup' function. */
-#cmakedefine HAVE_STRDUP 1
-
 /* Define to 1 if you have the `strerror' function. */
 #cmakedefine HAVE_STRERROR 1
 

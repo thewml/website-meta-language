@@ -35,21 +35,3 @@
 
 #include "eperl_config.h"
 
-
-/*  some systems (like Ultrix) don't not have a strdup() function :-( */
-#ifndef HAVE_STRDUP
-char *strdup(const char *str)
-{
-    size_t len;
-    char *copy;
-
-    len = strlen(str) + 1;
-    if ((copy = malloc(len)) == NULL)
-        return (NULL);
-    memcpy(copy, str, len);
-    return (copy);
-}
-#endif
-
-
-/*EOF*/

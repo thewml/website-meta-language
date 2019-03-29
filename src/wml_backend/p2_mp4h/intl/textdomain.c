@@ -63,9 +63,6 @@ extern const char *_nl_current_default_domain;
    prefix.  So we have to make a difference here.  */
 #ifdef _LIBC
 # define TEXTDOMAIN __textdomain
-# ifndef strdup
-#  define strdup(str) __strdup (str)
-# endif
 #else
 # define TEXTDOMAIN textdomain__
 #endif
@@ -107,14 +104,7 @@ TEXTDOMAIN (domainname)
       /* If the following malloc fails `_nl_current_default_domain'
 	 will be NULL.  This value will be returned and so signals we
 	 are out of core.  */
-#if defined _LIBC || defined HAVE_STRDUP
       new_domain = strdup (domainname);
-#else
-      size_t len = strlen (domainname) + 1;
-      new_domain = (char *) malloc (len);
-      if (new_domain != NULL)
-	memcpy (new_domain, domainname, len);
-#endif
 
       if (new_domain != NULL)
 	_nl_current_default_domain = new_domain;

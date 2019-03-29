@@ -72,7 +72,6 @@ SET (FUNCTIONS_TO_CHECK
     setlocale
     stpcpy
     strcasecmp
-    strdup
     strerror
     strrchr
     strtol

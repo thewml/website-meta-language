@@ -146,15 +146,6 @@ char *vsprintf (char *, char *, va_list);
 #endif
 
 /*
- *
- *  We can provide own functions...
- */
-#ifndef HAVE_STRDUP
-char *strdup(const char *str);
-#endif
-
-
-/*
 **
 **  OS Return Values
 **

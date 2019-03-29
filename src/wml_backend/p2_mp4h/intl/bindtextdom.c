@@ -73,9 +73,6 @@ __libc_rwlock_define (extern, _nl_state_lock)
 #ifdef _LIBC
 # define BINDTEXTDOMAIN __bindtextdomain
 # define BIND_TEXTDOMAIN_CODESET __bind_textdomain_codeset
-# ifndef strdup
-#  define strdup(str) __strdup (str)
-# endif
 #else
 # define BINDTEXTDOMAIN bindtextdomain__
 # define BIND_TEXTDOMAIN_CODESET bind_textdomain_codeset__
@@ -150,14 +147,7 @@ set_binding_values (domainname, dirnamep, codesetp)
 		    result = (char *) _nl_default_dirname;
 		  else
 		    {
-#if defined _LIBC || defined HAVE_STRDUP
 		      result = strdup (dirname);
-#else
-		      size_t len = strlen (dirname) + 1;
-		      result = (char *) malloc (len);
-		      if (__builtin_expect (result != NULL, 1))
-			memcpy (result, dirname, len);
-#endif
 		    }
 
 		  if (__builtin_expect (result != NULL, 1))
@@ -188,14 +178,7 @@ set_binding_values (domainname, dirnamep, codesetp)
 	      char *result = binding->codeset;
 	      if (result == NULL || strcmp (codeset, result) != 0)
 		{
-#if defined _LIBC || defined HAVE_STRDUP
 		  result = strdup (codeset);
-#else
-		  size_t len = strlen (codeset) + 1;
-		  result = (char *) malloc (len);
-		  if (__builtin_expect (result != NULL, 1))
-		    memcpy (result, codeset, len);
-#endif
 
 		  if (__builtin_expect (result != NULL, 1))
 		    {
@@ -246,17 +229,9 @@ set_binding_values (domainname, dirnamep, codesetp)
 	      else
 		{
 		  char *result;
-#if defined _LIBC || defined HAVE_STRDUP
 		  result = strdup (dirname);
 		  if (__builtin_expect (result == NULL, 0))
 		    goto failed_dirname;
-#else
-		  size_t len = strlen (dirname) + 1;
-		  result = (char *) malloc (len);
-		  if (__builtin_expect (result == NULL, 0))
-		    goto failed_dirname;
-		  memcpy (result, dirname, len);
-#endif
 		  dirname = result;
 		}
 	    }
@@ -277,17 +252,9 @@ set_binding_values (domainname, dirnamep, codesetp)
 	    {
 	      char *result;
 
-#if defined _LIBC || defined HAVE_STRDUP
 	      result = strdup (codeset);
 	      if (__builtin_expect (result == NULL, 0))
 		goto failed_codeset;
-#else
-	      size_t len = strlen (codeset) + 1;
-	      result = (char *) malloc (len);
-	      if (__builtin_expect (result == NULL, 0))
-		goto failed_codeset;
-	      memcpy (result, codeset, len);
-#endif
 	      codeset = result;
 	      new_binding->codeset_cntr++;
 	    }
