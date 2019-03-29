@@ -29,7 +29,6 @@ SET (INCLUDE_FILES_TO_CHECK
     sys/dl.h
     sys/ndir.h
     sys/param.h
-    sys/stat.h
     sys/times.h
     sys/types.h
     time.h

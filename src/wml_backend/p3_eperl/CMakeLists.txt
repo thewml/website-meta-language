@@ -60,7 +60,6 @@ SET (INCLUDE_FILES_TO_CHECK
     signal.h
     sys/param.h
     sys/socket.h
-    sys/stat.h
     sys/types.h
     time.h
     unistd.h
