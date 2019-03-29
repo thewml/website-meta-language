@@ -1,5 +1,6 @@
 # @(#)yaccpar 1.8 (Berkeley) 01/20/91 (JAKE-P5BP-0.6 04/26/98)
 package SliceTermParser;
+
 ;##
 ;##  slice_term.y -- YACC parser for slice terms
 ;##  Copyright (c) 1997-2002 Ralf S. Engelschall.
