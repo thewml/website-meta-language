@@ -2,15 +2,14 @@
 
 use strict;
 use warnings;
+use autodie;
 
 use Getopt::Long qw/ GetOptions /;
 use Path::Tiny qw/ cwd path /;
 
 sub do_system
 {
-    my ($args) = @_;
-
-    my $cmd = $args->{cmd};
+    my $cmd = shift;
     print "Running [@$cmd]\n";
     if ( system(@$cmd) )
     {
@@ -44,13 +43,11 @@ if ( !-e $myprefix )
     $build_dir->remove_tree;
     if (
         do_system(
-            {
-                cmd => [
+            [
 "mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
-                        . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
-                        . " --prefix=$myprefix && $MAKE VERBOSE=1 && $MAKE package_source && $MAKE install"
-                ]
-            }
+                    . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
+                    . " --prefix=$myprefix && $MAKE VERBOSE=1 && $MAKE package_source && $MAKE install"
+            ]
         )
         )
     {
@@ -68,9 +65,9 @@ $ENV{LANG}                  = $ENV{LC_ALL} = 'C';
 
 chdir($script_dir);
 
-do_system( { cmd => [ 'which',      'perlcritic' ] } );
-do_system( { cmd => [ 'bash',       '-c', q{echo "$PATH"}, ] } );
-do_system( { cmd => [ 'perlcritic', '--version', ] } );
+do_system( [ 'which',      'perlcritic' ] );
+do_system( [ 'bash',       '-c', q{echo "$PATH"}, ] );
+do_system( [ 'perlcritic', '--version', ] );
 if ($is_interactive)
 {
     system("bash");
@@ -78,13 +75,11 @@ if ($is_interactive)
 else
 {
     do_system(
-        {
-            cmd => [
-                'prove',
-                ( $ENV{WML_TEST_QUIET} ? () : ('-v') ),
-                glob( 't' . $SEP . '*.t' ),
-            ],
-        }
+        [
+            'prove',
+            ( $ENV{WML_TEST_QUIET} ? () : ('-v') ),
+            glob( 't' . $SEP . '*.t' ),
+        ],
     );
 }
 
