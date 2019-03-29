@@ -38,9 +38,6 @@
 /* Define if you have the strdup function.  */
 #cmakedefine HAVE_STRDUP
 
-/* Define if you have the <ctype.h> header file.  */
-#cmakedefine HAVE_CTYPE_H
-
 /* Define if you have the <grp.h> header file.  */
 #cmakedefine HAVE_GRP_H
 
