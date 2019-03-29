@@ -38,17 +38,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #include <string.h>
 #include <ctype.h>
 
-#if HAVE_MALLOC_H
-#  include <malloc.h>
-#endif
-
 #if HAVE_MEMORY_H
 #  include <memory.h>
 #endif
 
-#if HAVE_ERRNO_H
-#  include <errno.h>
-#endif
+#include <errno.h>
 
 #if HAVE_DIRENT_H
 #  include <dirent.h>

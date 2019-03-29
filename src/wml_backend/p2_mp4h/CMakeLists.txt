@@ -16,11 +16,9 @@ SET (INCLUDE_FILES_TO_CHECK
     dld.h
     dlfcn.h
     dl.h
-    errno.h
     grp.h
     inttypes.h
     locale.h
-    malloc.h
     memory.h
     ndir.h
     nl/types.h
