@@ -111,7 +111,7 @@ FOREACH (base ${myfiles})
         "3"
         "${dest_man}"
     )
-ENDFOREACH(base)
+ENDFOREACH()
 EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/batch-preprocess-perl-source.pl" ${batch_list})
 
 FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/TheWML/Frontends/Wml/")

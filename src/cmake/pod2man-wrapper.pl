@@ -66,12 +66,6 @@ if ( !-e $src )
 copy( $src, "$dir/$pod" );
 chdir($dir);
 
-if (
-    system(
-        'pod2man',            "--section=$sect", "--center=$center",
-        "--release=$release", $pod,              $dest
-    )
-    )
-{
-    die "pod2man failed! $!";
-}
+use Pod::Man ();
+Pod::Man->new( section => $sect, center => $center, release => $release )
+    ->parse_from_file( $pod, $dest )
