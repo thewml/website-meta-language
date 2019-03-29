@@ -46,7 +46,7 @@ if ( !-e $myprefix )
         do_system(
             {
                 cmd => [
-"cd . && mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
+"mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
                         . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
                         . " --prefix=$myprefix && $MAKE VERBOSE=1 && $MAKE package_source && $MAKE install"
                 ]
