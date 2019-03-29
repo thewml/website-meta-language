@@ -25,7 +25,6 @@ SET (INCLUDE_FILES_TO_CHECK
     pwd.h
     stdarg.h
     stddef.h
-    stdint.h
     sys/dir.h
     sys/dl.h
     sys/ndir.h

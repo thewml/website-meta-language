@@ -196,13 +196,6 @@
 /* Define to 1 if you have the <stddef.h> header file. */
 #cmakedefine HAVE_STDDEF_H 1
 
-/* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine HAVE_STDINT_H 1
-
-/* Define if <stdint.h> exists, doesn't clash with <sys/types.h>, and declares
-   uintmax_t. */
-#undef HAVE_STDINT_H_WITH_UINTMAX
-
 /* Define to 1 if you have the `stpcpy' function. */
 #cmakedefine HAVE_STPCPY 1
 
@@ -360,16 +353,3 @@
 typedef int error_t;
 #endif
 
-/* Define as `__inline' if that's what the C compiler calls it, or to nothing
-   if it is not supported. */
-#undef inline
-
-/* Define to `long' if <sys/types.h> does not define. */
-#undef off_t
-
-/* Define to `unsigned' if <sys/types.h> does not define. */
-#undef size_t
-
-/* Define to unsigned long or unsigned long long if <inttypes.h> and
-   <stdint.h> don't define. */
-#undef uintmax_t
