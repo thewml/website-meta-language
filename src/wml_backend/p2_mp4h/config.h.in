@@ -132,13 +132,6 @@
 /* Define if you have the iconv() function. */
 #cmakedefine HAVE_ICONV 1
 
-/* Define if <inttypes.h> exists and doesn't clash with <sys/types.h>. */
-#cmakedefine HAVE_INTTYPES_H 1
-
-/* Define if <inttypes.h> exists, doesn't clash with <sys/types.h>, and
-   declares uintmax_t. */
-#undef HAVE_INTTYPES_H_WITH_UINTMAX
-
 /* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
 #undef HAVE_LANGINFO_CODESET
 
@@ -172,9 +165,6 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #cmakedefine HAVE_NDIR_H 1
 
-/* Define to 1 if you have the <nl_types.h> header file. */
-#cmakedefine HAVE_NL_TYPES_H 1
-
 /* Define to 1 if you have the `obstack' function. */
 #cmakedefine HAVE_OBSTACK 1
 
@@ -189,9 +179,6 @@
 
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD
-
-/* Define to 1 if you have the <stddef.h> header file. */
-#cmakedefine HAVE_STDDEF_H 1
 
 /* Define to 1 if you have the `stpcpy' function. */
 #cmakedefine HAVE_STPCPY 1
@@ -212,9 +199,6 @@
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #cmakedefine HAVE_SYS_PARAM_H 1
-
-/* Define to 1 if you have the <sys/times.h> header file. */
-#cmakedefine HAVE_SYS_TIMES_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #cmakedefine HAVE_SYS_TYPES_H 1
@@ -298,9 +282,6 @@
 
 /* Define to the version of this package. */
 #cmakedefine PACKAGE_VERSION @PACKAGE_VERSION@
-
-/* Define if <inttypes.h> exists and defines unusable PRI* macros. */
-#undef PRI_MACROS_BROKEN
 
 /* Define if compiler has function prototypes */
 #undef PROTOTYPES

@@ -132,12 +132,8 @@ extern "C" {
 #ifdef __PTRDIFF_TYPE__
 # define PTR_INT_TYPE __PTRDIFF_TYPE__
 #else
-# ifdef HAVE_STDDEF_H
 #  include <stddef.h>
 #  define PTR_INT_TYPE ptrdiff_t
-# else
-#  define PTR_INT_TYPE long
-# endif
 #endif
 
 #include <string.h>

@@ -23,10 +23,7 @@
 # include <config.h>
 #endif
 
-#if HAVE_STDDEF_H
-# include <stddef.h>
-#endif
-
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

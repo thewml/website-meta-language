@@ -17,18 +17,14 @@ SET (INCLUDE_FILES_TO_CHECK
     dlfcn.h
     dl.h
     grp.h
-    inttypes.h
     locale.h
     memory.h
     ndir.h
-    nl/types.h
     pwd.h
-    stddef.h
     sys/dir.h
     sys/dl.h
     sys/ndir.h
     sys/param.h
-    sys/times.h
     sys/types.h
     unistd.h
     )

@@ -17,7 +17,4 @@
 #cmakedefine USE_SLCURSES
 #cmakedefine USE_CURSES
 
-/* Define if you have the <stddef.h> header file.  */
-#cmakedefine HAVE_STDDEF_H
-
 #endif /* CONFIG_AC_H */
