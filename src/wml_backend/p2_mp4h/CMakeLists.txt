@@ -12,7 +12,6 @@ SET (LTDL_OBJDIR "./lt")
 SET (INCLUDE_FILES_TO_CHECK
     alloca.h
     argz.h
-    dirent.h
     dld.h
     dlfcn.h
     dl.h
@@ -21,9 +20,7 @@ SET (INCLUDE_FILES_TO_CHECK
     memory.h
     ndir.h
     pwd.h
-    sys/dir.h
     sys/dl.h
-    sys/ndir.h
     sys/param.h
     sys/types.h
     unistd.h

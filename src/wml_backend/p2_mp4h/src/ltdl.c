@@ -50,12 +50,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #else
 #  define dirent direct
 #  define LT_D_NAMLEN(dirent) ((dirent)->d_namlen)
-#  if HAVE_SYS_NDIR_H
-#    include <sys/ndir.h>
-#  endif
-#  if HAVE_SYS_DIR_H
-#    include <sys/dir.h>
-#  endif
 #  if HAVE_NDIR_H
 #    include <ndir.h>
 #  endif
