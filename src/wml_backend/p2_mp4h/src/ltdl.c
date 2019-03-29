@@ -199,36 +199,6 @@ strdup(str)
 }
 
 
-#if ! HAVE_STRRCHR
-
-#  if HAVE_RINDEX
-#    define strrchr rindex
-#  else
-#    define strrchr rpl_strrchr
-
-static const char *strrchr LT_PARAMS((const char *str, int ch));
-
-static const char*
-strrchr(str, ch)
-     const char *str;
-     int ch;
-{
-  const char *p, *q = 0;
-
-  for (p = str; *p != LT_EOS_CHAR; ++p)
-    {
-      if (*p == (char) ch)
-	{
-	  q = p;
-	}
-    }
-
-  return q;
-}
-
-# endif
-#endif
-
 /* According to Alexandre Oliva <oliva@lsd.ic.unicamp.br>,
     ``realloc is not entirely portable''
    In any case we want to use the allocator supplied by the user without

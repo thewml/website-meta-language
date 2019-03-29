@@ -40,9 +40,7 @@
 char * getenv ();
 
 /*
-**
 **  own setenv() function which works with Perl
-**
 */
 
 extern char **environ;

@@ -184,17 +184,8 @@
 /* Define if libtool can extract symbol lists from object files. */
 #undef HAVE_PRELOADED_SYMBOLS
 
-/* Define to 1 if you have the `putenv' function. */
-#cmakedefine HAVE_PUTENV 1
-
 /* Define to 1 if you have the <pwd.h> header file. */
 #cmakedefine HAVE_PWD_H 1
-
-/* Define to 1 if you have the `rindex' function. */
-#cmakedefine HAVE_RINDEX 1
-
-/* Define to 1 if you have the `setenv' function. */
-#cmakedefine HAVE_SETENV 1
 
 /* Define to 1 if you have the `setlocale' function. */
 #cmakedefine HAVE_SETLOCALE 1

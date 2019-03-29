@@ -66,9 +66,6 @@ SET (FUNCTIONS_TO_CHECK
     mkstemp
     munmap
     obstack
-    putenv
-    rindex
-    setenv
     setlocale
     stpcpy
     strcasecmp
