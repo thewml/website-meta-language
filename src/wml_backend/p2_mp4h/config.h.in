@@ -132,9 +132,6 @@
 /* Define if you have the iconv() function. */
 #cmakedefine HAVE_ICONV 1
 
-/* Define to 1 if you have the `index' function. */
-#cmakedefine HAVE_INDEX 1
-
 /* Define if <inttypes.h> exists and doesn't clash with <sys/types.h>. */
 #cmakedefine HAVE_INTTYPES_H 1
 

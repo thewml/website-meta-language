@@ -61,7 +61,6 @@ SET (FUNCTIONS_TO_CHECK
     getpwuid
     getuid
     iconv
-    index
     mempcpy
     mkstemp
     munmap
