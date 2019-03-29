@@ -24,7 +24,6 @@
 #ifdef _LIBC
 # define USE_NUMBER_GROUPING
 # define STDC_HEADERS
-# define HAVE_LIMITS_H
 #endif
 
 #include <ctype.h>
@@ -36,9 +35,7 @@ extern int errno;
 # define __set_errno(Val) errno = (Val)
 #endif
 
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
+#include <limits.h>
 
 #include <stddef.h>
 #include <stdlib.h>

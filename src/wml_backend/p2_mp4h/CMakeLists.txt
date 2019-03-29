@@ -19,7 +19,6 @@ SET (INCLUDE_FILES_TO_CHECK
     errno.h
     grp.h
     inttypes.h
-    limits.h
     locale.h
     malloc.h
     memory.h
@@ -29,7 +28,6 @@ SET (INCLUDE_FILES_TO_CHECK
     stdarg.h
     stddef.h
     stdint.h
-    strings.h
     sys/dir.h
     sys/dl.h
     sys/ndir.h

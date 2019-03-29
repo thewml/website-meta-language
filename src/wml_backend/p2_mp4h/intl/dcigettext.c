@@ -147,13 +147,7 @@ static void *mempcpy PARAMS ((void *dest, const void *src, size_t n));
 /* Amount to increase buffer size by in each try.  */
 #define PATH_INCR 32
 
-/* The following is from pathmax.h.  */
-/* Non-POSIX BSD systems might have gcc's limits.h, which doesn't define
-   PATH_MAX but might cause redefinition warnings when sys/param.h is
-   later included (as on MORE/BSD 4.3).  */
-#if defined _POSIX_VERSION || (defined HAVE_LIMITS_H && !defined __GNUC__)
-# include <limits.h>
-#endif
+#include <limits.h>
 
 #ifndef _POSIX_PATH_MAX
 # define _POSIX_PATH_MAX 255
