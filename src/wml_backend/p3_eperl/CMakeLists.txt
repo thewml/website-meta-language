@@ -67,10 +67,14 @@ SET (FUNCTIONS_TO_CHECK
     )
 CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
+set(readme_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_readme")
+set(readme_c "${readme_cc}.c")
+set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/README")
 
 SET (SOURCES
     ${CMAKE_SOURCE_DIR}/lib/getopt.c
     ${CMAKE_SOURCE_DIR}/lib/getopt1.c
+   "${readme_c}"
     eperl_config.c
     eperl_debug.c
     eperl_http.c
@@ -81,9 +85,13 @@ SET (SOURCES
     eperl_perl5.c
     eperl_powered.c
     eperl_pp.c
-    eperl_readme.c
     eperl_sys.c
     eperl_version.c
+)
+ADD_CUSTOM_COMMAND(
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "ePerl_README"
+    OUTPUT "${readme_c}"
+    DEPENDS ${readme_s}
 )
 
 SET(EXE "eperl")
