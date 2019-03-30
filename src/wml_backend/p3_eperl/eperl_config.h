@@ -57,9 +57,7 @@
 #include <unistd.h>
 #endif
 #include <time.h>
-#ifdef HAVE_SIGNAL_H
 #include <signal.h>
-#endif
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
