@@ -114,28 +114,21 @@
 #define ASC_NL    ASC_LF
 #define NL        ASC_NL
 
-/*   define the boolean values in a general and
- *   portable way.
- */
-#undef  TRUE
-#define TRUE  (0 || !(0))
-#undef  FALSE
-#define FALSE (!(TRUE))
-/* typedef enum { false = FALSE, true = TRUE } bool; */
+#include <stdbool.h>
 
 /*   some other names for true and false */
-#define YES   TRUE
-#define NO    FALSE
+#define YES   true
+#define NO    false
 
-#define GOOD  TRUE
-#define WRONG FALSE
+#define GOOD  true
+#define WRONG false
 
 #undef  OK
-#define OK    TRUE
-#define BAD   FALSE
+#define OK    true
+#define BAD   false
 
-#define SOME  TRUE
-#define NONE  FALSE
+#define SOME  true
+#define NONE  false
 
 /*
  *   define NULL if not already defined

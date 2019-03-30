@@ -161,16 +161,16 @@ char *iSelect_InputField(int wYSize, int wXSize, int wYPos, int wXPos, int bAllo
     cpBuf = caBuf;
 
     wField = newwin(wYSize, wXSize, wYPos, wXPos);
-    keypad(wField, TRUE);
-    scrollok(wField, FALSE);
+    keypad(wField, true);
+    scrollok(wField, false);
 
     nScrCurPos = 0;
     nBufCurPos = 0;
     nBufEnd = 0;
-    bEOI = FALSE;
+    bEOI = false;
 
     wmove(wField, 0, nScrCurPos);
-    while (bEOI == FALSE) {
+    while (bEOI == false) {
         c = wgetch(wField);
         if (c >= KEY_MIN && c <= KEY_MAX) {
             /* NOP */
@@ -185,11 +185,11 @@ char *iSelect_InputField(int wYSize, int wXSize, int wYPos, int wXPos, int bAllo
                     if (nBufEnd == 0 && !bAllowEmpty)
                         continue;
                     cpBuf[nBufEnd] = '\0';
-                    bEOI = TRUE;
+                    bEOI = true;
                 }
                 else if (c == 0x1b) { /* ESCAPE */
                     strcpy(caBuf, "ESC");
-                    bEOI = TRUE;
+                    bEOI = true;
                 }
                 else if (c == 0x04) { /* DELETE */
                     waddch(wField, '?');
@@ -374,7 +374,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     int nRelFirstDraw, nRelLastDraw;  /* relative first & last line inside output buffer */
     int c;
     int bEOI;
-    int bQuit = FALSE;
+    int bQuit = false;
     int y;
     int x;
     char msg[1024];
@@ -394,8 +394,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     werase(wField);
     crmode();
     noecho();
-    keypad(wField, TRUE);
-    scrollok(wField, FALSE);
+    keypad(wField, true);
+    scrollok(wField, false);
 
     /*
      *  Status field
@@ -459,10 +459,10 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     }
 
 
-    ok = FALSE;
+    ok = false;
     for (i = nFirstLine; i < nLastLine; i++) {
         if (spaLines[i]->fSelectable) {
-            ok = TRUE;
+            ok = true;
             break;
         }
     }
@@ -470,8 +470,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
         strcpy(msg, "WARNING! No lines selectable.");
 
 
-    bEOI = FALSE;
-    while (bEOI == FALSE) {
+    bEOI = false;
+    while (bEOI == false) {
          iSelect_Draw(wField,
                       wYSize, wXSize, wYPos, wXPos,
                       nAbsFirstLine, nAbsLastLine,
@@ -580,14 +580,14 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                  */
                 if (c == '\n' || c == '\r') {      /* RETURN */
                     if (spaLines[nAbsFirstLine+nRelMarked]->fSelectable) {
-                        spaLines[nAbsFirstLine+nRelMarked]->fSelected = TRUE;
-                        bEOI = TRUE;
+                        spaLines[nAbsFirstLine+nRelMarked]->fSelected = true;
+                        bEOI = true;
                     }
                     else {
                         if (multiselect) {
                             for (i = 0; i < nLines; i++) {
                                 if (spaLines[i]->fSelected) {
-                                    bEOI = TRUE;
+                                    bEOI = true;
                                     break;
                                 }
                             }
@@ -600,10 +600,10 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                     }
 
                     /* additionally ask for query strings */
-                    if (bEOI == TRUE) {
+                    if (bEOI == true) {
                         cp = spaLines[nAbsFirstLine+nRelMarked]->cpResult;
                         cp2 = ca;
-                        while (bEOI == TRUE && *cp != NUL) {
+                        while (bEOI == true && *cp != NUL) {
                             if (strnEQ(cp, "%[", 2)) {
                                 cp += 2;
                                 for (cp3 = cp; !strniEQ(cp3, "]s", 2); cp3++)
@@ -612,9 +612,9 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                                 ca3[cp3-cp] = NUL;
                                 cp = cp3+1;
                                 if (*cp == 's')
-                                    bAllowEmpty = TRUE;
+                                    bAllowEmpty = true;
                                 else
-                                    bAllowEmpty = FALSE;
+                                    bAllowEmpty = false;
                                 cp++;
 
                                 sprintf(msg, "%s: ", ca3);
@@ -622,8 +622,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                                 wrefresh(wField);
                                 cp3 = iSelect_InputField(mYSize, mXSize-strlen(msg), mYPos, mXPos+strlen(msg), bAllowEmpty);
                                 if (strEQ(cp3, "ESC")) {
-                                    bEOI = FALSE;
-                                    spaLines[nAbsFirstLine+nRelMarked]->fSelected = FALSE;
+                                    bEOI = false;
+                                    spaLines[nAbsFirstLine+nRelMarked]->fSelected = false;
                                     strcpy(msg, "Selection cancelled.");
                                     continue;
                                 }
@@ -635,7 +635,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                                 *cp2++ = *cp++;
                             }
                         }
-                        if (bEOI == TRUE) {
+                        if (bEOI == true) {
                             *cp2 = NUL;
                             if (strNE(spaLines[nAbsFirstLine+nRelMarked]->cpResult, ca))
                                 spaLines[nAbsFirstLine+nRelMarked]->cpResult = strdup(ca);
@@ -650,10 +650,10 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                  if (c == ' ') {
                      if (multiselect) {
                          if (spaLines[nAbsFirstLine+nRelMarked]->fSelectable) {
-                             if (spaLines[nAbsFirstLine+nRelMarked]->fSelected == FALSE)
-                                 spaLines[nAbsFirstLine+nRelMarked]->fSelected = TRUE;
+                             if (spaLines[nAbsFirstLine+nRelMarked]->fSelected == false)
+                                 spaLines[nAbsFirstLine+nRelMarked]->fSelected = true;
                              else
-                                 spaLines[nAbsFirstLine+nRelMarked]->fSelected = FALSE;
+                                 spaLines[nAbsFirstLine+nRelMarked]->fSelected = false;
                          }
                          else {
                              strcpy(msg, "Line not selectable.");
@@ -664,8 +664,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                      }
                  }
                  else if (c == 'q') {
-                     bEOI = TRUE;
-                     bQuit = TRUE;
+                     bEOI = true;
+                     bQuit = true;
                  }
                  else if (c == 'g') {
                      if (nAbsFirstLine+nRelMarked == nFirstLine) {
@@ -853,20 +853,20 @@ int iSelect(char *caBuf, int pos, char *title, char *name,
                     CU(EX_FAIL);
                 }
                 spLine->cpLine = strdup(ca);
-                spLine->fSelectable = TRUE;
+                spLine->fSelectable = true;
                 spLine->cpResult = strdup(ca2);
             }
             else {
                 /*  is normal plain text line  */
                 spLine->cpLine = strdup(ca);
                 if (allselectable)
-                    spLine->fSelectable = TRUE;
+                    spLine->fSelectable = true;
                 else
-                    spLine->fSelectable = FALSE;
+                    spLine->fSelectable = false;
                 spLine->cpResult = strdup(ca);
             }
 
-            spLine->fSelected = FALSE;
+            spLine->fSelected = false;
             if (stripws)
                 strip(spLine->cpResult);
             spaLines[nLines++] = spLine;
@@ -885,15 +885,15 @@ int iSelect(char *caBuf, int pos, char *title, char *name,
     if (!browsealways && nLines == 0)
         CU(-1);
     if (!browsealways && nLines == 1) {
-        spaLines[0]->fSelected = TRUE;
+        spaLines[0]->fSelected = true;
         CU(0);
     }
 
     if (exitnoselect) {
-        ok = FALSE;
+        ok = false;
         for (i = 0; i < nLines; i++) {
             if (spaLines[i]->fSelectable) {
-                ok = TRUE;
+                ok = true;
                 break;
             }
         }

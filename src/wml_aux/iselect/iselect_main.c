@@ -90,22 +90,22 @@ void give_usage(char *name)
 }
 
 struct option options[] = {
-    { "strip-comments",  FALSE, NULL, 'c'  },
-    { "force-browse",    FALSE, NULL, 'f'  },
-    { "all-select",      FALSE, NULL, 'a'  },
-    { "exit-no-select",  FALSE, NULL, 'e'  },
-    { "position",        TRUE,  NULL, 'p'  },
-    { "key",             TRUE,  NULL, 'k'  },
-    { "multi-line",      FALSE, NULL, 'm'  },
-    { "name",            TRUE,  NULL, 'n'  },
-    { "title",           TRUE,  NULL, 't'  },
-    { "strip-result",    FALSE, NULL, 'S'  },
-    { "position-result", FALSE, NULL, 'P'  },
-    { "key-result",      FALSE, NULL, 'K'  },
-    { "quit-result",     TRUE,  NULL, 'Q'  },
-    { "version",         FALSE, NULL, 'V'  },
-    { "help",            FALSE, NULL, 'h'  },
-    { NULL,              FALSE, NULL, '\0' },
+    { "strip-comments",  false, NULL, 'c'  },
+    { "force-browse",    false, NULL, 'f'  },
+    { "all-select",      false, NULL, 'a'  },
+    { "exit-no-select",  false, NULL, 'e'  },
+    { "position",        true,  NULL, 'p'  },
+    { "key",             true,  NULL, 'k'  },
+    { "multi-line",      false, NULL, 'm'  },
+    { "name",            true,  NULL, 'n'  },
+    { "title",           true,  NULL, 't'  },
+    { "strip-result",    false, NULL, 'S'  },
+    { "position-result", false, NULL, 'P'  },
+    { "key-result",      false, NULL, 'K'  },
+    { "quit-result",     true,  NULL, 'Q'  },
+    { "version",         false, NULL, 'V'  },
+    { "help",            false, NULL, 'h'  },
+    { NULL,              false, NULL, '\0' },
 };
 
 char caBuf[MAXBUF];
@@ -122,14 +122,14 @@ int main(int argc, char **argv)
     char ca[1024];
     char *title = "";
     char *name = "iSelect";
-    int stripco = FALSE;
-    int stripws = FALSE;
-    int resultline = FALSE;
-    int keyresultline = FALSE;
-    int browsealways = FALSE;
-    int allselectable = FALSE;
-    int multiselect = FALSE;
-    int exitnoselect = FALSE;
+    int stripco = false;
+    int stripws = false;
+    int resultline = false;
+    int keyresultline = false;
+    int browsealways = false;
+    int allselectable = false;
+    int multiselect = false;
+    int exitnoselect = false;
     int i;
     char *keystr;
     char *abortstr = NULL;
@@ -164,16 +164,16 @@ int main(int argc, char **argv)
 				tagend = cp;
                 break;
             case 'c':
-                stripco = TRUE;
+                stripco = true;
                 break;
             case 'f':
-                browsealways = TRUE;
+                browsealways = true;
                 break;
             case 'a':
-                allselectable = TRUE;
+                allselectable = true;
                 break;
             case 'e':
-                exitnoselect = TRUE;
+                exitnoselect = true;
                 break;
             case 'p':
                 pos = atoi(optarg);
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
                 configure_custom_key(optarg);
                 break;
             case 'm':
-                multiselect = TRUE;
+                multiselect = true;
                 break;
             case 'n':
                 name = strdup(optarg);
@@ -191,13 +191,13 @@ int main(int argc, char **argv)
                 title = strdup(optarg);
                 break;
             case 'S':
-                stripws = TRUE;
+                stripws = true;
                 break;
             case 'P':
-                resultline = TRUE;
+                resultline = true;
                 break;
             case 'K':
-                keyresultline = TRUE;
+                keyresultline = true;
                 break;
             case 'Q':
                 abortstr = strdup(optarg);
