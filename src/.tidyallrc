@@ -6,5 +6,5 @@ ignore =
 [PerlCritic]
 ; select = **/*.{pl,pm,t}
 ; ignore = **/*
-select = **/*.t wml_include/**/*.pm
+select = **/*.t wml_include/**/*.pm wml*/**/*.pl
 ignore =
