@@ -120,9 +120,6 @@
 /* Define to 1 if you have the `getuid' function. */
 #cmakedefine HAVE_GETUID 1
 
-/* Define to 1 if you have the <grp.h> header file. */
-#cmakedefine HAVE_GRP_H 1
-
 /* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
 #undef HAVE_LANGINFO_CODESET
 

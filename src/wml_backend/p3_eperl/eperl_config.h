@@ -61,9 +61,7 @@
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
-#ifdef HAVE_GRP_H
 #include <grp.h>
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef HAVE_SYS_PARAM_H
@@ -75,9 +73,7 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
-#ifdef HAVE_NETDB_H
 #include <netdb.h>
-#endif
 
 
 /*
@@ -86,56 +82,6 @@
 **  They are needed to get a clean compile with gcc -Wall.
 **
 */
-
-/*
- *  Believe it or not, these do have to be declared, at least on SunOS,
- *  because they aren't mentioned in the relevant system headers.
- *  Sun Quality Software.  Gotta love it.
- */
-#ifdef SUNOS_LIB_PROTOTYPES
-int getopt (int, char **, char *);
-int strcasecmp (char *, char *);
-int strncasecmp (char *, char *, int);
-int toupper(int);
-int tolower(int);
-int printf (char *, ...);
-int fprintf (FILE *, char *, ...);
-int fputs (char *, FILE *);
-int fread (char *, int, int, FILE *);
-int fwrite (char *, int, int, FILE *);
-int fflush (FILE *);
-int fclose (FILE *);
-int ungetc (int, FILE *);
-int _filbuf (FILE *);       /* !!! */
-int _flsbuf (unsigned char, FILE *); /* !!! */
-int sscanf (char *, char *, ...);
-void setbuf (FILE *, char *);
-void perror (char *);
-time_t time (time_t *);
-int strftime (char *, int, char *, struct tm *);
-int initgroups (char *, int);
-int wait3 (int *, int, void*);  /* Close enough for us... */
-int lstat (const char *, struct stat *);
-int stat (const char *, struct stat *);
-int flock (int, int);
-#ifndef NO_KILLPG
-int killpg(int, int);
-#endif
-int socket (int, int, int);
-int setsockopt (int, int, int, const char*, int);
-int listen (int, int);
-int bind (int, struct sockaddr *, int);
-int connect (int, struct sockaddr *, int);
-int accept (int, struct sockaddr *, int *);
-int shutdown (int, int);
-int getsockname (int s, struct sockaddr *name, int *namelen);
-int getpeername (int s, struct sockaddr *name, int *namelen);
-int gethostname (char *name, int namelen);
-void syslog (int, char *, ...);
-char *mktemp (char *);
-long vfprintf (FILE *, char *, va_list);
-char *vsprintf (char *, char *, va_list);
-#endif
 
 /*
 **

@@ -35,7 +35,7 @@
 
 #if defined(HAVE_DIRENT_H) && \
     defined(HAVE_PWD_H) && \
-    defined(HAVE_GRP_H) && defined(HAVE_SYS_PARAM_H)
+    defined(HAVE_SYS_PARAM_H)
 #define HAVE_FILE_FUNCS 1
 #else
 #undef HAVE_FILE_FUNCS

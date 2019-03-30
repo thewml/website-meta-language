@@ -53,8 +53,6 @@ CHOMP(build_user)
 CHOMP(build_time_iso)
 
 SET (INCLUDE_FILES_TO_CHECK
-    grp.h
-    netdb.h
     netinet/in.h
     pwd.h
     sys/param.h

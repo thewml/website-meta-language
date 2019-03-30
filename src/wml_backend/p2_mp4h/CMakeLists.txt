@@ -15,7 +15,6 @@ SET (INCLUDE_FILES_TO_CHECK
     dld.h
     dlfcn.h
     dl.h
-    grp.h
     memory.h
     pwd.h
     sys/dl.h
