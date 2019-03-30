@@ -67,6 +67,10 @@ SET (FUNCTIONS_TO_CHECK
     )
 CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
+set(license_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_license")
+set(license_c "${license_cc}.c")
+set(license_s "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+
 set(readme_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_readme")
 set(readme_c "${readme_cc}.c")
 set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/README")
@@ -74,11 +78,11 @@ set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/README")
 SET (SOURCES
     ${CMAKE_SOURCE_DIR}/lib/getopt.c
     ${CMAKE_SOURCE_DIR}/lib/getopt1.c
+   "${license_c}"
    "${readme_c}"
     eperl_config.c
     eperl_debug.c
     eperl_http.c
-    eperl_license.c
     eperl_logo.c
     eperl_main.c
     eperl_parse.c
@@ -92,6 +96,11 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "ePerl_README"
     OUTPUT "${readme_c}"
     DEPENDS ${readme_s}
+)
+ADD_CUSTOM_COMMAND(
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${license_s} "${license_cc}" "ePerl_LICENSE"
+    OUTPUT "${license_c}"
+    DEPENDS ${license_s}
 )
 
 SET(EXE "eperl")
