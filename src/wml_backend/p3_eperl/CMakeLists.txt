@@ -69,9 +69,10 @@ CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
 
 SET (SOURCES
+    ${CMAKE_SOURCE_DIR}/lib/getopt.c
+    ${CMAKE_SOURCE_DIR}/lib/getopt1.c
     eperl_config.c
     eperl_debug.c
-    eperl_getopt.c
     eperl_http.c
     eperl_license.c
     eperl_logo.c

@@ -38,7 +38,7 @@
 #include "eperl_config.h"
 #include "eperl_global.h"
 #include "eperl_security.h"
-#include "eperl_getopt.h"
+#include "getopt.h"
 #include "eperl_proto.h"
 
 #define _EPERL_VERSION_C_AS_HEADER_
