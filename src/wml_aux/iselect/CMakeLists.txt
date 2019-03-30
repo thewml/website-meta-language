@@ -3,6 +3,9 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET (CURSES_NEED_NCURSES TRUE)
 INCLUDE(FindCurses)
 
+set(help_cc "${CMAKE_CURRENT_BINARY_DIR}/iselect_help")
+set(help_c "${help_cc}.c")
+set(help_s "${CMAKE_CURRENT_SOURCE_DIR}/iselect_help.txt")
 set(readme_cc "${CMAKE_CURRENT_BINARY_DIR}/iselect_readme")
 set(readme_c "${readme_cc}.c")
 set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/iselect_readme.txt")
@@ -10,11 +13,12 @@ set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/iselect_readme.txt")
 DEFINE_WML_AUX_C_PROG (
    "iselect"
    "${CMAKE_CURRENT_BINARY_DIR}"
+   "${help_c}"
    "${readme_c}"
    ${CMAKE_SOURCE_DIR}/lib/getopt.c
    ${CMAKE_SOURCE_DIR}/lib/getopt1.c
    iselect_main.c iselect_browse.c iselect_keys.c
-   iselect_version.c iselect_help.c
+   iselect_version.c
 )
 
 INCLUDE_DIRECTORIES( BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
@@ -29,12 +33,18 @@ SIMPLE_POD2MAN(
 )
 
 ADD_CUSTOM_COMMAND(
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${help_s} "${help_cc}" "iSelect_Help"
+    OUTPUT "${help_c}"
+    DEPENDS ${help_s}
+)
+ADD_CUSTOM_TARGET("iselect_h" DEPENDS "${help_c}")
+ADD_CUSTOM_COMMAND(
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "iSelect_README"
     OUTPUT "${readme_c}"
     DEPENDS ${readme_s}
 )
 ADD_CUSTOM_TARGET("iselect_r" DEPENDS "${readme_c}")
-ADD_DEPENDENCIES("iselect" iselect_r)
+ADD_DEPENDENCIES("iselect" iselect_h iselect_r)
 ADD_CUSTOM_TARGET(
     "wml_aux_iselect" ALL
     DEPENDS ${pod_dests}

@@ -49,7 +49,7 @@
 #include "iselect_browse.h"
 #include "iselect_keys.h"
 
-extern char *iSelect_Help[];
+extern char *iSelect_Help;
 extern char *iSelect_README;
 
 void strip(char *string);
@@ -720,8 +720,9 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                      hField = newwin(wYSize, wXSize, wYPos, wXPos);
                      werase(hField);
                      char *iSelect_READMEs[] = {iSelect_README, NULL};
+                     char *iSelect_Helps[] = {iSelect_Help, NULL};
                      if (c == 'h')
-                         cpp = iSelect_Help;
+                         cpp = iSelect_Helps;
                      else
                          cpp = iSelect_READMEs;
                      for (y = 0; y < wYSize && cpp[y] != NULL; y++) {
