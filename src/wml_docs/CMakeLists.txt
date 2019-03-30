@@ -1,14 +1,5 @@
 SET (STDS
     "wml_barebone"
-    "wml_std_css1"
-    "wml_std_css2"
-    "wml_std_csspos"
-    "wml_std_html20"
-    "wml_std_html32"
-    "wml_std_html40"
-    "wml_std_html401"
-    "wml_std_wai10"
-    "wml_std_xhtml10"
     )
 
 SET (WML_DOCS
