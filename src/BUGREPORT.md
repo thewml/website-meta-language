@@ -10,6 +10,4 @@ author, then you have the following options:
 2. Directly write an E-Mail to shlomif@shlomifish.org or see
 https://www.shlomifish.org/me/contact-me/ .
 
-Go to a system from where you can send E-Mail
-and manually send one directly to sw-wml@engelschall.com. Please include
-at least the output of `wml -V3`.
+Please include at least the output of `wml -V3`.
