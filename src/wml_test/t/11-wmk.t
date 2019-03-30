@@ -8,7 +8,7 @@ use WmlTest;
 WmlTest::init();
 
 my $term;
-eval "\$term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }";
+eval { $term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }; };
 my ( $bold, $norm );
 if ($@)
 {
