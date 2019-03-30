@@ -3,13 +3,18 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET (CURSES_NEED_NCURSES TRUE)
 INCLUDE(FindCurses)
 
+set(readme_cc "${CMAKE_CURRENT_BINARY_DIR}/iselect_readme")
+set(readme_c "${readme_cc}.c")
+set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/iselect_readme.txt")
+# message(FATAL_ERROR ${readme_c})
 DEFINE_WML_AUX_C_PROG (
    "iselect"
    "${CMAKE_CURRENT_BINARY_DIR}"
+   "${readme_c}"
    ${CMAKE_SOURCE_DIR}/lib/getopt.c
    ${CMAKE_SOURCE_DIR}/lib/getopt1.c
    iselect_main.c iselect_browse.c iselect_keys.c
-   iselect_version.c iselect_help.c iselect_readme.c
+   iselect_version.c iselect_help.c
 )
 
 INCLUDE_DIRECTORIES( BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
@@ -23,6 +28,13 @@ SIMPLE_POD2MAN(
     "1"
 )
 
+ADD_CUSTOM_COMMAND(
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "iSelect_README"
+    OUTPUT "${readme_c}"
+    DEPENDS ${readme_s}
+)
+ADD_CUSTOM_TARGET("iselect_r" DEPENDS "${readme_c}")
+ADD_DEPENDENCIES("iselect" iselect_r)
 ADD_CUSTOM_TARGET(
     "wml_aux_iselect" ALL
     DEPENDS ${pod_dests}

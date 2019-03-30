@@ -50,7 +50,7 @@
 #include "iselect_keys.h"
 
 extern char *iSelect_Help[];
-extern char *iSelect_README[];
+extern char *iSelect_README;
 
 void strip(char *string);
 void diehard(int signum);
@@ -719,10 +719,11 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
 
                      hField = newwin(wYSize, wXSize, wYPos, wXPos);
                      werase(hField);
+                     char *iSelect_READMEs[] = {iSelect_README, NULL};
                      if (c == 'h')
                          cpp = iSelect_Help;
                      else
-                         cpp = iSelect_README;
+                         cpp = iSelect_READMEs;
                      for (y = 0; y < wYSize && cpp[y] != NULL; y++) {
                          sprintf(ca, "%s", cpp[y]);
                          cp = ca;
