@@ -138,9 +138,6 @@
 /* Define to 1 if you have the `dld' library (-ldld). */
 #undef HAVE_LIBDLD
 
-/* Define to 1 if you have the <locale.h> header file. */
-#cmakedefine HAVE_LOCALE_H 1
-
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
 
@@ -161,9 +158,6 @@
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #cmakedefine HAVE_PWD_H 1
-
-/* Define to 1 if you have the `setlocale' function. */
-#cmakedefine HAVE_SETLOCALE 1
 
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD

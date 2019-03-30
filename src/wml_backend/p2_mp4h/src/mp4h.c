@@ -393,9 +393,7 @@ main (int argc, char *const *argv)
   symtab_init ();
   break_init ();
   caseless_init (caseless);
-#ifdef HAVE_LOCALE_H
   locale_init (LC_ALL, NULL);
-#endif
 #ifdef WITH_MODULES
   module_init ();
 #endif

@@ -37,9 +37,7 @@
 # if HAVE_LANGINFO_CODESET
 #  include <langinfo.h>
 # else
-#  if HAVE_SETLOCALE
-#   include <locale.h>
-#  endif
+#  include <locale.h>
 # endif
 #else /* WIN32 */
 # define WIN32_LEAN_AND_MEAN

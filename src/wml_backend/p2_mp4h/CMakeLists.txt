@@ -16,7 +16,6 @@ SET (INCLUDE_FILES_TO_CHECK
     dlfcn.h
     dl.h
     grp.h
-    locale.h
     memory.h
     pwd.h
     sys/dl.h
@@ -50,7 +49,6 @@ SET (FUNCTIONS_TO_CHECK
     mempcpy
     munmap
     obstack
-    setlocale
     stpcpy
     strcasecmp
     tsearch

@@ -58,11 +58,9 @@ DECLARE (mp4h_bp_rb);
 DECLARE (mp4h_bp_dq);
 DECLARE (mp4h_bp_bs);
 DECLARE (mp4h_bp_timer);
-#ifdef HAVE_LOCALE_H
 DECLARE (mp4h_bp_mp4h_l10n);
-#endif
 DECLARE (mp4h_bp_mp4h_output_radix);
-#if !defined(HAVE_FILE_FUNCS) || !defined (HAVE_LOCALE_H) || !defined(WITH_MODULES)
+#if !defined(HAVE_FILE_FUNCS) || !defined(WITH_MODULES)
 DECLARE (mp4h_bp_unsupported);
 #endif
 
@@ -209,11 +207,7 @@ builtin_tab[] =
   { "dq",               FALSE,    TRUE,   mp4h_bp_dq },
   { "bs",               FALSE,    TRUE,   mp4h_bp_bs },
   { "timer",            FALSE,    TRUE,   mp4h_bp_timer },
-#ifdef HAVE_LOCALE_H
   { "mp4h-l10n",        FALSE,    TRUE,   mp4h_bp_mp4h_l10n },
-#else
-  { "mp4h-l10n",        FALSE,    TRUE,   mp4h_bp_unsupported },
-#endif
   { "mp4h-output-radix",FALSE,    TRUE,   mp4h_bp_mp4h_output_radix },
   { "date",             FALSE,    TRUE,   mp4h_bp_date },
 
@@ -403,11 +397,7 @@ static struct tms elapsed_time;
 
 /*  Pointer to a string containig the decimal point used
     with locales.  */
-#ifdef HAVE_LOCALE_H
 static const char *decimal_point;
-#else
-#define decimal_point "."
-#endif
 
 /*  Output radix  */
 static int output_radix = 6;
@@ -1002,7 +992,6 @@ pcre_deallocate (void)
 | Initialize locales.  |
 `---------------------*/
 
-#ifdef HAVE_LOCALE_H
 void
 locale_init (int category, char *value)
 {
@@ -1060,8 +1049,6 @@ mp4h_bp_mp4h_l10n (MP4H_BUILTIN_ARGS)
   syntax_init ();
 }
 
-#endif /* HAVE_LOCALE_H */
-
 /*----------------------------------------------.
 | Set output radix used when printing numbers.  |
 `----------------------------------------------*/
@@ -1086,7 +1073,7 @@ mp4h_bp_timer (MP4H_BUILTIN_ARGS)
   obstack_grow (obs, buf, strlen (buf));
 }
 
-#if !defined(HAVE_FILE_FUNCS) || !defined (HAVE_LOCALE_H) || !defined(WITH_MODULES)
+#if !defined(HAVE_FILE_FUNCS) || !defined(WITH_MODULES)
 static void
 mp4h_bp_unsupported (MP4H_BUILTIN_ARGS)
 {
