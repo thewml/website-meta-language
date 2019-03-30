@@ -43,10 +43,6 @@
 /* Size of buffer size to use while copying files.  */
 #define COPY_BUFFER_SIZE (32 * 512)
 
-#ifdef HAVE_TMPFILE
-extern FILE *tmpfile ();
-#endif
-
 /* Output functions.  Most of the complexity is for handling cpp like
    sync lines.
 
@@ -125,43 +121,6 @@ output_deallocate (void)
 {
   xfree ((voidstar) diversion_table);
 }
-
-#ifndef HAVE_TMPFILE
-
-#ifndef HAVE_MKSTEMP
-
-/* This implementation of mkstemp(3) does not avoid any races, but its
-   there.  */
-
-#include <fcntl.h>
-
-static int
-mkstemp (const char *tmpl)
-{
-  mktemp (tmpl);
-  return open (tmpl, O_RDWR | O_TRUNC | O_CREAT, 0600);
-}
-
-#endif /* not HAVE_MKSTEMP */
-
-/* Implement tmpfile(3) for non-USG systems.  */
-
-static FILE *
-tmpfile (void)
-{
-  char buf[32];
-  int fd;
-
-  strcpy (buf, "/tmp/mp4hXXXXXX");
-  fd = mkstemp (buf);
-  if (fd < 0)
-    return NULL;
-
-  unlink (buf);
-  return fdopen (fd, "w+");
-}
-
-#endif /* not HAVE_TMPFILE */
 
 /*-----------------------------------------------------------------------.
 | Reorganize in-memory diversion buffers so the current diversion can    |

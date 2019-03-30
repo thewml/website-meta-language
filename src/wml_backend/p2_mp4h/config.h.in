@@ -150,9 +150,6 @@
 /* Define to 1 if you have the `mempcpy' function. */
 #cmakedefine HAVE_MEMPCPY 1
 
-/* Define to 1 if you have the `mkstemp' function. */
-#cmakedefine HAVE_MKSTEMP 1
-
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
 
@@ -191,9 +188,6 @@
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #cmakedefine HAVE_SYS_TYPES_H 1
-
-/* Define to 1 if you have the `tmpfile' function. */
-#cmakedefine HAVE_TMPFILE 1
 
 /* Define to 1 if you have the `tsearch' function. */
 #cmakedefine HAVE_TSEARCH 1

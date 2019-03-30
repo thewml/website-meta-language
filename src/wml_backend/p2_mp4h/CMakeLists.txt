@@ -50,13 +50,11 @@ SET (FUNCTIONS_TO_CHECK
     getuid
     iconv
     mempcpy
-    mkstemp
     munmap
     obstack
     setlocale
     stpcpy
     strcasecmp
-    tmpfile
     tsearch
     vprintf
     xmalloc
