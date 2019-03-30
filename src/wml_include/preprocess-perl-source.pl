@@ -12,29 +12,26 @@ my %substitutions;
 my $input_fn;
 my $output_fn;
 
-GetOptions
-(
-    "subst=s" => \%substitutions,
-    "input=s" => \$input_fn,
+GetOptions(
+    "subst=s"  => \%substitutions,
+    "input=s"  => \$input_fn,
     "output=s" => \$output_fn,
 );
 
-if (!defined($input_fn))
+if ( !defined($input_fn) )
 {
     die "Input filename not specified!";
 }
 
-if (!defined($output_fn))
+if ( !defined($output_fn) )
 {
     die "Output filename not specified!";
 }
 
-verify_all_keys(
-        [sort { $a cmp $b } @params],
-        [sort { $a cmp $b } keys(%substitutions)]
-    );
+verify_all_keys( [ sort { $a cmp $b } @params ],
+    [ sort { $a cmp $b } keys(%substitutions) ] );
 
-my $subst_keys_re = join("|", map { quotemeta($_) } @params);
+my $subst_keys_re = join( "|", map { quotemeta($_) } @params );
 
 open my $in_fh, "<", $input_fn
     or die "Could not open '$input_fn'";
@@ -43,18 +40,18 @@ open my $out_fh, ">", $output_fn
     or die "Could not open '$output_fn'";
 
 LINES:
-while (my $line = <$in_fh>)
+while ( my $line = <$in_fh> )
 {
-    if ($line =~ /\A__END__/)
+    if ( $line =~ /\A__END__/ )
     {
         last LINES;
     }
-    elsif ($line =~ /^=head1/)
+    elsif ( $line =~ /^=head1/ )
     {
-        DISCARD_POD:
-        while ($line = <$in_fh>)
+    DISCARD_POD:
+        while ( $line = <$in_fh> )
         {
-            if ($line =~ /^=cut/)
+            if ( $line =~ /^=cut/ )
             {
                 last DISCARD_POD;
             }
@@ -69,26 +66,26 @@ while (my $line = <$in_fh>)
 close($in_fh);
 close($out_fh);
 
-chmod(0755, $output_fn);
+chmod( 0755, $output_fn );
 
 exit(0);
 
 sub verify_all_keys
 {
-    my ($want, $have) = @_;
+    my ( $want, $have ) = @_;
 
-    for my $idx (0 .. $#$want)
+    for my $idx ( 0 .. $#$want )
     {
-        if ($want->[$idx] ne $have->[$idx])
+        if ( $want->[$idx] ne $have->[$idx] )
         {
             die "Substitution $want->[$idx] is missing!";
         }
     }
 
-    if (@$have != @$want)
+    if ( @$have != @$want )
     {
         die "Extra keys in substitution: "
-            .  join(",", @{$have}[@$want .. $#$have]) . " !";
+            . join( ",", @{$have}[ @$want .. $#$have ] ) . " !";
     }
 
     return;

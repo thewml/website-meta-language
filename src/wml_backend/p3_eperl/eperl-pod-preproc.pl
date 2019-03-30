@@ -10,8 +10,8 @@ my $o_fn;
 my $v_fn;
 
 GetOptions(
-    'input=s' => \$i_fn,
-    'output=s' => \$o_fn,
+    'input=s'       => \$i_fn,
+    'output=s'      => \$o_fn,
     'versionfrom=s' => \$v_fn,
 );
 
@@ -19,9 +19,9 @@ my $ver;
 open my $ver_fh, "<", $v_fn
     or die "Cannot open '$v_fn'";
 VER_LOOP:
-while (my $l = <$ver_fh>)
+while ( my $l = <$ver_fh> )
 {
-    if (my ($val) = $l =~ m{"(\d+\.\d+\.\d+)"})
+    if ( my ($val) = $l =~ m{"(\d+\.\d+\.\d+)"} )
     {
         $ver = $val;
         last VER_LOOP;
@@ -33,7 +33,7 @@ open my $in, "<", $i_fn
     or die "Cannot open input - '$i_fn'!";
 
 my $buffer;
-while (my $l = <$in>)
+while ( my $l = <$in> )
 {
     $l =~ s{\@V\@}{$ver}g;
     $buffer .= $l;

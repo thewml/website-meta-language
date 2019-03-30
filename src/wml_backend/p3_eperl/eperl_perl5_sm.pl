@@ -7,11 +7,10 @@ use Config;
 use Getopt::Long;
 
 my $output_fn;
-GetOptions(
-    'o|output=s' => \$output_fn,
-) or die "Output not specified. $!";
+GetOptions( 'o|output=s' => \$output_fn, )
+    or die "Output not specified. $!";
 
-if (!defined($output_fn))
+if ( !defined($output_fn) )
 {
     die "Output not specified.";
 }
@@ -58,15 +57,17 @@ print <<'EOT'
 #define EPERL_PERL5_SM_H 1
 
 EOT
-;
+    ;
 
 #
 #   code stolen from Perl 5.004_04's ExtUtils::Embed because
 #   this module is only available in newer Perl versions.
 #
 
-sub static_ext {
-    unless (scalar @Extensions) {
+sub static_ext
+{
+    unless ( scalar @Extensions )
+    {
         # my $static_ext = $Config{static_ext};
         # $static_ext =~ s{^\s+}{};
         # @Extensions = sort split /\s+/, $static_ext;
@@ -74,40 +75,50 @@ sub static_ext {
     }
     return @Extensions;
 }
-sub xsi_body {
-    my(@exts) = @_;
-    my($pname,@retval,%seen);
-    my($dl) = &canon('/','DynaLoader');
-    foreach $_ (@exts){
-        my($pname) = &canon('/', $_);
-        my($mname, $cname, $ccode);
-        ($mname = $pname) =~ s!/!::!g;
-        ($cname = $pname) =~ s!/!__!g;
-        if ($pname eq $dl){
-            $ccode = "newXS(\"${mname}::boot_${cname}\", boot_${cname}, file);\\\n";
-            push(@retval, $ccode) unless $seen{$ccode}++;
-        } else {
+
+sub xsi_body
+{
+    my (@exts) = @_;
+    my ( $pname, @retval, %seen );
+    my ($dl) = &canon( '/', 'DynaLoader' );
+    foreach $_ (@exts)
+    {
+        my ($pname) = &canon( '/', $_ );
+        my ( $mname, $cname, $ccode );
+        ( $mname = $pname ) =~ s!/!::!g;
+        ( $cname = $pname ) =~ s!/!__!g;
+        if ( $pname eq $dl )
+        {
+            $ccode =
+                "newXS(\"${mname}::boot_${cname}\", boot_${cname}, file);\\\n";
+            push( @retval, $ccode ) unless $seen{$ccode}++;
+        }
+        else
+        {
             $ccode = "newXS(\"${mname}::bootstrap\", boot_${cname}, file);\\\n";
-            push(@retval, $ccode) unless $seen{$ccode}++;
+            push( @retval, $ccode ) unless $seen{$ccode}++;
         }
     }
     return join '', @retval;
 }
-sub canon {
-    my($as, @ext) = @_;
-    foreach(@ext) {
-       # might be X::Y or lib/auto/X/Y/Y.a
-       next if s!::!/!g;
-       s:^(lib|ext)/(auto/)?::;
-       s:/\w+\.\w+$::;
+
+sub canon
+{
+    my ( $as, @ext ) = @_;
+    foreach (@ext)
+    {
+        # might be X::Y or lib/auto/X/Y/Y.a
+        next if s!::!/!g;
+        s:^(lib|ext)/(auto/)?::;
+        s:/\w+\.\w+$::;
     }
-    grep(s:/:$as:, @ext) if ($as ne '/');
+    grep( s:/:$as:, @ext ) if ( $as ne '/' );
     return @ext;
 }
 @mods = ();
-push(@mods, &static_ext());
-@mods = grep(!$seen{$_}++, @mods);
-$DEF = "#define DO_NEWXS_STATIC_MODULES \\\n";
+push( @mods, &static_ext() );
+@mods = grep( !$seen{$_}++, @mods );
+$DEF  = "#define DO_NEWXS_STATIC_MODULES \\\n";
 $DEF .= &xsi_body(@mods);
 $DEF =~ s|\\\n$|\n|s;
 print $DEF;
@@ -117,7 +128,7 @@ print <<EOT
 #endif /* EPERL_PERL5_SM_H */
 /*EOF*/
 EOT
-;
+    ;
 
 close(O);
 ##EOF##

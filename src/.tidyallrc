@@ -1,5 +1,5 @@
 [PerlTidy]
-select = cmake/*.pl wml_frontend/*.src wml_backend/*/*.src wml_include/**/*.pm wml_include/**/*.pm.src wml_test/t/*.t wml_test/**/*.{pl,pm}
+select = **/*.t wml_frontend/*.src wml_backend/*/*.src wml_include/**/*.pm wml_include/**/*.pm.src wml_test/**/*.pm wml*/**/*.pl
 argv = -ci=4 -bl -cti=0
 ignore =
 

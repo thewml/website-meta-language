@@ -11,9 +11,9 @@ my $input_fn;
 my $output_fn;
 
 GetOptions(
-    "mp4h=s" => \$mp4h,
+    "mp4h=s"   => \$mp4h,
     "srcdir=s" => \$srcdir,
-    "input=s" => \$input_fn,
+    "input=s"  => \$input_fn,
     "output=s" => \$output_fn,
 );
 
