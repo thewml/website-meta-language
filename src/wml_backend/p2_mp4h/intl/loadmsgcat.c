@@ -223,9 +223,7 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 #ifdef _LIBC
   domain->conv = (__gconv_t) -1;
 #else
-# if HAVE_ICONV
   domain->conv = (iconv_t) -1;
-# endif
 #endif
   domain->conv_tab = NULL;
 
@@ -234,7 +232,6 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 
   if (nullentry != NULL)
     {
-#if defined _LIBC || HAVE_ICONV
       const char *charsetstr;
 
       charsetstr = strstr (nullentry, "charset=");
@@ -270,10 +267,8 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 # ifdef _LIBC
 		  outcharset = (*_nl_current[LC_CTYPE])->values[_NL_ITEM_INDEX (CODESET)].string;
 # else
-#  if HAVE_ICONV
 		  extern const char *locale_charset (void);
 		  outcharset = locale_charset ();
-#  endif
 # endif
 		}
 	    }
@@ -287,7 +282,6 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 	      != __GCONV_OK)
 	    domain->conv = (__gconv_t) -1;
 # else
-#  if HAVE_ICONV
 	  /* When using GNU libiconv, we want to use transliteration.  */
 #   if _LIBICONV_VERSION >= 0x0105
 	  len = strlen (outcharset);
@@ -302,12 +296,10 @@ _nl_init_domain_conv (domain_file, domain, domainbinding)
 #   if _LIBICONV_VERSION >= 0x0105
 	  freea (outcharset);
 #   endif
-#  endif
 # endif
 
 	  freea (charset);
 	}
-#endif /* _LIBC || HAVE_ICONV */
     }
 
   return nullentry;
@@ -326,10 +318,8 @@ _nl_free_domain_conv (domain)
   if (domain->conv != (__gconv_t) -1)
     __gconv_close (domain->conv);
 #else
-# if HAVE_ICONV
   if (domain->conv != (iconv_t) -1)
     iconv_close (domain->conv);
-# endif
 #endif
 }
 

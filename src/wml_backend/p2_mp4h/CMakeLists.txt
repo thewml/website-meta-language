@@ -45,7 +45,6 @@ SET (FUNCTIONS_TO_CHECK
     getpagesize
     getpwuid
     getuid
-    iconv
     mempcpy
     munmap
     obstack

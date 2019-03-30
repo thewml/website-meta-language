@@ -25,9 +25,7 @@
 #ifdef _LIBC
 # include "../iconv/gconv_int.h"
 #else
-# if HAVE_ICONV
 #  include <iconv.h>
-# endif
 #endif
 
 #include "loadinfo.h"
@@ -133,9 +131,7 @@ struct loaded_domain
 #ifdef _LIBC
   __gconv_t conv;
 #else
-# if HAVE_ICONV
   iconv_t conv;
-# endif
 #endif
   char **conv_tab;
 
