@@ -36,7 +36,7 @@
 #include <fcntl.h>
 
 #include "iselect_global.h"
-#include "iselect_getopt.h"
+#include "getopt.h"
 #include "iselect_browse.h"
 #include "iselect_keys.h"
 #define _ISELECT_VERSION_C_AS_HEADER_

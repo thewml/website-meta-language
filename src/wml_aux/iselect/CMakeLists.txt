@@ -6,11 +6,14 @@ INCLUDE(FindCurses)
 DEFINE_WML_AUX_C_PROG (
    "iselect"
    "${CMAKE_CURRENT_BINARY_DIR}"
+   ${CMAKE_SOURCE_DIR}/lib/getopt.c
+   ${CMAKE_SOURCE_DIR}/lib/getopt1.c
    iselect_main.c iselect_browse.c iselect_keys.c
-   iselect_getopt.c iselect_version.c iselect_help.c iselect_readme.c
+   iselect_version.c iselect_help.c iselect_readme.c
 )
 
 INCLUDE_DIRECTORIES( BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
+INCLUDE_DIRECTORIES( AFTER "${CMAKE_CURRENT_SOURCE_DIR}")
 
 SET (pod_dests )
 SIMPLE_POD2MAN(
