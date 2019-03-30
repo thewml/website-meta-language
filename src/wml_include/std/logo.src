@@ -113,7 +113,6 @@ The logo is selected via attribute C<name>. The following logos are available:
   php       PHP Hypertext Preprocessor     http://www.php.net/
   vim       Vi Improved Editor             http://www.vim.org/
   wml       Website META Language          http://www.engelschall.com/sw/wml/
-  xemacs    XEmacs Editor                  http://www.xemacs.org/
 
 =head1 ATTRIBUTES
 
@@ -188,13 +187,6 @@ any output:
 
  Internal: P1, P2, P3
  External: --
-
-=head1 HISTORY
-
- For backward compatibility a logo named "php3" is also available.
- Inluding the version number was not a really good idea, use the
- logo "php" instead. Expect that the logo "php3" will be removed in
- future releases.
 
 =head1 SEE ALSO
 

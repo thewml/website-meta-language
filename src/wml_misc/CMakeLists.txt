@@ -20,9 +20,6 @@ SET (LOGO_FILES
     logo-openbsd.gif
     logo-openbsd.info
     logo-openbsd.png
-    logo-php3.gif
-    logo-php3.info
-    logo-php3.png
     logo-php.gif
     logo-php.info
     logo-php.png
@@ -32,9 +29,6 @@ SET (LOGO_FILES
     logo-wml.gif
     logo-wml.info
     logo-wml.png
-    logo-xemacs.gif
-    logo-xemacs.info
-    logo-xemacs.png
 )
 
 INSTALL(
