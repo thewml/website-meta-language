@@ -84,9 +84,6 @@
 /* Define to 1 if you have the <dl.h> header file. */
 #cmakedefine HAVE_DL_H 1
 
-/* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
-#undef HAVE_DOPRNT
-
 /* Define to 1 if the system has the type `error_t'. */
 #undef HAVE_ERROR_T
 
@@ -156,9 +153,6 @@
 /* Define to 1 if you have the `munmap' function. */
 #cmakedefine HAVE_MUNMAP 1
 
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
-#cmakedefine HAVE_NDIR_H 1
-
 /* Define to 1 if you have the `obstack' function. */
 #cmakedefine HAVE_OBSTACK 1
 
@@ -197,9 +191,6 @@
 
 /* Define if you have the unsigned long long type. */
 #undef HAVE_UNSIGNED_LONG_LONG
-
-/* Define to 1 if you have the `vprintf' function. */
-#cmakedefine HAVE_VPRINTF 1
 
 /* Define to 1 if you have the `xmalloc' function. */
 #cmakedefine HAVE_XMALLOC 1

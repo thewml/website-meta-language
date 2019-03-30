@@ -48,11 +48,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #  include <dirent.h>
 #  define LT_D_NAMLEN(dirent) (strlen((dirent)->d_name))
 #else
-#  define dirent direct
-#  define LT_D_NAMLEN(dirent) ((dirent)->d_namlen)
-#  if HAVE_NDIR_H
-#    include <ndir.h>
-#  endif
+#  error to implement
 #endif
 
 #if HAVE_ARGZ_H

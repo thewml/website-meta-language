@@ -18,7 +18,6 @@ SET (INCLUDE_FILES_TO_CHECK
     grp.h
     locale.h
     memory.h
-    ndir.h
     pwd.h
     sys/dl.h
     sys/param.h
@@ -56,7 +55,6 @@ SET (FUNCTIONS_TO_CHECK
     stpcpy
     strcasecmp
     tsearch
-    vprintf
     xmalloc
     xstrdup
     )
