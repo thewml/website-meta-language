@@ -75,19 +75,7 @@
 #endif
 #include <netdb.h>
 
-
-/*
-**
-**  Missing Prototypes.
-**  They are needed to get a clean compile with gcc -Wall.
-**
-*/
-
-/*
-**
-**  OS Return Values
-**
-*/
+/* OS Return Values */
 #define EX__BASE        64      /* base value for error messages */
 #define EX_USAGE        64      /* command line usage error */
 #define EX_DATAERR      65      /* data format error */
@@ -199,19 +187,6 @@
 #    endif
 #  endif
 #endif
-
-
-/*
-**
-**  Boolean Values -- defined in a general and portable way
-**
-*/
-/* typedef enum { false = FALSE, true = TRUE } bool; */
-#undef  TRUE
-#define TRUE  (0 || !(0))
-#undef  FALSE
-#define FALSE (!(TRUE))
-
 
 #endif /* EPERL_CONFIG_H */
 /*EOF*/

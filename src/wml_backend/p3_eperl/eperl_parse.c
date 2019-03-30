@@ -47,9 +47,9 @@
 
 char       *ePerl_begin_delimiter           = NULL;
 char       *ePerl_end_delimiter             = NULL;
-int         ePerl_case_sensitive_delimiters = TRUE;
-int         ePerl_convert_entities          = FALSE;
-int         ePerl_line_continuation         = FALSE;
+bool         ePerl_case_sensitive_delimiters = true;
+bool         ePerl_convert_entities          = false;
+bool         ePerl_line_continuation         = false;
 static char ePerl_ErrorString[1024]         = "";
 
 /*
@@ -580,7 +580,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
 
             /* pass through the ePerl block without changes! */
             if (cpe2 > cps) {
-                if (ePerl_convert_entities == TRUE)
+                if (ePerl_convert_entities)
                     cpOut = ePerl_Cfnwrite(cps, cpe2-cps, 1, cpOut, &cpOutLen);
                 else
                     cpOut = ePerl_fnwrite(cps, cpe2-cps, 1, cpOut, &cpOutLen);

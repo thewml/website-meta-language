@@ -53,8 +53,8 @@ char **mysetenv(char **env, char *var, char *str, ...)
     char *cp;
     int i;
     char **envN;
-    static int stillcalled = FALSE;
-    int replaced = FALSE;
+    static bool stillcalled = false;
+    bool replaced = false;
 
     /*  create the key=val string  */
     va_start(ap, str);
@@ -71,7 +71,7 @@ char **mysetenv(char **env, char *var, char *str, ...)
     for (i = 0; env[i] != NULL; i++) {
         if (strncmp(env[i], var, strlen(var)) == 0) {
             envN[i] = cp;
-            replaced = TRUE;
+            replaced = true;
         }
         else
             envN[i] = env[i];
@@ -86,7 +86,7 @@ char **mysetenv(char **env, char *var, char *str, ...)
     /*  set the libc/exec variable which Perl uses */
     if (stillcalled)
         free(environ);
-    stillcalled = TRUE;
+    stillcalled = true;
     environ = envN;
 
     va_end(ap);
@@ -107,9 +107,9 @@ char **mysetenv(char **env, char *var, char *str, ...)
 #define HANDLE_STORE_STDOUT 11
 #define HANDLE_STORE_STDERR 12
 
-static int IO_redirected_stdin  = FALSE;
-static int IO_redirected_stdout = FALSE;
-static int IO_redirected_stderr = FALSE;
+static int IO_redirected_stdin  = false;
+static int IO_redirected_stdout = false;
+static int IO_redirected_stderr = false;
 
 void IO_redirect_stdin(FILE *fp)
 {
@@ -123,7 +123,7 @@ void IO_redirect_stdin(FILE *fp)
     (void)dup2(fileno(fp), HANDLE_STDIN);
 
     /* and remember the fact */
-    IO_redirected_stdin = TRUE;
+    IO_redirected_stdin = true;
 }
 
 void IO_redirect_stdout(FILE *fp)
@@ -138,7 +138,7 @@ void IO_redirect_stdout(FILE *fp)
     (void)dup2(fileno(fp), HANDLE_STDOUT);
 
     /* and remember the fact */
-    IO_redirected_stdout = TRUE;
+    IO_redirected_stdout = true;
 }
 
 void IO_redirect_stderr(FILE *fp)
@@ -153,7 +153,7 @@ void IO_redirect_stderr(FILE *fp)
     (void)dup2(fileno(fp), HANDLE_STDERR);
 
     /* and remember the fact */
-    IO_redirected_stderr = TRUE;
+    IO_redirected_stderr = true;
 }
 
 int IO_is_stdin_redirected(void)
@@ -175,7 +175,7 @@ void IO_restore_stdin(void)
 {
     if (IO_redirected_stdin) {
         dup2(HANDLE_STORE_STDIN, HANDLE_STDIN);
-        IO_redirected_stdin = FALSE;
+        IO_redirected_stdin = false;
     }
 }
 
@@ -183,7 +183,7 @@ void IO_restore_stdout(void)
 {
     if (IO_redirected_stdout) {
         dup2(HANDLE_STORE_STDOUT, HANDLE_STDOUT);
-        IO_redirected_stdout = FALSE;
+        IO_redirected_stdout = false;
     }
 }
 
@@ -191,7 +191,7 @@ void IO_restore_stderr(void)
 {
     if (IO_redirected_stderr) {
         dup2(HANDLE_STORE_STDERR, HANDLE_STDERR);
-        IO_redirected_stderr = FALSE;
+        IO_redirected_stderr = false;
     }
 }
 

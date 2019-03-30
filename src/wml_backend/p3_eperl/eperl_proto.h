@@ -34,6 +34,7 @@
 */
 #ifndef EPERL_PROTO_H
 #define EPERL_PROTO_H 1
+#include <stdbool.h>
 
 /*_BEGIN_PROTO_*/
 
@@ -57,9 +58,9 @@ extern void myexit(int rc);
 /* eperl_parse.c */
 extern char *ePerl_begin_delimiter;
 extern char *ePerl_end_delimiter;
-extern int ePerl_case_sensitive_delimiters;
-extern int ePerl_convert_entities;
-extern int ePerl_line_continuation;
+extern bool ePerl_case_sensitive_delimiters;
+extern bool ePerl_convert_entities;
+extern bool ePerl_line_continuation;
 extern void ePerl_SetError(char *str, ...);
 extern char *ePerl_GetError(void);
 extern char *ePerl_fprintf(char *cpOut, char *str, ...);
@@ -117,7 +118,7 @@ extern char *WebTime(void);
 extern FILE *HTTP_openURLasFP(char *url);
 
 /* eperl_debug.c */
-extern int fDebug;
+extern bool fDebug;
 extern char *cpDebugFile;
 extern void Debug(char *str, ...);
 

@@ -36,9 +36,10 @@
 #include "eperl_config.h"
 #include "eperl_global.h"
 #include "eperl_proto.h"
+#include <stdbool.h>
 
 
-int fDebug = FALSE;
+bool fDebug = false;
 char *cpDebugFile = "eperl.debug";
 
 void Debug(char *str, ...)

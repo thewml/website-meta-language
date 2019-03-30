@@ -39,25 +39,25 @@
 /*
  * General security for CGI modes
  */
-#define CGI_NEEDS_ALLOWED_FILE_EXT       TRUE
+#define CGI_NEEDS_ALLOWED_FILE_EXT       true
 #define LIST_OF_ALLOWED_FILE_EXT         { ".html", ".phtml", ".eperl", ".ephtml", ".epl", ".pl", ".cgi", NULL }
 
 /*
  * Perl security
  * (BE CAREFUL HERE, THIS CAN MAKE YOUR LIVE HARD!)
  */
-#define CGI_MODES_FORCE_TAINTING         FALSE
-#define CGI_MODES_FORCE_WARNINGS         FALSE
+#define CGI_MODES_FORCE_TAINTING         false
+#define CGI_MODES_FORCE_WARNINGS         false
 
 /*
  * SetUID security checks for CGI modes:
  * You can enable/disable any checked steps here.
  */
-#define SETUID_NEEDS_VALID_CALLER_UID    TRUE
-#define SETUID_NEEDS_ALLOWED_CALLER_UID  TRUE
-#define SETUID_NEEDS_VALID_OWNER_UID     TRUE
-#define SETUID_NEEDS_VALID_OWNER_GID     TRUE
-#define SETUID_NEEDS_BELOW_OWNER_HOME    TRUE
+#define SETUID_NEEDS_VALID_CALLER_UID    true
+#define SETUID_NEEDS_ALLOWED_CALLER_UID  true
+#define SETUID_NEEDS_VALID_OWNER_UID     true
+#define SETUID_NEEDS_VALID_OWNER_GID     true
+#define SETUID_NEEDS_BELOW_OWNER_HOME    true
 #define LIST_OF_ALLOWED_CALLER_UID       { "nobody", "root", "www-data", NULL }
 
 /*

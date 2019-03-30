@@ -329,18 +329,18 @@ int main(int argc, char **argv, char **env)
     struct passwd *pw2;
     struct group *gr;
     int uid, gid;
-    int keepcwd = FALSE;
+    int keepcwd = false;
     int c;
     char *cpScript = NULL;
     int allow;
     int i, n, k;
     char *outputfile = NULL;
     char cwd[MAXPATHLEN];
-    int fCheck = FALSE;
-    int fTaint = FALSE;
-    int fWarn = FALSE;
-    int fNoCase = FALSE;
-    int fPP = FALSE;
+    int fCheck = false;
+    int fTaint = false;
+    int fWarn = false;
+    int fNoCase = false;
+    int fPP = false;
     char *cwd2;
     int fOkSwitch;
     char *cpHost;
@@ -382,28 +382,28 @@ int main(int argc, char **argv, char **env)
                 ePerl_end_delimiter = strdup(optarg);
                 break;
             case 'n':
-                fNoCase = TRUE;
+                fNoCase = true;
                 break;
             case 'k':
-                keepcwd = TRUE;
+                keepcwd = true;
                 break;
             case 'P':
-                fPP = TRUE;
+                fPP = true;
                 break;
             case 'C':
-                ePerl_convert_entities = TRUE;
+                ePerl_convert_entities = true;
                 break;
             case 'L':
-                ePerl_line_continuation = TRUE;
+                ePerl_line_continuation = true;
                 break;
             case 'T':
-                fTaint = TRUE;
+                fTaint = true;
                 break;
             case 'w':
-                fWarn = TRUE;
+                fWarn = true;
                 break;
             case 'x':
-                fDebug = TRUE;
+                fDebug = true;
                 break;
             case 'm':
                 if (strcasecmp(optarg, "f") == 0     ||
@@ -429,7 +429,7 @@ int main(int argc, char **argv, char **env)
                 outputfile = strdup(optarg);
                 break;
             case 'c':
-                fCheck = TRUE;
+                fCheck = true;
                 break;
             case 'r':
                 give_readme();
@@ -473,9 +473,9 @@ int main(int argc, char **argv, char **env)
         cpCGIpt = "";
     if ((cpCGIqs = getenv("QUERY_STRING")) == NULL)
         cpCGIqs = "";
-    fCGIqsEqualChar = FALSE;
+    fCGIqsEqualChar = false;
     if (cpCGIqs != NULL && strchr(cpCGIqs, '=') != NULL)
-        fCGIqsEqualChar = TRUE;
+        fCGIqsEqualChar = true;
 
     /*
      *  Server-Side-Scripting-Language:
@@ -637,7 +637,7 @@ int main(int argc, char **argv, char **env)
             fclose(fp); fp = NULL;
 
             /* stdin script implies keeping of cwd */
-            keepcwd = TRUE;
+            keepcwd = true;
         }
     }
     /*
@@ -664,9 +664,9 @@ int main(int argc, char **argv, char **env)
             ePerl_end_delimiter = END_DELIMITER_CGI;
     }
     if (fNoCase)
-        ePerl_case_sensitive_delimiters = FALSE;
+        ePerl_case_sensitive_delimiters = false;
     else
-        ePerl_case_sensitive_delimiters = TRUE;
+        ePerl_case_sensitive_delimiters = true;
 
     /* the built-in GIF images */
     if ((mode == MODE_CGI || mode == MODE_NPHCGI) && (cp = getenv("PATH_INFO")) != NULL) {
@@ -685,8 +685,8 @@ int main(int argc, char **argv, char **env)
        - HTML entity conversions
        - adding of DOCUMENT_ROOT to include paths */
     if (mode == MODE_CGI || mode == MODE_NPHCGI) {
-        fPP = TRUE;
-        ePerl_convert_entities = TRUE;
+        fPP = true;
+        ePerl_convert_entities = true;
         if ((cp = getenv("DOCUMENT_ROOT")) != NULL)
             RememberINC(cp);
     }
@@ -716,12 +716,12 @@ int main(int argc, char **argv, char **env)
 
         /* general security check: allowed file extension */
         if (CGI_NEEDS_ALLOWED_FILE_EXT) {
-            allow = FALSE;
+            allow = false;
             n = strlen(source);
             for (i = 0; allowed_file_ext[i] != NULL; i++) {
                 k = strlen(allowed_file_ext[i]);
                 if (stringEQ(source+n-k, allowed_file_ext[i]))
-                    allow = TRUE;
+                    allow = true;
             }
             if (!allow) {
                 PrintError(mode, source, NULL, NULL, "File `%s' is not allowed to be interpreted by ePerl (wrong extension!)", source);
@@ -737,11 +737,11 @@ int main(int argc, char **argv, char **env)
 
         /* perhaps force Taint mode */
         if (CGI_MODES_FORCE_TAINTING)
-            fTaint = TRUE;
+            fTaint = true;
 
         /* perhaps force Warnings */
         if (CGI_MODES_FORCE_WARNINGS)
-            fWarn = TRUE;
+            fWarn = true;
 
         /*
          *
@@ -752,7 +752,7 @@ int main(int argc, char **argv, char **env)
         /* we can only do a switching if we have euid == 0 (root) */
         if (geteuid() == 0) {
 
-            fOkSwitch = TRUE;
+            fOkSwitch = true;
 
             /* get our real user id (= caller uid) */
             uid = getuid();
@@ -765,19 +765,19 @@ int main(int argc, char **argv, char **env)
                     CU(EX_OK);
                 }
                 else
-                    fOkSwitch = FALSE;
+                    fOkSwitch = false;
             }
             else {
                 /* security check: allowed caller uid */
                 if (SETUID_NEEDS_ALLOWED_CALLER_UID) {
-                    allow = FALSE;
+                    allow = false;
                     for (i = 0; allowed_caller_uid[i] != NULL; i++) {
                         if (isdigit(allowed_caller_uid[i][0]))
                             pw2 = getpwuid(atoi(allowed_caller_uid[i]));
                         else
                             pw2 = getpwnam(allowed_caller_uid[i]);
                         if (stringEQ(pw->pw_name, pw2->pw_name)) {
-                            allow = TRUE;
+                            allow = true;
                             break;
                         }
                     }
@@ -787,7 +787,7 @@ int main(int argc, char **argv, char **env)
                             CU(EX_OK);
                         }
                         else
-                            fOkSwitch = FALSE;
+                            fOkSwitch = false;
                     }
                 }
             }
@@ -800,7 +800,7 @@ int main(int argc, char **argv, char **env)
                     CU(EX_OK);
                 }
                 else
-                    fOkSwitch = FALSE;
+                    fOkSwitch = false;
             else
                 uid = pw->pw_uid;
 
@@ -812,7 +812,7 @@ int main(int argc, char **argv, char **env)
                     CU(EX_OK);
                 }
                 else
-                    fOkSwitch = FALSE;
+                    fOkSwitch = false;
             else
                 gid = gr->gr_gid;
 
@@ -829,7 +829,7 @@ int main(int argc, char **argv, char **env)
                         CU(EX_OK);
                     }
                     else
-                        fOkSwitch = FALSE;
+                        fOkSwitch = false;
                 }
                 else {
                     dir_home = getcwd(NULL, 1024);
@@ -843,7 +843,7 @@ int main(int argc, char **argv, char **env)
                             CU(EX_OK);
                         }
                         else
-                            fOkSwitch = FALSE;
+                            fOkSwitch = false;
                     }
                     else {
                         *cp = NUL;
@@ -853,7 +853,7 @@ int main(int argc, char **argv, char **env)
                                 CU(EX_OK);
                             }
                             else
-                                fOkSwitch = FALSE;
+                                fOkSwitch = false;
                         }
                         else {
                             dir_script = getcwd(NULL, 1024);
@@ -865,7 +865,7 @@ int main(int argc, char **argv, char **env)
                                     CU(EX_OK);
                                 }
                                 else
-                                    fOkSwitch = FALSE;
+                                    fOkSwitch = false;
                             }
 
                             free(dir_script);
