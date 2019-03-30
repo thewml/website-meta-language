@@ -27,13 +27,14 @@ print $out_c "\n";
 print $out_c "int  ${name}_size   = " . $size . ";\n";
 print $out_c "unsigned char ${name}_data[] = {\n";
 
-$i = 1;
+my $i = 1;
+my $c;
 while ( read( $in_fh, $c, 1 ) )
 {
     printf( $out_c "0x%02x", ord($c) );
     printf( $out_c "," ) if ( $i < $size );
     printf( $out_c "\n" ) if ( $i % 15 == 0 && $i < $size );
-    $i++;
+    ++$i;
 }
 
 print $out_c " };\n";

@@ -75,15 +75,19 @@ set(readme_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_readme")
 set(readme_c "${readme_cc}.c")
 set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/README")
 
+set(logo_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_logo")
+set(logo_c "${logo_cc}.c")
+set(logo_s "${CMAKE_CURRENT_SOURCE_DIR}/eperl_logo.gif")
+
 SET (SOURCES
     ${CMAKE_SOURCE_DIR}/lib/getopt.c
     ${CMAKE_SOURCE_DIR}/lib/getopt1.c
    "${license_c}"
+   "${logo_c}"
    "${readme_c}"
     eperl_config.c
     eperl_debug.c
     eperl_http.c
-    eperl_logo.c
     eperl_main.c
     eperl_parse.c
     eperl_perl5.c
@@ -101,6 +105,11 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${license_s} "${license_cc}" "ePerl_LICENSE"
     OUTPUT "${license_c}"
     DEPENDS ${license_s}
+)
+ADD_CUSTOM_COMMAND(
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/bin2c ${logo_s} "${logo_cc}" "ePerl_LOGO"
+    OUTPUT "${logo_c}"
+    DEPENDS ${logo_s}
 )
 
 SET(EXE "eperl")
