@@ -37,14 +37,11 @@ ADD_CUSTOM_COMMAND(
     OUTPUT "${help_c}"
     DEPENDS ${help_s}
 )
-ADD_CUSTOM_TARGET("iselect_h" DEPENDS "${help_c}")
 ADD_CUSTOM_COMMAND(
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "iSelect_README"
     OUTPUT "${readme_c}"
     DEPENDS ${readme_s}
 )
-ADD_CUSTOM_TARGET("iselect_r" DEPENDS "${readme_c}")
-ADD_DEPENDENCIES("iselect" iselect_h iselect_r)
 ADD_CUSTOM_TARGET(
     "wml_aux_iselect" ALL
     DEPENDS ${pod_dests}
