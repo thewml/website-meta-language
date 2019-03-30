@@ -60,7 +60,6 @@ SET (INCLUDE_FILES_TO_CHECK
     signal.h
     sys/param.h
     sys/socket.h
-    sys/types.h
     unistd.h
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})

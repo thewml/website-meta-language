@@ -21,7 +21,6 @@ SET (INCLUDE_FILES_TO_CHECK
     pwd.h
     sys/dl.h
     sys/param.h
-    sys/types.h
     unistd.h
     )
 CHECK_MULTI_INCLUDE_FILES(${INCLUDE_FILES_TO_CHECK})
@@ -115,4 +114,3 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" "${CMAKE_CURRENT_BINARY
 ADD_SUBDIRECTORY( lib )
 ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( "doc" )
-
