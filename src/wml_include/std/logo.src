@@ -106,7 +106,6 @@ The logo is selected via attribute C<name>. The following logos are available:
   apache    Apache Webserver Project       http://www.apache.org/
   freebsd   FreeBSD Operating System       http://www.freebsd.org/
   gimp      GNU Image Manipulation Program http://www.gimp.org/
-  htdig     Internet search engine         http://www.htdig.org/
   linux     Linux Operating System         http://www.linux.org/
   netbsd    NetBSD Operating System        http://www.netbsd.org/
   openbsd   OpenBSD Operating System       http://www.openbsd.org/

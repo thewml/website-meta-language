@@ -8,9 +8,6 @@ SET (LOGO_FILES
     logo-gimp.gif
     logo-gimp.info
     logo-gimp.png
-    logo-htdig.gif
-    logo-htdig.info
-    logo-htdig.png
     logo-linux.gif
     logo-linux.info
     logo-linux.png
