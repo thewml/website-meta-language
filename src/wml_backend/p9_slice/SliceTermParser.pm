@@ -7,7 +7,6 @@ package SliceTermParser;
 ;##  Copyright (c) 1999-2002 Denis Barbier.
 ;##
 
-package SliceTermParser;
 
 {
     use strict;
