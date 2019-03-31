@@ -29,6 +29,9 @@
 
 # include <config.h>
 
+#ifdef __CYGWIN__
+#define ELIDE_CODE
+#endif
 #if !defined __STDC__ || !__STDC__
 /* This is a separate conditional since some stdc systems
    reject `defined (const)'.  */
@@ -983,5 +986,3 @@ getopt_long_only (argc, argv, options, long_options, opt_index)
 }
 
 #endif  /* Not ELIDE_CODE.  */
-
-/*EOF*/
