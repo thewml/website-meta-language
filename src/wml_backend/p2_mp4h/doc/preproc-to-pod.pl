@@ -17,9 +17,9 @@ GetOptions(
     "output=s" => \$output_fn,
 );
 
-my $flags = qq{-X 0 -I $srcdir -D srcdir="$srcdir"};
+my @flags = ( "-X", 0, "-I", $srcdir, -D, "srcdir=$srcdir" );
 
-open my $mp4h_fh, "$mp4h $flags -D format=pod $input_fn |"
+open my $mp4h_fh, "-|", $mp4h, @flags, "-D", "format=pod", $input_fn
     or die "Could not open mp4h!";
 
 open my $out_fh, ">", $output_fn

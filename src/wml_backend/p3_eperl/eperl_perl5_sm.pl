@@ -3,8 +3,11 @@
 ##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
 ##
 
+use strict;
+use warnings;
+
 use Config;
-use Getopt::Long;
+use Getopt::Long qw/ GetOptions /;
 
 my $output_fn;
 GetOptions( 'o|output=s' => \$output_fn, )
@@ -15,10 +18,9 @@ if ( !defined($output_fn) )
     die "Output not specified.";
 }
 
-open O, '>', $output_fn
+open my $out, '>', $output_fn
     or die "Cannot open '$output_fn' for writing";
-select(O);
-print <<'EOT'
+print {$out} <<'EOT'
 /*
 **        ____           _
 **    ___|  _ \ ___ _ __| |
@@ -63,10 +65,11 @@ EOT
 #   code stolen from Perl 5.004_04's ExtUtils::Embed because
 #   this module is only available in newer Perl versions.
 #
+my @Extensions;
 
 sub static_ext
 {
-    unless ( scalar @Extensions )
+    unless (@Extensions)
     {
         # my $static_ext = $Config{static_ext};
         # $static_ext =~ s{^\s+}{};
@@ -81,9 +84,9 @@ sub xsi_body
     my (@exts) = @_;
     my ( $pname, @retval, %seen );
     my ($dl) = &canon( '/', 'DynaLoader' );
-    foreach $_ (@exts)
+    foreach my $ext (@exts)
     {
-        my ($pname) = &canon( '/', $_ );
+        my ($pname) = canon( '/', $ext );
         my ( $mname, $cname, $ccode );
         ( $mname = $pname ) =~ s!/!::!g;
         ( $cname = $pname ) =~ s!/!__!g;
@@ -105,30 +108,30 @@ sub xsi_body
 sub canon
 {
     my ( $as, @ext ) = @_;
-    foreach (@ext)
+    foreach my $ext (@ext)
     {
         # might be X::Y or lib/auto/X/Y/Y.a
-        next if s!::!/!g;
-        s:^(lib|ext)/(auto/)?::;
-        s:/\w+\.\w+$::;
+        next if $ext =~ s!::!/!g;
+        $ext =~ s:^(lib|ext)/(auto/)?::;
+        $ext =~ s:/\w+\.\w+$::;
     }
     grep( s:/:$as:, @ext ) if ( $as ne '/' );
     return @ext;
 }
-@mods = ();
+my @mods = ();
 push( @mods, &static_ext() );
+my %seen;
 @mods = grep( !$seen{$_}++, @mods );
-$DEF  = "#define DO_NEWXS_STATIC_MODULES \\\n";
-$DEF .= &xsi_body(@mods);
+my $DEF = "#define DO_NEWXS_STATIC_MODULES \\\n";
+$DEF .= xsi_body(@mods);
 $DEF =~ s|\\\n$|\n|s;
-print $DEF;
+print {$out} $DEF;
 
-print <<EOT
+print {$out} <<'EOT'
 
 #endif /* EPERL_PERL5_SM_H */
 /*EOF*/
 EOT
     ;
 
-close(O);
-##EOF##
+close($out);
