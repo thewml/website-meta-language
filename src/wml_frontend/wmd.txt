@@ -48,7 +48,6 @@ wml_p9_slice(1) ..........<s> Slicing and Output Filter
 
 Auxiliaries:
 wml_aux_htmlinfo(1) ......<s> HTML Information
-wml_aux_linklint(1) ......<s> Hyperlink Checker
 wml_aux_weblint(1) .......<s> HTML Checker
 wml_aux_tidy(1) ..........<s> HTML Clean up
 wml_aux_htmlclean(1) .....<s> HTML Optimizer

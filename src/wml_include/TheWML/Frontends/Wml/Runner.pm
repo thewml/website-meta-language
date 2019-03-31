@@ -119,7 +119,7 @@ sub _calc_epilogue_program
     }
     elsif ( $e =~ m|^linklint(.*)| )
     {
-        $e = "$libdir/exec/wml_aux_linklint$1";
+        $e = "linklint$1";
         $e .= " -nocache -one -summary" if ( $1 eq '' );
     }
     elsif ( $e =~ m|^weblint(.*)| )
