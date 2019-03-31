@@ -14,7 +14,7 @@ sub wml_fmt_text {
     local (*FP);
 
     #   read the txt2html result
-    open(FP, "$(WML_LOC_LIBDIR)/exec/wml_aux_txt2html $arg->{FILE}|");
+    open(FP, "txt2html $arg->{FILE}|");
     local ($/) = undef;
     $buf = <FP>;
     close(FP);
@@ -89,7 +89,7 @@ wml::fmt::text - Plain ASCII with Special Formatting Semantic
 
 The usage is simple: Surround the text with the C<E<lt>textE<gt>> container
 tag and then just write plain ASCII text inside it. The corresponding HTML
-code is created via F<wml_aux_txt2html>(1), a filter which gives the ASCII
+code is created via F<txt2html>(1), a filter which gives the ASCII
 text nice formatting semantic which control the HTML result.
 
 The core conversion function is wml_fmt_text() which also can be used by other
@@ -103,12 +103,12 @@ include files.
 
 =head1 REQUIRES
 
- Internal: P1, P2, P3, wml_aux_txt2html (WML)
+ Internal: P1, P2, P3, txt2html (WML)
  External: --
 
 =head1 SEEALSO
 
-wml_aux_txt2html(1)
+txt2html(1)
 
 =cut
 

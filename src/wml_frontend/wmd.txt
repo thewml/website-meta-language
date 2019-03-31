@@ -53,7 +53,6 @@ wml_aux_weblint(1) .......<s> HTML Checker
 wml_aux_tidy(1) ..........<s> HTML Clean up
 wml_aux_htmlclean(1) .....<s> HTML Optimizer
 wml_aux_map2html(1) ......<s> Server-Side to Client-Side Map Converter
-wml_aux_txt2html(1) ......<s> Text to HTML Converter
 wml_aux_freetable(1) .....<s> Table to HTML Converter
 wml_aux_iselect(1) .......<s> Interactive Selection
 

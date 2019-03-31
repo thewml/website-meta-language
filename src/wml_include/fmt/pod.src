@@ -17,7 +17,6 @@ sub wml_fmt_pod {
     my ($buf);
     local (*FP);
 
-    #   read the txt2html result
     open(FP, "pod2html --norecurse" .
                        ($arg->{KEEPINDEX}  ? ' --index' : ' --noindex') .
                        ($arg->{NONETSCAPE} ? ' --nonetscape' : ' --netscape') .

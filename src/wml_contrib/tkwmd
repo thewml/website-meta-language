@@ -89,7 +89,7 @@ add_doc_menu('Backends',
        wml_p6_asubst wml_p7_htmlfix wml_p8_htmlstrip wml_p9_slice));
 add_doc_menu('Auxiliaries',
     qw(wml_aux_htmlinfo wml_aux_linklint wml_aux_weblint wml_aux_tidy
-       wml_aux_htmlclean wml_aux_map2html wml_aux_txt2html
+       wml_aux_htmlclean wml_aux_map2html
        wml_aux_freetable wml_aux_iselect));
 add_doc_menu('Webdesign',
     qw(wml::des::all wml::des::gfont wml::des::imgbg wml::des::imgdot
