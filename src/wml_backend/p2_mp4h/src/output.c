@@ -87,7 +87,7 @@ static int output_unused;       /* current value of (size - used) */
 int output_current_line;
 
 /* Set to true after a left angle, to remove star before tag name  */
-static boolean after_left_angle = FALSE;
+static bool after_left_angle = false;
 
 
 /*------------------------.
@@ -238,7 +238,7 @@ make_room_for (int length)
 `----------------------------------------------------*/
 
 void
-remove_special_chars (char *s, boolean restore_quotes)
+remove_special_chars (char *s, bool restore_quotes)
 {
   int offset = 0;
   register unsigned char *cp = (unsigned char *) s;
@@ -413,7 +413,7 @@ output_text (const char *text, int length)
 void
 shipout_text (struct obstack *obs, char *text)
 {
-  static boolean start_of_output_line = TRUE;
+  static bool start_of_output_line = true;
   char line[20];
   const char *cursor;
   int length;
@@ -432,7 +432,7 @@ shipout_text (struct obstack *obs, char *text)
     return;
 
   /* Restitute some special characters  */
-  remove_special_chars (text, TRUE);
+  remove_special_chars (text, true);
 
   /* Remove leading and trailing stars in tag names
      and trailing slash in attributes */
@@ -442,7 +442,7 @@ shipout_text (struct obstack *obs, char *text)
 
   if (*text == '\0')
     {
-      after_left_angle = FALSE;
+      after_left_angle = false;
       return;
     }
 
@@ -476,7 +476,7 @@ shipout_text (struct obstack *obs, char *text)
       {
         if (start_of_output_line)
           {
-            start_of_output_line = FALSE;
+            start_of_output_line = false;
             output_current_line++;
 
 #ifdef DEBUG_OUTPUT
@@ -507,13 +507,13 @@ shipout_text (struct obstack *obs, char *text)
           }
         OUTPUT_CHARACTER (*text);
         if (*text == '\n')
-          start_of_output_line = TRUE;
+          start_of_output_line = true;
       }
 
   if (*text == '<')
-    after_left_angle = TRUE;
+    after_left_angle = true;
   else
-    after_left_angle = FALSE;
+    after_left_angle = false;
 }
 
 /* Functions for use by diversions.  */

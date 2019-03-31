@@ -40,6 +40,7 @@
 # define voidstar void *
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <ctype.h>
 
 #include "obstack.h"
@@ -66,14 +67,6 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-
-/* If FALSE is defined, we presume TRUE is defined too.  In this case,
-   merely typedef boolean as being int.  Or else, define these all.  */
-#ifndef FALSE
-# define FALSE 0
-# define TRUE 1
-#endif
-typedef int boolean;
 
 char *mktemp ();
 
@@ -151,7 +144,7 @@ struct _token_data
       struct
         {
           builtin_func *func;
-          boolean traced;
+          bool traced;
         }
       u_f;
     }
@@ -278,7 +271,7 @@ void debug_init __P ((void));
 void debug_deallocate __P ((void));
 int debug_decode __P ((const char *));
 void debug_flush_files __P ((void));
-boolean debug_set_output __P ((const char *));
+bool debug_set_output __P ((const char *));
 void debug_message_prefix __P ((void));
 
 void trace_prepre __P ((const char *, int));
@@ -335,19 +328,19 @@ void input_init __P ((void));
 void input_deallocate __P ((void));
 void syntax_init __P ((void));
 int peek_input __P ((void));
-token_type next_token __P ((token_data *, read_type, boolean));
+token_type next_token __P ((token_data *, read_type, bool));
 void skip_line __P ((void));
 void skip_buffer __P ((void));
 void input_close __P ((void));
 
 /* push back input */
 void push_file __P ((FILE *, const char *));
-void push_macro __P ((builtin_func *, boolean));
+void push_macro __P ((builtin_func *, bool));
 void push_single __P ((int));
 struct obstack *push_string_init __P ((void));
 const char *push_string_finish __P ((read_type));
 void push_wrapup __P ((const char *));
-boolean pop_wrapup __P ((void));
+bool pop_wrapup __P ((void));
 void unget_string __P ((char *));
 
 /* read a file verbatim */
@@ -442,7 +435,7 @@ void make_diversion __P ((int));
 void insert_diversion __P ((int));
 void insert_file __P ((FILE *));
 void freeze_diversions __P ((FILE *));
-void remove_special_chars __P ((char *, boolean));
+void remove_special_chars __P ((char *, bool));
 
 
 /* File symtab.c  --- symbol table definitions.  */
@@ -462,9 +455,9 @@ enum _symbol_lookup
 struct _symbol
 {
   struct _symbol *next;
-  boolean traced;
-  boolean container;
-  boolean expand_args;
+  bool traced;
+  bool container;
+  bool expand_args;
 
   char *name;
   char *hook_begin;
@@ -508,7 +501,7 @@ void hack_all_symbols __P ((hack_symbol *, const char *));
 
 void expand_input __P ((void));
 void call_macro __P ((symbol *, struct obstack *, int, token_data **, read_type));
-boolean get_attribute (struct obstack *obs, token_data *argp);
+bool get_attribute (struct obstack *obs, token_data *argp);
 
 extern int expansion_level;
 
@@ -525,14 +518,14 @@ typedef enum _encoding_type encoding_type;
 struct _builtin
 {
   const char *name;
-  boolean container;
-  boolean expand_args;
+  bool container;
+  bool expand_args;
   builtin_func *func;
 };
 
 typedef struct _builtin builtin;
 
-extern boolean visible_quotes;
+extern bool visible_quotes;
 
 /* Used to disable risky functions. */
 extern int safety_level;
@@ -547,11 +540,11 @@ void initialize_builtin __P ((symbol *));
 void builtin_init __P ((void));
 void builtin_deallocate __P ((void));
 void clear_tag_attr __P ((void));
-void define_builtin __P ((const char *, const builtin *, boolean));
+void define_builtin __P ((const char *, const builtin *, bool));
 void break_init __P ((void));
 void break_deallocate __P ((void));
 void define_user_macro __P ((const char *, char *, symbol_lookup,
-                             boolean, boolean, boolean));
+                             bool, bool, bool));
 void undivert_all __P ((void));
 void expand_user_macro __P ((struct obstack *, symbol *, int, token_data **,
                              read_type));
@@ -563,13 +556,13 @@ void install_builtin_table __P ((builtin *));
 
 /* File: devel.c  --- global functions for writing builtins and modules.  */
 
-boolean bad_argc __P ((token_data *, int, int, int));
-boolean numeric_arg __P ((token_data *, const char *, boolean, int *));
+bool bad_argc __P ((token_data *, int, int, int));
+bool numeric_arg __P ((token_data *, const char *, bool, int *));
 void shipout_int __P ((struct obstack *, int));
 void shipout_long __P ((struct obstack *, long));
 void shipout_string __P ((struct obstack *, const char *, int));
 void dump_args __P ((struct obstack *, int, token_data **, const char *));
-const char * predefined_attribute __P ((const char *, int *, token_data **, boolean));
+const char * predefined_attribute __P ((const char *, int *, token_data **, bool));
 
 
 /* File: path.c  --- path search for include files.  */
@@ -604,11 +597,11 @@ struct search_path_info
 
 /* File: eval.c  --- expression evaluation.  */
 
-boolean evaluate __P ((struct obstack *obs,
+bool evaluate __P ((struct obstack *obs,
                        const char *, const int radix, int min));
 
 #ifdef WITH_GMP
-boolean mp_evaluate __P ((struct obstack *obs,
+bool mp_evaluate __P ((struct obstack *obs,
                           const char *, const int radix, int min));
 #endif /* WITH_GMP */
 

@@ -42,8 +42,8 @@ DECLARE(mp4m_system_sh);
 
 builtin mp4h_macro_table[] =
 {
-  { "sh",                TRUE,    TRUE,   mp4m_system_sh },
-  { 0,                  FALSE,    FALSE,  0 },
+  { "sh",                true,    true,   mp4m_system_sh },
+  { 0,                  false,    false,  0 },
 };
 
 /*   Load `exec' module if not yet loaded.   */
@@ -65,9 +65,9 @@ mp4m_system_sh (MP4H_BUILTIN_ARGS)
   char *script;
   FILE *fp;
 
-  verbatim = predefined_attribute ("verbatim", &argc, argv, TRUE);
+  verbatim = predefined_attribute ("verbatim", &argc, argv, true);
   script = xstrdup(ARGBODY);
-  remove_special_chars (script, TRUE);
+  remove_special_chars (script, true);
 
   fp = popen(script, "r");
   if (fp == NULL)

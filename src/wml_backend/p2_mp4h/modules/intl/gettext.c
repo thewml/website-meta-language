@@ -60,12 +60,12 @@ builtin mp4h_macro_table[] =
   /* name             container   expand    function
                                 attributes                      */
 
-  { "textdomain",       FALSE,    TRUE,   mp4m_intl_textdomain },
-  { "bindtextdomain",   FALSE,    TRUE,   mp4m_intl_bindtextdomain },
+  { "textdomain",       false,    true,   mp4m_intl_textdomain },
+  { "bindtextdomain",   false,    true,   mp4m_intl_bindtextdomain },
   { "bind_textdomain_codeset",
-                        FALSE,    TRUE,   mp4m_intl_bind_textdomain_codeset },
-  { "gettext",           TRUE,    TRUE,   mp4m_intl_gettext },
-  { 0,                  FALSE,   FALSE,   0 },
+                        false,    true,   mp4m_intl_bind_textdomain_codeset },
+  { "gettext",           true,    true,   mp4m_intl_gettext },
+  { 0,                  false,   false,   0 },
 };
 
 void
@@ -85,7 +85,7 @@ mp4m_intl_textdomain (MP4H_BUILTIN_ARGS)
 {
   const char *domain;
 
-  domain = predefined_attribute ("domain", &argc, argv, FALSE);
+  domain = predefined_attribute ("domain", &argc, argv, false);
   if (!domain)
     {
       MP4HERROR ((warning_status, 0,
@@ -101,8 +101,8 @@ mp4m_intl_bindtextdomain (MP4H_BUILTIN_ARGS)
 {
   const char *domain, *path;
 
-  domain = predefined_attribute ("domain", &argc, argv, FALSE);
-  path   = predefined_attribute ("path", &argc, argv, FALSE);
+  domain = predefined_attribute ("domain", &argc, argv, false);
+  path   = predefined_attribute ("path", &argc, argv, false);
   if (!domain)
     {
       MP4HERROR ((warning_status, 0,
@@ -125,8 +125,8 @@ mp4m_intl_bind_textdomain_codeset (MP4H_BUILTIN_ARGS)
 {
   const char *domain, *codeset;
 
-  domain  = predefined_attribute ("domain", &argc, argv, FALSE);
-  codeset = predefined_attribute ("codeset", &argc, argv, FALSE);
+  domain  = predefined_attribute ("domain", &argc, argv, false);
+  codeset = predefined_attribute ("codeset", &argc, argv, false);
   if (!domain)
     {
       MP4HERROR ((warning_status, 0,
@@ -150,7 +150,7 @@ mp4m_intl_gettext (MP4H_BUILTIN_ARGS)
   const char *domain;
   char *cp, *msgstr;
 
-  domain = predefined_attribute ("domain", &argc, argv, FALSE);
+  domain = predefined_attribute ("domain", &argc, argv, false);
   for (cp = ARGBODY; *cp != '\0'; cp++)
     if (CHAR_SLASH == *cp)
       *cp = '/';

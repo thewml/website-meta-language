@@ -45,7 +45,7 @@ int expansion_level = 0;
 static int macro_call_id = 0;
 
 /* global variable to abort expansion */
-static boolean internal_abort = FALSE;
+static bool internal_abort = false;
 
 /*----------------------------------------------------------------------.
 | This function read all input, and expands each token, one at a time.  |
@@ -57,7 +57,7 @@ expand_input (void)
   token_type t;
   token_data td;
 
-  while ((t = next_token (&td, READ_NORMAL, FALSE)) != TOKEN_EOF)
+  while ((t = next_token (&td, READ_NORMAL, false)) != TOKEN_EOF)
     expand_token ((struct obstack *) NULL, READ_NORMAL, t, &td);
 }
 
@@ -200,13 +200,13 @@ expand_argument (struct obstack *obs, read_type expansion, token_data *argp,
   token_data td;
   int group_level = 0;
   int rc;
-  boolean in_string = FALSE;
+  bool in_string = false;
 
   *last_char_ptr = ' ';
   TOKEN_DATA_TYPE (argp) = TOKEN_VOID;
 
   /* Skip leading white space.  */
-  t = next_token (&td, expansion, FALSE);
+  t = next_token (&td, expansion, false);
   if (t == TOKEN_SPACE)
     {
       if (expansion == READ_ATTR_ASIS || expansion == READ_ATTR_QUOT)
@@ -216,7 +216,7 @@ expand_argument (struct obstack *obs, read_type expansion, token_data *argp,
           obstack_grow (obs, TOKEN_DATA_TEXT (&td),
                   strlen (TOKEN_DATA_TEXT (&td)));
         }
-      t = next_token (&td, expansion, FALSE);
+      t = next_token (&td, expansion, false);
     }
 
   rc = 0;
@@ -254,8 +254,8 @@ expand_argument (struct obstack *obs, read_type expansion, token_data *argp,
           break;
 
         case TOKEN_EOF:
-          internal_abort = TRUE;
-          return FALSE;
+          internal_abort = true;
+          return false;
           break;
 
         case TOKEN_BGROUP:
@@ -317,10 +317,10 @@ expand_argument (struct obstack *obs, read_type expansion, token_data *argp,
 | stored on the obstack ARGUMENTS and a table of pointers to the arguments |
 | on the obstack ARGPTR.                                                   |
 | If there is a slash character before closing bracket, this function      |
-| returns TRUE, otherwise FALSE.                                           |
+| returns true, otherwise false.                                           |
 `-------------------------------------------------------------------------*/
 
-static boolean
+static bool
 collect_arguments (char *symbol_name, read_type expansion,
                    struct obstack *argptr, struct obstack *arguments)
 {
@@ -339,7 +339,7 @@ collect_arguments (char *symbol_name, read_type expansion,
 
   ch = peek_input ();
   if (IS_CLOSE (ch))
-    (void) next_token (&td, READ_BODY, FALSE);
+    (void) next_token (&td, READ_BODY, false);
   else if (IS_SPACE(ch) || IS_TAG(ch) || IS_SLASH(ch))
     {
       do
@@ -391,7 +391,7 @@ collect_body (char *symbol_name, read_type expansion,
 
   while (1)
     {
-      t = next_token (&td, expansion, FALSE);
+      t = next_token (&td, expansion, false);
       text = TOKEN_DATA_TEXT (&td);
       switch (t)
         {                                /* TOKSW */
@@ -434,7 +434,7 @@ collect_body (char *symbol_name, read_type expansion,
                   /*  gobble closing bracket */
                   do
                     {
-                      t = next_token (&td, expansion, FALSE);
+                      t = next_token (&td, expansion, false);
                     }
                   while (! IS_CLOSE(*TOKEN_DATA_TEXT (&td)))
                     ;
@@ -480,7 +480,7 @@ collect_body (char *symbol_name, read_type expansion,
                   /*  gobble closing bracket */
                   do
                     {
-                      t = next_token (&td, expansion, FALSE);
+                      t = next_token (&td, expansion, false);
                       obstack_grow (bodyptr, TOKEN_DATA_TEXT (&td),
                               strlen(TOKEN_DATA_TEXT (&td)) );
                     }
@@ -569,7 +569,7 @@ expand_macro (symbol *sym, read_type expansion)
   struct obstack *obs_expansion;
   const char *expanded;
   char *cp;
-  boolean traced, slash;
+  bool traced, slash;
   int my_call_id;
   read_type attr_expansion;
 
@@ -586,7 +586,7 @@ expand_macro (symbol *sym, read_type expansion)
   macro_call_id++;
   my_call_id = macro_call_id;
 
-  traced = (boolean) ((debug_level & DEBUG_TRACE_ALL) || SYMBOL_TRACED (sym));
+  traced = (bool) ((debug_level & DEBUG_TRACE_ALL) || SYMBOL_TRACED (sym));
 
   obstack_init (&arguments);
   obstack_init (&argptr);
@@ -712,7 +712,7 @@ expand_unknown_tag (char *name, read_type expansion)
   const char *expanded;
   char *symbol_name, *cp;
   read_type attr_expansion;
-  boolean slash, single;
+  bool slash, single;
 
   expansion_level++;
   if (expansion_level > nesting_limit)
@@ -747,7 +747,7 @@ expand_unknown_tag (char *name, read_type expansion)
   */
   single = slash;
   if (*(symbol_name) == '/')
-    single = TRUE;
+    single = true;
 
   if (!single && !(exp_flags & EXP_STAR_COMPLEX))
     single = (LAST_CHAR (symbol_name) == '*');
@@ -835,7 +835,7 @@ expand_entity (symbol *sym, read_type expansion)
 {
   struct obstack *obs_expansion;
   const char *expanded;
-  boolean traced;
+  bool traced;
   int my_call_id;
 
   expansion_level++;
@@ -851,7 +851,7 @@ expand_entity (symbol *sym, read_type expansion)
   macro_call_id++;
   my_call_id = macro_call_id;
 
-  traced = (boolean) ((debug_level & DEBUG_TRACE_ALL) || SYMBOL_TRACED (sym));
+  traced = (bool) ((debug_level & DEBUG_TRACE_ALL) || SYMBOL_TRACED (sym));
 
   if (traced && (debug_level & DEBUG_TRACE_CALL))
     trace_prepre (SYMBOL_NAME (sym), my_call_id);

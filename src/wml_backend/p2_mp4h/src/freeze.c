@@ -228,7 +228,7 @@ reload_frozen_state (const char *name)
   int number[2];
   const builtin *bp;
   symbol *sym, *var;
-  boolean container, expand_args;
+  bool container, expand_args;
 
   file = path_search (name, (char **)NULL);
   if (file == NULL)
@@ -383,7 +383,7 @@ reload_frozen_state (const char *name)
             /* Enter a macro having an expansion text as a definition.  */
 
             define_user_macro (string[0], string[1], SYMBOL_INSERT,
-                    container, expand_args, FALSE);
+                    container, expand_args, false);
 
             sym = lookup_symbol (string[0], SYMBOL_LOOKUP);
 

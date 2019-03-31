@@ -435,7 +435,7 @@ main (int argc, char *const *argv)
 
         case 't':
           sym = lookup_symbol (defines->macro, SYMBOL_INSERT);
-          SYMBOL_TRACED (sym) = TRUE;
+          SYMBOL_TRACED (sym) = true;
           break;
 
         default:

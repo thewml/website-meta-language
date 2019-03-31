@@ -45,8 +45,8 @@ DECLARE(mp4m_system_execute);
 
 builtin mp4h_macro_table[] =
 {
-  { "exec",              TRUE,    TRUE,   mp4m_system_execute },
-  { 0,                  FALSE,    FALSE,  0 },
+  { "exec",              true,    true,   mp4m_system_execute },
+  { 0,                  false,    false,  0 },
 };
 
 void
@@ -65,7 +65,7 @@ mp4m_system_execute (MP4H_BUILTIN_ARGS)
   const char *type, *s;
   const builtin *bp;
 
-  type = predefined_attribute ("type", &argc, argv, FALSE);
+  type = predefined_attribute ("type", &argc, argv, false);
   if (!type)
     {
       MP4HERROR ((warning_status, errno,

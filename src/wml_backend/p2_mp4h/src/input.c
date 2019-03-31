@@ -139,14 +139,14 @@ struct input_block
           int lineno;           /* current line number for do */
           /* Yet another attack of "The curse of global variables" (sigh) */
           int out_lineno;       /* current output line number do */
-          boolean advance_line; /* start_of_input_line from next_char () */
+          bool advance_line; /* start_of_input_line from next_char () */
         }
       u_f;
       struct
         {
           builtin_func *func;   /* pointer to macros function */
-          boolean traced;       /* TRUE iff builtin is traced */
-          boolean read;         /* TRUE iff block has been read */
+          bool traced;       /* true iff builtin is traced */
+          bool read;         /* true iff block has been read */
         }
       u_m;
     }
@@ -192,7 +192,7 @@ static input_block *next;
 static token_data token_read;
 
 /* Flag for next_char () to increment current_line.  */
-static boolean start_of_input_line;
+static bool start_of_input_line;
 
 /* Input syntax table */
 unsigned short syntax_table[256];
@@ -205,7 +205,7 @@ unsigned short syntax_table[256];
 STRING eolcomm;
 STRING lquote, rquote;
 
-boolean visible_quotes;
+bool visible_quotes;
 
 
 
@@ -241,7 +241,7 @@ file_read(void)
 
   if (start_of_input_line)
     {
-      start_of_input_line = FALSE;
+      start_of_input_line = false;
       current_line++;
     }
 
@@ -250,7 +250,7 @@ file_read(void)
     return CHAR_RETRY;
 
   if (ch == '\n')
-    start_of_input_line = TRUE;
+    start_of_input_line = true;
   return ch;
 }
 
@@ -259,7 +259,7 @@ file_unget(int ch)
 {
   ungetc (ch, isp->u.u_f.file);
   if (ch == '\n')
-    start_of_input_line = FALSE;
+    start_of_input_line = false;
 }
 
 static void
@@ -332,7 +332,7 @@ push_file (FILE *fp, const char *title)
 static int
 macro_peek(void)
 {
-  if (isp->u.u_m.read == TRUE)
+  if (isp->u.u_m.read == true)
     return CHAR_RETRY;
 
   return CHAR_MACRO;
@@ -341,10 +341,10 @@ macro_peek(void)
 static int
 macro_read(void)
 {
-  if (isp->u.u_m.read == TRUE)
+  if (isp->u.u_m.read == true)
     return CHAR_RETRY;
 
-  isp->u.u_m.read = TRUE;
+  isp->u.u_m.read = true;
   return CHAR_MACRO;
 }
 
@@ -353,7 +353,7 @@ static struct input_funcs macro_funcs = {
 };
 
 void
-push_macro (builtin_func *func, boolean traced)
+push_macro (builtin_func *func, bool traced)
 {
   input_block *i;
 
@@ -369,7 +369,7 @@ push_macro (builtin_func *func, boolean traced)
 
   i->u.u_m.func = func;
   i->u.u_m.traced = traced;
-  i->u.u_m.read = FALSE;
+  i->u.u_m.read = false;
 
   i->prev = isp;
   isp = i;
@@ -563,20 +563,20 @@ pop_input (void)
 /*------------------------------------------------------------------------.
 | To switch input over to the wrapup stack, main () calls pop_wrapup ().  |
 | Since wrapup text can install new wrapup text, pop_wrapup () returns    |
-| FALSE when there is no wrapup text on the stack, and TRUE otherwise.    |
+| false when there is no wrapup text on the stack, and true otherwise.    |
 `------------------------------------------------------------------------*/
 
-boolean
+bool
 pop_wrapup (void)
 {
   if (wsp == NULL)
-    return FALSE;
+    return false;
 
   current_input = &wrapup_stack;
   isp = wsp;
   wsp = NULL;
 
-  return TRUE;
+  return true;
 }
 
 void
@@ -759,7 +759,7 @@ skip_buffer (void)
 | of individual chars might break quotes with 8-bit chars in it.       |
 `---------------------------------------------------------------------*/
 
-static boolean
+static bool
 match_comment (const unsigned char *s)
 {
   int n;                        /* number of characters matched */
@@ -769,24 +769,24 @@ match_comment (const unsigned char *s)
 
   ch = peek_input ();
   if (ch != *s)
-    return FALSE;               /* fail */
+    return false;               /* fail */
 
   (void) next_char ();
   if (s[1] == '\0')
-    return TRUE;                /* short match */
+    return true;                /* short match */
 
   for (n = 1, t = s++; (ch = peek_input ()) == *s++; n++)
     {
       (void) next_char ();
       if (*s == '\0')           /* long match */
-        return TRUE;
+        return true;
     }
 
   /* Push back input.  */
   st = push_string_init ();
   obstack_grow (st, t, n);
   push_string_finish (READ_NORMAL);
-  return FALSE;
+  return false;
 }
 
 /*------------------------------------------------------------------------.
@@ -835,7 +835,7 @@ input_init (void)
   wsp = NULL;
   next = NULL;
 
-  start_of_input_line = FALSE;
+  start_of_input_line = false;
 
   eolcomm.string = xstrdup (DEF_EOLCOMM);
   eolcomm.length = strlen (eolcomm.string);
@@ -845,7 +845,7 @@ input_init (void)
 
   rquote.string  = xstrdup (DEF_RQUOTE);
   rquote.length  = strlen (rquote.string);
-  visible_quotes = FALSE;
+  visible_quotes = false;
 
   syntax_init ();
 }
@@ -966,7 +966,7 @@ set_syntax (int code, const char *chars)
 `-------------------------------------------------------------------------*/
 
 token_type
-next_token (token_data *td, read_type expansion, boolean in_string)
+next_token (token_data *td, read_type expansion, bool in_string)
 {
   int ch;
   token_type type = TOKEN_NONE;
@@ -1401,7 +1401,7 @@ lex_debug (void)
   token_type t;
   token_data td;
 
-  while ((t = next_token (&td, READ_NORMAL, FALSE)) != TOKEN_EOF)
+  while ((t = next_token (&td, READ_NORMAL, false)) != TOKEN_EOF)
     print_token ("lex", t, &td);
 }
 #endif

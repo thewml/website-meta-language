@@ -63,13 +63,13 @@ symbol **file_tab;
 symbol **symtab;
 
 /* True if tags are case insensitive  */
-boolean caseless_tag;
+bool caseless_tag;
 
 /* True if variables are case insensitive  */
-boolean caseless_var;
+bool caseless_var;
 
 /* True if entities are case insensitive  */
-boolean caseless_ent;
+bool caseless_ent;
 
 static void
 hash_table_init (symbol **s)
@@ -180,7 +180,7 @@ hash (const char *s)
 `------------------------------------------------------------------------*/
 
 static symbol *
-generic_lookup (const char *name, symbol_lookup mode, boolean caseless)
+generic_lookup (const char *name, symbol_lookup mode, bool caseless)
 {
   int h, cmp = 1;
   symbol *sym, *prev;
@@ -290,7 +290,7 @@ symbol *
 lookup_file (const char *name, symbol_lookup mode)
 {
   symtab = file_tab;
-  return generic_lookup (name, mode, FALSE);
+  return generic_lookup (name, mode, false);
 }
 
 /*----------------------------------------------------------------------.
@@ -334,7 +334,7 @@ symtab_debug (void)
   symbol *s;
   int delete;
 
-  while ((t = next_token (&td, READ_NORMAL, FALSE)) != TOKEN_EOF)
+  while ((t = next_token (&td, READ_NORMAL, false)) != TOKEN_EOF)
     {
       if (t != TOKEN_WORD)
         continue;

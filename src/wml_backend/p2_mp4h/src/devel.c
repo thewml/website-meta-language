@@ -47,10 +47,10 @@ static var_stack *tag_attr = NULL;
 | applicable.                                                             |
 `------------------------------------------------------------------------*/
 
-boolean
+bool
 bad_argc (token_data *name, int argc, int min, int max)
 {
-  boolean isbad = FALSE;
+  bool isbad = false;
 
   if (min > 0 && argc < min)
     {
@@ -58,7 +58,7 @@ bad_argc (token_data *name, int argc, int min, int max)
         MP4HERROR ((warning_status, 0,
           _("Warning:%s:%d: Too few arguments to built-in `%s'"),
                CURRENT_FILE_LINE, TOKEN_DATA_TEXT (name)));
-      isbad = TRUE;
+      isbad = true;
     }
   else if (max > 0 && argc > max && !suppress_warnings)
     {
@@ -73,7 +73,7 @@ bad_argc (token_data *name, int argc, int min, int max)
 /*--------------------------------------------------------------------------.
 | The function numeric_arg () converts ARG to an int pointed to by VALUEP.  |
 | If the conversion fails, print error message for macro MACRO.  Return     |
-| TRUE iff conversion succeeds.                                             |
+| true iff conversion succeeds.                                             |
 `--------------------------------------------------------------------------*/
 static const char *
 skip_space (const char *arg)
@@ -83,8 +83,8 @@ skip_space (const char *arg)
   return arg;
 }
 
-boolean
-numeric_arg (token_data *macro, const char *arg, boolean warn, int *valuep)
+bool
+numeric_arg (token_data *macro, const char *arg, bool warn, int *valuep)
 {
   char *endp;
 
@@ -95,9 +95,9 @@ numeric_arg (token_data *macro, const char *arg, boolean warn, int *valuep)
         MP4HERROR ((warning_status, 0,
           _("Warning:%s:%d: Argument `%s' non-numeric in the <%s> tag"),
                CURRENT_FILE_LINE, arg, TOKEN_DATA_TEXT (macro)));
-      return FALSE;
+      return false;
     }
-  return TRUE;
+  return true;
 }
 
 /*----------------------------------------------------------------------.
@@ -176,12 +176,12 @@ dump_args (struct obstack *obs, int argc, token_data **argv, const char *sep)
 
 const char *
 predefined_attribute (const char *key, int *ptr_argc, token_data **argv,
-                      boolean lowercase)
+                      bool lowercase)
 {
   var_stack *next;
   char *cp, *sp, *lower;
   int i, j, special_chars;
-  boolean found = FALSE;
+  bool found = false;
 
   i = 1;
   while (i<*ptr_argc)
@@ -199,7 +199,7 @@ predefined_attribute (const char *key, int *ptr_argc, token_data **argv,
           (cp != NULL && strncasecmp (sp, key, strlen (key)) == 0
                && *(sp + strlen (key)) == '='))
         {
-          found = TRUE;
+          found = true;
           next = (var_stack *) xmalloc (sizeof (var_stack));
           next->prev = tag_attr;
           if (cp)

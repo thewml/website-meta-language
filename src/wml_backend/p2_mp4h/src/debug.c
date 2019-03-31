@@ -188,10 +188,10 @@ debug_flush_files (void)
 /*-------------------------------------------------------------------------.
 | Change the debug output to file NAME.  If NAME is "-", debug output is   |
 | sent to stdout, and if it is NULL, debug output is reverted to stderr.   |
-| Return TRUE iff the output stream was changed.                          |
+| Return true iff the output stream was changed.                          |
 `-------------------------------------------------------------------------*/
 
-boolean
+bool
 debug_set_output (const char *name)
 {
   FILE *fp;
@@ -205,11 +205,11 @@ debug_set_output (const char *name)
     {
       fp = fopen (name, "a");
       if (fp == NULL)
-        return FALSE;
+        return false;
 
       debug_set_file (fp);
     }
-  return TRUE;
+  return true;
 }
 
 /*-------------------------------------------------------------------------.
@@ -251,7 +251,7 @@ trace_format (const char *fmt, ...)
 
   va_start (args, fmt);
 
-  while (TRUE)
+  while (true)
     {
       while ((ch = *fmt++) != '\0' && ch != '%')
         obstack_1grow (&trace, ch);
@@ -282,7 +282,7 @@ trace_format (const char *fmt, ...)
         }
 
       /*   Remove special chars from output */
-      remove_special_chars (s, TRUE);
+      remove_special_chars (s, true);
       slen = strlen (s);
       if (maxlen == 0 || maxlen > slen)
         obstack_grow (&trace, s, slen);
@@ -369,7 +369,7 @@ trace_pre (const char *name, int id, int argc, token_data **argv)
             {
             case TOKEN_TEXT:
               text = xstrdup (TOKEN_DATA_TEXT (argv[i]));
-              remove_special_chars (text, FALSE);
+              remove_special_chars (text, false);
               trace_format ("%S", text);
               xfree ((voidstar) text);
               break;
@@ -422,7 +422,7 @@ trace_post (const char *name, int id, int argc, token_data **argv,
   if (expanded && (debug_level & DEBUG_TRACE_EXPANSION))
     {
       text = xstrdup (expanded);
-      remove_special_chars (text, FALSE);
+      remove_special_chars (text, false);
       trace_format (" -> %S", text);
       xfree ((voidstar) text);
     }
