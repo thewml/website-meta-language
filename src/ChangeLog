@@ -8,6 +8,15 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.18.0 to 2.20.0:
+
+  *) Remove / unbundle old mkwml, weblint, wmg.cgi, linklint, txt2html,
+  the wml_std* documents, old logos (htdig, php3, xemacs), wml1to2, wml.vim,
+  wml.spec. They are available separately.
+
+  *) Heavy refactoring and modernisation of the code - relying on newer C
+  and POSIX standards.
+
   Changes between 2.16.0 to 2.18.0:
 
   *) Refactored the p9_slice code to avoid global state and eval and allow
