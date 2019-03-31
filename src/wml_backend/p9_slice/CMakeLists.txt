@@ -6,6 +6,10 @@ SET(dest "${CMAKE_CURRENT_BINARY_DIR}/${destbase}")
 SET (yytab_base "SliceTermParser.pm")
 
 SET (yytab "${CMAKE_CURRENT_SOURCE_DIR}/${yytab_base}")
+# Workaround for git clone SNAFU.
+EXECUTE_PROCESS(
+    COMMAND "cmake" "-E" "touch_nocreate" "${yytab}"
+)
 
 ADD_CUSTOM_COMMAND(
     OUTPUT "${yytab}"
