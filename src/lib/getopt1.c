@@ -49,6 +49,9 @@
 #define ELIDE_CODE
 #endif
 #endif
+#ifdef __CYGWIN__
+#define ELIDE_CODE
+#endif
 
 #ifndef ELIDE_CODE
 
