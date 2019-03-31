@@ -115,8 +115,8 @@ void Perl5_SetScalar(pTHX_ char *pname, char *vname, char *vvalue)
     dTHR;
     ENTER;
     save_hptr(&PL_curstash);
-    PL_curstash = gv_stashpv(pname, TRUE);
-    sv_setpv(perl_get_sv(vname, TRUE), vvalue);
+    PL_curstash = gv_stashpv(pname, true);
+    sv_setpv(perl_get_sv(vname, true), vvalue);
     LEAVE;
     return;
 }
