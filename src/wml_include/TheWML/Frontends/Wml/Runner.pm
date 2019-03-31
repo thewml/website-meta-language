@@ -124,7 +124,7 @@ sub _calc_epilogue_program
     }
     elsif ( $e =~ m|^weblint(.*)| )
     {
-        return "$libdir/exec/wml_aux_weblint$1";
+        return "weblint$1";
     }
     elsif ( $e =~ m|^tidy(.*)| )
     {

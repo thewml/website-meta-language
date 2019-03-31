@@ -88,7 +88,7 @@ add_doc_menu('Backends',
     qw(wml_p1_ipp wml_p2_mhc wml_p3_eperl wml_p4_gm4 wml_p5_divert
        wml_p6_asubst wml_p7_htmlfix wml_p8_htmlstrip wml_p9_slice));
 add_doc_menu('Auxiliaries',
-    qw(wml_aux_htmlinfo wml_aux_weblint wml_aux_tidy
+    qw(wml_aux_htmlinfo wml_aux_tidy
        wml_aux_htmlclean wml_aux_map2html
        wml_aux_freetable wml_aux_iselect));
 add_doc_menu('Webdesign',
