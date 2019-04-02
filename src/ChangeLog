@@ -8,6 +8,11 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.20.0 to 2.20.1:
+
+  *) Fix p9_slice in certain conditions - SliceTermParser.pm was installed
+  to the wrong place.
+
   Changes between 2.18.0 to 2.20.0:
 
   *) Remove / unbundle old mkwml, weblint, wmg.cgi, linklint, txt2html,
