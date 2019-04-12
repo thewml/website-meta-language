@@ -76,9 +76,24 @@ MACRO (_gen_mod modbase1 modbase with_mp4h)
         )
         set_target_properties("${modbase}" PROPERTIES PREFIX "")
 
+        set(mp4hp "${CMAKE_CURRENT_BINARY_DIR}/${modbase}.mp4hp")
+        set(SOURCE "${module}/${modbase}.src")
+
+        ADD_CUSTOM_COMMAND(
+            OUTPUT "${mp4hp}"
+            COMMAND "${PERL_EXECUTABLE}"
+            ARGS "-nlE" "say unless \\(/^=head1/../^=cut/ or /^##EOF##/..1\\)"
+                "<" "${module}/${modbase}.src"
+                ">" "${mp4hp}"
+            DEPENDS "${SOURCE}"
+        )
+        ADD_CUSTOM_TARGET(
+            "mp4hp__${modbase}" ALL
+            DEPENDS ${mp4hp}
+        )
         install(
             FILES
-                "${module}/${modbase}.src"
+                "${mp4hp}"
             DESTINATION
                "${MP4HLIBDIR}/${modbase1}"
            RENAME
