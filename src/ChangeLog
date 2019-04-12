@@ -8,6 +8,10 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.20.1 to 2.20.2:
+
+  *) Fix p9_slice warning on non-existing slice.
+
   Changes between 2.20.0 to 2.20.1:
 
   *) Fix p9_slice in certain conditions - SliceTermParser.pm was installed
