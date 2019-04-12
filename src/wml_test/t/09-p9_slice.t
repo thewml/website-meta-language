@@ -5,7 +5,7 @@ use warnings;
 use WmlTest;
 WmlTest::init();
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 #
 #   TEST 1-2: throughput
@@ -34,6 +34,14 @@ ok( !system("$ENV{WML} -p$pass $tmpfile1 >a"), "wml" );
 # TEST
 ok( !system("cmp $tmpfile2 b"), "cmp" );
 
+{
+    my $tmpfile2 = WmlTest::tmpfile('');
+    my $tmpfile3 = WmlTest::tmpfile('');
+
+    # TEST
+    ok( !system("$ENV{WML} -p1-9 -o UNDEFuEN:$tmpfile3 $tmpfile2"),
+        "slice warning" );
+}
 WmlTest::add_files("b");
 WmlTest::add_files("a");
 

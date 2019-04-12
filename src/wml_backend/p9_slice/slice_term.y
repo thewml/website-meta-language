@@ -47,10 +47,13 @@ expr:   SLICE           { $$ = newvar($p, $s->[0], $1); my $t = $$; my $src = $1
 #   create new set variable
 my $tmpcnt = 0;
 sub newvar {
+local $SIG{__WARN__}=sub{print STDERR @_;exit(-1);};
+# use warnings FATAL => 'all';
+# die "oooookkkk";
     my ($p, $CFG, $name) = @_;
     my ($tmp);
 
-    if ($CFG->{SLICE}->{SET}->{OBJ}->{"$name"} eq '') {
+    if (( $CFG->{SLICE}->{SET}->{OBJ}->{"$name"} // '') eq '') {
         main::printwarning("no such slice '$name'\n") if $p->{_undef};
         #    The $p->{_undef} string is caught by caller, it is used
         #    to trap warnings depending on the -y command line flag.
