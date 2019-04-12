@@ -131,7 +131,7 @@ foreach my $rec (
     my $id   = $rec->{id};
     my $arch = $rec->{a};
 
-    $themes{$id} = [ "--arch=$arch", "--prefix=$HOME/apps/fcs", ];
+    $themes{$id} = [ "--arch=$arch", "--prefix=$HOME/apps/test/wml", ];
 
     my $def = sub {
         my ( $suffix, $theme ) = @_;
