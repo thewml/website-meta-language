@@ -6,6 +6,8 @@ INCLUDE ("${CMAKE_SOURCE_DIR}/cmake/thewml.cmake")
 # see - http://www.cmake.org/Wiki/CMake_FAQ#Is_there_an_option_to_produce_more_.27verbose.27_compiling.3F
 # SET(CMAKE_VERBOSE_MAKEFILE ON)
 
+SET (CPU_ARCH "" CACHE STRING "A specific CPU architecture to pass to gcc")
+option (OPTIMIZATION_OMIT_FRAME_POINTER "Use -fomit-frame-pointer with gcc (not recommended for debugging)")
 SET (PKGDATADIR_SUBDIR "wml")
 SET (RELATIVE_PKGDATADIR "${RELATIVE_DATADIR}/${PKGDATADIR_SUBDIR}")
 SET (PKGDATADIR "${DATADIR}/${PKGDATADIR_SUBDIR}")
