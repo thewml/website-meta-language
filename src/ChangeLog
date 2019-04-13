@@ -8,6 +8,11 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.20.2 to 2.20.3:
+
+  *) Strip documentation from the .mp4hp modules which caused bad output
+  on use.
+
   Changes between 2.20.1 to 2.20.2:
 
   *) Fix p9_slice warning on non-existing slice.
