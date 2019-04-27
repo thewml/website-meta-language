@@ -49,6 +49,7 @@ use Class::XSAccessor (
             _src
             _src_filename
             _src_istmp
+            _temp_dir
             _tmp
             _tmpdir
             bindir
@@ -61,7 +62,7 @@ use Class::XSAccessor (
 use Getopt::Long 2.13;
 use File::Spec ();
 use List::Util qw/ sum /;
-
+use Path::Tiny qw/ path tempdir tempfile cwd /;
 use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
@@ -704,7 +705,7 @@ sub _set_src
     if ( $self->_src eq '-' )
     {
         $self->_src_istmp(1);
-        $self->_src( $self->_tmpdir . "/wml.input.$$.tmp" );
+        $self->_src( $self->_temp_dir->child("wml.input.tmp") );
         unlink( $self->_src );
         io->file( $self->_src )->print( io->stdin()->all );
     }
@@ -737,6 +738,7 @@ sub _output_and_cleanup
     {
         $_pass_mgr->_display_times;
     }
+    $self->_temp_dir('');
 
     return 0;
 }
@@ -843,6 +845,7 @@ sub run_with_ARGV
     $self->_opt_I( [] );
     $self->_opt_h(0);
     $self->_reset_opts;
+    $self->_temp_dir( tempdir() );
 
     my @temp_argv = @{ $self->_argv };
     $self->_process_options( \@temp_argv, [] );
@@ -898,7 +901,7 @@ sub run_with_ARGV
     #   Create temporary file names
     $self->_tmp(
         [
-            map { sprintf( "%s/wml.%s.tmp%d", $self->_tmpdir, $$, $_ + 1 ) }
+            map { $self->_temp_dir->child( sprintf( "wml.tmp%d", $_ + 1 ) ) }
                 0 .. 3
         ]
     );
