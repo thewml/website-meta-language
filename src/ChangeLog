@@ -8,6 +8,11 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.20.3 to 2.20.4:
+
+  *) Fix some insecure temporary files' creations (e.g: wml.$PID.tmp1).
+  SECURITY!
+
   Changes between 2.20.2 to 2.20.3:
 
   *) Strip documentation from the .mp4hp modules which caused bad output
