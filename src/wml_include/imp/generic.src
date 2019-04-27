@@ -85,9 +85,10 @@ sub local_fetch {
         $buf = &local_fetch($src);
     }
 
-    my $tmpfile = "$(WML_TMPDIR)/wml.import.$$.tmp";
+    use Path::Tiny qw/ path tempdir tempfile cwd /;
+    my $tmpfile     = tempfile();
     local (*TMP);
-    open(TMP, ">$tmpfile");
+    open(TMP, ">", $tmpfile);
     print TMP $buf;
     close(TMP);
 

@@ -39,7 +39,8 @@ sub wml_fmt_text {
 <set-var %attributes />
 <perl>
 {
-    my $tmpfile = "$(WML_TMPDIR)/wml.txt2html.$$.tmp";
+    use Path::Tiny qw/ path tempdir tempfile cwd /;
+    my $tmpfile     = tempfile();
     my $notypo = (qq|<get-var notypo />| eq '' ? 1 : 0);
 
     my $buf;
@@ -47,7 +48,7 @@ sub wml_fmt_text {
 
     #   there is no reason to nest <text> tags, so the <perl:print>
     #   statement is unnecessary
-    open(TXT, ">$tmpfile");
+    open(TXT, ">", $tmpfile);
     print TXT $buf;
     close(TXT);
 

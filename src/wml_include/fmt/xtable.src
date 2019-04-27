@@ -10,12 +10,14 @@
 <increment __xtable:level />
 <perl filehandle="FH_XTABLE">
 {
-    my $tmpfile = "$(WML_TMPDIR)/wml.table.$$.tmp";
+    use Path::Tiny qw/ path tempdir tempfile cwd /;
+    my $tmpfile     = tempfile();
+
     my $options;
     <perl:assign $options>%attributes</perl:assign>;
     <when <eq <get-var __xtable:level /> 1 />>
     local *FH_XTABLE;
-    open(FH_XTABLE, ">$tmpfile");
+    open(FH_XTABLE, ">", $tmpfile);
     </when>
     <perl:assign>
       <wwwtable $options>

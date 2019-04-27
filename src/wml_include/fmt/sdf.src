@@ -64,7 +64,8 @@ sub wml_fmt_sdf {
 <set-var %attributes />
 <perl>
 {
-    my $tmpfile    = "$(WML_TMPDIR)/wml.sdf2html.$$.tmp";
+    use Path::Tiny qw/ path tempdir tempfile cwd /;
+    my $tmpfile     = tempfile();
     my $keephr     = (qq|<get-var keephr />| eq '' ? 1 : 0);
     my $notypo     = (qq|<get-var notypo />| eq '' ? 1 : 0);
 
@@ -73,7 +74,7 @@ sub wml_fmt_sdf {
 
     #   there is no reason to nest <sdf> tags, so the <perl:print>
     #   statement is unnecessary
-    open(SDF, ">$tmpfile");
+    open(SDF, ">", $tmpfile);
     print SDF $buf;
     close(SDF);
     <perl:print:

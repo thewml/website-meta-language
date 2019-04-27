@@ -74,7 +74,8 @@ sub wml_fmt_pod {
 <set-var %attributes />
 <perl>
 {
-    my $tmpfile     = "$(WML_TMPDIR)/wml.pod2html.$$.tmp";
+    use Path::Tiny qw/ path tempdir tempfile cwd /;
+    my $tmpfile     = tempfile();
     my $keepindex   = (qq|<get-var keepindex />| eq '' ? 1 : 0);
     my $keephr      = (qq|<get-var keephr />| eq '' ? 1 : 0);
     my $nonetscape  = (qq|<get-var nonetscape />| eq '' ? 1 : 0);
@@ -93,7 +94,7 @@ sub wml_fmt_pod {
 
     #   there is no reason to nest <pod> tags, so the <perl:print>
     #   statement is unnecessary
-    open(POD, ">$tmpfile");
+    open(POD, ">", $tmpfile);
     print POD $buf;
     close(POD);
     <perl:print:
