@@ -148,7 +148,7 @@ sub ProcessOptions
         print STDERR "Try `$0 --help' for more information.\n";
         exit(0);
     }
-    &usage($0) if ($opt_h);
+    usage($0) if ($opt_h);
 }
 
 sub error
@@ -190,7 +190,7 @@ our $opt_h = 0;
 our $opt_V = -1;
 our $opt_z = 0;
 
-&ProcessOptions();
+ProcessOptions();
 
 #   fix the version level
 if ( $opt_V == 0 )
@@ -238,7 +238,7 @@ sub quotearg
 sub addquotedarg
 {
     my ( $flag, $arg ) = @_;
-    return ' -' . $flag . ' "' . &quotearg($arg) . '"';
+    return ' -' . $flag . ' "' . quotearg($arg) . '"';
 }
 
 my $Oq = '';
@@ -255,16 +255,16 @@ my $Op = '';
 foreach $a (@opt_p) { $Op .= ' -p' . $a; }
 
 my $OW = '';
-foreach $a (@opt_W) { $OW .= &addquotedarg( 'W', $a ); }
+foreach $a (@opt_W) { $OW .= addquotedarg( 'W', $a ); }
 
 my $OD = '';
-foreach $a (@opt_D) { $OD .= &addquotedarg( 'D', $a ); }
+foreach $a (@opt_D) { $OD .= addquotedarg( 'D', $a ); }
 
 my $OP = '';
-foreach $a (@opt_P) { $OP .= &addquotedarg( 'P', $a ); }
+foreach $a (@opt_P) { $OP .= addquotedarg( 'P', $a ); }
 
 my $OE = '';
-foreach $a (@opt_E) { $OE .= &addquotedarg( 'E', $a ); }
+foreach $a (@opt_E) { $OE .= addquotedarg( 'E', $a ); }
 
 my $OM = '';
 $OM = " -M$opt_M" if ( $opt_M ne '-' );
@@ -279,10 +279,10 @@ my $Os = '';
 $Os = ' -s' if ($opt_s);
 
 my $OI = '';
-foreach $a (@opt_I) { $OI .= &addquotedarg( 'I', $a ); }
+foreach $a (@opt_I) { $OI .= addquotedarg( 'I', $a ); }
 
 my $Oi = '';
-foreach $a (@opt_i) { $Oi .= &addquotedarg( 'i', $a ); }
+foreach $a (@opt_i) { $Oi .= addquotedarg( 'i', $a ); }
 
 my $OO = '';
 $OO = ' -O' . $opt_O if ( $opt_O ne '' );
@@ -335,7 +335,7 @@ $home =~ s|/$||;
 if ( -f "$home/.wmkrc" )
 {
     chdir($home);
-    &read_rcfile();
+    read_rcfile();
     chdir($cwd);
 }
 
@@ -364,7 +364,7 @@ foreach my $p (@P)
             #
             #   first look into .wmkrc in case -F option is found
             chdir($p);
-            &read_rcfile();
+            read_rcfile();
             chdir($cwd);
 
             my @dirs = ();
@@ -381,8 +381,8 @@ foreach my $p (@P)
             {
                 $dir =~ s|\n$||;
                 chdir($dir);
-                &read_rcfile() if $dir ne $p;
-                my @files = &determine_files();
+                read_rcfile() if $dir ne $p;
+                my @files = determine_files();
                 if ( $#files > -1 )
                 {
                     #   a little bit verbosity
@@ -402,7 +402,7 @@ foreach my $p (@P)
                     }
                     foreach my $file (@files)
                     {
-                        &process_file( "$dir/$file", $dir, $file );
+                        process_file( "$dir/$file", $dir, $file );
                     }
                     foreach my $exec (@opt_X_CUR)
                     {
@@ -419,9 +419,9 @@ foreach my $p (@P)
             #   path is a directory and we run locally
             #
             chdir($p);
-            &read_rcfile();
+            read_rcfile();
             next if $p =~ m#^${matchF}$#;
-            my @files = &determine_files();
+            my @files = determine_files();
             foreach my $exec (@opt_x_CUR)
             {
                 my $rc = system($exec);
@@ -429,7 +429,7 @@ foreach my $p (@P)
             }
             foreach my $file (@files)
             {
-                &process_file( "$p/$file", $p, $file );
+                process_file( "$p/$file", $p, $file );
             }
             foreach my $exec (@opt_X_CUR)
             {
@@ -450,14 +450,14 @@ foreach my $p (@P)
         if ($dir)
         {
             chdir($dir);
-            &read_rcfile();
-            &process_file( $p, $dir, $file );
+            read_rcfile();
+            process_file( $p, $dir, $file );
             chdir($cwd);
         }
         else
         {
-            &read_rcfile();
-            &process_file( $p, $dir, $file );
+            read_rcfile();
+            process_file( $p, $dir, $file );
         }
     }
     else
@@ -503,7 +503,7 @@ sub read_rcfile
                     s|^\s+||;
                     s|\s+$||;
                     s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-                    push( @ARGV, &split_argv($_) );
+                    push( @ARGV, split_argv($_) );
                 }
                 close(FP) || error("Unable to close $dir/.wmkrc: $!");
                 @opt_A = ();
@@ -511,7 +511,7 @@ sub read_rcfile
                 @opt_x = ();
                 @opt_X = ();
                 @opt_o = ();
-                &ProcessOptions();
+                ProcessOptions();
                 @opt_A_CUR = ( @opt_A_CUR, @opt_A );
                 @opt_F_CUR = ( @opt_F_CUR, @opt_F );
                 @opt_x_CUR = ( @opt_x_CUR, @opt_x );
@@ -532,7 +532,7 @@ sub read_rcfile
     @opt_X = ();
     @opt_o = ();
     @ARGV  = @ARGVLINE;
-    &ProcessOptions();
+    ProcessOptions();
     @opt_A_CUR = ( @opt_A_CUR, @opt_A );
     @opt_F_CUR = ( @opt_F_CUR, @opt_F );
     @opt_x_CUR = ( @opt_x_CUR, @opt_x );
@@ -662,7 +662,7 @@ sub process_file
     {
         $opts .= " -o ${base}.html";
     }
-    $opts =~ s|(\s*)(\S+)|' '.&quotearg($2)|sge;
+    $opts =~ s|(\s*)(\S+)|' '.quotearg($2)|sge;
     $opts =~ s|^\s+||;
     $opts =~ s|\s+$||;
 
@@ -674,7 +674,7 @@ sub process_file
         my $s        = $opts;
         $s =~
 s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@outfiles, $1), ''|sge;
-        $skipable = &skipable( $file, @outfiles );
+        $skipable = skipable( $file, @outfiles );
     }
     else
     {
