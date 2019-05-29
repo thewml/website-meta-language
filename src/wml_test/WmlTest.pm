@@ -1,7 +1,5 @@
-##
-##  TEST.pl -- WML Test Suite utility functions
+##  wml_test/WmlTest.pm -- WML Test Suite utility functions
 ##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved.
-##
 
 package WmlTest;
 
