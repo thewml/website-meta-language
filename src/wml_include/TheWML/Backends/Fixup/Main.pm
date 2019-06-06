@@ -477,6 +477,7 @@ sub main
     my $opt_S = '';
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
+
     if (
         not Getopt::Long::GetOptionsFromArray(
             $self->argv,

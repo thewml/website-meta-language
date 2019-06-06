@@ -369,8 +369,8 @@ sub _display_times
         my $cond = ( $i == 2 or $i == 3 );
         $timestr .= (
               ( $t ne '' ) ? sprintf( $cond ? '%5.2f' : '%4.2f', $t )
-            : $cond        ? '   -- '
-            :                '  -- '
+            : $cond ? '   -- '
+            :         '  -- '
         );
     }
 

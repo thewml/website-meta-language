@@ -133,7 +133,7 @@ sub _init
     ##           location pointers.
     ##
 
-    $self->_location('main');    # currently active location
+    $self->_location('main');         # currently active location
     $self->_loc_stack( ['null'] );    # stack of remembered locations
     $self->_BUFFER( +{ null => [], main => [], } );    # the location buffers
     $self->_OVRWRITE( +{} );                           # the overwrite flags
