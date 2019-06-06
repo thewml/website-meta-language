@@ -45,10 +45,10 @@ BEGIN { $^W = 0; }    # get rid of nasty warnings
 
 my $VERSION = "@WML_VERSION@";
 
-use Term::Cap;
+use Term::Cap ();
 use Getopt::Long 2.13;
-use Cwd;
-use File::Find;
+use Cwd        ();
+use File::Find ();
 use Time::HiRes qw/ stat /;
 
 ##
@@ -369,21 +369,21 @@ foreach my $p (@P)
 
             my @dirs = ();
 
-            sub wanted
-            {
-                -d $_
-                    && ( m#^${matchF}$# && ( $File::Find::prune = 1 )
-                    || push( @dirs, $File::Find::name ) );
-            }
-            File::Find::find( \&wanted, $p );
+            File::Find::find(
+                sub {
+                    -d $_
+                        && ( m#^${matchF}$# && ( $File::Find::prune = 1 )
+                        || push( @dirs, $File::Find::name ) );
+                },
+                $p
+            );
             my $dirC = '';
             foreach my $dir (@dirs)
             {
                 $dir =~ s|\n$||;
                 chdir($dir);
                 read_rcfile() if $dir ne $p;
-                my @files = determine_files();
-                if ( $#files > -1 )
+                if ( my @files = determine_files() )
                 {
                     #   a little bit verbosity
                     if ( $dirC ne $dir )
