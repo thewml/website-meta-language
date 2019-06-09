@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -9,6 +8,7 @@ use Test::More tests => 2;
 
 my $pass = "1-9";
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::std::tags
 <define-tag nesting endtag=required whitespace=delete>
@@ -25,4 +25,3 @@ DEF
 EOT_OUT
 
 WmlTest::cleanup();
-

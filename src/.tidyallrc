@@ -8,3 +8,6 @@ ignore =
 ; ignore = **/*
 select = **/*.t wml_include/**/*.pm wml*/**/*.pl
 ignore =
+
+[TestCount]
+select = **/*.t

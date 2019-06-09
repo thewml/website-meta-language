@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -27,10 +26,10 @@ my $conf;
 
 =cut
 
-# TEST*2
 if ($png_support)
 {
     #   PNG support available
+    # TEST*2
     WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::space
 <space format=png width=6 height=4>
@@ -67,4 +66,3 @@ WmlTest::add_files(
 );
 
 WmlTest::cleanup();
-

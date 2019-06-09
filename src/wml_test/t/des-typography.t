@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -9,6 +8,7 @@ use Test::More tests => 10;
 
 my $pass = "1-9";
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <headline>This is a Headline</headline>
@@ -44,6 +44,7 @@ Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 EOT_OUT
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
@@ -58,6 +59,7 @@ T&nbsp;h&nbsp;i&nbsp;s&nbsp;&nbsp; i&nbsp;s&nbsp;&nbsp; s&nbsp;p&nbsp;a&nbsp;c&n
 T&nbsp;&nbsp;h&nbsp;&nbsp;i&nbsp;&nbsp;s&nbsp;&nbsp;&nbsp;&nbsp; i&nbsp;&nbsp;s&nbsp;&nbsp;&nbsp;&nbsp; m&nbsp;&nbsp;o&nbsp;&nbsp;r&nbsp;&nbsp;e&nbsp;&nbsp;&nbsp;&nbsp; s&nbsp;&nbsp;p&nbsp;&nbsp;a&nbsp;&nbsp;c&nbsp;&nbsp;e&nbsp;&nbsp;d&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;e&nbsp;&nbsp;x&nbsp;&nbsp;t&nbsp;&nbsp;
 EOT_OUT
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
@@ -81,6 +83,7 @@ Foo bar quux Foo bar<img src="imgdot-1x1-transp-ffffff.gif" width="1" height="15
 This is spaced text, including<img src="imgdot-1x1-transp-ffffff.gif" width="1" height="15" alt=""> interline spacing.
 EOT_OUT
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
@@ -94,6 +97,7 @@ T<font size="-1">HIS</font> <font size="-1">IS</font> S<font size="-1">MALL</fon
 T<font size="-1">HIS</font> I<font size="-1">S</font> C<font size="-1">OMPLETE</font> S<font size="-1">MALL</font> C<font size="-1">APS</font> T<font size="-1">EXT</font>
 EOT_OUT
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
@@ -167,4 +171,3 @@ WmlTest::add_files("imgdot-1x1-cccccc.gif");
 WmlTest::add_files("imgdot-1x1-ff3333.gif");
 WmlTest::add_files("imgdot-1x1-transp-ffffff.gif");
 WmlTest::cleanup();
-

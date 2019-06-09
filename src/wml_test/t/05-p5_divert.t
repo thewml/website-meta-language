@@ -13,6 +13,7 @@ use Test::More tests => 2;
 
 my $pass = 5;
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 FOO
 <<BAR>>

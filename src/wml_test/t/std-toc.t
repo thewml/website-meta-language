@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -9,6 +8,7 @@ use Test::More tests => 4;
 
 my $pass = "1-9";
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::std::toc style=pre
 <h1>Chapter 1</h1>
@@ -35,6 +35,7 @@ EOT_IN
 </pre>
 EOT_OUT
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::std::toc style=ol type=A1a
 <h1>Chapter 1</h1>
@@ -58,4 +59,3 @@ EOT_IN
 EOT_OUT
 
 WmlTest::cleanup();
-

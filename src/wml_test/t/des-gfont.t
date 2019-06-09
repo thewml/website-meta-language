@@ -1,4 +1,3 @@
-
 use strict;
 use warnings;
 
@@ -27,6 +26,7 @@ else
 
 my $pass = "1-9";
 
+# TEST*2
 WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::gfont
 <gfont notag>foo</gfont>
@@ -37,6 +37,7 @@ EOT_OUT
 
 WmlTest::add_files(qw(tmp.00.gfont000.gif tmp.00.gfont000.gif.cmd));
 
+# TEST*2
 WmlTest::generic( $pass,
     <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=' );
 #use wml::des::gfont
@@ -47,6 +48,7 @@ EOT_OUT
 
 WmlTest::add_files(qw(tmp.gif tmp.gif.cmd));
 
+# TEST*2
 WmlTest::generic( $pass,
     <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=' );
 #use wml::des::gfont
@@ -58,4 +60,3 @@ EOT_OUT
 WmlTest::add_files(qw(tmp.gfont000.gif tmp.gfont000.gif.cmd));
 
 WmlTest::cleanup();
-
