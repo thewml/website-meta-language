@@ -35,13 +35,13 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  this program under different conditions or license agreements.
 ##
 
+use strict;
+use warnings;
+use 5.014;
+
 use lib '@INSTALLPRIVLIB@';
 use lib '@INSTALLARCHLIB@';
 use TheWML::Frontends::Wml::Util qw/ canon_path /;
-
-use 5.014;
-
-BEGIN { $^W = 0; }    # get rid of nasty warnings
 
 my $VERSION = "@WML_VERSION@";
 
@@ -65,7 +65,7 @@ my $WML = $ENV{'WML'} || '@bindir@/wml';
 my $bold;
 my $norm;
 my $term;
-our $opt_h;
+our $opt_h = 0;
 our @opt_A_CUR;
 our @opt_F_CUR;
 our @opt_x_CUR;
@@ -186,7 +186,6 @@ our $opt_M = '-';
 our $opt_s = 0;
 our $opt_v = -1;
 our $opt_q = 0;
-our $opt_h = 0;
 our $opt_V = -1;
 our $opt_z = 0;
 
