@@ -151,41 +151,13 @@
 
 /*
 **
-**  NULL
-**
-*/
-#ifndef NULL
-#define NULL (void *)0
-#endif
-
-
-/*
-**
 **  MAXPATHLEN
 **  PATH_MAX should be used in .c files, but it needs to be
 **  fixed upstream
 */
 /*  Cut'n'paste from perl.h  */
 #ifndef MAXPATHLEN
-#  ifdef PATH_MAX
-#    ifdef _POSIX_PATH_MAX
-#       if PATH_MAX > _POSIX_PATH_MAX
-/* MAXPATHLEN is supposed to include the final null character,
- *  * as opposed to PATH_MAX and _POSIX_PATH_MAX. */
-#         define MAXPATHLEN (PATH_MAX+1)
-#       else
-#         define MAXPATHLEN (_POSIX_PATH_MAX+1)
-#       endif
-#    else
-#      define MAXPATHLEN (PATH_MAX+1)
-#    endif
-#  else
-#    ifdef _POSIX_PATH_MAX
-#       define MAXPATHLEN (_POSIX_PATH_MAX+1)
-#    else
-#       define MAXPATHLEN 1024  /* Err on the large side. */
-#    endif
-#  endif
+#define MAXPATHLEN PATH_MAX
 #endif
 
 #endif /* EPERL_CONFIG_H */

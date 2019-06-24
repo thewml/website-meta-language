@@ -32,13 +32,6 @@
 #ifdef __CYGWIN__
 #define ELIDE_CODE
 #endif
-#if !defined __STDC__ || !__STDC__
-/* This is a separate conditional since some stdc systems
-   reject `defined (const)'.  */
-# ifndef const
-#  define const
-# endif
-#endif
 
 #include <stdio.h>
 
@@ -952,10 +945,6 @@ getopt (argc, argv, optstring)
    to get __GNU_LIBRARY__ defined.  */
 #ifdef __GNU_LIBRARY__
 #include <stdlib.h>
-#endif
-
-#ifndef NULL
-#define NULL 0
 #endif
 
 int

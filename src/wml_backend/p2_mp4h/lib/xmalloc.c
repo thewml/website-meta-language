@@ -21,14 +21,7 @@
 
 #include <sys/types.h>
 
-#if STDC_HEADERS
-# include <stdlib.h>
-#else
-void *calloc ();
-void *malloc ();
-void *realloc ();
-void free ();
-#endif
+#include <stdlib.h>
 
 #if ENABLE_NLS
 # include <libintl.h>
