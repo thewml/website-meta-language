@@ -38,9 +38,6 @@
 #ifdef USE_NCURSES
 #include <ncurses.h>
 #endif
-#ifdef USE_SLCURSES
-#include <slcurses.h>
-#endif
 #ifdef USE_CURSES
 #include <curses.h>
 #endif

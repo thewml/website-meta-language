@@ -38,9 +38,6 @@
 #ifdef USE_NCURSES
 #include <ncurses.h>
 #endif
-#ifdef USE_SLCURSES
-#include <slcurses.h>
-#endif
 #ifdef USE_CURSES
 #include <curses.h>
 #endif
@@ -117,18 +114,14 @@ void diehard(int signum)
 {
     signal(SIGINT,  SIG_IGN);      /* ignore all further interrupts */
     signal(SIGTERM, SIG_IGN);      /* ignore all further interrupts */
-#ifndef USE_SLCURSES
     mvcur(0, COLS-1, LINES-1, 0);  /* move curser to lower left corner */
-#endif
     endwin();                      /* make terminal the way it was */
     exit(0);
 }
 
 void diesoft(void)
 {
-#ifndef USE_SLCURSES
     mvcur(0, COLS-1, LINES-1, 0);  /* move curser to lower left corner */
-#endif
     endwin();                      /* make terminal the way it was */
 }
 
@@ -284,11 +277,7 @@ void iSelect_Draw(WINDOW *wField,
         if (spaLines[nAbsFirstLine+nRelFirstDraw+i]->fSelectable)
             mode = mode | A_BOLD;
         if (i == nRelMarked)
-#ifdef USE_SLCURSES
-            mode = A_REVERSE;
-#else
             mode = mode | A_REVERSE;
-#endif
         wattrset(wField, mode);
         if (spaLines[nAbsFirstLine+nRelFirstDraw+i]->fSelected)
             waddstr(wField, "*");
@@ -760,9 +749,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                      nRelLastDraw = nAbsLastLine-nAbsFirstLine;
                      strcpy(msg, "");
                      iSelect_Draw(wField, wYSize, wXSize, wYPos, wXPos, nAbsFirstLine, nAbsLastLine, nRelMarked, nRelFirstDraw, nRelLastDraw, nLines, sField, title, name, mField, msg, tagbegin, tagend);
-#ifndef USE_SLCURSES
                      redrawwin(wField);
-#endif
                      wrefresh(wField);
                  }
                  else {
@@ -774,9 +761,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
 
     fflush(stdin);
     echo();
-#ifndef USE_SLCURSES
     nocrmode();
-#endif
     delwin(wField);
 
     if (bQuit)
