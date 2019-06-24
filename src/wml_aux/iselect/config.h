@@ -4,11 +4,6 @@
  *
  * Distributed under terms of the MIT license.
  */
-
-#ifndef CONFIG_H
-#define CONFIG_H
-
+#pragma once
 #include "config_ac.h"
 #include "config_sc.h"
-
-#endif /* !CONFIG_H */

@@ -54,11 +54,7 @@
 #define EX_FAIL 1
 #endif
 
-#if __STDC__
 #define VOID void
-#else
-#define VOID char
-#endif
 
 /*
  *  CU() -- CleanUp Makro
@@ -129,14 +125,6 @@
 
 #define SOME  true
 #define NONE  false
-
-/*
- *   define NULL if not already defined
- */
-#ifndef NULL
-#define NULL (void *)0
-#endif
-
 
 /*   define some handy str* functions
  */
