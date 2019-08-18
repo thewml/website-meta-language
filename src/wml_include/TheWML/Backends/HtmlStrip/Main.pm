@@ -17,6 +17,7 @@ use Class::XSAccessor (
     accessors   => +{
         map { $_ => $_ }
             qw(
+            _nosharp
             argv
             opt_O
             opt_b
@@ -387,6 +388,7 @@ sub main
     if (
         not Getopt::Long::GetOptionsFromArray(
             $self->argv,
+            "sharp!" => sub { my ( undef, $v ) = @_; $self->_nosharp( !$v ); },
             "v|verbose"     => sub { my ( undef, $v ) = @_; $self->opt_v($v); },
             "O|optimize=i"  => sub { my ( undef, $v ) = @_; $self->opt_O($v); },
             "b|blocksize=i" => sub { my ( undef, $v ) = @_; $self->opt_b($v); },
@@ -407,14 +409,16 @@ sub main
 
     #   strip sharp-like comments
     #$input =~ s|^\s*#.*$||mg;
-    $input =~ s/\A(?:(?:[ \t]*)#[^\n]*\n)+//s;    # special  case: at begin
-    $input =~ s/\n[ \t]*#[^\n]*(?=\n)//sg;        # standard case: in the middle
-    $input =~ s/\n[ \t]*#[^\n]*\n?$/\n/s;         # special  case: at end
-    $input =~ s/^([ \t]*)\\(#)/$1$2/mg;           # remove escaping backslash
+    if ( !$self->_nosharp )
+    {
+        $input =~ s/\A(?:(?:[ \t]*)#[^\n]*\n)+//s;    # special  case: at begin
+        $input =~ s/\n[ \t]*#[^\n]*(?=\n)//sg;    # standard case: in the middle
+        $input =~ s/\n[ \t]*#[^\n]*\n?$/\n/s;     # special  case: at end
+        $input =~ s/^([ \t]*)\\(#)/$1$2/mg;       # remove escaping backslash
                                                   #
                                                   #   Processing Loop
                                                   #
-
+    }
     $self->verbose("Main processing");
     my $output = $self->_main_loop($input);
 
