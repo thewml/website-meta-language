@@ -29,6 +29,7 @@ B<htmlstrip>
 [B<-O> I<level>]
 [B<-b> I<blocksize>]
 [B<-v>]
+[B<--nosharp>]
 [I<inputfile>]
 
 =head1 DESCRIPTION
@@ -81,7 +82,8 @@ levels. The following stripping is done on each level:
 =item B<Level 0:>
 
 No real stripping, just removing the sharp/comment-lines (C<#...>) [txt,tag].
-Such lines are a standard feature of WML, so this is always done.
+Such lines are a standard feature of WML, so this is always done B<unless>
+--nosharp was given.
 
 =item B<Level 1:>
 

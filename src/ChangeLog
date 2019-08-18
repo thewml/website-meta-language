@@ -8,6 +8,10 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.20.4 to 2.22.0:
+
+  *) Add the --nosharp flag to wml_backend/p8_htmlstrip .
+
   Changes between 2.20.3 to 2.20.4:
 
   *) Fix some insecure temporary files' creations (e.g: wml.$PID.tmp1).
