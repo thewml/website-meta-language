@@ -105,7 +105,8 @@ if ( $opt_V == -1 )
 }
 version() if ($opt_V);
 
-my $libdir = TheWML::Config::libdir();
+my $libdir  = TheWML::Config::libdir();
+my $datadir = TheWML::Config::datadir();
 ##
 ##  This variable eases port on some OS.  For instance if htmlclean is
 ##  part of your system, you do not want to include it within WML.
