@@ -440,9 +440,14 @@ sub run
     my ( $self, $opt_S, $opt_F ) = @_;
 
     # process all required fixups
-    my %skips = ( map { $_ => 1 } split( ',', $opt_S ) );
+    my %skips = (
+        map {
+            my $s = $_;
+            map { $_ => 1 } split( ',', $s )
+        } @$opt_S
+    );
 FIXUP:
-    foreach my $m ( split( ',', $opt_F ) )
+    foreach my $m ( map { my $s = $_; split( ',', $s ) } @$opt_F )
     {
         if ( exists $skips{$m} )
         {
@@ -472,9 +477,8 @@ sub main
     my $opt_q = 0;
     my $opt_v = 0;
     my $opt_o = '-';
-    my $opt_F =
-        'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
-    my $opt_S = '';
+    my @opt_F;
+    my @opt_S;
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
 
@@ -483,13 +487,18 @@ sub main
             $self->argv,
             "v|verbose"      => \$opt_v,
             "q"              => \$opt_q,
-            "F|fix=s"        => \$opt_F,
-            "S|skip=s"       => \$opt_S,
+            "F|fix=s"        => \@opt_F,
+            "S|skip=s"       => \@opt_S,
             "o|outputfile=s" => \$opt_o
         )
         )
     {
         usage();
+    }
+    if ( !@opt_F )
+    {
+        push @opt_F,
+            'imgalt,imgsize,summary,center,space,quotes,indent,comment,tagcase';
     }
 
     my $buffer = $self->_input;
@@ -499,7 +508,7 @@ sub main
     $self->opt_v($opt_v);
     $self->bytes(0);
     $self->_buffer( \$buffer );
-    $self->run( $opt_S, $opt_F );
+    $self->run( \@opt_S, \@opt_F );
 
     $self->_out( $opt_o, [$buffer] );
     return;
