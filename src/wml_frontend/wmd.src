@@ -1,6 +1,13 @@
 #!@PATH_PERL@
-eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
-    if $running_under_some_shell;
+
+use strict;
+use warnings;
+
+use lib '@INSTALLPRIVLIB@';
+use lib '@INSTALLARCHLIB@';
+
+use TheWML::Config ();
+
 ##
 ##  WMd -- Website META Language Documentation Browser
 ##
@@ -39,13 +46,15 @@ require 5.003;
 
 BEGIN { $^W = 0; }    # get rid of nasty warnings
 
-$VERSION = "@WML_VERSION@";
+our $VERSION = "@WML_VERSION@";
 
 use Getopt::Long 2.13;
 
 ##
 ##  PROCESS ARGUMENT LINE
 ##
+our $opt_V = -1;
+our $opt_h = 0;
 
 sub usage
 {
@@ -68,10 +77,6 @@ sub version
     exit(0);
 }
 
-#   options
-$opt_V = -1;
-$opt_h = 0;
-
 sub ProcessOptions
 {
     $Getopt::Long::bundling      = 1;
@@ -84,10 +89,10 @@ sub ProcessOptions
         print STDERR "Try `$0 --help' for more information.\n";
         exit(0);
     }
-    &usage($0) if ($opt_h);
+    usage($0) if ($opt_h);
     $SIG{'__WARN__'} = undef;
 }
-&ProcessOptions();
+ProcessOptions();
 
 #   fix the version level
 if ( $opt_V == 0 )
@@ -98,7 +103,7 @@ if ( $opt_V == -1 )
 {
     $opt_V = 0;    # we operate with 0 for not set
 }
-&version if ($opt_V);
+version() if ($opt_V);
 
 ##
 ##  This variable eases port on some OS.  For instance if htmlclean is
@@ -108,7 +113,7 @@ if ( $opt_V == -1 )
 ##  the `wml_aux_htmlclean' entry in WMd will display the htmlclean
 ##  manpage.
 ##  By default there is no mapping
-%map = ();
+my %map = ();
 if ( -r "@libdir@/data/wmd.map" )
 {
     if ( open( MAP, "< @libdir@/data/wmd.map" ) )
@@ -125,16 +130,16 @@ if ( -r "@libdir@/data/wmd.map" )
 ##  Find browser
 ##
 
-$browser      = '@libdir@/exec/wml_aux_iselect';
-$browser_file = '@libdir@/data/wmd.txt';
+my $browser      = '@libdir@/exec/wml_aux_iselect';
+my $browser_file = TheWML::Config::datadir() . '/data/wmd.txt';
 
-$reader_man = 'MANPATH="@mandir@:$MANPATH"; export MANPATH; man';
+my $reader_man = 'MANPATH="@mandir@:$MANPATH"; export MANPATH; man';
 
-$reader_url   = '';
-@reader_progs = qw(w3m lynx);
-WWW_PROG: foreach $prog (@reader_progs)
+my $reader_url   = '';
+my @reader_progs = qw(w3m lynx);
+WWW_PROG: foreach my $prog (@reader_progs)
 {
-    foreach $dir ( split( /:/, $ENV{'PATH'} ) )
+    foreach my $dir ( split( /:/, $ENV{'PATH'} ) )
     {
         if ( -x "$dir/$prog" )
         {
@@ -144,15 +149,15 @@ WWW_PROG: foreach $prog (@reader_progs)
     }
 }
 
-$p = 10;
+my $p = 10;
 while (1)
 {
-    $rc =
+    my $rc =
 `$browser -n "Website META Language" -t "Documentation Browser" -p$p -P <$browser_file`;
     last if ( $rc eq '' );
     $rc =~ m|^(\d+):(.*)|;
-    ( $p, $line ) = ( $1, $2 );
-    if ( ( ( $page, $sec ) = $line =~ m|^\s*(\S+)\((\d)\)\s+| ) )
+    ( $p, my $line ) = ( $1, $2 );
+    if ( ( my ( $page, $sec ) = $line =~ m|^\s*(\S+)\((\d)\)\s+| ) )
     {
         if ( exists $map{$page} )
         {
@@ -161,7 +166,7 @@ while (1)
         system("$reader_man $page");
         system("$reader_man wmd_missing") if $?;
     }
-    elsif ( ($url) = ( $line =~ m/^\s*((?:http|ftp):\/\/\S+)/ ) )
+    elsif ( my ($url) = ( $line =~ m/^\s*((?:http|ftp):\/\/\S+)/ ) )
     {
         if ($reader_url)
         {
@@ -176,38 +181,35 @@ while (1)
             sleep(4);
         }
     }
-    elsif ( ($keyword) = ( $line =~ m/^\s*search=(.+)$/ ) )
+    elsif ( my ($keyword) = ( $line =~ m/^\s*search=(.+)$/ ) )
     {
-        @L = glob("@mandir@/*/wml* @mandir@/*/wm[bdku]\.[1-9]*");
-        %F = ();
-        foreach $f (@L)
+        my @L = glob("@mandir@/*/wml* @mandir@/*/wm[bdku]\.[1-9]*");
+        my %F = ();
+        foreach my $f (@L)
         {
-            $n = $f;
+            my $n = $f;
             $n =~
 s%^.+?/(wm[bdklu](?:[:_].+?|))\.([1-9])(?:\.Z|\.z|\.gz|)$%$1($2)%;
-            $metacat = 'cat';
+            my $metacat = 'cat';
             $metacat = 'gzip -d -c' if ( $f =~ m/\.(?:Z|z|gz)$/ );
-            @R       = `$metacat $f | grep -i '$keyword'`;
-            for ( $i = 0 ; $i <= $#R ; $i++ )
-            {
-                $F{$n}++;
-            }
+            my @R = `$metacat $f | grep -i '$keyword'`;
+            $F{$n} += @R;
         }
-        $L = '';
+        my $L = '';
         $L .= "'' 'Keyword Search Result: $keyword' '' ";
-        foreach $f ( sort { $F{$b} <=> $F{$a} } ( keys(%F) ) )
+        foreach my $f ( sort { $F{$b} <=> $F{$a} } ( keys(%F) ) )
         {
             $L .= sprintf( "'%-30s (%3d) <s>' ", $f, $F{$f} );
         }
-        $p2 = 4;
+        my $p2 = 4;
         while (1)
         {
             $rc =
 `$browser -n "Website META Language" -t "Documentation Browser (Keyword Search)" -p$p2 -P $L`;
             last if ( $rc eq '' );
             $rc =~ m|^(\d+):(.*)|;
-            ( $p2, $line ) = ( $1, $2 );
-            if ( ( ( $page, $sec ) = $line =~ m|^\s*(\S+)\((\d)\)\s+| ) )
+            ( $p2, my $line ) = ( $1, $2 );
+            if ( ( my ( $page, $sec ) = $line =~ m|^\s*(\S+)\((\d)\)\s+| ) )
             {
                 system("$reader_man $page");
             }
