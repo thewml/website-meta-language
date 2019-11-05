@@ -400,7 +400,7 @@ sub main
         usage();
     }
     $self->opt_b(32766) if $self->opt_b > 32766;
-    $self->opt_b(1024)  if ( $self->opt_b > 0 and $self->opt_b < 1024 );
+    $self->opt_b(1024) if ( $self->opt_b > 0 and $self->opt_b < 1024 );
 
     my $input = $self->_input;
 

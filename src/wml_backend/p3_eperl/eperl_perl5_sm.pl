@@ -112,8 +112,8 @@ sub canon
     {
         # might be X::Y or lib/auto/X/Y/Y.a
         next if $ext =~ s!::!/!g;
-        $ext =~ s:^(lib|ext)/(auto/)?::;
-        $ext =~ s:/\w+\.\w+$::;
+        $ext         =~ s:^(lib|ext)/(auto/)?::;
+        $ext         =~ s:/\w+\.\w+$::;
     }
     grep( s:/:$as:, @ext ) if ( $as ne '/' );
     return @ext;
