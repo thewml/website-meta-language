@@ -1,6 +1,16 @@
 SUPPORT
 =======
 
+GitHub:
+-------
+
+One can file issues for WML at https://github.com/thewml/website-meta-language
+or directly to the maintainer using the mediums at
+https://www.shlomifish.org/me/contact-me/ .
+
+Note that WML is both slow and tends to mutilate the output HTML in
+subtle ways and as a result its use is no longer recommended.
+
 Mailing List
 ------------
 
