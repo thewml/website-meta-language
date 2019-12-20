@@ -621,13 +621,13 @@ sub pass3
         {
             printwarning("Empty output: skip generation of $outfile\n");
             main::error("Execution stopped\n") if $status->{z} > 2;
-            next if $status->{z} == 2;
+            next                               if $status->{z} == 2;
         }
         if ( $status->{'s'} > 0 and ( $out eq '' or $out !~ m/\S/ ) )
         {
             printwarning("Whitespace only: skip generation of $outfile\n");
             main::error("Execution stopped\n") if $status->{'s'} > 2;
-            next if $status->{'s'} == 2;
+            next                               if $status->{'s'} == 2;
         }
 
         TheWML::CmdLine::IO->out( $outfile, [$out] );
