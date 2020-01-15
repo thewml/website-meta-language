@@ -1,5 +1,4 @@
 ADD_SUBDIRECTORY( iselect )
-ADD_SUBDIRECTORY( htmlclean )
 ADD_SUBDIRECTORY( htmlinfo )
 ADD_SUBDIRECTORY( map2html )
 ADD_SUBDIRECTORY( freetable )

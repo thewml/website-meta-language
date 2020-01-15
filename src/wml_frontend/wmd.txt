@@ -49,7 +49,6 @@ wml_p9_slice(1) ..........<s> Slicing and Output Filter
 Auxiliaries:
 wml_aux_htmlinfo(1) ......<s> HTML Information
 wml_aux_tidy(1) ..........<s> HTML Clean up
-wml_aux_htmlclean(1) .....<s> HTML Optimizer
 wml_aux_map2html(1) ......<s> Server-Side to Client-Side Map Converter
 wml_aux_freetable(1) .....<s> Table to HTML Converter
 wml_aux_iselect(1) .......<s> Interactive Selection
