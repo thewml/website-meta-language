@@ -33,8 +33,7 @@ use Class::XSAccessor (
     },
 );
 
-use Path::Tiny qw/ tempdir /;
-use IO::All qw/ io /;
+use Path::Tiny qw/ path tempdir /;
 
 use Carp qw( cluck );
 use TheWML::Backends::IPP::Args qw/ $IDENT_RE /;
@@ -110,7 +109,7 @@ sub _write_includes
 {
     my ( $self, $opt_s, $opt_i ) = @_;
 
-    my $tmp = io()->file( $self->temp_fn )->open('>');
+    my $tmp = path( $self->temp_fn )->openw;
     foreach my $fn (@$opt_s)
     {
         if ( $fn =~ m#\A(\S+?)::(\S+).*\n\z# )
@@ -255,8 +254,7 @@ sub _process_real_files
     foreach my $fn ( @{ $self->argv } )
     {
         #   create temporary working file
-        io()->file( $self->temp_fn )
-            ->print( TheWML::CmdLine::IO->input( [$fn] ) );
+        path( $self->temp_fn )->spew_raw( TheWML::CmdLine::IO->input( [$fn] ) );
 
         #   apply prolog filters
         foreach my $p (@$opt_P)

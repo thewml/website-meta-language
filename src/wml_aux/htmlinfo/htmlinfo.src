@@ -12,7 +12,7 @@ use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
 use Term::Cap;
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 use Image::Size;
 
 eval "\$term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }";
@@ -30,11 +30,11 @@ else {
 #   open input file and read into buffer
 #
 if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
-    $INPUT = io('-')->all;
+    $INPUT = do { local $/; <STDIN> };
     $src = "STDIN";
 }
 elsif ($#ARGV == 0) {
-    $INPUT = io->file($src = $ARGV[0])->all;
+    $INPUT = path($src = $ARGV[0])->slurp_raw;
 }
 else {
     print STDERR "Usage: htmlinfo file.html\n";

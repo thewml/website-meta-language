@@ -3,13 +3,13 @@ package TheWML::CmdLine::IO;
 use strict;
 use warnings;
 
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 
 sub out
 {
     my ( $self, $opt_o, $output_aref ) = @_;
 
-    ( $opt_o eq '-' ? io('-') : io->file($opt_o) )->print(@$output_aref);
+    ( $opt_o eq '-' ? (*STDOUT) : path($opt_o)->openw )->print(@$output_aref);
 
     return;
 }
@@ -23,11 +23,11 @@ sub input
 
     if ( ( @local_argv == 1 and $local_argv[0] eq '-' ) or !@local_argv )
     {
-        $foo_buffer = io('-')->all;
+        $foo_buffer = do { local $/; <STDIN> };
     }
     elsif ( @local_argv == 1 )
     {
-        $foo_buffer = io->file( $local_argv[0] )->all;
+        $foo_buffer = path( $local_argv[0] )->slurp_raw;
     }
     else
     {

@@ -3,7 +3,7 @@ package TheWML::Backends::IPP::Map;
 use strict;
 use warnings;
 
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 
 use Class::XSAccessor (
     accessors => +{
@@ -51,7 +51,7 @@ sub read_mapfile
     my ( $self, $mapfile ) = @_;
 
     my $MAP = $self->_map;
-    my $fp  = io->file($mapfile);
+    my $fp  = path($mapfile)->openr;
 
 LINES:
     while ( my $l = $fp->getline )

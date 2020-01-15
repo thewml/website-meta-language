@@ -9,7 +9,7 @@ use autodie;
 
 use Test::More ();
 use File::Temp qw/ tempdir tempfile /;
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 
 my @files_to_del;
 
@@ -59,8 +59,8 @@ sub generic
     # $rc = system("cmp $tmpfile2 $tmpfile3");
 
     Test::More::is(
-        io()->file($tmpfile3)->all(),
-        io()->file($tmpfile2)->all(),
+        path($tmpfile3)->slurp_raw(),
+        path($tmpfile2)->slurp_raw(),
         "generic cmp"
     );
 }

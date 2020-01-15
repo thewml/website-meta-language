@@ -63,7 +63,6 @@ use Getopt::Long 2.13;
 use File::Spec ();
 use List::Util qw/ sum /;
 use Path::Tiny qw/ path tempdir tempfile cwd /;
-use IO::All qw/ io /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
 use TheWML::Config                        ();
@@ -706,7 +705,9 @@ sub _set_src
         $self->_src_istmp(1);
         $self->_src( $self->_temp_dir->child("wml.input.tmp") );
         unlink( $self->_src );
-        io->file( $self->_src )->print( io->stdin()->all );
+        path( $self->_src )->spew_raw(
+            do { local $/; <STDIN> }
+        );
     }
 
     if ( $self->_src_istmp and not -f $self->_src )
