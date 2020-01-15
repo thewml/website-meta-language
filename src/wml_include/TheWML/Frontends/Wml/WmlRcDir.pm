@@ -37,7 +37,7 @@ use 5.014;
 use strict;
 use warnings;
 
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 
 use TheWML::Frontends::Wml::Util qw/ canonize_path split_argv /;
 use Class::XSAccessor (
@@ -63,7 +63,7 @@ sub _process_wmlrc_dir
         return;
     }
     $_pass_mgr->verbose( 2, "Reading RC file: $dir/.wmlrc\n" );
-    my $wml_rc_fh = io->file("$dir/.wmlrc");
+    my $wml_rc_fh = path("$dir/.wmlrc")->openr;
     my @aa;
 WMLRC_LINES:
     while ( my $l = $wml_rc_fh->getline )

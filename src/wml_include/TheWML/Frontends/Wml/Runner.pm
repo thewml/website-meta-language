@@ -157,9 +157,8 @@ sub _handle_output
     #   to mtime of inputfile if inputfile was not STDIN
     if ( not $self->_src_istmp and $self->_opt_t )
     {
-        my $stat  = io->file( $self->_src );
         my $atime = time();
-        my $mtime = $stat->mtime;
+        my $mtime = path( $self->_src )->stat->mtime;
         foreach my $o ( @{ $self->_out_filenames } )
         {
             utime( $atime, $mtime + 1, $o );
@@ -472,15 +471,15 @@ sub _do_output
         {
             foreach my $o ( @{ $self->_out_filenames } )
             {
-                push @fh, io->file($o)->open('>');
+                push @fh, path($o)->openw;
             }
         }
         else
         {
             my $o = $self->_tmp->[3];
-            push @fh, io->file($o)->open('>');
+            push @fh, path($o)->openw;
         }
-        my $buf = io()->file( $self->_last )->all;
+        my $buf = path( $self->_last )->slurp_raw;
         foreach my $fp (@fh)
         {
             $fp->print($buf);
@@ -607,7 +606,7 @@ sub _process_shebang
     {
         return;
     }
-    my $tmp_fh  = io->file( $self->_src );
+    my $tmp_fh  = path( $self->_src )->openr;
     my $shebang = '';
 SHEBANG:
     while ( my $l = $tmp_fh->getline )
@@ -729,7 +728,7 @@ sub _output_and_cleanup
     #   ... and eventually send to stdout
     if ( $_pass_mgr->out_istmp )
     {
-        print io->file( $self->_tmp->[3] )->all;
+        print path( $self->_tmp->[3] )->slurp_raw;
     }
 
     $self->_unlink_tmp;
@@ -749,7 +748,7 @@ sub _handle_out_tmp
 
     if ( not $self->_src_istmp )
     {
-        io->file( $self->_tmp->[0] )->print( io->file( $self->_src )->all );
+        path( $self->_tmp->[0] )->spew_raw( path( $self->_src )->slurp_raw );
     }
 
     if ( $self->_out eq '' )

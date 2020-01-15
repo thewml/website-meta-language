@@ -22,15 +22,15 @@ use Class::XSAccessor (
 );
 
 use List::Util qw/ max /;
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 use TheWML::Frontends::Wml::Util qw/ expandrange /;
 
 sub _protect
 {
     my ( $self, $fn, $pass ) = @_;
 
-    my $data = io->file($fn)->all;
-    my $fp   = io->file($fn)->open('>');
+    my $data = path($fn)->slurp_raw;
+    my $fp   = path($fn)->openw;
 
     #   First remove a shebang line
     if ( $self->_firstpass and $data =~ m/^#!wml/ )
@@ -96,7 +96,7 @@ sub _unprotect
 {
     my ( $self, $fn, $pass ) = @_;
 
-    my $data = io->file($fn)->all;
+    my $data = path($fn)->slurp_raw;
     while ( my ( $prefix, $key, $new ) =
         $data =~ m|^(.*?)-=P\[([0-9]+)\]=-(.*)$|s )
     {
@@ -112,7 +112,7 @@ sub _unprotect
 
     #    Remove useless <protect> tags
     $data =~ s|</?protect.*?>||gs if $pass == 9;
-    io->file($fn)->print($data);
+    path($fn)->spew_raw($data);
     if ( $pass < 9 )
     {
         foreach my $key ( keys %{ $self->_protect_storage } )

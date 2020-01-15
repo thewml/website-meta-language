@@ -58,8 +58,9 @@ use TheWML::Config                  ();
 use TheWML::Frontends::Wml::PassObj ();
 
 use TheWML::Frontends::Wml::Util qw/ _my_cwd error split_argv /;
-use IO::All qw/ io /;
 use File::Which qw/ which /;
+
+use Path::Tiny qw/ path /;
 
 my $RESOLV_FN = '/etc/resolv.conf';
 my $EXEC_DIR  = "@{[TheWML::Config::libdir()]}/exec";
@@ -190,10 +191,10 @@ sub pass2
 
     #   remove asterisks which can be entered
     #   by the user to avoid tag interpolation
-    my $buf = io()->file($tmp)->all;
+    my $buf = path($tmp)->slurp_raw;
     $buf =~ s|<\*?([a-zA-Z][a-zA-Z0-9-_]*)\*?([^a-zA-Z0-9-_])|<$1$2|sg;
     $buf =~ s|<\*?(/[a-zA-Z][a-zA-Z0-9-_]*)\*?>|<$1>|sg;
-    io->file($to)->print($buf);
+    path($to)->spew_raw($buf);
 
     return $rc;
 }

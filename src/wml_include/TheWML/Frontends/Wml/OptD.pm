@@ -26,9 +26,7 @@ use Class::XSAccessor (
     }
 );
 
-use File::Basename qw/ basename dirname /;
-
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
 
 use TheWML::Config qw//;
 use TheWML::Frontends::Wml::Util
@@ -57,13 +55,13 @@ sub _populate_opt_D
     {
         $src_dirname = (
             ( $self->_main->_src =~ m#/# )
-            ? Cwd::abs_path( dirname( $self->_main->_src ) )
+            ? path( $self->_main->_src )->parent->absolute->stringify
             : $cwd
         );
         $src_basename =
-            $self->_main->_src_filename( basename( $self->_main->_src ) ) =~
-            s#(\.[a-zA-Z0-9]+)\z##r;
-        my $stat = io->file( $self->_main->_src );
+            $self->_main->_src_filename( path( $self->_main->_src )->basename )
+            =~ s#(\.[a-zA-Z0-9]+)\z##r;
+        my $stat = path( $self->_main->_src )->stat;
         $src_time_rec = time_record( $stat->mtime );
         $src_user     = user_record( $stat->uid );
     }

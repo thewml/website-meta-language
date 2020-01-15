@@ -46,7 +46,6 @@ use Class::XSAccessor (
 
 use File::Basename qw/ basename /;
 use File::Which qw/ which /;
-use IO::All qw/ io /;
 
 #   remove escape backslashes
 sub unquotearg
