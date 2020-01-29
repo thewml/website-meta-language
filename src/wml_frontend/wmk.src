@@ -344,7 +344,7 @@ my $matchF = '';
 my @P;
 
 #   set the path to act on
-if ( $#ARGV == -1 )
+if ( !@ARGV )
 {
     @P = ('.');
 }
@@ -352,6 +352,7 @@ else
 {
     @P = @ARGV;
 }
+PATHS:
 foreach my $p (@P)
 {
     if ( -d $p )
@@ -443,7 +444,7 @@ foreach my $p (@P)
         #
         #   path is a file
         #
-        next if $p =~ m#^${matchF}$#;
+        next PATHS if $p =~ m#\A${matchF}\z#;
 
         my ( $dir, $file ) = ( $p =~ m|^(.*?)([^/]+)$| );
         if ($dir)
