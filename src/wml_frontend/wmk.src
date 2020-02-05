@@ -91,7 +91,6 @@ else
 sub usage
 {
     my ($progname) = @_;
-    my ($o);
 
     print STDERR "Usage: $progname [options] [path ...]\n";
     print STDERR "\n";
@@ -111,7 +110,7 @@ sub usage
     print STDERR
         "  -r, --norcfile          no .wmkrc and .wmlrc files are read\n";
     print STDERR "\n";
-    $o = `$WML --help 2>&1`;
+    my $o = `$WML --help 2>&1`;
     $o =~ s|^.+?\n\n||s;
     $o =~ s|^.+?--noshebang.+?\n||m;
     $o =~ s|^.+?--norcfile.+?\n||m;
