@@ -491,21 +491,23 @@ sub read_rcfile
         }
         foreach $dir ( reverse(@DIR) )
         {
-            if ( -f "$dir/.wmkrc" )
+            my $wmkrc_fn = "$dir/.wmkrc";
+            if ( -f $wmkrc_fn )
             {
-                open( FP, "<$dir/.wmkrc" )
-                    || error("Unable to load $dir/.wmkrc: $!");
+                open( my $fp, "<", $wmkrc_fn )
+                    || error("Unable to load ${wmkrc_fn}: $!");
                 @ARGV = ();
-                while (<FP>)
+            WMKRC:
+                while ( my $l = <$fp> )
                 {
-                    next if (m|^\s*\n$|);
-                    next if (m|^\s*#[#\s]*.*$|);
-                    s|^\s+||;
-                    s|\s+$||;
-                    s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
-                    push( @ARGV, split_argv($_) );
+                    next WMKRC if ( $l =~ m|^\s*\n$| );
+                    next WMKRC if ( $l =~ m|^\s*#[#\s]*.*$| );
+                    $l =~ s|^\s+||;
+                    $l =~ s|\s+$||;
+                    $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
+                    push( @ARGV, split_argv($l) );
                 }
-                close(FP) || error("Unable to close $dir/.wmkrc: $!");
+                close($fp) || error("Unable to close $dir/.wmkrc: $!");
                 @opt_A = ();
                 @opt_F = ();
                 @opt_x = ();
@@ -701,11 +703,11 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@outfiles, $1), ''|sge;
 sub skipable
 {
     my ( $file, @outfiles ) = @_;
-    my ( $skipable, $outfile, $t, $dep, $incl );
+    my ( $outfile, $t, $dep, $incl );
     my ( @IS, @OS );
 
-    $skipable = 1;
-    @IS       = stat($file);
+    my $skipable = 1;
+    @IS = stat($file);
     local ($/) = undef;
     open( DEP, "$wml_ipp -odummy $file |" )
         || error("Unable to exec $wml_ipp: $!");
@@ -728,6 +730,7 @@ sub skipable
         }
     }
 
+OUT_FILES:
     foreach $outfile (@outfiles)
     {
         if ( -f $outfile )
@@ -736,13 +739,13 @@ sub skipable
             if ( $IS[9] >= $OS[9] )
             {    # 9=mtime
                 $skipable = 0;
-                last;
+                last OUT_FILES;
             }
         }
         else
         {
             $skipable = 0;
-            last;
+            last OUT_FILES;
         }
     }
     return $skipable;
