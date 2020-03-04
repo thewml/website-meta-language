@@ -226,7 +226,7 @@ sub quotearg
     {
         if ( $arg =~ m|[\[\]()!*?&"']| )
         {
-            $arg =~ s|'|\\'|sg;
+            $arg =~ s|'|\\'|gs;
             $arg = "'" . $arg . "'";
         }
     }
@@ -655,17 +655,17 @@ sub process_file
     #   expand %DIR and %BASE
     my $base = $file;
     $base =~ s|\.[a-zA-Z0-9]+$||;
-    $opts =~ s|%DIR|$dir|sg;
-    $opts =~ s|%BASE|$base|sg;
+    $opts =~ s|%DIR|$dir|gs;
+    $opts =~ s|%BASE|$base|gs;
 
     #   determine default output file
     if ( $opts !~ m|-o| )
     {
         $opts .= " -o ${base}.html";
     }
-    $opts =~ s|(\s*)(\S+)|' '.quotearg($2)|sge;
-    $opts =~ s|^\s+||;
-    $opts =~ s|\s+$||;
+    $opts =~ s|(\s*)(\S+)|' '.quotearg($2)|egs;
+    $opts =~ s|\A\s+||;
+    $opts =~ s|\s+\z||;
 
     #   determine if invocation can be skipped
     my $skipable;
@@ -674,7 +674,7 @@ sub process_file
         my @out_filenames;
         my $s = $opts;
         $s =~
-s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|sge;
+s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
         $skipable = skipable( $file, ( \@out_filenames ) );
     }
     else
@@ -712,7 +712,7 @@ sub skipable
         || error("Unable to exec $wml_ipp: $!");
     $dep = <DEP>;
     close(DEP) || error("Unable to close exec $wml_ipp: $!");
-    $dep =~ s/\\\s+/ /sg;
+    $dep =~ s/\\\s+/ /gs;
 
     if ( $dep =~ m|^(.*):\s+(.*?)\s+(.*)$| )
     {
