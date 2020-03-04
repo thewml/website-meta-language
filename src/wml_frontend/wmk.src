@@ -239,18 +239,14 @@ sub addquotedarg
     return ' -' . $flag . ' "' . quotearg($arg) . '"';
 }
 
-my $Oq = '';
-$Oq = ' -q' if ($opt_q);
+my @wml_args;
+push @wml_args, '-q' if ($opt_q);
+push @wml_args, '-z' if ($opt_z);
 
-my $Oz = '';
-$Oz = ' -z' if ($opt_z);
+push @wml_args, '-v'          if ( $opt_v == 0 );
+push @wml_args, '-v' . $opt_v if ( $opt_v > 0 );
 
-my $Ov = '';
-$Ov = ' -v'          if ( $opt_v == 0 );
-$Ov = ' -v' . $opt_v if ( $opt_v > 0 );
-
-my $Op = '';
-foreach my $arg (@opt_p) { $Op .= ' -p' . $arg; }
+push @wml_args, map { "-p$_" } @opt_p;
 
 my $OW = '';
 foreach my $arg (@opt_W) { $OW .= addquotedarg( 'W', $arg ); }
@@ -286,11 +282,8 @@ my $OO = '';
 $OO = ' -O' . $opt_O if ( $opt_O ne '' );
 
 my $wml_cmd =
-      "$WML -n"
-    . $Oq
-    . $Oz
-    . $Ov
-    . $Op
+      "$WML -n "
+    . ( join " ", @wml_args )
     . $OW
     . $OD
     . $OP
@@ -303,11 +296,8 @@ my $wml_cmd =
     . $Oi
     . $OO;
 my $wml_ipp =
-      "$WML -n -MM"
-    . $Oq
-    . $Oz
-    . $Ov
-    . $Op
+      "$WML -n -MM "
+    . ( join " ", @wml_args )
     . $OW
     . $OD
     . $OP
