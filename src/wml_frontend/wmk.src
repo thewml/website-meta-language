@@ -233,6 +233,12 @@ sub quotearg
     return $arg;
 }
 
+sub _quote_arg
+{
+    my ( $flag, $arg ) = @_;
+    return ( '-' . $flag, '"' . quotearg($arg) . '"' );
+}
+
 sub addquotedarg
 {
     my ( $flag, $arg ) = @_;
@@ -248,67 +254,29 @@ push @wml_args, '-v' . $opt_v if ( $opt_v > 0 );
 
 push @wml_args, map { "-p$_" } @opt_p;
 
-my $OW = '';
-foreach my $arg (@opt_W) { $OW .= addquotedarg( 'W', $arg ); }
+sub _push_args
+{
+    my ( $arr, $flag ) = @_;
+    push @wml_args, map { _quote_arg( $flag, $_ ) } @$arr;
+}
 
-my $OD = '';
-foreach my $arg (@opt_D) { $OD .= addquotedarg( 'D', $arg ); }
+_push_args( \@opt_W, 'W' );
+_push_args( \@opt_D, 'D' );
+_push_args( \@opt_P, 'P' );
+_push_args( \@opt_E, 'E' );
 
-my $OP = '';
-foreach my $arg (@opt_P) { $OP .= addquotedarg( 'P', $arg ); }
+push @wml_args, " -M$opt_M" if ( $opt_M ne '-' );
+push @wml_args, "-t"        if ($opt_t);
+push @wml_args, "-s"        if ($opt_s);
+push @wml_args, "-r"        if ($opt_r);
 
-my $OE = '';
-foreach my $arg (@opt_E) { $OE .= addquotedarg( 'E', $arg ); }
+_push_args( \@opt_I, 'I' );
+_push_args( \@opt_i, 'i' );
 
-my $OM = '';
-$OM = " -M$opt_M" if ( $opt_M ne '-' );
+push @wml_args, "-O" . $opt_O if ( $opt_O ne '' );
 
-my $Ot = '';
-$Ot = ' -t' if ($opt_t);
-
-my $Or = '';
-$Or = ' -r' if ($opt_r);
-
-my $Os = '';
-$Os = ' -s' if ($opt_s);
-
-my $OI = '';
-foreach my $arg (@opt_I) { $OI .= addquotedarg( 'I', $arg ); }
-
-my $Oi = '';
-foreach my $arg (@opt_i) { $Oi .= addquotedarg( 'i', $arg ); }
-
-my $OO = '';
-$OO = ' -O' . $opt_O if ( $opt_O ne '' );
-
-my $wml_cmd =
-      "$WML -n "
-    . ( join " ", @wml_args )
-    . $OW
-    . $OD
-    . $OP
-    . $OE
-    . $OM
-    . $Ot
-    . $Os
-    . $Or
-    . $OI
-    . $Oi
-    . $OO;
-my $wml_ipp =
-      "$WML -n -MM "
-    . ( join " ", @wml_args )
-    . $OW
-    . $OD
-    . $OP
-    . $OE
-    . $OM
-    . $Ot
-    . $Os
-    . $Or
-    . $OI
-    . $Oi
-    . $OO;
+my $wml_cmd = "$WML -n " .     ( join " ", @wml_args );
+my $wml_ipp = "$WML -n -MM " . ( join " ", @wml_args );
 
 my $Oo = '';
 foreach my $arg (@opt_o) { $Oo .= ' -o' . $arg; }
