@@ -671,11 +671,11 @@ sub process_file
     my $skipable;
     if ( not $opt_f )
     {
-        my @outfiles = ();
-        my $s        = $opts;
+        my @out_filenames;
+        my $s = $opts;
         $s =~
-s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@outfiles, $1), ''|sge;
-        $skipable = skipable( $file, @outfiles );
+s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|sge;
+        $skipable = skipable( $file, ( \@out_filenames ) );
     }
     else
     {
@@ -701,8 +701,8 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@outfiles, $1), ''|sge;
 #   any of its output files
 sub skipable
 {
-    my ( $file, @outfiles ) = @_;
-    my ( $outfile, $t, $dep, $incl );
+    my ( $file, $out_filenames ) = @_;
+    my ( $t, $dep, $incl );
     my ( @IS, @OS );
 
     my $skipable = 1;
@@ -730,11 +730,11 @@ sub skipable
     }
 
 OUT_FILES:
-    foreach $outfile (@outfiles)
+    foreach my $out_fn (@$out_filenames)
     {
-        if ( -f $outfile )
+        if ( -f $out_fn )
         {
-            @OS = stat($outfile);
+            @OS = stat($out_fn);
             if ( $IS[9] >= $OS[9] )
             {    # 9=mtime
                 $skipable = 0;
