@@ -250,19 +250,19 @@ $Ov = ' -v'          if ( $opt_v == 0 );
 $Ov = ' -v' . $opt_v if ( $opt_v > 0 );
 
 my $Op = '';
-foreach $a (@opt_p) { $Op .= ' -p' . $a; }
+foreach my $arg (@opt_p) { $Op .= ' -p' . $arg; }
 
 my $OW = '';
-foreach $a (@opt_W) { $OW .= addquotedarg( 'W', $a ); }
+foreach my $arg (@opt_W) { $OW .= addquotedarg( 'W', $arg ); }
 
 my $OD = '';
-foreach $a (@opt_D) { $OD .= addquotedarg( 'D', $a ); }
+foreach my $arg (@opt_D) { $OD .= addquotedarg( 'D', $arg ); }
 
 my $OP = '';
-foreach $a (@opt_P) { $OP .= addquotedarg( 'P', $a ); }
+foreach my $arg (@opt_P) { $OP .= addquotedarg( 'P', $arg ); }
 
 my $OE = '';
-foreach $a (@opt_E) { $OE .= addquotedarg( 'E', $a ); }
+foreach my $arg (@opt_E) { $OE .= addquotedarg( 'E', $arg ); }
 
 my $OM = '';
 $OM = " -M$opt_M" if ( $opt_M ne '-' );
@@ -277,10 +277,10 @@ my $Os = '';
 $Os = ' -s' if ($opt_s);
 
 my $OI = '';
-foreach $a (@opt_I) { $OI .= addquotedarg( 'I', $a ); }
+foreach my $arg (@opt_I) { $OI .= addquotedarg( 'I', $arg ); }
 
 my $Oi = '';
-foreach $a (@opt_i) { $Oi .= addquotedarg( 'i', $a ); }
+foreach my $arg (@opt_i) { $Oi .= addquotedarg( 'i', $arg ); }
 
 my $OO = '';
 $OO = ' -O' . $opt_O if ( $opt_O ne '' );
@@ -321,7 +321,7 @@ my $wml_ipp =
     . $OO;
 
 my $Oo = '';
-foreach $a (@opt_o) { $Oo .= ' -o' . $a; }
+foreach my $arg (@opt_o) { $Oo .= ' -o' . $arg; }
 
 #   store initial working directory
 my $cwd = Cwd::cwd;
