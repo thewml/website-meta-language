@@ -48,7 +48,6 @@ my $VERSION = "@WML_VERSION@";
 
 use Term::ANSIColor qw/ colored /;
 use Getopt::Long 2.13 ();
-use Cwd        ();
 use File::Find ();
 use Time::HiRes qw/ stat /;
 use List::Util qw/ max none /;
@@ -291,7 +290,7 @@ my $wml_ipp = _gen_cmd(' -MM');
 my $Oo = _get_opt_o_str;
 
 #   store initial working directory
-my $cwd = Cwd::cwd;
+my $cwd = cwd;
 
 ##  read $HOME/.wmkrc
 my @pwinfo = getpwuid($<);
@@ -461,12 +460,12 @@ sub _read_rcfile
 
     if ( not $opt_r )
     {
-        ( my $dirs_str = Cwd::cwd ) =~ s|/\z||;
+        my $dirs_str = cwd;
         my @dir_names;
-        while ($dirs_str)
+        while ( !$dirs_str->is_rootdir )
         {
             push( @dir_names, $dirs_str );
-            $dirs_str =~ s|/[^/]+\z||;
+            $dirs_str = $dirs_str->parent;
         }
         foreach my $dir_name ( reverse(@dir_names) )
         {
