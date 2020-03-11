@@ -655,13 +655,10 @@ sub skipable
 
     if ( my ($capt) = $dep =~ m|\A.*:\s+.*?\s+(.*)\Z| )
     {
-        foreach my $incl ( split( /\s+/, $capt ) )
-        {
-            if ( -f $incl )
-            {
-                $IS = max( $IS, scalar mtime($incl) );
-            }
-        }
+        $IS = max(
+            $IS, map { mtime($_) } grep { -f }
+                split( /\s+/, $capt )
+        );
     }
 
     return none
