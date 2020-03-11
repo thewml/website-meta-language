@@ -333,7 +333,7 @@ foreach my $p (@P)
                 $dir =~ s|\n$||;
                 chdir($dir);
                 read_rcfile() if $dir ne $p;
-                if ( my @files = determine_files() )
+                if ( my @files = @{ determine_files() } )
                 {
                     #   a little bit verbosity
                     if ( $dirC ne $dir )
@@ -371,7 +371,7 @@ foreach my $p (@P)
             chdir($p);
             read_rcfile();
             next if $p =~ m#\A${matchF}\Z#;
-            my @files = determine_files();
+            my @files = @{ determine_files() };
             foreach my $exec (@opt_x_CUR)
             {
                 my $rc = system($exec);
@@ -519,28 +519,15 @@ sub read_rcfile
 #   determine files to act on
 sub determine_files
 {
-    my ( @files, @filesA, @filesF, $fileA, $fileF, %files );
-
     #   determine files
-    @filesA = glob( join( ' ', @opt_A_CUR ) );
-    @filesF = glob( join( ' ', @opt_F_CUR ) );
-    %files  = ();
-    foreach $fileA (@filesA)
+    my @filesA  = glob( join( ' ', @opt_A_CUR ) );
+    my %_filesF = map { $_ => 1 } glob( join( ' ', @opt_F_CUR ) );
+    my %files;
+    foreach my $fileA (@filesA)
     {
-        my $ok = 1;
-        foreach $fileF (@filesF)
-        {
-            if ( $fileA eq $fileF )
-            {
-                $ok = 0;
-                last;
-            }
-        }
-        $files{$fileA} = 1 if $ok;
+        $files{$fileA} = 1 if not exists $_filesF{$fileA};
     }
-    @files = sort( keys(%files) );
-
-    return @files;
+    return [ sort( keys(%files) ) ];
 }
 
 #   helper function to split argument line
