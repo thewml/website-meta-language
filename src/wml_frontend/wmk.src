@@ -683,21 +683,9 @@ sub skipable
         }
     }
 
-OUT_FILES:
     foreach my $out_fn (@$out_filenames)
     {
-        if ( -f $out_fn )
-        {
-            $OS = mtime($out_fn);
-            if ( $IS >= $OS )
-            {    # 9=mtime
-                return 0;
-            }
-        }
-        else
-        {
-            return 0;
-        }
+        return 0 if ( ( not -f $out_fn ) or ( $IS >= mtime($out_fn) ) );
     }
     return 1;
 }
