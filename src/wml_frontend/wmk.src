@@ -76,34 +76,31 @@ our $opt_o_CUR;
 ##  PROCESS ARGUMENT LINE
 ##
 
-sub usage
+sub _usage
 {
     my ($progname) = @_;
 
-    print STDERR "Usage: $progname [options] [path ...]\n";
-    print STDERR "\n";
-    print STDERR "Operation Options (WMk intern):\n";
-    print STDERR "  -a, --all               run for all files recursively\n";
-    print STDERR
-        "  -A, --accept=WILDMAT    accept files via shell wildcard matching\n";
-    print STDERR
-"  -F, --forget=WILDMAT    forget files which were previously accepted\n";
-    print STDERR "  -o, --outputfile=PATH   specify the output file(s)\n";
-    print STDERR
-        "  -x, --exec-prolog=PATH  execute a prolog program in local context\n";
-    print STDERR
-        "  -X, --exec-epilog=PATH  execute a epilog program in local context\n";
-    print STDERR "  -f, --force             force outpout generation\n";
-    print STDERR "  -n, --nop               no operation (nop) mode\n";
-    print STDERR
-        "  -r, --norcfile          no .wmkrc and .wmlrc files are read\n";
-    print STDERR "\n";
     my $o = `$WML --help 2>&1`;
     $o =~ s|\A.+?\n\n||s;
     $o =~ s|^.+?--noshebang.+?\n||m;
     $o =~ s|^.+?--norcfile.+?\n||m;
     $o =~ s|^.+?--outputfile.+?\n||m;
-    print STDERR $o;
+
+    print STDERR <<"EOF";
+Usage: $progname [options] [path ...]
+
+Operation Options (WMk intern):
+  -a, --all               run for all files recursively
+  -A, --accept=WILDMAT    accept files via shell wildcard matching
+  -F, --forget=WILDMAT    forget files which were previously accepted
+  -o, --outputfile=PATH   specify the output file(s)
+  -x, --exec-prolog=PATH  execute a prolog program in local context
+  -X, --exec-epilog=PATH  execute a epilog program in local context
+  -f, --force             force outpout generation
+  -n, --nop               no operation (nop) mode
+  -r, --norcfile          no .wmkrc and .wmlrc files are read
+$o
+EOF
     exit(1);
 }
 
@@ -135,7 +132,7 @@ sub _process_options
         print STDERR "Try `$0 --help' for more information.\n";
         exit(0);
     }
-    usage($0) if ($opt_h);
+    _usage($0) if ($opt_h);
 }
 
 sub _error
@@ -294,11 +291,11 @@ $home =~ s|/$||;
 if ( -f "$home/.wmkrc" )
 {
     chdir($home);
-    read_rcfile();
+    _read_rcfile();
     chdir($cwd);
 }
 
-#    this variable is defined in read_rcfile
+#    this variable is defined in _read_rcfile
 my $matchF = '';
 
 PATHS:
@@ -313,7 +310,7 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             #
             #   first look into .wmkrc in case -F option is found
             chdir($p);
-            read_rcfile();
+            _read_rcfile();
             chdir($cwd);
 
             my @dirs;
@@ -331,7 +328,7 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             {
                 $dir =~ s|\n$||;
                 chdir($dir);
-                read_rcfile() if $dir ne $p;
+                _read_rcfile() if $dir ne $p;
                 if ( my @files = @{ _determine_filenames() } )
                 {
                     #   a little bit verbosity
@@ -368,7 +365,7 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             #   path is a directory and we run locally
             #
             chdir($p);
-            read_rcfile();
+            _read_rcfile();
             next if $p =~ m#\A${matchF}\Z#;
             my @files = @{ _determine_filenames() };
             foreach my $exec (@opt_x_CUR)
@@ -399,13 +396,13 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
         if ($dir)
         {
             chdir($dir);
-            read_rcfile();
+            _read_rcfile();
             _process_file( $p, $dir, $file );
             chdir($cwd);
         }
         else
         {
-            read_rcfile();
+            _read_rcfile();
             _process_file( $p, $dir, $file );
         }
     }
@@ -445,7 +442,7 @@ sub _process_options_wrapper
 }
 
 #   read .wmkrc files and command-line options
-sub read_rcfile
+sub _read_rcfile
 {
     my @opt_A_SAV = @opt_A;
     my @opt_F_SAV = @opt_F;
