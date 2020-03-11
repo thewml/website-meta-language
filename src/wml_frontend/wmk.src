@@ -52,6 +52,7 @@ use Cwd        ();
 use File::Find ();
 use Time::HiRes qw/ stat /;
 use List::Util qw/ max none /;
+use Path::Tiny qw/ path tempdir tempfile cwd /;
 
 ##
 ##  INIT
@@ -400,19 +401,14 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
         #
         next PATHS if $p =~ m#\A${matchF}\Z#;
 
-        my ( $dir, $file ) = ( $p =~ m|\A(.*?)([^/]+)\Z| );
-        if ($dir)
-        {
-            chdir($dir);
-            _read_rcfile();
-            _process_file( $p, $dir, $file );
-            chdir($cwd);
-        }
-        else
-        {
-            _read_rcfile();
-            _process_file( $p, $dir, $file );
-        }
+        my $path = path($p);
+        my $dir  = $path->parent;
+        my $bn   = $path->basename;
+        my $cond = ( not $dir->is_rootdir );
+        chdir($dir) if $cond;
+        _read_rcfile();
+        _process_file( $path, $dir, $bn );
+        chdir($cwd) if $cond;
     }
     else
     {
@@ -466,13 +462,13 @@ sub _read_rcfile
     if ( not $opt_r )
     {
         ( my $dirs_str = Cwd::cwd ) =~ s|/\z||;
-        my @DIR;
+        my @dir_names;
         while ($dirs_str)
         {
-            push( @DIR, $dirs_str );
+            push( @dir_names, $dirs_str );
             $dirs_str =~ s|/[^/]+\z||;
         }
-        foreach my $dir_name ( reverse(@DIR) )
+        foreach my $dir_name ( reverse(@dir_names) )
         {
             my $wmkrc_fn = "$dir_name/.wmkrc";
             if ( -f $wmkrc_fn )
