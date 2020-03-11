@@ -83,7 +83,7 @@ sub version
 $opt_V = -1;
 $opt_h = 0;
 
-sub ProcessOptions
+sub _process_options
 {
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
@@ -98,7 +98,7 @@ sub ProcessOptions
     &usage($0) if ($opt_h);
     $SIG{'__WARN__'} = undef;
 }
-&ProcessOptions();
+_process_options();
 
 #   fix the version level
 if ( $opt_V == 0 )

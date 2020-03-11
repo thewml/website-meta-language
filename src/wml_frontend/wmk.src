@@ -106,7 +106,7 @@ sub usage
     exit(1);
 }
 
-sub ProcessOptions
+sub _process_options
 {
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
@@ -175,7 +175,7 @@ our $opt_q = 0;
 our $opt_V = -1;
 our $opt_z = 0;
 
-ProcessOptions();
+_process_options();
 
 #   fix the version level
 if ( $opt_V == 0 )
@@ -452,7 +452,7 @@ sub read_rcfile
                 @opt_x = ();
                 @opt_X = ();
                 @opt_o = ();
-                ProcessOptions();
+                _process_options();
                 @opt_A_CUR = ( @opt_A_CUR, @opt_A );
                 @opt_F_CUR = ( @opt_F_CUR, @opt_F );
                 @opt_x_CUR = ( @opt_x_CUR, @opt_x );
@@ -473,7 +473,7 @@ sub read_rcfile
     @opt_X = ();
     @opt_o = ();
     @ARGV  = @ARGVLINE;
-    ProcessOptions();
+    _process_options();
     @opt_A_CUR = ( @opt_A_CUR, @opt_A );
     @opt_F_CUR = ( @opt_F_CUR, @opt_F );
     @opt_x_CUR = ( @opt_x_CUR, @opt_x );
