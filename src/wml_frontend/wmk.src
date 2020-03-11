@@ -306,6 +306,24 @@ if ( -f "$home/.wmkrc" )
 #    this variable is defined in _read_rcfile
 my $matchF = '';
 
+sub _exec_wrapper
+{
+    my $cb = shift;
+
+    foreach my $exec (@opt_x_CUR)
+    {
+        my $rc = system($exec);
+        _error("prolog failed: $exec") if $rc != 0;
+    }
+    $cb->();
+    foreach my $exec (@opt_X_CUR)
+    {
+        my $rc = system($exec);
+        _error("epilog failed: $exec") if $rc != 0;
+    }
+    return;
+}
+
 PATHS:
 foreach my $p ( @ARGV ? @ARGV : (".") )
 {
@@ -334,7 +352,7 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             my $dirC = '';
             foreach my $dir (@dirs)
             {
-                $dir =~ s|\n$||;
+                $dir =~ s|\n\z||;
                 chdir($dir);
                 _read_rcfile() if $dir ne $p;
                 if ( my @files = @{ _determine_filenames() } )
@@ -349,20 +367,14 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
                             print STDERR colored( "[$dirtxt]", 'bold' ), "\n";
                         }
                     }
-                    foreach my $exec (@opt_x_CUR)
-                    {
-                        my $rc = system($exec);
-                        _error("prolog failed: $exec") if $rc != 0;
-                    }
-                    foreach my $file (@files)
-                    {
-                        _process_file( "$dir/$file", $dir, $file );
-                    }
-                    foreach my $exec (@opt_X_CUR)
-                    {
-                        my $rc = system($exec);
-                        _error("epilog failed: $exec") if $rc != 0;
-                    }
+                    _exec_wrapper(
+                        sub {
+                            foreach my $file (@files)
+                            {
+                                _process_file( "$dir/$file", $dir, $file );
+                            }
+                        }
+                    );
                 }
                 chdir($cwd);
             }
@@ -376,20 +388,14 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             _read_rcfile();
             next if $p =~ m#\A${matchF}\Z#;
             my @files = @{ _determine_filenames() };
-            foreach my $exec (@opt_x_CUR)
-            {
-                my $rc = system($exec);
-                _error("prolog failed: $exec") if $rc != 0;
-            }
-            foreach my $file (@files)
-            {
-                _process_file( "$p/$file", $p, $file );
-            }
-            foreach my $exec (@opt_X_CUR)
-            {
-                my $rc = system($exec);
-                _error("epilog failed: $exec") if $rc != 0;
-            }
+            _exec_wrapper(
+                sub {
+                    foreach my $file (@files)
+                    {
+                        _process_file( "$p/$file", $p, $file );
+                    }
+                }
+            );
             chdir($cwd);
         }
     }
