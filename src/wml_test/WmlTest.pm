@@ -9,15 +9,16 @@ use autodie;
 
 use Test::More ();
 use File::Temp qw/ tempdir tempfile /;
-use Path::Tiny qw/ path /;
+use Path::Tiny qw/ cwd path /;
 
 my @files_to_del;
 
-my $dir = tempdir( CLEANUP => 1 );
+my $orig_cwd = cwd->absolute;
+my $dir      = tempdir( CLEANUP => 1 );
 
 sub init
 {
-    return;
+    chdir $dir;
 }
 
 sub tmpfile
@@ -76,6 +77,7 @@ sub cleanup
     {
         eval { unlink($fn); };
     }
+    chdir $orig_cwd;
 }
 
 1;
