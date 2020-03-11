@@ -156,12 +156,14 @@ our $opt_f = 0;
 our $opt_r = 0;
 our $opt_n = 0;
 
+sub _get_opt_o_str
+{
+    return join "", map { " -o$_" } @opt_o;
+}
+
 sub _set_opt_o
 {
-    if (@opt_o)
-    {
-        $opt_o_CUR = '-o' . join( ' -o', @opt_o );
-    }
+    $opt_o_CUR = _get_opt_o_str;
     return;
 }
 
@@ -285,8 +287,7 @@ sub _gen_cmd
 my $wml_cmd = _gen_cmd('');
 my $wml_ipp = _gen_cmd(' -MM');
 
-my $Oo = '';
-foreach my $arg (@opt_o) { $Oo .= ' -o' . $arg; }
+my $Oo = _get_opt_o_str;
 
 #   store initial working directory
 my $cwd = Cwd::cwd;
