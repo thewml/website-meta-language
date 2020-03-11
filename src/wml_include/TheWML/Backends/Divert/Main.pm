@@ -232,10 +232,7 @@ sub _handle_enter_location
     #   execute a "rewind now" by clearing the location buffer
     if ( $rewind_now == 1 )
     {
-        while ( $#{ $self->_BUFFER->{ $self->_location } } > -1 )
-        {
-            shift( @{ $self->_BUFFER->{ $self->_location } } );
-        }
+        $#{ $self->_BUFFER->{ $self->_location } } = -1;
     }
     return;
 }
@@ -268,7 +265,7 @@ sub _handle_leave_location
             #   leave the named location and all locations
             #   on the stack above it.
             my $n = -1;
-            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; $i-- )
+            for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; --$i )
             {
                 if ( $self->_loc_stack->[$i] eq $loc )
                 {

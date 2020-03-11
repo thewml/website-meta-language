@@ -33,7 +33,7 @@ if ((@ARGV == 1 and $ARGV[0] eq '-') or !@ARGV) {
     $INPUT = do { local $/; <STDIN> };
     $src = "STDIN";
 }
-elsif ($#ARGV == 0) {
+elsif (@ARGV == 1)
     $INPUT = path($src = $ARGV[0])->slurp_raw;
 }
 else {

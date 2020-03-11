@@ -188,7 +188,7 @@ sub setup
     {
         usage;
     }
-    if ( $#opt_o == -1 )
+    if ( !@opt_o )
     {
         @opt_o = ("ALL:-");    # default is all on stdout
     }

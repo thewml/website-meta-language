@@ -201,7 +201,7 @@ if ($opt_V)
 
 #   If the -M was the last option and the user forgot
 #   to put `--' to end options, we adjust it.
-if ( $opt_M !~ m%\A(-|[MD]*)\Z% && $#ARGV == -1 )
+if ( $opt_M !~ m%\A(-|[MD]*)\Z% and ( !@ARGV ) )
 {
     push( @ARGV, $opt_M );
     $opt_M = '';

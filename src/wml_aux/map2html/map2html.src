@@ -45,7 +45,7 @@ $rc = Getopt::Long::GetOptions("v|verbose",
                                "n|name=s",
                                "o|outputfile=s",
                                "h|help");
-if (not $rc or $opt_h or ($#ARGV == -1)) {
+if (not $rc or $opt_h or (!@ARGV)) {
     &usage;
 }
 if ($opt_v) {

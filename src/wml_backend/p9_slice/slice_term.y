@@ -103,10 +103,10 @@ sub yylex {
                     push(@slices, $slice) unless &$sub_excl($slice);
                 }
             }
-            if ($#slices == 0) {
+            if (@slices == 1) {
                 $val = $slices[0];
             }
-            elsif ($#slices > 0) {
+            elsif (@slices > 1) {
                 $$s = join('u', @slices).')'.$$s;
                 return( ord('('), 0);
             }

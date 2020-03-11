@@ -228,7 +228,7 @@ sub location_tags_substitute {
 sub entries2table {
     my ($entryref,$cellref,$max_row,$max_col) = @_;
     my %entry = %$entryref;
-    my $len = $#{$entry{head}};; ## row-P ?
+    my $len = $#{$entry{head}}; ## row-P ?
     foreach my $entrynr (0..$len) {
 	my @rowmask = @{${$entry{row}}[$entrynr]};
 	my @colmask = @{${$entry{col}}[$entrynr]};
