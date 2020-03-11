@@ -169,15 +169,15 @@ sub _set_opt_o
 }
 
 #   WML options are read from the command line
-our @opt_I = ();
-our @opt_i = ();
-our @opt_D = ();
+our @opt_I;
+our @opt_i;
+our @opt_D;
 our $opt_O = '';
-our @opt_P = ();
-our @opt_E = ();
+our @opt_P;
+our @opt_E;
 our $opt_t = 0;
-our @opt_p = ();
-our @opt_W = ();
+our @opt_p;
+our @opt_W;
 our $opt_M = '-';
 our $opt_s = 0;
 our $opt_v = -1;
@@ -316,7 +316,7 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             read_rcfile();
             chdir($cwd);
 
-            my @dirs = ();
+            my @dirs;
 
             File::Find::find(
                 sub {
