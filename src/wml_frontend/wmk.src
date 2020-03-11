@@ -97,7 +97,7 @@ sub usage
         "  -r, --norcfile          no .wmkrc and .wmlrc files are read\n";
     print STDERR "\n";
     my $o = `$WML --help 2>&1`;
-    $o =~ s|^.+?\n\n||s;
+    $o =~ s|\A.+?\n\n||s;
     $o =~ s|^.+?--noshebang.+?\n||m;
     $o =~ s|^.+?--norcfile.+?\n||m;
     $o =~ s|^.+?--outputfile.+?\n||m;
@@ -193,7 +193,7 @@ if ($opt_V)
 
 #   If the -M was the last option and the user forgot
 #   to put `--' to end options, we adjust it.
-if ( $opt_M !~ m%^(-|[MD]*)$% && $#ARGV == -1 )
+if ( $opt_M !~ m%\A(-|[MD]*)\Z% && $#ARGV == -1 )
 {
     push( @ARGV, $opt_M );
     $opt_M = '';
@@ -208,7 +208,13 @@ if ( $opt_M !~ m%^(-|[MD]*)$% && $#ARGV == -1 )
 sub quotearg
 {
     my ($arg) = @_;
-    if ( $arg !~ m|^'.*'$| and $arg !~ m|^".*"$| )
+    if (
+        not(
+            $arg !~ /\n/ms
+            and (  ( $arg =~ m#\A'# && $arg =~ m#'\z# )
+                or ( $arg =~ m#\A"# && $arg =~ m#"\z# ) )
+        )
+        )
     {
         if ( $arg =~ m|[\[\]()!*?&"']| )
         {
@@ -315,7 +321,7 @@ foreach my $p (@P)
             File::Find::find(
                 sub {
                     -d $_
-                        && ( m#^${matchF}$# && ( $File::Find::prune = 1 )
+                        && ( m#\A${matchF}\Z# && ( $File::Find::prune = 1 )
                         || push( @dirs, $File::Find::name ) );
                 },
                 $p
@@ -363,7 +369,7 @@ foreach my $p (@P)
             #
             chdir($p);
             read_rcfile();
-            next if $p =~ m#^${matchF}$#;
+            next if $p =~ m#\A${matchF}\Z#;
             my @files = determine_files();
             foreach my $exec (@opt_x_CUR)
             {
@@ -387,9 +393,9 @@ foreach my $p (@P)
         #
         #   path is a file
         #
-        next PATHS if $p =~ m#\A${matchF}\z#;
+        next PATHS if $p =~ m#\A${matchF}\Z#;
 
-        my ( $dir, $file ) = ( $p =~ m|^(.*?)([^/]+)$| );
+        my ( $dir, $file ) = ( $p =~ m|\A(.*?)([^/]+)\Z| );
         if ($dir)
         {
             chdir($dir);
@@ -443,10 +449,10 @@ sub read_rcfile
             WMKRC:
                 while ( my $l = <$fp> )
                 {
-                    next WMKRC if ( $l =~ m|^\s*\n$| );
-                    next WMKRC if ( $l =~ m|^\s*#[#\s]*.*$| );
-                    $l =~ s|^\s+||;
-                    $l =~ s|\s+$||;
+                    next WMKRC if ( $l =~ m|\A\s*\n\Z| );
+                    next WMKRC if ( $l =~ m|\A\s*#[#\s]*.*\Z| );
+                    $l =~ s|\A\s+||;
+                    $l =~ s|\s+\Z||;
                     $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
                     push( @ARGV, split_argv($l) );
                 }
@@ -549,17 +555,17 @@ sub split_argv
 
     while (1)
     {
-        next if $str =~ s|^"([^"\\]*(?:\\.[^"\\]*)*)"(.*)$|$r .= $1, $2|e;
-        next if $str =~ s|^'([^'\\]*(?:\\.[^'\\]*)*)'(.*)$|$r .= $1, $2|e;
-        next if $str =~ s|^([^\s"']+)(.*)$|$r .= $1, $2|e;
-        if ( $str =~ m|^[\s\n]+| || $str eq '' )
+        next if $str =~ s|\A"([^"\\]*(?:\\.[^"\\]*)*)"(.*)\Z|$r .= $1, $2|e;
+        next if $str =~ s|\A'([^'\\]*(?:\\.[^'\\]*)*)'(.*)\Z|$r .= $1, $2|e;
+        next if $str =~ s|\A([^\s"']+)(.*)\Z|$r .= $1, $2|e;
+        if ( $str =~ m#\A[\s\n]+# || $str eq '' )
         {
             if ( $r ne '' )
             {
                 push( @argv, $r );
                 $r = '';
             }
-            $str =~ s|^[\s\n]+||;
+            $str =~ s|\A[\s\n]+||;
             last if ( $str eq '' );
         }
     }
@@ -582,14 +588,14 @@ sub process_file
         while (1)
         {
             $shebang .= <FP>;
-            if ( $shebang =~ m|^(.*)\\\s*$|s )
+            if ( $shebang =~ m|\A(.*)\\\s*\Z|s )
             {
                 $shebang = $1;
                 next;
             }
             last;
         }
-        if ( $shebang =~ m|^#!wml\s+(.+\S)\s*$|is )
+        if ( $shebang =~ m|\A#!wml\s+(.+\S)\s*\Z|is )
         {
             $opts = $1;
         }
@@ -642,33 +648,36 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
     }
 }
 
+sub mtime
+{
+    return ( stat(shift) )[9];
+}
+
 #   is file skipable because not newer than
 #   any of its output files
 sub skipable
 {
     my ( $file, $out_filenames ) = @_;
-    my ( $t, $dep, $incl );
-    my ( @IS, @OS );
+    my ($OS);
 
-    my $skipable = 1;
-    @IS = stat($file);
+    my $IS = mtime($file);
     local ($/) = undef;
-    open( DEP, "$wml_ipp -odummy $file |" )
+    open( my $DEP, "$wml_ipp -odummy $file |" )
         || error("Unable to exec $wml_ipp: $!");
-    $dep = <DEP>;
-    close(DEP) || error("Unable to close exec $wml_ipp: $!");
+    my $dep = <$DEP>;
+    close($DEP) || error("Unable to close exec $wml_ipp: $!");
     $dep =~ s/\\\s+/ /gs;
 
-    if ( $dep =~ m|^(.*):\s+(.*?)\s+(.*)$| )
+    if ( $dep =~ m|\A(.*):\s+(.*?)\s+(.*)\Z| )
     {
-        foreach $incl ( split( /\s+/, $3 ) )
+        foreach my $incl ( split( /\s+/, $3 ) )
         {
             if ( -f $incl )
             {
-                @OS = stat($incl);
-                if ( $IS[9] < $OS[9] )
+                $OS = mtime($incl);
+                if ( $IS < $OS )
                 {    # 9=mtime
-                    $IS[9] = $OS[9];
+                    $IS = $OS;
                 }
             }
         }
@@ -679,20 +688,18 @@ OUT_FILES:
     {
         if ( -f $out_fn )
         {
-            @OS = stat($out_fn);
-            if ( $IS[9] >= $OS[9] )
+            $OS = mtime($out_fn);
+            if ( $IS >= $OS )
             {    # 9=mtime
-                $skipable = 0;
-                last OUT_FILES;
+                return 0;
             }
         }
         else
         {
-            $skipable = 0;
-            last OUT_FILES;
+            return 0;
         }
     }
-    return $skipable;
+    return 1;
 }
 
 #   exit gracefully
