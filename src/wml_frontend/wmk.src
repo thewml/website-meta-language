@@ -66,11 +66,11 @@ if ( index( $ENV{'PATH'}, $BINDIR ) < 0 )
 my $WML = $ENV{'WML'} || "${BINDIR}/wml";
 
 our $opt_h = 0;
-our @opt_A_CUR;
-our @opt_F_CUR;
-our @opt_x_CUR;
-our @opt_X_CUR;
-our $opt_o_CUR;
+my @opt_A_CUR;
+my @opt_F_CUR;
+my @opt_x_CUR;
+my @opt_X_CUR;
+my $opt_o_CUR;
 
 ##
 ##  PROCESS ARGUMENT LINE
