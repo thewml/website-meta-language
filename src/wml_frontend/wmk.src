@@ -37,6 +37,7 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 
 use strict;
 use warnings;
+use autodie;
 use 5.014;
 
 use lib '@INSTALLPRIVLIB@';
@@ -137,7 +138,7 @@ sub _process_options
     usage($0) if ($opt_h);
 }
 
-sub error
+sub _error
 {
     my ($str) = @_;
     print STDERR "** WMK:Error: $str\n";
@@ -337,16 +338,16 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
                     foreach my $exec (@opt_x_CUR)
                     {
                         my $rc = system($exec);
-                        error("prolog failed: $exec") if $rc != 0;
+                        _error("prolog failed: $exec") if $rc != 0;
                     }
                     foreach my $file (@files)
                     {
-                        process_file( "$dir/$file", $dir, $file );
+                        _process_file( "$dir/$file", $dir, $file );
                     }
                     foreach my $exec (@opt_X_CUR)
                     {
                         my $rc = system($exec);
-                        error("epilog failed: $exec") if $rc != 0;
+                        _error("epilog failed: $exec") if $rc != 0;
                     }
                 }
                 chdir($cwd);
@@ -364,16 +365,16 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             foreach my $exec (@opt_x_CUR)
             {
                 my $rc = system($exec);
-                error("prolog failed: $exec") if $rc != 0;
+                _error("prolog failed: $exec") if $rc != 0;
             }
             foreach my $file (@files)
             {
-                process_file( "$p/$file", $p, $file );
+                _process_file( "$p/$file", $p, $file );
             }
             foreach my $exec (@opt_X_CUR)
             {
                 my $rc = system($exec);
-                error("epilog failed: $exec") if $rc != 0;
+                _error("epilog failed: $exec") if $rc != 0;
             }
             chdir($cwd);
         }
@@ -390,18 +391,18 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
         {
             chdir($dir);
             read_rcfile();
-            process_file( $p, $dir, $file );
+            _process_file( $p, $dir, $file );
             chdir($cwd);
         }
         else
         {
             read_rcfile();
-            process_file( $p, $dir, $file );
+            _process_file( $p, $dir, $file );
         }
     }
     else
     {
-        error("path `$p' neither directory nor plain file");
+        _error("path `$p' neither directory nor plain file");
     }
 }
 
@@ -433,8 +434,7 @@ sub read_rcfile
             my $wmkrc_fn = "$dir/.wmkrc";
             if ( -f $wmkrc_fn )
             {
-                open( my $fp, "<", $wmkrc_fn )
-                    || error("Unable to load ${wmkrc_fn}: $!");
+                open( my $fp, "<", $wmkrc_fn );
                 @ARGV = ();
             WMKRC:
                 while ( my $l = <$fp> )
@@ -446,7 +446,7 @@ sub read_rcfile
                     $l =~ s|\$([A-Za-z_][A-Za-z0-9_]*)|$ENV{$1}|ge;
                     push( @ARGV, split_argv($l) );
                 }
-                close($fp) || error("Unable to close $dir/.wmkrc: $!");
+                close($fp);
                 @opt_A = ();
                 @opt_F = ();
                 @opt_x = ();
@@ -544,7 +544,7 @@ sub split_argv
     return @argv;
 }
 
-sub process_file
+sub _process_file
 {
     my ( $path, $dir, $file ) = @_;
 
@@ -553,7 +553,7 @@ sub process_file
     if ( $opts eq '' )
     {
         $opts = $opt_o_CUR;
-        open( my $FP, '<', $file ) || error("Unable to load $file: $!");
+        open( my $FP, '<', $file );
         my $shebang = '';
         while (1)
         {
@@ -569,7 +569,7 @@ sub process_file
         {
             $opts = $1;
         }
-        close($FP) || error("Unable to close $file: $!");
+        close($FP);
     }
 
     #   expand %DIR and %BASE
@@ -614,7 +614,7 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
         if ( not $opt_n )
         {
             my $rc = system("$wml_cmd $opts $file");
-            error("Error in WML (rc=$rc)") if $rc != 0;
+            _error("Error in WML (rc=$rc)") if $rc != 0;
         }
     }
 }
@@ -632,10 +632,9 @@ sub skipable
 
     my $IS = mtime($file);
     local ($/) = undef;
-    open( my $DEP, "$wml_ipp -odummy $file |" )
-        || error("Unable to exec $wml_ipp: $!");
+    open( my $DEP, "$wml_ipp -odummy $file |" );
     my $dep = <$DEP>;
-    close($DEP) || error("Unable to close exec $wml_ipp: $!");
+    close($DEP);
     $dep =~ s/\\\s+/ /gs;
 
     if ( $dep =~ m|\A(.*):\s+(.*?)\s+(.*)\Z| )
