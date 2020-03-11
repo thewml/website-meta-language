@@ -653,12 +653,10 @@ sub skipable
     my $dep = qx#$wml_ipp -odummy $fn#;
     $dep =~ s/\\\s+/ /gs;
 
-    if ( my ($capt) = $dep =~ m|\A.*:\s+.*?\s+(.*)\Z| )
+    if ( my ($deps_filenames) = $dep =~ m|\A.*:\s+.*?\s+(.*)\Z| )
     {
-        $IS = max(
-            $IS, map { mtime($_) } grep { -f }
-                split( /\s+/, $capt )
-        );
+        $IS = max( $IS, map { mtime($_) } grep { -f }
+                split( /\s+/, $deps_filenames ) );
     }
 
     return none
