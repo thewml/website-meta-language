@@ -7,6 +7,8 @@ use strict;
 use warnings;
 use autodie;
 
+use Carp::Always;
+
 use Test::More ();
 use File::Temp qw/ tempdir tempfile /;
 use Path::Tiny qw/ cwd path /;
