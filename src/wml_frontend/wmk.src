@@ -275,8 +275,15 @@ _push_args( \@opt_i, 'i' );
 
 push @wml_args, "-O" . $opt_O if ( $opt_O ne '' );
 
-my $wml_cmd = "$WML -n " .     ( join " ", @wml_args );
-my $wml_ipp = "$WML -n -MM " . ( join " ", @wml_args );
+my $WML_ARGS_STR = ( join " ", @wml_args );
+
+sub _gen_cmd
+{
+    my $_opts = shift;
+    return "$WML -n$_opts $WML_ARGS_STR";
+}
+my $wml_cmd = _gen_cmd('');
+my $wml_ipp = _gen_cmd(' -MM');
 
 my $Oo = '';
 foreach my $arg (@opt_o) { $Oo .= ' -o' . $arg; }
