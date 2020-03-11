@@ -648,16 +648,13 @@ sub skipable
 {
     my ( $file, $out_filenames ) = @_;
 
-    my $IS = mtime($file);
-    local ($/) = undef;
-    open( my $DEP, "$wml_ipp -odummy $file |" );
-    my $dep = <$DEP>;
-    close($DEP);
+    my $IS  = mtime($file);
+    my $dep = qx#$wml_ipp -odummy $file#;
     $dep =~ s/\\\s+/ /gs;
 
-    if ( $dep =~ m|\A(.*):\s+(.*?)\s+(.*)\Z| )
+    if ( my ($capt) = $dep =~ m|\A.*:\s+.*?\s+(.*)\Z| )
     {
-        foreach my $incl ( split( /\s+/, $3 ) )
+        foreach my $incl ( split( /\s+/, $capt ) )
         {
             if ( -f $incl )
             {
