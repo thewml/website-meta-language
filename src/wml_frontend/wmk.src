@@ -511,12 +511,7 @@ sub _determine_filenames
     #   determine files
     my @filesA  = glob( join( ' ', @opt_A_CUR ) );
     my %_filesF = map { $_ => 1 } glob( join( ' ', @opt_F_CUR ) );
-    my %filenames;
-    foreach my $fileA (@filesA)
-    {
-        $filenames{$fileA} = 1 if not exists $_filesF{$fileA};
-    }
-    return [ sort( keys(%filenames) ) ];
+    return [ sort( grep { not exists $_filesF{$_} } @filesA ) ];
 }
 
 #   helper function to split argument line
@@ -609,7 +604,8 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
 
     if ($skipable)
     {
-        print STDERR "$wml_cmd $opts $file  (", colored( 'skipped', 'bold' ),
+        print STDERR "$wml_cmd $opts $file  (",
+            colored( 'skipped', 'bold' ),
             ")\n";
     }
     else
