@@ -151,13 +151,22 @@ my @ARGVLINE = @ARGV;
 #   WMk options
 our $opt_a = 0;
 our @opt_A = ('*.wml');
-our @opt_F = ();
-our @opt_o = ();
-our @opt_x = ();
-our @opt_X = ();
+our @opt_F;
+our @opt_o;
+our @opt_x;
+our @opt_X;
 our $opt_f = 0;
 our $opt_r = 0;
 our $opt_n = 0;
+
+sub _set_opt_o
+{
+    if (@opt_o)
+    {
+        $opt_o_CUR = '-o' . join( ' -o', @opt_o );
+    }
+    return;
+}
 
 #   WML options are read from the command line
 our @opt_I = ();
@@ -453,15 +462,12 @@ sub read_rcfile
                 @opt_X = ();
                 @opt_o = ();
                 _process_options();
-                @opt_A_CUR = ( @opt_A_CUR, @opt_A );
-                @opt_F_CUR = ( @opt_F_CUR, @opt_F );
-                @opt_x_CUR = ( @opt_x_CUR, @opt_x );
-                @opt_X_CUR = ( @opt_X_CUR, @opt_X );
+                push @opt_A_CUR, @opt_A;
+                push @opt_F_CUR, @opt_F;
+                push @opt_x_CUR, @opt_x;
+                push @opt_X_CUR, @opt_X;
 
-                if (@opt_o)
-                {
-                    $opt_o_CUR = '-o' . join( ' -o', @opt_o );
-                }
+                _set_opt_o;
             }
         }
     }
@@ -474,15 +480,12 @@ sub read_rcfile
     @opt_o = ();
     @ARGV  = @ARGVLINE;
     _process_options();
-    @opt_A_CUR = ( @opt_A_CUR, @opt_A );
-    @opt_F_CUR = ( @opt_F_CUR, @opt_F );
-    @opt_x_CUR = ( @opt_x_CUR, @opt_x );
-    @opt_X_CUR = ( @opt_X_CUR, @opt_X );
+    push @opt_A_CUR, @opt_A;
+    push @opt_F_CUR, @opt_F;
+    push @opt_x_CUR, @opt_x;
+    push @opt_X_CUR, @opt_X;
 
-    if (@opt_o)
-    {
-        $opt_o_CUR = '-o' . join( ' -o', @opt_o );
-    }
+    _set_opt_o;
 
     #    transforms filename wildcards into extended regexp
     if (@opt_F_CUR)
