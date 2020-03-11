@@ -655,8 +655,13 @@ sub skipable
 
     if ( my ($deps_filenames) = $dep =~ m|\A.*:\s+.*?\s+(.*)\Z| )
     {
-        $IS = max( $IS, map { mtime($_) } grep { -f }
-                split( /\s+/, $deps_filenames ) );
+        foreach my $incl ( split( /\s+/, $deps_filenames ) )
+        {
+            if ( -f $incl )
+            {
+                $IS = max( $IS, scalar mtime($incl) );
+            }
+        }
     }
 
     return none
