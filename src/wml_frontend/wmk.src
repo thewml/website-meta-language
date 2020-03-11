@@ -464,12 +464,12 @@ sub _read_rcfile
 
     if ( not $opt_r )
     {
-        ( my $cwd = Cwd::cwd ) =~ s|/\z||;
+        ( my $dirs_str = Cwd::cwd ) =~ s|/\z||;
         my @DIR;
-        while ($cwd)
+        while ($dirs_str)
         {
-            push( @DIR, $cwd );
-            $cwd =~ s|/[^/]+\z||;
+            push( @DIR, $dirs_str );
+            $dirs_str =~ s|/[^/]+\z||;
         }
         foreach my $dir ( reverse(@DIR) )
         {
