@@ -185,7 +185,7 @@ our $opt_q = 0;
 our $opt_V = -1;
 our $opt_z = 0;
 
-_process_options();
+_process_options;
 
 #   fix the version level
 if ( $opt_V == 0 )
@@ -432,6 +432,18 @@ sub _append_options
     push @opt_X_CUR, @opt_X;
 }
 
+sub _process_options_wrapper
+{
+    my ($cb) = @_;
+
+    _empty_the_options;
+    $cb->();
+    _process_options;
+    _append_options;
+
+    _set_opt_o;
+}
+
 #   read .wmkrc files and command-line options
 sub read_rcfile
 {
@@ -473,22 +485,22 @@ sub read_rcfile
                     push( @ARGV, split_argv($l) );
                 }
                 close($fp);
-                _empty_the_options;
-                _process_options();
-                _append_options;
-
-                _set_opt_o;
+                _process_options_wrapper(
+                    sub {
+                        return;
+                    }
+                );
             }
         }
     }
 
     #   Add command-line options
-    _empty_the_options;
-    @ARGV = @ARGVLINE;
-    _process_options();
-    _append_options;
-
-    _set_opt_o;
+    _process_options_wrapper(
+        sub {
+            @ARGV = @ARGVLINE;
+            return;
+        }
+    );
 
     #    transforms filename wildcards into extended regexp
     if (@opt_F_CUR)
