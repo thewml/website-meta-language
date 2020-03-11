@@ -291,19 +291,8 @@ if ( -f "$home/.wmkrc" )
 #    this variable is defined in read_rcfile
 my $matchF = '';
 
-my @P;
-
-#   set the path to act on
-if ( !@ARGV )
-{
-    @P = ('.');
-}
-else
-{
-    @P = @ARGV;
-}
 PATHS:
-foreach my $p (@P)
+foreach my $p ( @ARGV ? @ARGV : (".") )
 {
     if ( -d $p )
     {
@@ -537,9 +526,9 @@ sub _determine_filenames
 #   #3: foo="bar quux" => "foo=bar quux"     <-- !!
 sub split_argv
 {
-    my ($str)  = @_;
-    my (@argv) = ();
-    my ($r)    = '';
+    my ($str) = @_;
+    my @argv;
+    my $r = '';
 
     while (1)
     {
