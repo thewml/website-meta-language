@@ -45,7 +45,7 @@ use TheWML::Frontends::Wml::Util qw/ canon_path /;
 
 my $VERSION = "@WML_VERSION@";
 
-use Term::Cap ();
+use Term::ANSIColor qw/ colored /;
 use Getopt::Long 2.13 ();
 use Cwd        ();
 use File::Find ();
@@ -63,27 +63,12 @@ if ( index( $ENV{'PATH'}, $BINDIR ) < 0 )
 
 my $WML = $ENV{'WML'} || "${BINDIR}/wml";
 
-my $bold;
-my $norm;
-my $term;
 our $opt_h = 0;
 our @opt_A_CUR;
 our @opt_F_CUR;
 our @opt_x_CUR;
 our @opt_X_CUR;
 our $opt_o_CUR;
-
-eval "\$term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }";
-if ($@)
-{
-    $bold = '';
-    $norm = '';
-}
-else
-{
-    $bold = $term->Tputs( 'md', 1, undef );
-    $norm = $term->Tputs( 'me', 1, undef );
-}
 
 ##
 ##  PROCESS ARGUMENT LINE
@@ -350,7 +335,7 @@ foreach my $p (@P)
                         my $dirtxt = canon_path($dir);
                         if ( $dirtxt ne '.' )
                         {
-                            print STDERR "${bold}[$dirtxt]${norm}\n";
+                            print STDERR colored( "[$dirtxt]", 'bold' ), "\n";
                         }
                     }
                     foreach my $exec (@opt_x_CUR)
@@ -643,7 +628,8 @@ s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
 
     if ($skipable)
     {
-        print STDERR "$wml_cmd $opts $file  (${bold}skipped${norm})\n";
+        print STDERR "$wml_cmd $opts $file  (", colored( 'skipped', 'bold' ),
+            ")\n";
     }
     else
     {

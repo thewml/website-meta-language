@@ -1,25 +1,10 @@
-
 use strict;
 use warnings;
 
-use Term::Cap;
+use Term::ANSIColor qw/ colored /;
 
 use WmlTest;
 WmlTest::init();
-
-my $term;
-eval { $term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }; };
-my ( $bold, $norm );
-if ($@)
-{
-    $bold = '';
-    $norm = '';
-}
-else
-{
-    $bold = $term->Tputs( 'md', 1, undef );
-    $norm = $term->Tputs( 'me', 1, undef );
-}
 
 use Test::More tests => 7;
 
@@ -58,8 +43,10 @@ is(
 ok( !system("cmp $tmpfile1 a.html"), "cmp 1" );
 
 # TEST
-is( ( scalar `$wmk a.wml 2>&1` ),
-    "$ENV{WML} -n -q -W \"1,-N\" -o a.html a.wml  (${bold}skipped${norm})\n" );
+is(
+    ( scalar `$wmk a.wml 2>&1` ),
+"$ENV{WML} -n -q -W \"1,-N\" -o a.html a.wml  (@{[colored('skipped', 'bold')]})\n"
+);
 
 {
     open( my $o, '>>', 'a' );
