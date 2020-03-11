@@ -611,7 +611,7 @@ sub _process_file
     $opts =~ s|\s+\z||;
 
     #   determine if invocation can be skipped
-    my $skipable;
+    my $skipable = 0;
     if ( not $opt_f )
     {
         my @out_filenames;
@@ -620,23 +620,18 @@ sub _process_file
 s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
         $skipable = skipable( $file, ( \@out_filenames ) );
     }
-    else
-    {
-        $skipable = 0;
-    }
+    my $cmd = "$wml_cmd $opts $file";
 
     if ($skipable)
     {
-        print STDERR "$wml_cmd $opts $file  (",
-            colored( 'skipped', 'bold' ),
-            ")\n";
+        print STDERR "$cmd  (", colored( 'skipped', 'bold' ), ")\n";
     }
     else
     {
-        print STDERR "$wml_cmd $opts $file\n";
+        print STDERR "$cmd\n";
         if ( not $opt_n )
         {
-            my $rc = system("$wml_cmd $opts $file");
+            my $rc = system($cmd);
             _error("Error in WML (rc=$rc)") if $rc != 0;
         }
     }
