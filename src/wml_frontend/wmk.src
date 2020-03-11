@@ -563,19 +563,17 @@ sub split_argv
 sub process_file
 {
     my ( $path, $dir, $file ) = @_;
-    my ( $shebang, $opts, $out );
-    local (*FP);
 
     #   determine additional options
-    $opts = $Oo;
+    my $opts = $Oo;
     if ( $opts eq '' )
     {
         $opts = $opt_o_CUR;
-        open( FP, "<$file" ) || error("Unable to load $file: $!");
-        $shebang = '';
+        open( my $FP, '<', $file ) || error("Unable to load $file: $!");
+        my $shebang = '';
         while (1)
         {
-            $shebang .= <FP>;
+            $shebang .= <$FP>;
             if ( $shebang =~ m|\A(.*)\\\s*\Z|s )
             {
                 $shebang = $1;
@@ -587,7 +585,7 @@ sub process_file
         {
             $opts = $1;
         }
-        close(FP) || error("Unable to close $file: $!");
+        close($FP) || error("Unable to close $file: $!");
     }
 
     #   expand %DIR and %BASE
