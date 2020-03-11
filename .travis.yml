@@ -5,6 +5,7 @@ addons:
             - cmake
             - cpanminus
             - hunspell
+            - hunspell-en-gb
             - libdb5.3-dev
             - libgd-dev
             - libhunspell-dev
@@ -12,7 +13,6 @@ addons:
             - libpcre3-dev
             - libperl-dev
             - lynx
-            - myspell-en-gb
             - perl
             - xz-utils
             - zip
