@@ -114,7 +114,6 @@ extern void HTTP_StripResponseHeaders(char **cpBuf, int *nBuf);
 extern int HTTP_IsHeaderLine(char *cp1, char *cp2);
 extern int HTTP_HeadersExists(char *cpBuf);
 extern int HTTP_HeaderLineExists(char *cpBuf, char *name);
-extern char *WebTime(void);
 extern FILE *HTTP_openURLasFP(char *url);
 
 /* eperl_debug.c */

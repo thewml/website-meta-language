@@ -203,7 +203,6 @@ void IO_restore_stderr(void)
 */
 
 static char *mytmpfiles[100] = { NULL };
-static int mytmpfilecnt = 0;
 
 char *mytmpfile(char *id)
 {

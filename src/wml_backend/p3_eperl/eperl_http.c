@@ -43,6 +43,25 @@
 
 /*
 **
+**  Give back acceptable HTTP time format string
+**
+    Code modified according to "man localtime" and
+    to https://stackoverflow.com/questions/7548759/generate-a-date-string-in-http-response-date-format-in-c
+    - thanks!
+*/
+#define WebTime_buf_size 200
+static void WebTime(char * const buf)
+{
+    time_t t;
+    struct tm tm;
+
+    t = time(&t);
+    tm = *gmtime(&t);
+    strftime(buf, WebTime_buf_size, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+}
+
+/*
+**
 **  print a standard HTTP reponse of header lines
 **
 */
@@ -77,9 +96,12 @@ char *HTTP_PrintResponseHeaders(char *cpBuf)
         printf("Server: %s %s Perl/%s\r\n", cp, eperl_version.v_web, AC_perl_vers);
     }
 
-    if (!HTTP_HeaderLineExists(cpBuf, "Date"))
-        printf("Date: %s\r\n", WebTime());
-
+    if (!HTTP_HeaderLineExists(cpBuf, "Date")) {
+        char buf[WebTime_buf_size];
+        WebTime(buf);
+        buf[WebTime_buf_size-1] = 0;
+        printf("Date: %s\r\n", buf);
+    }
     if (!HTTP_HeaderLineExists(cpBuf, "Connection"))
         printf("Connection: close\r\n");
 
@@ -184,24 +206,6 @@ int HTTP_HeaderLineExists(char *cpBuf, char *name)
         return 0;
     }
     return 0;
-}
-
-/*
-**
-**  Give back acceptable HTTP time format string
-**
-*/
-char *WebTime(void)
-{
-    time_t t;
-    struct tm *tm;
-    char *cp;
-
-    t = time(&t);
-    tm = localtime(&t);
-    cp = ctime(&t);
-    cp[strlen(cp)-1] = NUL;
-    return cp;
 }
 
 
