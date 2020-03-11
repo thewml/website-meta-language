@@ -50,6 +50,7 @@ use Getopt::Long 2.13 ();
 use Cwd        ();
 use File::Find ();
 use Time::HiRes qw/ stat /;
+use List::Util qw/ max /;
 
 ##
 ##  INIT
@@ -658,7 +659,6 @@ sub mtime
 sub skipable
 {
     my ( $file, $out_filenames ) = @_;
-    my ($OS);
 
     my $IS = mtime($file);
     local ($/) = undef;
@@ -674,11 +674,7 @@ sub skipable
         {
             if ( -f $incl )
             {
-                $OS = mtime($incl);
-                if ( $IS < $OS )
-                {    # 9=mtime
-                    $IS = $OS;
-                }
+                $IS = max( $IS, scalar mtime($incl) );
             }
         }
     }
