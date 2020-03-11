@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Getopt::Long;
+use Getopt::Long qw / GetOptions /;
 
 my $mp4h;
 my $srcdir;

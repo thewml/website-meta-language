@@ -46,7 +46,7 @@ use TheWML::Frontends::Wml::Util qw/ canon_path /;
 my $VERSION = "@WML_VERSION@";
 
 use Term::Cap ();
-use Getopt::Long 2.13;
+use Getopt::Long 2.13 ();
 use Cwd        ();
 use File::Find ();
 use Time::HiRes qw/ stat /;

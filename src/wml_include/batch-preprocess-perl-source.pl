@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 
-use Getopt::Long;
-
 sub is_newer
 {
     my $fn1   = shift;

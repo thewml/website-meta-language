@@ -50,8 +50,8 @@ use Class::XSAccessor (
 ##                                rse@engelschall.com
 ##                                www.engelschall.com
 
-use Getopt::Long 2.13;
-use Bit::Vector 5.0;
+use Getopt::Long 2.13 ();
+use Bit::Vector 5.0   ();
 use List::Util qw/ first max /;
 
 my $slice_version = {

@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use Getopt::Long;
+use Getopt::Long qw / GetOptions /;
 
 my ( $src, $dest, $main, $incl );
 GetOptions(

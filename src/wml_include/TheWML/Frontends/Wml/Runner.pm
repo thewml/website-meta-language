@@ -59,7 +59,7 @@ use Class::XSAccessor (
     }
 );
 
-use Getopt::Long 2.13;
+use Getopt::Long 2.13 ();
 use File::Spec ();
 use List::Util qw/ sum /;
 use Path::Tiny qw/ path tempdir tempfile cwd /;

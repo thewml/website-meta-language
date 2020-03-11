@@ -42,7 +42,7 @@ BEGIN { $^W = 0; }    # get rid of nasty warnings
 
 $VERSION = "@WML_VERSION@";
 
-use Getopt::Long 2.13;
+use Getopt::Long 2.13 ();
 use Term::ReadKey;
 
 ##

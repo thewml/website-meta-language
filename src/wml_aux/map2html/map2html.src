@@ -11,7 +11,7 @@ require 5.003;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-use Getopt::Long;
+use Getopt::Long ();
 
 #
 #   process command line

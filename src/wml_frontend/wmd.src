@@ -48,7 +48,7 @@ BEGIN { $^W = 0; }    # get rid of nasty warnings
 
 our $VERSION = TheWML::Config::_VERSION();
 
-use Getopt::Long 2.13;
+use Getopt::Long 2.13 ();
 
 ##
 ##  PROCESS ARGUMENT LINE

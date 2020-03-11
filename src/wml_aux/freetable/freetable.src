@@ -39,7 +39,8 @@ Options:
   -m, --macro [program]  Use macro processor for cells content (default: m4)
 ';
 
-use Getopt::Long;
+use Getopt::Long ();
+
 $Getopt::Long::bundling=1;
 my (@opts) = ("b|no-nbsp","c|comment","w|warning","h|help","V|version","m|macro:s","l|location");
 $opt_h=$opt_V=$opt_b=$opt_c=$opt_w=$opt_m=$opt_l=0;
