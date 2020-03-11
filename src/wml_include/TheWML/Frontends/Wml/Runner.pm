@@ -62,7 +62,7 @@ use Class::XSAccessor (
 use Getopt::Long 2.13 ();
 use File::Spec ();
 use List::Util qw/ sum /;
-use Path::Tiny qw/ path tempdir tempfile cwd /;
+use Path::Tiny qw/ path tempdir /;
 use Term::ReadKey qw/ ReadMode ReadKey /;
 
 use TheWML::Config                        ();
@@ -895,7 +895,6 @@ sub run_with_ARGV
     #   Flag set if some output goes to stdout
     $_pass_mgr->out_istmp(0);
 
-    my $cwd = _my_cwd;
     $self->_opt_D_man->_populate_opt_D;
 
     #   Create temporary file names
