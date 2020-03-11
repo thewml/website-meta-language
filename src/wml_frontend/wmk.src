@@ -422,11 +422,11 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
 
 sub _empty_the_options
 {
-    @opt_A = ();
-    @opt_F = ();
-    @opt_x = ();
-    @opt_X = ();
-    @opt_o = ();
+    $#opt_A = -1;
+    $#opt_F = -1;
+    $#opt_x = -1;
+    $#opt_X = -1;
+    $#opt_o = -1;
 }
 
 sub _append_options
@@ -472,13 +472,13 @@ sub _read_rcfile
             push( @DIR, $dirs_str );
             $dirs_str =~ s|/[^/]+\z||;
         }
-        foreach my $dir ( reverse(@DIR) )
+        foreach my $dir_name ( reverse(@DIR) )
         {
-            my $wmkrc_fn = "$dir/.wmkrc";
+            my $wmkrc_fn = "$dir_name/.wmkrc";
             if ( -f $wmkrc_fn )
             {
                 open( my $fp, "<", $wmkrc_fn );
-                @ARGV = ();
+                $#ARGV = -1;
             WMKRC:
                 while ( my $l = <$fp> )
                 {
