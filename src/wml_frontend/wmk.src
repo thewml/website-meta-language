@@ -355,7 +355,7 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
                 $dir =~ s|\n\z||;
                 chdir($dir);
                 _read_rcfile() if $dir ne $p;
-                if ( my @files = @{ _determine_filenames() } )
+                if ( my @filenames = @{ _determine_filenames() } )
                 {
                     #   a little bit verbosity
                     if ( $dirC ne $dir )
@@ -369,9 +369,9 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
                     }
                     _exec_wrapper(
                         sub {
-                            foreach my $file (@files)
+                            foreach my $fn (@filenames)
                             {
-                                _process_file( "$dir/$file", $dir, $file );
+                                _process_file( "$dir/$fn", $dir, $fn );
                             }
                         }
                     );
@@ -387,12 +387,12 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
             chdir($p);
             _read_rcfile();
             next if $p =~ m#\A${matchF}\Z#;
-            my @files = @{ _determine_filenames() };
+            my @filenames = @{ _determine_filenames() };
             _exec_wrapper(
                 sub {
-                    foreach my $file (@files)
+                    foreach my $fn (@filenames)
                     {
-                        _process_file( "$p/$file", $p, $file );
+                        _process_file( "$p/$fn", $p, $fn );
                     }
                 }
             );
@@ -570,14 +570,14 @@ sub split_argv
 
 sub _process_file
 {
-    my ( $path, $dir, $file ) = @_;
+    my ( $path, $dir, $fn ) = @_;
 
     #   determine additional options
     my $opts = $Oo;
     if ( $opts eq '' )
     {
         $opts = $opt_o_CUR;
-        open( my $FP, '<', $file );
+        open( my $FP, '<', $fn );
         my $shebang = '';
         while (1)
         {
@@ -597,7 +597,7 @@ sub _process_file
     }
 
     #   expand %DIR and %BASE
-    my $base = $file;
+    my $base = $fn;
     $base =~ s|\.[a-zA-Z0-9]+$||;
     $opts =~ s|%DIR|$dir|gs;
     $opts =~ s|%BASE|$base|gs;
@@ -619,9 +619,9 @@ sub _process_file
         my $s = $opts;
         $s =~
 s|-o\s*["']?(?:[^:]+:(?!:))?([^\s\@'"]+)|push(@out_filenames, $1), ''|egs;
-        $skipable = skipable( $file, ( \@out_filenames ) );
+        $skipable = skipable( $fn, ( \@out_filenames ) );
     }
-    my $cmd = "$wml_cmd $opts $file";
+    my $cmd = "$wml_cmd $opts $fn";
 
     if ($skipable)
     {
@@ -647,10 +647,10 @@ sub mtime
 #   any of its output files
 sub skipable
 {
-    my ( $file, $out_filenames ) = @_;
+    my ( $fn, $out_filenames ) = @_;
 
-    my $IS  = mtime($file);
-    my $dep = qx#$wml_ipp -odummy $file#;
+    my $IS  = mtime($fn);
+    my $dep = qx#$wml_ipp -odummy $fn#;
     $dep =~ s/\\\s+/ /gs;
 
     if ( my ($capt) = $dep =~ m|\A.*:\s+.*?\s+(.*)\Z| )
