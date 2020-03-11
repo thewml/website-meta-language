@@ -419,12 +419,11 @@ foreach my $p (@P)
 #   read .wmkrc files and command-line options
 sub read_rcfile
 {
-    my ( $cwd, $dir, @DIR );
-    our @opt_A_SAV = @opt_A;
-    our @opt_F_SAV = @opt_F;
-    our @opt_x_SAV = @opt_x;
-    our @opt_X_SAV = @opt_X;
-    our @opt_o_SAV = @opt_o;
+    my @opt_A_SAV = @opt_A;
+    my @opt_F_SAV = @opt_F;
+    my @opt_x_SAV = @opt_x;
+    my @opt_X_SAV = @opt_X;
+    my @opt_o_SAV = @opt_o;
     @opt_A_CUR = @opt_A;
     @opt_F_CUR = @opt_F;
     @opt_x_CUR = @opt_x;
@@ -433,13 +432,14 @@ sub read_rcfile
 
     if ( not $opt_r )
     {
-        ( $cwd = Cwd::cwd ) =~ s|/$||;
+        ( my $cwd = Cwd::cwd ) =~ s|/\z||;
+        my @DIR;
         while ($cwd)
         {
             push( @DIR, $cwd );
-            $cwd =~ s|/[^/]+$||;
+            $cwd =~ s|/[^/]+\z||;
         }
-        foreach $dir ( reverse(@DIR) )
+        foreach my $dir ( reverse(@DIR) )
         {
             my $wmkrc_fn = "$dir/.wmkrc";
             if ( -f $wmkrc_fn )
@@ -469,7 +469,7 @@ sub read_rcfile
                 @opt_x_CUR = ( @opt_x_CUR, @opt_x );
                 @opt_X_CUR = ( @opt_X_CUR, @opt_X );
 
-                if ( $#opt_o > -1 )
+                if (@opt_o)
                 {
                     $opt_o_CUR = '-o' . join( ' -o', @opt_o );
                 }
@@ -490,13 +490,13 @@ sub read_rcfile
     @opt_x_CUR = ( @opt_x_CUR, @opt_x );
     @opt_X_CUR = ( @opt_X_CUR, @opt_X );
 
-    if ( $#opt_o > -1 )
+    if (@opt_o)
     {
         $opt_o_CUR = '-o' . join( ' -o', @opt_o );
     }
 
     #    transforms filename wildcards into extended regexp
-    if ( $#opt_F_CUR > -1 )
+    if (@opt_F_CUR)
     {
         $matchF = '(' . join( '|', @opt_F_CUR ) . ')';
         $matchF =~ s|\.|\\.|g;
