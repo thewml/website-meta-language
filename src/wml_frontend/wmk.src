@@ -415,6 +415,23 @@ foreach my $p ( @ARGV ? @ARGV : (".") )
     }
 }
 
+sub _empty_the_options
+{
+    @opt_A = ();
+    @opt_F = ();
+    @opt_x = ();
+    @opt_X = ();
+    @opt_o = ();
+}
+
+sub _append_options
+{
+    push @opt_A_CUR, @opt_A;
+    push @opt_F_CUR, @opt_F;
+    push @opt_x_CUR, @opt_x;
+    push @opt_X_CUR, @opt_X;
+}
+
 #   read .wmkrc files and command-line options
 sub read_rcfile
 {
@@ -456,16 +473,9 @@ sub read_rcfile
                     push( @ARGV, split_argv($l) );
                 }
                 close($fp);
-                @opt_A = ();
-                @opt_F = ();
-                @opt_x = ();
-                @opt_X = ();
-                @opt_o = ();
+                _empty_the_options;
                 _process_options();
-                push @opt_A_CUR, @opt_A;
-                push @opt_F_CUR, @opt_F;
-                push @opt_x_CUR, @opt_x;
-                push @opt_X_CUR, @opt_X;
+                _append_options;
 
                 _set_opt_o;
             }
@@ -473,17 +483,10 @@ sub read_rcfile
     }
 
     #   Add command-line options
-    @opt_A = ();
-    @opt_F = ();
-    @opt_x = ();
-    @opt_X = ();
-    @opt_o = ();
-    @ARGV  = @ARGVLINE;
+    _empty_the_options;
+    @ARGV = @ARGVLINE;
     _process_options();
-    push @opt_A_CUR, @opt_A;
-    push @opt_F_CUR, @opt_F;
-    push @opt_x_CUR, @opt_x;
-    push @opt_X_CUR, @opt_X;
+    _append_options;
 
     _set_opt_o;
 
