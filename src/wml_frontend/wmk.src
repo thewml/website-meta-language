@@ -55,12 +55,13 @@ use Time::HiRes qw/ stat /;
 ##  INIT
 ##
 
-if ( $ENV{'PATH'} !~ m|@bindir@| )
+my $BINDIR = q#@bindir@#;
+if ( index( $ENV{'PATH'}, $BINDIR ) < 0 )
 {
-    $ENV{'PATH'} = '@bindir@:' . $ENV{'PATH'};
+    $ENV{'PATH'} = "${BINDIR}:$ENV{PATH}";
 }
 
-my $WML = $ENV{'WML'} || '@bindir@/wml';
+my $WML = $ENV{'WML'} || "${BINDIR}/wml";
 
 my $bold;
 my $norm;
