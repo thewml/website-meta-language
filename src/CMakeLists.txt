@@ -115,6 +115,14 @@ CHECK_FOR_MULTIPLE_PERL_MODULES(${CPAN_MODULES_TO_CHECK})
 
 ENABLE_TESTING()
 
+FUNCTION(RUN_ASC2C src dest varname)
+    ADD_CUSTOM_COMMAND(
+        COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c "${src}" "${dest}" "${varname}"
+        OUTPUT "${dest}.c"
+        DEPENDS "${src}"
+    )
+ENDFUNCTION()
+
 ADD_SUBDIRECTORY( wml_aux )
 ADD_SUBDIRECTORY( wml_backend )
 ADD_SUBDIRECTORY( wml_docs )

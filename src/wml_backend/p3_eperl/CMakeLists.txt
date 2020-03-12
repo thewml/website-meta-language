@@ -101,16 +101,8 @@ SET (SOURCES
     eperl_sys.c
     eperl_version.c
 )
-ADD_CUSTOM_COMMAND(
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "ePerl_README"
-    OUTPUT "${readme_c}"
-    DEPENDS ${readme_s}
-)
-ADD_CUSTOM_COMMAND(
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${license_s} "${license_cc}" "ePerl_LICENSE"
-    OUTPUT "${license_c}"
-    DEPENDS ${license_s}
-)
+RUN_ASC2C("${readme_s}" "${readme_cc}" "ePerl_README")
+RUN_ASC2C("${license_s}" "${license_cc}" "ePerl_LICENSE")
 ADD_CUSTOM_COMMAND(
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/bin2c ${logo_s} "${logo_cc}" "ePerl_LOGO"
     OUTPUT "${logo_c}"
