@@ -51,23 +51,6 @@ my $with_context_var      = 1;
 my $max_bench_threads_num = 4;
 my $link_to_static        = 0;
 
-sub set_both
-{
-    my $val = shift;
-    foreach my $k ('p|pos')
-    {
-        $STR_OPTS{$k}{'value'} = $val;
-    }
-    return;
-}
-
-sub set_hash
-{
-    return set_both("INTERNAL_HASH");
-}
-
-set_hash();
-
 my %themes = (
     tt         => [qw(-r --static)],
     bench      => [qw(-l tt --omit-frame)],
@@ -221,7 +204,6 @@ GetOptions(
         }
         return;
     },
-    'hash'    => \&set_hash,
     'profile' => sub {
         my ( $opt, $val ) = @_;
         if ($val)
@@ -239,7 +221,6 @@ GetOptions(
         return;
     },
     'gen=s'                   => \$generate_what,
-    'tokyo'                   => sub { return set_both("TOKYO_CAB_HASH"); },
     'with-ctx-var!'           => \$with_context_var,
     'max-bench-threads-num=i' => \$max_bench_threads_num,
     'static!'                 => \$link_to_static,
