@@ -164,21 +164,11 @@ void give_img_logo(void)
 {
     if (mode == MODE_NPHCGI)
         HTTP_PrintResponseHeaders("");
-    printf("Content-Type: image/gif\r\n\r\n");
+    printf("Content-Type: image/webp\r\n\r\n");
     if (fwrite(ePerl_LOGO_data, ePerl_LOGO_size, 1, stdout) != 1)
     {
         fprintf (stderr, "%s\n", "Cannot print the logo.");
         return;
-    }
-}
-
-void give_img_powered(void)
-{
-    if (mode == MODE_NPHCGI)
-        HTTP_PrintResponseHeaders("");
-    printf("Content-Type: image/gif\r\n\r\n");
-    if (fwrite(ePerl_POWERED_data, ePerl_POWERED_size, 1, stdout) != 1) {
-        exit(-1);
     }
 }
 
@@ -675,7 +665,7 @@ int main(int argc, char **argv, char **env)
             myexit(0);
         }
         else if (stringEQ(cp, "/powered.gif")) {
-            give_img_powered();
+            give_img_logo();
             myexit(0);
         }
     }

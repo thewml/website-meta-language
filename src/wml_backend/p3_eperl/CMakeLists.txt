@@ -77,11 +77,8 @@ set(readme_s "${CMAKE_CURRENT_SOURCE_DIR}/README")
 
 set(logo_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_logo")
 set(logo_c "${logo_cc}.c")
-set(logo_s "${CMAKE_CURRENT_SOURCE_DIR}/eperl_logo.gif")
+set(logo_s "${CMAKE_CURRENT_SOURCE_DIR}/empty_img.webp")
 
-set(powered_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_powered")
-set(powered_c "${powered_cc}.c")
-set(powered_s "${CMAKE_CURRENT_SOURCE_DIR}/eperl_powered.gif")
 
 SET (SOURCES
     ${CMAKE_SOURCE_DIR}/lib/getopt.c
@@ -89,14 +86,12 @@ SET (SOURCES
    "${license_c}"
    "${logo_c}"
    "${readme_c}"
-   "${powered_c}"
     eperl_config.c
     eperl_debug.c
     eperl_http.c
     eperl_main.c
     eperl_parse.c
     eperl_perl5.c
-    eperl_powered.c
     eperl_pp.c
     eperl_sys.c
     eperl_version.c
@@ -107,11 +102,6 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/bin2c ${logo_s} "${logo_cc}" "ePerl_LOGO"
     OUTPUT "${logo_c}"
     DEPENDS ${logo_s}
-)
-ADD_CUSTOM_COMMAND(
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/bin2c ${powered_s} "${powered_cc}" "ePerl_POWERED"
-    OUTPUT "${powered_c}"
-    DEPENDS ${powered_s}
 )
 
 SET(EXE "eperl")
