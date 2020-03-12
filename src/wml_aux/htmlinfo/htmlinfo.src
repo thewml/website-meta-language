@@ -11,20 +11,13 @@ require 5.003;
 use lib "@INSTALLPRIVLIB@";
 use lib "@INSTALLARCHLIB@";
 
-use Term::Cap;
 use Path::Tiny qw/ path /;
 use Image::Size;
 
-eval "\$term = Tgetent Term::Cap { TERM => undef, OSPEED => 9600 }";
-if ($@) {
-    $bold = '';
-    $norm = '';
-}
-else {
-    $bold = $term->Tputs('md', 1, undef);
-    $norm = $term->Tputs('me', 1, undef);
-}
+use Term::ANSIColor qw/ color /;
 
+my $bold = color('bold blue');
+my $norm = color('reset');
 
 #
 #   open input file and read into buffer
