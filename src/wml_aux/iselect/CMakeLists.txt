@@ -32,16 +32,8 @@ SIMPLE_POD2MAN(
     "1"
 )
 
-ADD_CUSTOM_COMMAND(
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${help_s} "${help_cc}" "iSelect_Help"
-    OUTPUT "${help_c}"
-    DEPENDS ${help_s}
-)
-ADD_CUSTOM_COMMAND(
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c ${readme_s} "${readme_cc}" "iSelect_README"
-    OUTPUT "${readme_c}"
-    DEPENDS ${readme_s}
-)
+RUN_ASC2C("${help_s}" "${help_cc}" "iSelect_Help")
+RUN_ASC2C("${readme_s}" "${readme_cc}" "iSelect_README")
 ADD_CUSTOM_TARGET(
     "wml_aux_iselect" ALL
     DEPENDS ${pod_dests}
