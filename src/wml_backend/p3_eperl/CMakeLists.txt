@@ -69,7 +69,7 @@ CHECK_MULTI_FUNCTIONS_EXISTS(${FUNCTIONS_TO_CHECK})
 
 set(license_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_license")
 set(license_c "${license_cc}.c")
-set(license_s "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+set(license_s "${CMAKE_CURRENT_SOURCE_DIR}/COPYING.short")
 
 set(readme_cc "${CMAKE_CURRENT_BINARY_DIR}/eperl_readme")
 set(readme_c "${readme_cc}.c")
