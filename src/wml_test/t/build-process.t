@@ -51,7 +51,7 @@ sub test_cmd
     # TEST
     test_cmd( [ "make", "all" ], "make all is successful" );
     {
-        open my $in, "-|", "sh", "-c", "man ./wml_frontend/wmk.1 | cat |"
+        open my $in, "-|", "sh", "-c", "man ./wml_frontend/wmk.1 | cat"
             or die "Cannot open $! !";
         local $/;
         my $text = <$in>;
