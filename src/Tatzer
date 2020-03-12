@@ -15,9 +15,9 @@ use Path::Tiny qw/ path /;
 my %BOOL_OPTS_WITH_FALSE_DEFAULTS =
     ( 'omit-frame' => 'OPTIMIZATION_OMIT_FRAME_POINTER', );
 
-my %TRUE_BOOL_OPTS = ();
+my %TRUE_BOOL_OPTS;
 
-my %INT_OPTS = ( 'pack-size' => 'FCS_IA_PACK_SIZE', );
+my %INT_OPTS;
 
 my %STR_OPTS = (
     'arch'   => { param => 'CPU_ARCH', },
@@ -47,16 +47,14 @@ $STR_OPTS{'prefix'}{value} = '/usr';
 
 my $build_type = "debug";
 my $generate_what;
-my $with_context_var      = 1;
-my $max_bench_threads_num = 4;
-my $link_to_static        = 0;
+my $with_context_var = 1;
+my $link_to_static   = 0;
 
 my %themes = (
-    tt         => [qw(-r --static)],
-    bench      => [qw(-l tt --omit-frame)],
-    fc_bench   => [qw(-l bench)],
-    testing    => [qw(--rwd)],
-    pysol_defs => [],
+    tt       => [qw(-r --static)],
+    bench    => [qw(-l tt --omit-frame)],
+    fc_bench => [qw(-l bench)],
+    testing  => [],
 );
 
 my $SEED_KEY = 'FCS_THEME_RAND';
@@ -144,11 +142,6 @@ foreach my $rec (
 
     # Testing theme - aims to run the tests quickly
     $bb_def->( t => [qw(-l testing)] );
-
-    # For use by PySolFC
-    $bb_def->(
-        _pysol => [ '-l', 'pysol_defs', "--prefix=$HOME/apps/fcs-for-pysol", ]
-    );
 }
 
 my @new_argv = @ARGV;
@@ -220,10 +213,8 @@ GetOptions(
         $build_type = "MinSizeRel";
         return;
     },
-    'gen=s'                   => \$generate_what,
-    'with-ctx-var!'           => \$with_context_var,
-    'max-bench-threads-num=i' => \$max_bench_threads_num,
-    'static!'                 => \$link_to_static,
+    'gen=s'   => \$generate_what,
+    'static!' => \$link_to_static,
     (
         map { ; "$_!" => \( $bool_opts_with_false_defaults__values{$_} ) }
             @BOOL_OPTS_WITH_FALSE_DEFAULTS__KEYS
