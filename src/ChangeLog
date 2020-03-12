@@ -8,6 +8,14 @@
   information about every single change.
   ___________________________________________________________________________
 
+  Changes between 2.24.0 to 2.26.0:
+
+  *) Refactoring, cleanups, modernizations and (likely minor) optimizations.
+
+  *) Replace Term-Cap with Term-ANSIColor
+
+  *) Use Path::Tiny instead of IO-All where appropriate.
+
   Changes between 2.22.0 to 2.24.0:
 
   *) Allow specifying multiple -S and -F flags in wml_backend/p7_htmlfix .
