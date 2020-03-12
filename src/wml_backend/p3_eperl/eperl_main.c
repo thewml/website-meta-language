@@ -150,17 +150,17 @@ void give_version(void)
     fprintf(stdout, "\n");
 }
 
-void give_readme(void)
+static void give_readme(void)
 {
     fprintf(stdout, "%s", ePerl_README);
 }
 
-void give_license(void)
+static void give_license(void)
 {
     fprintf(stdout, "%s", ePerl_LICENSE);
 }
 
-void give_img_logo(void)
+static void give_img_logo(void)
 {
     if (mode == MODE_NPHCGI)
         HTTP_PrintResponseHeaders("");
@@ -172,7 +172,7 @@ void give_img_logo(void)
     }
 }
 
-void give_usage(char *name)
+static void give_usage(const char * const name)
 {
     fprintf(stderr, "Usage: %s [options] [scriptfile]\n", name);
     fprintf(stderr, "\n");
@@ -660,11 +660,7 @@ int main(int argc, char **argv, char **env)
 
     /* the built-in GIF images */
     if ((mode == MODE_CGI || mode == MODE_NPHCGI) && (cp = getenv("PATH_INFO")) != NULL) {
-        if (stringEQ(cp, "/logo.gif")) {
-            give_img_logo();
-            myexit(0);
-        }
-        else if (stringEQ(cp, "/powered.gif")) {
+        if (stringEQ(cp, "/logo.gif") || stringEQ(cp, "/powered.gif")) {
             give_img_logo();
             myexit(0);
         }
