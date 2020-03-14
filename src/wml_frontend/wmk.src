@@ -658,7 +658,7 @@ sub skipable
         $IS = max(
             $IS,
             (
-                map { scalar( mtime($_) ) } grep { -f }
+                map { mtime($_) } grep { -f }
                     split( /\s+/, $deps_filenames )
             )
         );
