@@ -36,7 +36,7 @@ struct Line {
     int   fSelectable; /* whether selectable or not */
     int   fSelected;   /* whether already selected or not */
     char *cpResult;    /* the result string */
-} Line;
+};
 
 #define MAXLINELEN 1024
 #define MAXLINES   1024
