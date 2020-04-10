@@ -96,7 +96,7 @@ MACRO (_gen_mod modbase1 modbase with_mp4h)
                 "${mp4hp}"
             DESTINATION
                "${MP4HLIBDIR}/${modbase1}"
-           RENAME
+            RENAME
                "${modbase}.mp4hp"
         )
         if (with_mp4h)

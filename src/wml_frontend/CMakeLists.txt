@@ -32,7 +32,7 @@ FOREACH (cmd wmk wml wmb wmd wmu wml-params-conf)
     SET(PREPROCESS_PATH_PERL__ARGS )
     INSTALL (
         PROGRAMS "${dest}"
-        DESTINATION "bin"
+        DESTINATION "${CMAKE_INSTALL_BINDIR}"
         RENAME "${cmd}"
         )
     SET (POD2MAN_SOURCE_IS_IN_BINARY "1")
