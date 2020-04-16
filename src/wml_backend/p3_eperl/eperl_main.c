@@ -301,12 +301,10 @@ int main(int argc, char **argv, char **env)
     char perlstderr[1024] = "";
     char perlstdout[1024] = "";
     char dir_tmp[1024];
-    char *dir_home;
     char *dir_script;
     char ca[1024] = "";
     int myargc;
     char *myargv[20];
-    char *progname;
     int nBuf;
     int nOut;
     char *source = NULL;
@@ -318,7 +316,6 @@ int main(int argc, char **argv, char **env)
     struct passwd *pw;
     struct passwd *pw2;
     struct group *gr;
-    int uid, gid;
     int keepcwd = false;
     int c;
     char *cpScript = NULL;
@@ -326,13 +323,11 @@ int main(int argc, char **argv, char **env)
     int i, n, k;
     char *outputfile = NULL;
     char cwd[MAXPATHLEN];
-    int fCheck = false;
-    int fTaint = false;
-    int fWarn = false;
-    int fNoCase = false;
-    int fPP = false;
-    char *cwd2;
-    int fOkSwitch;
+    bool fCheck = false;
+    bool fTaint = false;
+    bool fWarn = false;
+    bool fNoCase = false;
+    bool fPP = false;
     char *cpHost;
     char *cpPort;
     char *cpPath;
@@ -345,13 +340,12 @@ int main(int argc, char **argv, char **env)
     myinit();
 
     /*  second step: canonicalize program name */
-    progname = argv[0];
+    char *progname = argv[0];
     if ((cp = strrchr(progname, '/')) != NULL) {
         progname = cp+1;
     }
 
     /*  parse the option arguments */
-    opterr = 0;
     while ((c = getopt_long(argc, argv, ":d:D:I:B:E:nkPCLTwxm:o:crlvVh", options, NULL)) != -1) {
         if (optarg == NULL)
             optarg = "(null)";
@@ -737,11 +731,10 @@ int main(int argc, char **argv, char **env)
 
         /* we can only do a switching if we have euid == 0 (root) */
         if (geteuid() == 0) {
-
-            fOkSwitch = true;
+            bool fOkSwitch = true;
 
             /* get our real user id (= caller uid) */
-            uid = getuid();
+            int uid = getuid();
 
             /* security check: valid caller uid */
             pw = getpwuid(uid);
@@ -790,6 +783,7 @@ int main(int argc, char **argv, char **env)
             else
                 uid = pw->pw_uid;
 
+            int gid = 0;
             /* security check: valid owner GID */
             gr = getgrgid(st.st_gid);
             if (SETUID_NEEDS_VALID_OWNER_GID && gr == NULL)
@@ -805,7 +799,10 @@ int main(int argc, char **argv, char **env)
             /* security check: file has to stay below owner homedir */
             if (fOkSwitch && SETUID_NEEDS_BELOW_OWNER_HOME) {
                 /* preserve current working directory */
-                cwd2 = getcwd(NULL, 1024);
+                char cwd2[1024];
+                if (!getcwd(cwd2, 1023)) {
+                    CU(EX_IOERR);
+                }
 
                 /* determine physical homedir of owner */
                 pw = getpwuid(st.st_uid);
@@ -818,7 +815,10 @@ int main(int argc, char **argv, char **env)
                         fOkSwitch = false;
                 }
                 else {
-                    dir_home = getcwd(NULL, 1024);
+                    char dir_home[1024] = {0};
+                    if (!getcwd(dir_home, 1023)) {
+                        CU(EX_IOERR);
+                    }
 
                     /* determine physical dir of file */
                     strncpy(dir_tmp, source, sizeof(dir_tmp));
@@ -857,7 +857,6 @@ int main(int argc, char **argv, char **env)
                             free(dir_script);
                         }
                     }
-                    free(dir_home);
                 }
 
                 /* restore original cwd */
@@ -865,8 +864,6 @@ int main(int argc, char **argv, char **env)
                 {
                     PrintError(mode, source, NULL, NULL, "chdir failed with errno: %li\n", (long)errno);
                 }
-
-                free(cwd2);
             }
 
             if (fOkSwitch && uid != 0 && gid != 0) {
@@ -885,8 +882,10 @@ int main(int argc, char **argv, char **env)
 
     /* Security! Eliminate effective root permissions if we are running setuid */
     if (geteuid() == 0) {
-        uid = getuid();
-        gid = getgid();
+        int uid = getuid();
+#ifndef HAVE_SETEGID
+        int gid = getgid();
+#endif
 #ifdef HAVE_SETEUID
         if (seteuid(uid)) {
             PrintError(mode, source, NULL, NULL, "Unable to set EUID %ld: seteuid failed", (long)uid);
