@@ -46,8 +46,6 @@ extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfil
 extern void give_version(void);
 extern void give_img_powered(void);
 extern void mysighandler(int rc);
-extern void myinit(void);
-extern void myexit(int rc);
 
 /* eperl_parse.c */
 extern char *ePerl_begin_delimiter;

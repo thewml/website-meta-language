@@ -39,6 +39,27 @@
 #include "eperl_version.c"
 #undef  _EPERL_VERSION_C_AS_HEADER_
 
+static void myexit(const int rc)
+{
+    /* cleanup */
+#ifndef DEBUG_ENABLED
+    remove_mytmpfiles();
+#endif
+
+    /* restore signals */
+    signal(SIGINT,  SIG_DFL);
+    signal(SIGTERM, SIG_DFL);
+
+#ifdef DEBUG_ENABLED
+#ifdef HAVE_DMALLOC
+    dmalloc_shutdown();
+#endif
+#endif
+
+    /* die gracefully */
+    exit(rc);
+}
+
 int mode = MODE_UNKNOWN;
 
 char *allowed_file_ext[]   = LIST_OF_ALLOWED_FILE_EXT;
@@ -228,32 +249,11 @@ void mysighandler(int rc)
     myexit(EX_FAIL);
 }
 
-void myinit(void)
+static inline void myinit(void)
 {
     /* caught signals */
     signal(SIGINT,  mysighandler);
     signal(SIGTERM, mysighandler);
-}
-
-void myexit(int rc)
-{
-    /* cleanup */
-#ifndef DEBUG_ENABLED
-    remove_mytmpfiles();
-#endif
-
-    /* restore signals */
-    signal(SIGINT,  SIG_DFL);
-    signal(SIGTERM, SIG_DFL);
-
-#ifdef DEBUG_ENABLED
-#ifdef HAVE_DMALLOC
-    dmalloc_shutdown();
-#endif
-#endif
-
-    /* die gracefully */
-    exit(rc);
 }
 
 struct option options[] = {
