@@ -300,7 +300,6 @@ int main(int argc, char **argv, char **env)
     char perlscript[1024] = "";
     char perlstderr[1024] = "";
     char perlstdout[1024] = "";
-    char dir_tmp[1024];
     char *dir_script;
     char ca[1024] = "";
     int myargc;
@@ -334,7 +333,6 @@ int main(int argc, char **argv, char **env)
     char *cpCGIgi;
     char *cpCGIpt;
     char *cpCGIqs;
-    int fCGIqsEqualChar;
 
     /*  first step: our process initialisation */
     myinit();
@@ -457,9 +455,7 @@ int main(int argc, char **argv, char **env)
         cpCGIpt = "";
     if ((cpCGIqs = getenv("QUERY_STRING")) == NULL)
         cpCGIqs = "";
-    fCGIqsEqualChar = false;
-    if (cpCGIqs != NULL && strchr(cpCGIqs, '=') != NULL)
-        fCGIqsEqualChar = true;
+    const bool fCGIqsEqualChar = (cpCGIqs != NULL && strchr(cpCGIqs, '=') != NULL);
 
     /*
      *  Server-Side-Scripting-Language:
@@ -821,6 +817,7 @@ int main(int argc, char **argv, char **env)
                     }
 
                     /* determine physical dir of file */
+                    char dir_tmp[1024];
                     strncpy(dir_tmp, source, sizeof(dir_tmp));
                     dir_tmp[sizeof(dir_tmp)-1] = NUL;
                     if ((cp = strrchr(dir_tmp, '/')) == NULL) {
