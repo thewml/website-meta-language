@@ -200,9 +200,9 @@ static void give_usage(const char * const name)
 }
 
 static size_t RememberedINC_i = 0;
-char *RememberedINC[1024] = { NULL };
+static char *RememberedINC[1024] = { NULL };
 
-void RememberINC(const char *str)
+static void RememberINC(const char *str)
 {
     for (; RememberedINC[RememberedINC_i] != NULL; ++RememberedINC_i)
         ;
