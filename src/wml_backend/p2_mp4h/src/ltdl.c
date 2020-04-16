@@ -183,7 +183,7 @@ rpl_strdup(const char *str)
 
 
 /* According to Alexandre Oliva <oliva@lsd.ic.unicamp.br>,
-    ``rpl_realloc is not entirely portable''
+    ``realloc is not entirely portable''
    In any case we want to use the allocator supplied by the user without
    burdening them with an lt_dlrealloc function pointer to maintain.
    Instead implement our own version (with known boundary conditions)
