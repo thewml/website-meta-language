@@ -63,7 +63,7 @@ static void myexit(const int rc)
 int mode = MODE_UNKNOWN;
 
 char *allowed_file_ext[]   = LIST_OF_ALLOWED_FILE_EXT;
-char *allowed_caller_uid[] = LIST_OF_ALLOWED_CALLER_UID;
+static char *allowed_caller_uid[] = LIST_OF_ALLOWED_CALLER_UID;
 
 /*
  *  Display an error message and a logfile content as a HTML page
