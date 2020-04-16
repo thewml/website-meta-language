@@ -164,15 +164,8 @@ LT_GLOBAL_DATA void   (*lt_dlfree)	LT_PARAMS((lt_ptr ptr))
 
 /* --- REPLACEMENT FUNCTIONS --- */
 
-
-#undef strdup
-#define strdup rpl_strdup
-
-static char *strdup LT_PARAMS((const char *str));
-
 static char *
-strdup(str)
-     const char *str;
+rpl_strdup(const char *str)
 {
   char *tmp = 0;
 
@@ -190,19 +183,14 @@ strdup(str)
 
 
 /* According to Alexandre Oliva <oliva@lsd.ic.unicamp.br>,
-    ``realloc is not entirely portable''
+    ``rpl_realloc is not entirely portable''
    In any case we want to use the allocator supplied by the user without
    burdening them with an lt_dlrealloc function pointer to maintain.
    Instead implement our own version (with known boundary conditions)
    using lt_dlmalloc and lt_dlfree. */
 
-#undef realloc
-#define realloc rpl_realloc
-
 static lt_ptr
-realloc (ptr, size)
-     lt_ptr ptr;
-     size_t size;
+rpl_realloc (lt_ptr ptr, size_t size)
 {
   if (size == 0)
     {
@@ -231,24 +219,17 @@ realloc (ptr, size)
 	}
 
       /* Note that the contents of PTR are not damaged if there is
-	 insufficient memory to realloc.  */
+	 insufficient memory to rpl_realloc.  */
       return mem;
     }
 }
 
 
 #if ! HAVE_ARGZ_APPEND
-#  define argz_append rpl_argz_append
 
-static error_t argz_append LT_PARAMS((char **pargz, size_t *pargz_len,
-					const char *buf, size_t buf_len));
-
-static error_t
-argz_append (pargz, pargz_len, buf, buf_len)
-     char **pargz;
-     size_t *pargz_len;
-     const char *buf;
-     size_t buf_len;
+static error_t argz_append (
+    char **pargz, size_t *pargz_len,
+    const char *buf, size_t buf_len)
 {
   size_t argz_len;
   char  *argz;
@@ -280,17 +261,9 @@ argz_append (pargz, pargz_len, buf, buf_len)
 
 
 #if ! HAVE_ARGZ_CREATE_SEP
-#  define argz_create_sep rpl_argz_create_sep
 
-static error_t argz_create_sep LT_PARAMS((const char *str, int delim,
-					    char **pargz, size_t *pargz_len));
-
-static error_t
-argz_create_sep (str, delim, pargz, pargz_len)
-     const char *str;
-     int delim;
-     char **pargz;
-     size_t *pargz_len;
+static error_t argz_create_sep(const char *str, int delim,
+    char **pargz, size_t *pargz_len)
 {
   size_t argz_len;
   char *argz = 0;
@@ -343,17 +316,9 @@ argz_create_sep (str, delim, pargz, pargz_len)
 
 
 #if ! HAVE_ARGZ_INSERT
-#  define argz_insert rpl_argz_insert
 
-static error_t argz_insert LT_PARAMS((char **pargz, size_t *pargz_len,
-					char *before, const char *entry));
-
-static error_t
-argz_insert (pargz, pargz_len, before, entry)
-     char **pargz;
-     size_t *pargz_len;
-     char *before;
-     const char *entry;
+static error_t argz_insert(char **pargz, size_t *pargz_len,
+					char *before, const char *entry)
 {
   assert (pargz);
   assert (pargz_len);
@@ -380,7 +345,7 @@ argz_insert (pargz, pargz_len, before, entry)
       return ENOMEM;
 
     /* Make BEFORE point to the equivalent offset in ARGZ that it
-       used to have in *PARGZ incase realloc() moved the block.  */
+       used to have in *PARGZ incase rpl_realloc() moved the block.  */
     before = argz + offset;
 
     /* Move the ARGZ entries starting at BEFORE up into the new
@@ -400,16 +365,9 @@ argz_insert (pargz, pargz_len, before, entry)
 
 
 #if ! HAVE_ARGZ_NEXT
-#  define argz_next rpl_argz_next
 
-static char *argz_next LT_PARAMS((char *argz, size_t argz_len,
-				    const char *entry));
-
-static char *
-argz_next (argz, argz_len, entry)
-     char *argz;
-     size_t argz_len;
-     const char *entry;
+static char *argz_next (char *argz, size_t argz_len,
+				    const char *entry)
 {
   assert ((argz && argz_len) || (!argz && !argz_len));
 
@@ -445,16 +403,9 @@ argz_next (argz, argz_len, entry)
 
 
 #if ! HAVE_ARGZ_STRINGIFY
-#  define argz_stringify rpl_argz_stringify
 
-static void argz_stringify LT_PARAMS((char *argz, size_t argz_len,
-				       int sep));
-
-static void
-argz_stringify (argz, argz_len, sep)
-     char *argz;
-     size_t argz_len;
-     int sep;
+static void argz_stringify (char *argz, size_t argz_len,
+				       int sep)
 {
   assert ((argz && argz_len) || (!argz && !argz_len));
 
@@ -470,8 +421,6 @@ argz_stringify (argz, argz_len, sep)
 }
 #endif /* !HAVE_ARGZ_STRINGIFY */
 
-
-
 
 /* --- TYPE DEFINITIONS -- */
 
@@ -481,8 +430,6 @@ typedef struct {
   lt_dlcaller_id	key;
   lt_ptr		data;
 } lt_caller_data;
-
-
 
 
 /* --- OPAQUE STRUCTURES DECLARED IN LTDL.H --- */
@@ -701,7 +648,7 @@ lt_erealloc (addr, size)
      lt_ptr addr;
      size_t size;
 {
-  lt_ptr mem = realloc (addr, size);
+  lt_ptr mem = rpl_realloc (addr, size);
   if (size && !mem)
     LT_DLMUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
   return mem;
@@ -711,7 +658,7 @@ static char *
 lt_estrdup (str)
      const char *str;
 {
-  char *copy = strdup (str);
+  char *copy = rpl_strdup (str);
   if (LT_STRLEN (str) && !copy)
     LT_DLMUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
   return copy;
@@ -1213,7 +1160,7 @@ sys_dld_open (loader_data, filename)
      lt_user_data loader_data;
      const char *filename;
 {
-  lt_module module = strdup (filename);
+  lt_module module = rpl_strdup (filename);
 
   if (dld_link (filename) != 0)
     {
