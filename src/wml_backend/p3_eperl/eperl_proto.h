@@ -33,7 +33,6 @@
 /*_BEGIN_PROTO_*/
 
 /* eperl_main.c */
-extern int mode;
 extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...);
 
 /* eperl_parse.c */
