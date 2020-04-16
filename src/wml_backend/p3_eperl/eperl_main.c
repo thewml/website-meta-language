@@ -62,7 +62,7 @@ static void myexit(const int rc)
 
 int mode = MODE_UNKNOWN;
 
-char *allowed_file_ext[]   = LIST_OF_ALLOWED_FILE_EXT;
+static char *allowed_file_ext[]   = LIST_OF_ALLOWED_FILE_EXT;
 static char *allowed_caller_uid[] = LIST_OF_ALLOWED_CALLER_UID;
 
 /*

@@ -34,7 +34,6 @@
 
 /* eperl_main.c */
 extern int mode;
-extern char *allowed_file_ext[];
 extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...);
 
 /* eperl_parse.c */
