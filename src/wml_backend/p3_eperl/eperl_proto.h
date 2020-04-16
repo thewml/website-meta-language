@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -43,9 +37,6 @@ extern int mode;
 extern char *allowed_file_ext[];
 extern char *allowed_caller_uid[];
 extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char *str, ...);
-extern void give_version(void);
-extern void give_img_powered(void);
-extern void mysighandler(int rc);
 
 /* eperl_parse.c */
 extern char *ePerl_begin_delimiter;

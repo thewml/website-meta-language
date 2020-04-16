@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -45,7 +39,6 @@ extern void boot_DynaLoader _((pTHX_ CV* cv));
 
 void give_version_extended_perl(void)
 {
-    give_version();
     fprintf(stdout, "Characteristics of this binary:\n");
     fprintf(stdout, "  Perl Version    : %s (%s)\n", AC_perl_vers, AC_perl_prog);
     fprintf(stdout, "  Perl I/O Layer  : %s\n", PERL_IO_LAYER_ID);

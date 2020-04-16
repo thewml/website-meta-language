@@ -152,7 +152,7 @@ void PrintError(int mode, char *scripturl, char *scriptfile, char *logfile, char
     return;
 }
 
-void give_version(void)
+static void give_version(void)
 {
     fprintf(stdout, "%s\n", eperl_version.v_tex);
     fprintf(stdout, "\n");
@@ -232,7 +232,7 @@ static void RememberINC(const char *str)
     return;
 }
 
-void mysighandler(int rc)
+static void mysighandler(const int rc)
 {
     /* ignore more signals */
     signal(SIGINT,  SIG_IGN);
@@ -416,6 +416,7 @@ int main(int argc, char **argv, char **env)
                 give_version();
                 myexit(EX_OK);
             case 'V':
+                give_version();
                 give_version_extended_perl();
                 myexit(EX_OK);
             case 'h':
