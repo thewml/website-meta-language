@@ -107,9 +107,9 @@ char **mysetenv(char **env, char *var, char *str, ...)
 #define HANDLE_STORE_STDOUT 11
 #define HANDLE_STORE_STDERR 12
 
-static int IO_redirected_stdin  = false;
-static int IO_redirected_stdout = false;
-static int IO_redirected_stderr = false;
+static bool IO_redirected_stdin  = false;
+static bool IO_redirected_stdout = false;
+static bool IO_redirected_stderr = false;
 
 void IO_redirect_stdin(FILE *fp)
 {
@@ -156,17 +156,17 @@ void IO_redirect_stderr(FILE *fp)
     IO_redirected_stderr = true;
 }
 
-int IO_is_stdin_redirected(void)
+bool IO_is_stdin_redirected(void)
 {
     return IO_redirected_stdin;
 }
 
-int IO_is_stdout_redirected(void)
+bool IO_is_stdout_redirected(void)
 {
     return IO_redirected_stdout;
 }
 
-int IO_is_stderr_redirected(void)
+bool IO_is_stderr_redirected(void)
 {
     return IO_redirected_stderr;
 }
