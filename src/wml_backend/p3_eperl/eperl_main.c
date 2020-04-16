@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -205,16 +199,15 @@ static void give_usage(const char * const name)
     fprintf(stderr, "\n");
 }
 
+static size_t RememberedINC_i = 0;
 char *RememberedINC[1024] = { NULL };
 
-void RememberINC(char *str)
+void RememberINC(const char *str)
 {
-    int i;
-
-    for (i = 0; RememberedINC[i] != NULL; i++)
+    for (; RememberedINC[RememberedINC_i] != NULL; ++RememberedINC_i)
         ;
-    RememberedINC[i++] = strdup(str);
-    RememberedINC[i++] = NULL;
+    RememberedINC[RememberedINC_i++] = strdup(str);
+    RememberedINC[RememberedINC_i++] = NULL;
     return;
 }
 
@@ -1066,7 +1059,7 @@ int main(int argc, char **argv, char **env)
     if (fWarn)
         myargv[myargc++] = "-w";
     /*  - previously remembered Perl 5 INC entries (option -I) */
-    for (i = 0; RememberedINC[i] != NULL; i++) {
+    for (size_t i = 0; RememberedINC[i] != NULL; ++i) {
         myargv[myargc++] = "-I";
         myargv[myargc++] = RememberedINC[i];
     }

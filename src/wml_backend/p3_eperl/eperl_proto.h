@@ -46,7 +46,7 @@ extern void PrintError(int mode, char *scripturl, char *scriptfile, char *logfil
 extern void give_version(void);
 extern void give_img_powered(void);
 extern char *RememberedINC[1024];
-extern void RememberINC(char *str);
+extern void RememberINC(const char *str);
 extern void mysighandler(int rc);
 extern void myinit(void);
 extern void myexit(int rc);
