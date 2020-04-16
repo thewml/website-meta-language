@@ -79,7 +79,7 @@ extern int IO_is_stderr_redirected(void);
 extern void IO_restore_stdin(void);
 extern void IO_restore_stdout(void);
 extern void IO_restore_stderr(void);
-extern char *mytmpfile(char *id);
+extern char *mytmpfile(const char *id);
 extern void remove_mytmpfiles(void);
 extern char *isotime(time_t *t);
 extern char *ePerl_ReadSourceFile(char *filename, char **cpBufC, int *nBufC);

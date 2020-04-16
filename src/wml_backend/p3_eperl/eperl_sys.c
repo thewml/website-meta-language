@@ -204,16 +204,16 @@ void IO_restore_stderr(void)
 
 static char *mytmpfiles[100] = { NULL };
 
-char *mytmpfile(char *id)
+char *mytmpfile(const char *id)
 {
     char ca[1024];
-    char *cp, *tmpdir;
+    char *cp;
     char tmpfile[]="eperl_sourceXXXXXX";
     int i;
     int fd=-1;
 
-    tmpdir = getenv ("TMPDIR");
-    if (tmpdir == (char *) NULL)
+    const char *tmpdir = getenv ("TMPDIR");
+    if (! tmpdir)
         tmpdir="/tmp";
 
     snprintf(ca, sizeof(ca), "%s/%s", tmpdir, tmpfile);
@@ -390,15 +390,13 @@ char *filename(char *path)
 
     if (path[strlen(path)-1] == '/')
         return "";
-    else {
-        for (cp = path+strlen(path); cp > path && *(cp-1) != '/'; cp--)
-            ;
-        if (cp == path+1)
-            cp--;
-        strncpy(file, cp, sizeof(file));
-        file[sizeof(file)-1] = '\0';
-        return file;
-    }
+    for (cp = path+strlen(path); cp > path && *(cp-1) != '/'; cp--)
+        ;
+    if (cp == path+1)
+        cp--;
+    strncpy(file, cp, sizeof(file));
+    file[sizeof(file)-1] = '\0';
+    return file;
 }
 
 char *dirname(char *path)
@@ -408,14 +406,12 @@ char *dirname(char *path)
 
     if (path[strlen(path)-1] == '/')
         return path;
-    else {
-        strncpy(dir, path, sizeof(dir));
-        dir[sizeof(dir)-1] = '\0';
-        for (cp = dir+strlen(dir); cp > dir && *(cp-1) != '/'; cp--)
-            ;
-        *cp = NUL;
-        return dir;
-    }
+    strncpy(dir, path, sizeof(dir));
+    dir[sizeof(dir)-1] = '\0';
+    for (cp = dir+strlen(dir); cp > dir && *(cp-1) != '/'; cp--)
+        ;
+    *cp = NUL;
+    return dir;
 }
 
 char *abspath(char *path)
@@ -426,32 +422,30 @@ char *abspath(char *path)
 
     if (path[0] == '/')
         return path;
-    else {
-        /* remember current working dir */
-        if (! getcwd(cwd, MAXPATHLEN)) {
-            return NULL;
-        }
-        /* determine dir of path */
-        cp = dirname(path);
-        if (chdir(cp) != 0) {
-            return NULL;
-        }
-        if (! getcwd(apath, MAXPATHLEN)) {
-            return NULL;
-        }
-        /* restore cwd */
-        if (chdir(cwd) != 0) {
-            return NULL;
-        }
-        /* add file part again */
-        if (apath[strlen(apath)-1] != '/') {
-            strncpy(apath+strlen(apath), "/", sizeof(apath)-strlen(apath));
-            apath[sizeof(apath)-1] = '\0';
-        }
-        strncpy(apath+strlen(apath), path, sizeof(apath)-strlen(apath));
-        apath[sizeof(apath)-1] = '\0';
-        return apath;
+    /* remember current working dir */
+    if (! getcwd(cwd, MAXPATHLEN)) {
+        return NULL;
     }
+    /* determine dir of path */
+    cp = dirname(path);
+    if (chdir(cp) != 0) {
+        return NULL;
+    }
+    if (! getcwd(apath, MAXPATHLEN)) {
+        return NULL;
+    }
+    /* restore cwd */
+    if (chdir(cwd) != 0) {
+        return NULL;
+    }
+    /* add file part again */
+    if (apath[strlen(apath)-1] != '/') {
+        strncpy(apath+strlen(apath), "/", sizeof(apath)-strlen(apath));
+        apath[sizeof(apath)-1] = '\0';
+    }
+    strncpy(apath+strlen(apath), path, sizeof(apath)-strlen(apath));
+    apath[sizeof(apath)-1] = '\0';
+    return apath;
 }
 
 /*EOF*/
