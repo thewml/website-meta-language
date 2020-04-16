@@ -32,7 +32,7 @@ if ($IS_WIN)
 {
     $cmake_gen = 'MSYS Makefiles';
 }
-my $tatzer_dir = path($0)->parent(2)->absolute;
+my $src_dir    = path($0)->parent(2)->absolute;
 my $script_dir = path(__FILE__)->parent->absolute;
 my $myprefix   = cwd()->child(qw/ tests installation /);
 
@@ -44,9 +44,9 @@ if ( !-e $myprefix )
     if (
         do_system(
             [
-"mkdir $build_dir && cd $build_dir && $^X $tatzer_dir${SEP}Tatzer "
-                    . ( defined($cmake_gen) ? qq#--gen="$cmake_gen"# : "" )
-                    . " --prefix=$myprefix && $MAKE VERBOSE=1 && $MAKE package_source && $MAKE install"
+                      "mkdir $build_dir && cd $build_dir && cmake "
+                    . ( defined($cmake_gen) ? qq#-G "$cmake_gen"# : "" )
+                    . " -D CMAKE_INSTALL_PREFIX=$myprefix $src_dir && $MAKE VERBOSE=1 && $MAKE package_source && $MAKE install"
             ]
         )
         )
