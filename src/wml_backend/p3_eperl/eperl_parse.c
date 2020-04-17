@@ -80,21 +80,7 @@ char *ePerl_GetError(void)
     return ePerl_ErrorString;
 }
 
-#if 0 /* unsafe ? */
-/*
-**  fprintf for internal buffer
-*/
-char *ePerl_fprintf(char *cpOut, char *str, ...)
-{
-    va_list ap;
-
-    va_start(ap, str);
-    vsprintf(cpOut, str, ap);
-    va_end(ap);
-    return cpOut+strlen(cpOut);
-}
-#else /* safe version */
-char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
+static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
 {
     va_list ap;
 
@@ -107,7 +93,6 @@ char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
     if (*n <= 0) { abort(); } /* hope NEVER */
     return cpOut+strlen(cpOut);
 }
-#endif
 
 /*
 **  fwrite for internal buffer
