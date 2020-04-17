@@ -94,22 +94,6 @@ static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
     return cpOut+strlen(cpOut);
 }
 
-/*
-**  fwrite for internal buffer
-*/
-#if 0 /* unsafe */
-char *ePerl_fwrite(char *cpBuf, int nBuf, int cNum, char *cpOut)
-{
-    char *cp;
-    int n;
-
-    n = nBuf*cNum;
-    (void)strncpy(cpOut, cpBuf, n);
-    cp = cpOut + n;
-    *cp = NUL;
-    return cp;
-}
-#else /* safe */
 char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
 {
     char *cp;
@@ -124,32 +108,10 @@ char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
     *cpOutLen -= n;
     return cp;
 }
-#endif
 
-#if 0 /* unsafe */
 /*
 **  fwrite for internal buffer WITH character escaping
 */
-char *ePerl_Efwrite(char *cpBuf, int nBuf, int cNum, char *cpOut)
-{
-    char *cpI;
-    char *cpO;
-
-    for (cpI = cpBuf, cpO = cpOut; cpI < (cpBuf+(nBuf*cNum)); ) {
-        switch (*cpI) {
-            case '"':  *cpO++ = '\\'; *cpO++ = *cpI++;     break;
-            case '@':  *cpO++ = '\\'; *cpO++ = *cpI++;     break;
-            case '$':  *cpO++ = '\\'; *cpO++ = *cpI++;     break;
-            case '\\': *cpO++ = '\\'; *cpO++ = *cpI++;     break;
-            case '\t': *cpO++ = '\\'; *cpO++ = 't'; cpI++; break;
-            case '\n': *cpO++ = '\\'; *cpO++ = 'n'; cpI++; break;
-            default: *cpO++ = *cpI++;
-        }
-    }
-    *cpO = NUL;
-    return cpO;
-}
-#else /* safe */
 char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n)
 {
     char *cpI;
@@ -171,8 +133,6 @@ char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n)
     *cpO = NUL;
     return cpO;
 }
-#endif
-
 
 /*
 **  fwrite for internal buffer WITH HTML entity conversion
@@ -290,39 +250,6 @@ static struct html2char html2char[] = {
     { NULL, NUL }
 };
 
-#if 0 /* unsafe */
-char *ePerl_Cfwrite(char *cpBuf, int nBuf, int cNum, char *cpOut)
-{
-    char *cpI;
-    char *cpO;
-    int i;
-    int n;
-    char *cpE;
-
-    cpI = cpBuf;
-    cpO = cpOut;
-    cpE = cpBuf+(nBuf*cNum);
-    while (cpI < cpE) {
-        if (*cpI == '&') {
-            for (i = 0; html2char[i].h != NULL; i++) {
-                n = strlen(html2char[i].h);
-                if (cpI+1+n+1 < cpE) {
-                    if (*(cpI+1+n) == ';') {
-                        if (strncmp(cpI+1, html2char[i].h, n) == 0) {
-                            *cpO++ = html2char[i].c;
-                            cpI += 1+n+1;
-                            continue;
-                        }
-                    }
-                }
-            }
-        }
-        *cpO++ = *cpI++;
-    }
-    *cpO = NUL;
-    return cpO;
-}
-#else /* safe */
 char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
 {
     char *cpI;
@@ -357,8 +284,6 @@ char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen
     *cpO = NUL;
     return cpO;
 }
-#endif
-
 
 /*
 **
