@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -39,10 +33,8 @@
 
 static char ePerl_PP_ErrorString[1024] = "";
 
-/*
-**  set PP error string
-*/
-void ePerl_PP_SetError(char *str, ...)
+/* set PP error string */
+static void ePerl_PP_SetError(char *str, ...)
 {
     va_list ap;
 
@@ -61,10 +53,8 @@ char *ePerl_PP_GetError(void)
     return ePerl_PP_ErrorString;
 }
 
-/*
-**  expand #include directives in buffer
-*/
-char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
+/* expand #include directives in buffer */
+static char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
 {
     char *cpOutBuf = NULL;
     char *cpEND;

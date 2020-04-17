@@ -56,9 +56,7 @@ extern void Perl5_RememberScalar(char *str);
 extern char **Perl5_SetEnvVar(char **env, char *str);
 
 /* eperl_pp.c */
-extern void ePerl_PP_SetError(char *str, ...);
 extern char *ePerl_PP_GetError(void);
-extern char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode);
 extern char *ePerl_PP(char *cpBuf, char **cppINC);
 
 /* eperl_sys.c */
