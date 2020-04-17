@@ -46,9 +46,7 @@ extern char *ePerl_GetError(void);
 extern char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen);
 extern char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n);
 extern char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen);
-extern char *ep_strnchr(char *buf, char chr, int n);
 extern char *ep_strnstr(char *buf, char *str, int n);
-extern char *ep_strncasestr(char *buf, char *str, int n);
 extern char *ePerl_Bristled2Plain(char *cpBuf);
 
 /* eperl_perl5.c */

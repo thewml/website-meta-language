@@ -291,7 +291,7 @@ char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen
 **
 */
 
-char *ep_strnchr(char *buf, char chr, int n)
+static char *ep_strnchr(char *buf, char chr, int n)
 {
     char *cp;
     char *cpe;
@@ -317,7 +317,7 @@ char *ep_strnstr(char *buf, char *str, int n)
     return NULL;
 }
 
-char *ep_strncasestr(char *buf, char *str, int n)
+static char *ep_strncasestr(char *buf, char *str, int n)
 {
     char *cp;
     char *cpe;
