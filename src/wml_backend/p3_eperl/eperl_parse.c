@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -33,11 +27,9 @@
 **  eperl_parse.c -- ePerl parser stuff
 */
 
-
 #include "eperl_config.h"
 #include "eperl_global.h"
 #include "eperl_proto.h"
-
 
 /*
 **
@@ -331,34 +323,30 @@ static char *ep_strncasestr(char *buf, char *str, int n)
     return NULL;
 }
 
-
 /*
 **  convert buffer from bristled format to plain format
 */
 char *ePerl_Bristled2Plain(char *cpBuf)
 {
+    // rc needed by macros
     char *rc;
     char *cpOutBuf = NULL;
     char *cpOut = NULL;
-    int cpOutLen = 0;
     char *cps, *cpe;
     char *cps2, *cpe2;
-    int nBuf;
-    char *cpEND;
-    int n;
 
-    if (strlen(cpBuf) == 0) {
+    const size_t nBuf = strlen(cpBuf);
+    if (nBuf == 0) {
         /* make sure we return a buffer which the caller can free() */
         cpOutBuf = (char *)malloc(sizeof(char) * 1);
         *cpOutBuf = NUL;
         return cpOutBuf;
     }
 
-    nBuf = strlen(cpBuf);
-    cpEND = cpBuf+nBuf;
+    char *const cpEND = cpBuf+nBuf;
 
     /* allocate memory for the Perl code */
-    n = sizeof(char) * nBuf * 10;
+    int n = sizeof(char) * nBuf * 10;
     if (nBuf < 1024)
         n = 16384;
     if ((cpOutBuf = (char *)malloc(n)) == NULL) {
@@ -366,7 +354,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
         CU(NULL);
     }
     cpOut = cpOutBuf;
-    cpOutLen = n;
+    int cpOutLen = n;
 
     /* now step through the file and convert it to legal Perl code.
        This is a bit complicated because we have to make sure that
@@ -542,5 +530,3 @@ char *ePerl_Bristled2Plain(char *cpBuf)
         free(cpOutBuf);
     RETURN_EXRC;
 }
-
-/*EOF*/
