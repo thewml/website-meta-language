@@ -38,9 +38,6 @@ bool         ePerl_convert_entities          = false;
 bool         ePerl_line_continuation         = false;
 static char ePerl_ErrorString[1024]         = "";
 
-/*
-**  set ePerl error string
-*/
 void ePerl_SetError(char *str, ...)
 {
     va_list ap;
@@ -52,9 +49,6 @@ void ePerl_SetError(char *str, ...)
     return;
 }
 
-/*
-**  get ePerl error string
-*/
 char *ePerl_GetError(void)
 {
     return ePerl_ErrorString;
@@ -86,9 +80,7 @@ char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
     return cp;
 }
 
-/*
-**  fwrite for internal buffer WITH character escaping
-*/
+// fwrite for internal buffer WITH character escaping
 char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n)
 {
     char *cpI;
@@ -256,11 +248,7 @@ char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen
     return cpO;
 }
 
-/*
-**
-**  Own string functions with maximum length (n) support
-**
-*/
+// Our own string functions with maximum length (n) support
 
 static char *ep_strnchr(char *buf, char chr, int n)
 {
@@ -298,9 +286,7 @@ static char *ep_strncasestr(char *buf, char *str, int n)
     return NULL;
 }
 
-/*
-**  convert buffer from bristled format to plain format
-*/
+// convert buffer from bristled format to plain format
 char *ePerl_Bristled2Plain(char *cpBuf)
 {
     // "rc" variable needed by macros
