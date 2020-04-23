@@ -31,24 +31,12 @@
 #include "eperl_global.h"
 #include "eperl_proto.h"
 
-/*
-**
-**  Static Data
-**
-*/
-
 char       *ePerl_begin_delimiter           = NULL;
 char       *ePerl_end_delimiter             = NULL;
 bool         ePerl_case_sensitive_delimiters = true;
 bool         ePerl_convert_entities          = false;
 bool         ePerl_line_continuation         = false;
 static char ePerl_ErrorString[1024]         = "";
-
-/*
-**
-**  Functions
-**
-*/
 
 /*
 **  set ePerl error string
@@ -88,14 +76,11 @@ static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
 
 char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
 {
-    char *cp;
-    int n;
-
-    n = nBuf*cNum;
+    const int n = nBuf*cNum;
     if (*cpOutLen < n) { abort(); }
     (void)strncpy(cpOut, cpBuf, n);
     cpOut[*cpOutLen - 1] = NUL;
-    cp = cpOut + n;
+    char *cp = cpOut + n;
     *cp = NUL;
     *cpOutLen -= n;
     return cp;
@@ -135,7 +120,7 @@ struct html2char {
     char c;
 };
 
-static struct html2char html2char[] = {
+static const struct html2char html2char[] = {
     { "copy",   '©' },    /* Copyright */
     { "die",    '¨' },    /* Diæresis / Umlaut */
     { "laquo",  '«' },    /* Left angle quote, guillemot left */
@@ -244,20 +229,14 @@ static struct html2char html2char[] = {
 
 char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
 {
-    char *cpI;
-    char *cpO;
-    int i;
-    int n;
-    char *cpE;
-
     if (*cpOutLen <= 0) { abort(); }
-    cpI = cpBuf;
-    cpO = cpOut;
-    cpE = cpBuf+(nBuf*cNum);
+    char * cpI = cpBuf;
+    char * cpO = cpOut;
+    char * cpE = cpBuf+(nBuf*cNum);
     while (cpI < cpE) {
         if (*cpI == '&') {
-            for (i = 0; html2char[i].h != NULL; i++) {
-                n = strlen(html2char[i].h);
+            for (int i = 0; html2char[i].h != NULL; i++) {
+                const size_t n = strlen(html2char[i].h);
                 if (cpI+1+n+1 < cpE) {
                     if (*(cpI+1+n) == ';') {
                         if (strncmp(cpI+1, html2char[i].h, n) == 0) {
@@ -299,9 +278,7 @@ char *ep_strnstr(char *buf, char *str, int n)
 {
     char *cp;
     char *cpe;
-    int len;
-
-    len = strlen(str);
+    const size_t len = strlen(str);
     for (cp = buf, cpe = buf+n-len; cp <= cpe; cp++) {
         if (strncmp(cp, str, len) == 0)
             return cp;
@@ -313,9 +290,7 @@ static char *ep_strncasestr(char *buf, char *str, int n)
 {
     char *cp;
     char *cpe;
-    int len;
-
-    len = strlen(str);
+    const size_t len = strlen(str);
     for (cp = buf, cpe = buf+n-len; cp <= cpe; cp++) {
         if (strncasecmp(cp, str, len) == 0)
             return cp;
@@ -328,19 +303,13 @@ static char *ep_strncasestr(char *buf, char *str, int n)
 */
 char *ePerl_Bristled2Plain(char *cpBuf)
 {
-    // rc needed by macros
+    // "rc" variable needed by macros
     char *rc;
-    char *cpOutBuf = NULL;
-    char *cpOut = NULL;
-    char *cps, *cpe;
     char *cps2, *cpe2;
 
     const size_t nBuf = strlen(cpBuf);
     if (nBuf == 0) {
-        /* make sure we return a buffer which the caller can free() */
-        cpOutBuf = (char *)malloc(sizeof(char) * 1);
-        *cpOutBuf = NUL;
-        return cpOutBuf;
+        return strdup("");
     }
 
     char *const cpEND = cpBuf+nBuf;
@@ -349,25 +318,23 @@ char *ePerl_Bristled2Plain(char *cpBuf)
     int n = sizeof(char) * nBuf * 10;
     if (nBuf < 1024)
         n = 16384;
-    if ((cpOutBuf = (char *)malloc(n)) == NULL) {
+    char *cpOutBuf = malloc(n);
+    if (! cpOutBuf) {
         ePerl_SetError("Cannot allocate %d bytes of memory", n);
         CU(NULL);
     }
-    cpOut = cpOutBuf;
+    char *cpOut = cpOutBuf;
     int cpOutLen = n;
 
     /* now step through the file and convert it to legal Perl code.
        This is a bit complicated because we have to make sure that
        we parse the correct delimiters while the delimiter
        characters could also occur inside the Perl code! */
-    cps = cpBuf;
+    char *cps = cpBuf;
     while (cps < cpEND) {
-
-        if (ePerl_case_sensitive_delimiters)
-            cpe = ep_strnstr(cps, ePerl_begin_delimiter, cpEND-cps);
-        else
-            cpe = ep_strncasestr(cps, ePerl_begin_delimiter, cpEND-cps);
-        if (cpe == NULL) {
+        char *cpe = (ePerl_case_sensitive_delimiters ? ep_strnstr : ep_strncasestr)
+            (cps, ePerl_begin_delimiter, cpEND-cps);
+        if (! cpe) {
 
             /* there are no more ePerl blocks, so
                just encapsulate the remaining contents into
