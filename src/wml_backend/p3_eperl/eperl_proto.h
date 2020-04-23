@@ -89,7 +89,6 @@ extern FILE *HTTP_openURLasFP(char *url);
 
 /* eperl_debug.c */
 extern bool fDebug;
-extern char *cpDebugFile;
 extern void Debug(char *str, ...);
 
 /* eperl_config.c */
