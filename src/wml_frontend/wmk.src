@@ -579,21 +579,17 @@ sub _process_file
         $opts = $opt_o_CUR;
         open( my $FP, '<', $fn );
         my $shebang = '';
+    SHEBANG:
         while (1)
         {
             $shebang .= <$FP>;
-            if ( $shebang =~ m|\A(.*)\\\s*\Z|s )
-            {
-                $shebang = $1;
-                next;
-            }
-            last;
-        }
-        if ( $shebang =~ m|\A#!wml\s+(.+\S)\s*\Z|is )
-        {
-            $opts = $1;
+            last SHEBANG if ( $shebang !~ s=\\\s*\Z==ms );
         }
         close($FP);
+        if ( my ($new_opts) = $shebang =~ m|\A#!wml\s+(.+\S)\s*\Z|is )
+        {
+            $opts = $new_opts;
+        }
     }
 
     #   expand %DIR and %BASE
