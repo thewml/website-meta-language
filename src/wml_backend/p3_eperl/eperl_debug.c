@@ -32,7 +32,9 @@
 #include "eperl_proto.h"
 
 bool fDebug = false;
+#ifdef DEBUG_ENABLED
 static const char *const cpDebugFile = "eperl.debug";
+#endif
 
 void Debug(char *str, ...)
 {
