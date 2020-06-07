@@ -7,6 +7,12 @@ i.e. changes between each patchlevel (1.x.y->1.x.(y+1) and
 information about every single change.
 ___________________________________________________________________________
 
+Changes between 2.26.0 to 2.28.0:
+
+*) Refactoring, cleanups, modernizations and optimizations.
+
+*) Moved some old documents outside the tarball.
+
 Changes between 2.24.0 to 2.26.0:
 
 *) Refactoring, cleanups, modernizations and (likely minor) optimizations.
