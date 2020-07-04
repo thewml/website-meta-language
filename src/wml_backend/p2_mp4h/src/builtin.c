@@ -1299,7 +1299,7 @@ mp4h_bp_function_def (MP4H_BUILTIN_ARGS)
 #ifdef HAVE_FILE_FUNCS
 
 /*-----------------------------------------------------------------.
-| Informations on a file.  A newline separated string is printed:  |
+| Information on a file.  A newline separated string is printed:   |
 |    Line 1: file size                                             |
 |    Line 2: file type                                             |
 |    Line 3: time of last change                                   |
@@ -4266,7 +4266,7 @@ mp4h_bp_decrement (MP4H_BUILTIN_ARGS)
 }
 
 /*--------------------------------.
-| Dumps informations of symbols.  |
+| Dumps information of symbols.   |
 `--------------------------------*/
 static void
 mp4h_bp_symbol_info (MP4H_BUILTIN_ARGS)

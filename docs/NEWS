@@ -239,7 +239,7 @@
       - System variables like WML_GEN_HOSTNAME now can be
         overwritten by -D options on the command line or in
         .wmlrc files. For instance this is useful to overwrite
-        informations for the <info> tag from wml::std::info with
+        information for the <info> tag from wml::std::info with
         correct values.
 
       - Various 3rd-party software upgrades:

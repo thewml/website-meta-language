@@ -836,7 +836,7 @@ it is set to the second argument.
 </tag:description>
 
 <para>
-Show informations on symbols.  If it is a variable name, the <command
+Show information on symbols.  If it is a variable name, the <command
 STRING /> word is printed as well as the number of lines contained within
 this variable.
 
@@ -1892,7 +1892,7 @@ Returns <true/> if file exists.
 </tag:description>
 
 <para>
-Returns an array of informations on this file.  These informations are:
+Returns an array of information on this file.  These information are:
 size, type, ctime, mtime, atime, owner and group.
 </para>
 
@@ -2158,7 +2158,7 @@ being processed.
 </tag:description>
 
 <para>
-Declare these macros traced, i.e. informations about these macros will
+Declare these macros traced, i.e. information about these macros will
 be printed if <optflag d /> flag or <command debugmode /> macro are used.
 </para>
 
@@ -2652,7 +2652,7 @@ and footers with
 <define-tag header>
 <html*>
 <head>
-... put here some informations ....
+... put here some information ....
 </head>
 <body* bgcolor="#ffffff" text="#000000">
 </define-tag>
