@@ -1892,8 +1892,8 @@ Returns <true/> if file exists.
 </tag:description>
 
 <para>
-Returns an array of information on this file.  These information are:
-size, type, ctime, mtime, atime, owner and group.
+Returns an array of file properties values.
+These values are (in order): size, type, ctime, mtime, atime, owner and group.
 </para>
 
 <example>
@@ -2652,7 +2652,7 @@ and footers with
 <define-tag header>
 <html*>
 <head>
-... put here some information ....
+... put some information here ....
 </head>
 <body* bgcolor="#ffffff" text="#000000">
 </define-tag>

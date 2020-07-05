@@ -1298,17 +1298,16 @@ mp4h_bp_function_def (MP4H_BUILTIN_ARGS)
 
 #ifdef HAVE_FILE_FUNCS
 
-/*-----------------------------------------------------------------.
-| Information on a file.  A newline separated string is printed:   |
-|    Line 1: file size                                             |
-|    Line 2: file type                                             |
-|    Line 3: time of last change                                   |
-|    Line 4: time of last modification                             |
-|    Line 5: time of last modification                             |
-|    Line 6: time of last access                                   |
-|    Line 7: name of the owner of this file                        |
-|    Line 8: name of the group of this file                        |
-`-----------------------------------------------------------------*/
+/*
+Metadata about a file.  A newline separated string is printed:
+   Line 1: file size
+   Line 2: file type
+   Line 3: time of last change
+   Line 4: time of last modification
+   Line 5: time of last access
+   Line 6: name of the owner of this file
+   Line 7: name of the group of this file
+*/
 static void
 mp4h_bp_get_file_properties (MP4H_BUILTIN_ARGS)
 {
@@ -4265,9 +4264,7 @@ mp4h_bp_decrement (MP4H_BUILTIN_ARGS)
   SYMBOL_TEXT (var) = xstrdup(buf);
 }
 
-/*--------------------------------.
-| Dumps information of symbols.   |
-`--------------------------------*/
+/* Dumps information about symbols. */
 static void
 mp4h_bp_symbol_info (MP4H_BUILTIN_ARGS)
 {

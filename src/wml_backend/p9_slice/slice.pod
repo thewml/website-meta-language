@@ -220,7 +220,7 @@ files on a webserver with the C<XBitHack> option available).
 
 The optional I<outputpolicy> string allows changing output policy for
 only this output file without changing its global meaning.  See above
-for information on output policy.
+for more information about output policy.
 
 Be careful here: When you use parenthesis or asterisks inside I<sliceterm> you
 have to make sure it is really passed to F<slice> this way, i.e. usually you
