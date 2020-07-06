@@ -146,20 +146,14 @@ sub dosystem
 
 sub _generic_do
 {
-    my ( $self, $args, ) = @_;
-
-    my $pass_idx = $args->{pass_idx};
-    my $EXE      = $args->{EXE};
-    my $opt      = $args->{opt};
-    my $from     = $args->{from};
-    my $to       = $args->{to};
+    my ( $self, $pass_idx, $EXE, $opt, $from, $to, $cb ) = @_;
 
     my $prog = "$EXEC_DIR/$EXE";
     my $argv = "$opt -o $to $from";
     return scalar(
           $self->_opt_s
         ? $self->dosystem("$prog $argv")
-        : $self->pass($pass_idx)->dosource( $self, $prog, $argv, $args->{cb} )
+        : $self->pass($pass_idx)->dosource( $self, $prog, $argv, $cb, )
     );
 }
 
@@ -167,18 +161,14 @@ sub pass1
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do(
-        {
-            pass_idx => 1,
-            EXE      => 'wml_p1_ipp',
-            opt      => $opt,
-            from     => $from,
-            to       => $to,
-            cb       => sub {
-                require TheWML::Backends::IPP::Main;
+        1,
+        'wml_p1_ipp',
+        $opt, $from, $to,
+        sub {
+            require TheWML::Backends::IPP::Main;
 
-                return TheWML::Backends::IPP::Main->new( argv => [@_] )->main;
-            },
-        }
+            return TheWML::Backends::IPP::Main->new( argv => [@_] )->main;
+        },
     );
 }
 
@@ -221,19 +211,14 @@ sub pass5
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do(
-        {
-            pass_idx => 5,
-            EXE      => 'wml_p5_divert',
-            opt      => $opt,
-            from     => $from,
-            to       => $to,
-            cb       => sub {
-                require TheWML::Backends::Divert::Main;
+        5,
+        'wml_p5_divert',
+        $opt, $from, $to,
+        sub {
+            require TheWML::Backends::Divert::Main;
 
-                return TheWML::Backends::Divert::Main->new( argv => [@_] )
-                    ->main;
-            },
-        }
+            return TheWML::Backends::Divert::Main->new( argv => [@_] )->main;
+        },
     );
 }
 
@@ -241,19 +226,14 @@ sub pass6
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do(
-        {
-            pass_idx => 6,
-            EXE      => 'wml_p6_asubst',
-            opt      => $opt,
-            from     => $from,
-            to       => $to,
-            cb       => sub {
-                require TheWML::Backends::ASubst::Main;
+        6,
+        'wml_p6_asubst',
+        $opt, $from, $to,
+        sub {
+            require TheWML::Backends::ASubst::Main;
 
-                return TheWML::Backends::ASubst::Main->new( argv => [@_] )
-                    ->main;
-            },
-        }
+            return TheWML::Backends::ASubst::Main->new( argv => [@_] )->main;
+        },
     );
 }
 
@@ -261,18 +241,14 @@ sub pass7
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do(
-        {
-            pass_idx => 7,
-            EXE      => 'wml_p7_htmlfix',
-            opt      => $opt,
-            from     => $from,
-            to       => $to,
-            cb       => sub {
-                require TheWML::Backends::Fixup::Main;
+        7,
+        'wml_p7_htmlfix',
+        $opt, $from, $to,
+        sub {
+            require TheWML::Backends::Fixup::Main;
 
-                return TheWML::Backends::Fixup::Main->new( argv => [@_] )->main;
-            },
-        }
+            return TheWML::Backends::Fixup::Main->new( argv => [@_] )->main;
+        },
     );
 }
 
@@ -280,19 +256,14 @@ sub pass8
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
     return $_pass_mgr->_generic_do(
-        {
-            pass_idx => 8,
-            EXE      => 'wml_p8_htmlstrip',
-            opt      => $opt,
-            from     => $from,
-            to       => $to,
-            cb       => sub {
-                require TheWML::Backends::HtmlStrip::Main;
+        8,
+        'wml_p8_htmlstrip',
+        $opt, $from, $to,
+        sub {
+            require TheWML::Backends::HtmlStrip::Main;
 
-                return TheWML::Backends::HtmlStrip::Main->new( argv => [@_] )
-                    ->main;
-            },
-        }
+            return TheWML::Backends::HtmlStrip::Main->new( argv => [@_] )->main;
+        },
     );
 }
 
@@ -317,18 +288,14 @@ sub pass9
     #   slice contains "package" commands and
     #   other stuff, so we cannot source it.
     return $_pass_mgr->_generic_do(
-        {
-            pass_idx => 9,
-            EXE      => 'wml_p9_slice',
-            opt      => $opt,
-            from     => $from,
-            to       => $to,
-            cb       => sub {
-                require TheWML::Backends::Slice::Main;
+        9,
+        'wml_p9_slice',
+        $opt, $from, $to,
+        sub {
+            require TheWML::Backends::Slice::Main;
 
-                return TheWML::Backends::Slice::Main->new( argv => [@_] )->main;
-            },
-        }
+            return TheWML::Backends::Slice::Main->new( argv => [@_] )->main;
+        },
     );
 }
 
