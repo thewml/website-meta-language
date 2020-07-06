@@ -69,26 +69,23 @@ sub new
 {
     my $self = bless +{}, shift;
     $self->_gnu_m4( scalar( which('gm4') ) // scalar( which('m4') ) );
-    my $args     = shift;
-    my $__PASSES = [
-        sub { return shift->pass1(@_); },
-        sub { return shift->pass2(@_); },
-        sub { return shift->pass3(@_); },
-        sub { return shift->pass4(@_); },
-        sub { return shift->pass5(@_); },
-        sub { return shift->pass6(@_); },
-        sub { return shift->pass7(@_); },
-        sub { return shift->pass8(@_); },
-        sub { return shift->pass9(@_); },
-    ];
+    my $args = shift;
     $self->_passes(
         [
             '',
-            map {
-                TheWML::Frontends::Wml::PassObj->new( cb => $__PASSES->[$_] )
-                }
-                keys @$__PASSES
-
+            map { TheWML::Frontends::Wml::PassObj->new( cb => $_ ) } (
+                (
+                    sub { return shift->pass1(@_); },
+                    sub { return shift->pass2(@_); },
+                    sub { return shift->pass3(@_); },
+                    sub { return shift->pass4(@_); },
+                    sub { return shift->pass5(@_); },
+                    sub { return shift->pass6(@_); },
+                    sub { return shift->pass7(@_); },
+                    sub { return shift->pass8(@_); },
+                    sub { return shift->pass9(@_); },
+                )
+            )
         ]
     );
     my $gen_hostname = `hostname`;
