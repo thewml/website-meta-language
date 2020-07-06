@@ -41,7 +41,7 @@ use Carp::Always;
 
 use Class::XSAccessor (
     constructor => 'new',
-    accessors   => +{ map { $_ => $_ } qw( idx cb opt_pass time_ src_cb) }
+    accessors   => +{ map { $_ => $_ } qw( cb opt_pass time_ src_cb) }
 );
 
 use File::Basename qw/ basename /;

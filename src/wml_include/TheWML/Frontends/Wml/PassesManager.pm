@@ -85,10 +85,7 @@ sub new
         [
             '',
             map {
-                TheWML::Frontends::Wml::PassObj->new(
-                    idx => ( $_ + 1 ),
-                    cb  => $__PASSES->[$_]
-                )
+                TheWML::Frontends::Wml::PassObj->new( cb => $__PASSES->[$_] )
                 }
                 keys @$__PASSES
 
