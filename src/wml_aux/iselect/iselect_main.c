@@ -39,16 +39,13 @@
 #include "getopt.h"
 #include "iselect_browse.h"
 #include "iselect_keys.h"
-#define _ISELECT_VERSION_C_AS_HEADER_
-#include "iselect_version.c"
-#undef  _ISELECT_VERSION_C_AS_HEADER_
 
 void give_version(char *name);
 void give_usage(char *name);
 
 void give_version(char *name)
 {
-    fprintf(stderr, "%s\n", iselect_version.v_tex);
+    fprintf(stderr, "%s\n",     "This is iSelect, Version 1.2.0 (01-Jul-2000)");
     fprintf(stdout, "\n");
     fprintf(stdout, "Copyright (c) 1996,1997,1998 Ralf S. Engelschall.\n");
     fprintf(stdout, "\n");

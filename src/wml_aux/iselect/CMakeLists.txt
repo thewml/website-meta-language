@@ -18,7 +18,6 @@ DEFINE_WML_AUX_C_PROG (
    ${CMAKE_SOURCE_DIR}/lib/getopt.c
    ${CMAKE_SOURCE_DIR}/lib/getopt1.c
    iselect_main.c iselect_browse.c iselect_keys.c
-   iselect_version.c
 )
 
 INCLUDE_DIRECTORIES( BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
