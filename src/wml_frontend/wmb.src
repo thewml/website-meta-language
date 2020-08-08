@@ -35,12 +35,12 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  this program under different conditions or license agreements.
 ##
 
-require 5.003;
+use 5.014;
 use Path::Tiny qw/ path /;
 
 BEGIN { $^W = 0; }    # get rid of nasty warnings
 
-$VERSION = "@WML_VERSION@";
+my $VERSION = "@WML_VERSION@";
 
 use Getopt::Long 2.13 ();
 use Term::ReadKey;
@@ -73,6 +73,8 @@ sub usage
     exit(1);
 }
 
+use vars qw/ $opt_V $opt_h /;
+
 sub version
 {
     system("wml -V$opt_V");
@@ -95,7 +97,7 @@ sub _process_options
         print STDERR "Try `$0 --help' for more information.\n";
         exit(0);
     }
-    &usage($0) if ($opt_h);
+    usage($0) if ($opt_h);
     $SIG{'__WARN__'} = undef;
 }
 _process_options();
@@ -109,7 +111,7 @@ if ( $opt_V == -1 )
 {
     $opt_V = 0;    # we operate with 0 for not set
 }
-&version if ($opt_V);
+version() if ($opt_V);
 
 ##
 ##   Header
@@ -123,19 +125,19 @@ print STDERR "\n";
 ##
 print STDERR "Determining your information...";
 
-@pwinfo = getpwuid($<);
+my @pwinfo = getpwuid($<);
 
-$username = $pwinfo[0];
+my $username = $pwinfo[0];
 $username =~ s|[\'\$\`\"]||g;
 
-$realname = $pwinfo[6];
+my $realname = $pwinfo[6];
 $realname =~ s|^([^\,]+)\,.*$|$1|;
 
-$hostname = `hostname`;
+my $hostname = `hostname`;
 $hostname =~ s|\n$||;
 if ( $hostname =~ m|^[a-zA-Z0-9_-]+$| and -f "/etc/resolv.conf" )
 {
-    $domain = '';
+    my $domain = '';
     open( TMP, "</etc/resolv.conf" );
     while (<TMP>)
     {
@@ -152,18 +154,19 @@ if ( $hostname =~ m|^[a-zA-Z0-9_-]+$| and -f "/etc/resolv.conf" )
     }
 }
 
-$version = `wml -V3 2>&1`;
+my $version = `wml -V3 2>&1`;
 $version =~ s|^.*?(Built)|Used WML System:\n$1|s;
 
-$editor    = $ENV{'EDITOR'} || 'vi';
-$editoropt = '';
-if ( $editor =~ m|^vim?| )
+my $maileropt;
+my $editor    = $ENV{'EDITOR'} || 'vi';
+my $editoropt = '';
+if ( $editor =~ m#\Avi# )
 {
     $editoropt = '+17';
 }
 
-$mailer = '';
-@M      = (
+my $mailer  = '';
+my @MAILERS = (
     {
         PRG => 'elm',
         HDR => 0,
@@ -185,17 +188,18 @@ $mailer = '';
     { PRG => 'mail',     HDR => 0, OPT => '-s \'%s\' %t <%F', TST => '1' },
     { PRG => 'sendmail', HDR => 1, OPT => '%t <%F',           TST => '1' },
 );
-LOOP: foreach $m (@M)
+my $mailerhdr;
+LOOP: foreach my $m (@MAILERS)
 {
-    $prg = $m->{PRG};
-    $hdr = $m->{HDR};
-    $opt = $m->{OPT};
-    $tst = $m->{TST};
-    foreach $p ( split( /:/, $ENV{'PATH'} ) )
+    my $prg = $m->{PRG};
+    my $hdr = $m->{HDR};
+    my $opt = $m->{OPT};
+    my $tst = $m->{TST};
+    foreach my $p ( split( /:/, $ENV{'PATH'} ) )
     {
         if ( -x "$p/$prg" )
         {
-            $rc = 0;
+            my $rc = 0;
             eval "\$rc = 1 if ($tst)";
             if ($rc)
             {
@@ -217,7 +221,7 @@ if ( $mailer eq '' )
         "** Sorry, cannot find a useable MTA on your system for E-Mail.\n";
     print STDERR
         "** Please send the bug report online via HTTP by opening the URL\n";
-    $v = $VERSION;
+    my $v = $VERSION;
     $v =~ s|^([0-9.]+).*$|$1|;
     print STDERR
         "** http://www.engelschall.com/sw/bugreport/?package=WML&version=$v\n";
@@ -230,10 +234,10 @@ if ( $mailer eq '' )
 #
 print STDERR "Creating bug report skeleton...";
 
-$tmpdir = $ENV{'TMPDIR'} || '/tmp';
+my $tmpdir = $ENV{'TMPDIR'} || '/tmp';
 
-$tmpfile  = "$tmpdir/wmb.$$.1.tmp";
-$tmpfile2 = "$tmpdir/wmb.$$.2.tmp";
+my $tmpfile  = "$tmpdir/wmb.$$.1.tmp";
+my $tmpfile2 = "$tmpdir/wmb.$$.2.tmp";
 unlink($tmpfile);
 
 open( MAIL, ">$tmpfile" );
@@ -272,13 +276,15 @@ system("$editor $editoropt $tmpfile");
 #
 print STDERR "Send report [Y/n]: ";
 ReadMode 4;
-$rc = ReadKey(0);
+my $rc = ReadKey(0);
 ReadMode 0;
 print STDERR "\n";
 if ( $rc eq '' or $rc eq "\n" or $rc eq "\r" )
 {
     $rc = 'y';
 }
+my $from;
+my $replyto;
 if ( $rc =~ m|[yY]| )
 {
     print STDERR "Sending bug report...";
@@ -297,14 +303,14 @@ if ( $rc =~ m|[yY]| )
     }
     close(FP);
 
-    $subject = "BUG REPORT: Website META Language $VERSION";
-    $to      = 'shlomif@cpan.org';
+    my $subject = "BUG REPORT: Website META Language $VERSION";
+    my $to      = 'shlomif@cpan.org';
     $maileropt =~ s|%r|$replyto|g;
     $maileropt =~ s|%s|$subject|g;
     $maileropt =~ s|%t|$to|g;
     $maileropt =~ s|%F|$tmpfile2|g;
 
-    $msg = path($tmpfile)->slurp;
+    my $msg = path($tmpfile)->slurp;
     $msg =~ s|^.+--.+?\-\+\n_|_|s;
 
     open( OUT, ">$tmpfile2" );
