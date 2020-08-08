@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use WmlTest;
+use WmlTest ();
 WmlTest::init();
 
 use Test::More tests => 10;

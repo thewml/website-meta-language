@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More tests => 4;
 
-use WmlTest;
+use WmlTest ();
 WmlTest::init();
 
 my $pass = "1-9";

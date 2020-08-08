@@ -3,7 +3,7 @@ use warnings;
 
 use Term::ANSIColor qw/ colored /;
 
-use WmlTest;
+use WmlTest ();
 WmlTest::init();
 
 use Test::More tests => 7;

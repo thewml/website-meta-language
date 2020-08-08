@@ -4,7 +4,7 @@ use warnings;
 
 use Test::More tests => 6;
 
-use WmlTest;
+use WmlTest ();
 WmlTest::init();
 
 #

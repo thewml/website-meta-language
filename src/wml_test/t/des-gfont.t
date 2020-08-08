@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More;
 
-use WmlTest;
+use WmlTest ();
 WmlTest::init();
 
 my $exists = 0;
