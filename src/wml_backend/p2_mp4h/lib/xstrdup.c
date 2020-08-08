@@ -23,16 +23,14 @@
 
 #if defined (__STDC__) && __STDC__
 char *xmalloc (size_t);
-char *xstrdup (char *string);
+char *xstrdup (const char *string);
 #else
 char *xmalloc ();
 #endif
 
 /* Return a newly allocated copy of STRING.  */
 
-char *
-xstrdup (string)
-     char *string;
+char * xstrdup (const char *const string)
 {
   return strcpy (xmalloc (strlen (string) + 1), string);
 }
