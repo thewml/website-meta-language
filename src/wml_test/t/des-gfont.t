@@ -24,10 +24,8 @@ else
     plan tests => 6;
 }
 
-my $pass = "1-9";
-
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::gfont
 <gfont notag>foo</gfont>
 void
@@ -38,8 +36,7 @@ EOT_OUT
 WmlTest::add_files(qw(tmp.00.gfont000.gif tmp.00.gfont000.gif.cmd));
 
 # TEST*2
-WmlTest::generic( $pass,
-    <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=' );
 #use wml::des::gfont
 <gfont file="tmp.gif">foo</gfont>
 EOT_IN
@@ -49,8 +46,7 @@ EOT_OUT
 WmlTest::add_files(qw(tmp.gif tmp.gif.cmd));
 
 # TEST*2
-WmlTest::generic( $pass,
-    <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '-Dbar -Dvoid=\"\" -Dvoid2=' );
 #use wml::des::gfont
 <gfont base="tmp">foo</gfont>
 EOT_IN

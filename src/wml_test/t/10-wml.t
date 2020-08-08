@@ -11,8 +11,6 @@ use Test::More tests => 4;
 #   TEST 1-2: throughput
 #
 
-my $pass = "1-9";
-
 {
     my $in = <<'EOT_IN';
 foo bar baz quux
@@ -27,7 +25,7 @@ foo bar baz quux
 EOT_OUT
 
     # TEST*2
-    WmlTest::generic( $pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2=' );
+    WmlTest::all_passes( $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2=' );
 }
 
 {
@@ -48,8 +46,7 @@ EOT_IN
 EOT_OUT
 
     # TEST*2
-    WmlTest::generic( $pass, $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2= -DROOT=.',
-    );
+    WmlTest::all_passes( $in, $out, '-Dbar -Dvoid=\"\" -Dvoid2= -DROOT=.', );
 }
 
 WmlTest::cleanup();

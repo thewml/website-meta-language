@@ -6,10 +6,8 @@ use Test::More tests => 4;
 use WmlTest ();
 WmlTest::init();
 
-my $pass = "1-9";
-
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::navbar
 <navbar:define name=test>
 <navbar:button id=foo url="foo.html" txt="foo">
@@ -21,7 +19,7 @@ EOT_IN
 EOT_OUT
 
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::navbar
 <navbar:define name=test>
 <navbar:button id=foo url="foo.html" txt="foo">

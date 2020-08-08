@@ -6,8 +6,6 @@ WmlTest::init();
 
 use Test::More tests => 2;
 
-my $pass = "1-9";
-
 #   Test if PNG support was found
 my $png_support = 0;
 
@@ -30,7 +28,7 @@ if ($png_support)
 {
     #   PNG support available
     # TEST*2
-    WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+    WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::space
 <space format=png width=6 height=4>
 <space format=gif width=6>
@@ -46,7 +44,7 @@ EOT_OUT
 else
 {
     #   PNG support unavailable
-    WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+    WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::space
 <space format=gif width=6>
 <space height=4>

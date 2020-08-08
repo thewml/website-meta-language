@@ -7,8 +7,6 @@ WmlTest::init();
 
 use Test::More tests => 2;
 
-my $pass = "1-9";
-
 my $in = <<'EOT_IN';
 #use wml::std::grid
 <grid layout=2x3 align=lr valign=tbm>
@@ -57,7 +55,7 @@ my $out = <<'EOT_OUT';
 EOT_OUT
 
 # TEST*2
-WmlTest::generic( $pass, $in, $out, '' );
+WmlTest::all_passes( $in, $out, '' );
 
 WmlTest::cleanup();
 

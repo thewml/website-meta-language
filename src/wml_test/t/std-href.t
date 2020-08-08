@@ -7,10 +7,8 @@ WmlTest::init();
 
 use Test::More tests => 2;
 
-my $pass = "1-9";
-
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::std::href
 <href url="THE://URL">
 <href url="THE://URL" name="THE_NAME">

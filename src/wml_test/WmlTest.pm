@@ -45,6 +45,14 @@ sub tmpfile_with_name
     return $name;
 }
 
+sub all_passes
+{
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my ( $in, $out, $opt ) = @_;
+    return generic( "1-9", $in, $out, $opt );
+}
+
 sub generic
 {
     local $Test::Builder::Level = $Test::Builder::Level + 1;

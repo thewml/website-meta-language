@@ -6,10 +6,8 @@ WmlTest::init();
 
 use Test::More tests => 10;
 
-my $pass = "1-9";
-
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <headline>This is a Headline</headline>
 
@@ -45,7 +43,7 @@ Foo bar quux Foo bar quux Foo bar quux Foo bar quux Foo bar quux
 EOT_OUT
 
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
 <spaced interchar=1>This is spaced text</spaced><br>
@@ -60,7 +58,7 @@ T&nbsp;&nbsp;h&nbsp;&nbsp;i&nbsp;&nbsp;s&nbsp;&nbsp;&nbsp;&nbsp; i&nbsp;&nbsp;s&
 EOT_OUT
 
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
 <spaced interline=1>
@@ -84,7 +82,7 @@ This is spaced text, including<img src="imgdot-1x1-transp-ffffff.gif" width="1" 
 EOT_OUT
 
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
 <sc>This is Small Caps text</sc><br>
@@ -98,7 +96,7 @@ T<font size="-1">HIS</font> I<font size="-1">S</font> C<font size="-1">OMPLETE</
 EOT_OUT
 
 # TEST*2
-WmlTest::generic( $pass, <<'EOT_IN', <<'EOT_OUT', '' );
+WmlTest::all_passes( <<'EOT_IN', <<'EOT_OUT', '' );
 #use wml::des::typography
 <p>
 This is a typographically more strong list environment
