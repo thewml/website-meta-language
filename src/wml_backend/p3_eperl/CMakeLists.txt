@@ -86,7 +86,6 @@ SET (SOURCES
    "${license_c}"
    "${logo_c}"
    "${readme_c}"
-    eperl_config.c
     eperl_debug.c
     eperl_http.c
     eperl_main.c
