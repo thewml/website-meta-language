@@ -35,10 +35,10 @@ eval 'exec @PATH_PERL@ -S $0 ${1+"$@"}'
 ##  this program under different conditions or license agreements.
 ##
 
+use strict;
+use warnings;
 use 5.014;
 use Path::Tiny qw/ path /;
-
-BEGIN { $^W = 0; }    # get rid of nasty warnings
 
 my $VERSION = "@WML_VERSION@";
 
