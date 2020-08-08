@@ -276,10 +276,10 @@ file_clean(void)
       should appear in error message instead of real file name.  */
   if (isp->prev != NULL)
     {
-      xfree ((voidstar) current_file);
+      free ((voidstar) current_file);
       current_file = xstrdup (isp->u.u_f.name);
     }
-  xfree ((voidstar) isp->u.u_f.name);
+  free ((voidstar) isp->u.u_f.name);
   current_line = isp->u.u_f.lineno;
   output_current_line = isp->u.u_f.out_lineno;
   start_of_input_line = isp->u.u_f.advance_line;
@@ -885,13 +885,13 @@ input_deallocate (void)
 {
   int i;
 
-  xfree ((voidstar) array_current_line);
+  free ((voidstar) array_current_line);
   for (i = 0; i < nesting_limit; i++)
-    xfree(array_current_file[i]);
-  xfree ((voidstar) array_current_file);
-  xfree ((voidstar) eolcomm.string);
-  xfree ((voidstar) lquote.string);
-  xfree ((voidstar) rquote.string);
+    free(array_current_file[i]);
+  free ((voidstar) array_current_file);
+  free ((voidstar) eolcomm.string);
+  free ((voidstar) lquote.string);
+  free ((voidstar) rquote.string);
 
   obstack_free (&token_stack, 0);
   obstack_free (&input_stack, 0);
@@ -977,7 +977,7 @@ next_token (token_data *td, read_type expansion, bool in_string)
       type = TOKEN_STRING;
       obstack_grow (&token_stack, TOKEN_DATA_TEXT (&token_read),
               strlen (TOKEN_DATA_TEXT (&token_read)));
-      xfree ((voidstar) TOKEN_DATA_TEXT (&token_read));
+      free ((voidstar) TOKEN_DATA_TEXT (&token_read));
       TOKEN_DATA_TYPE (&token_read) = TOKEN_VOID;
     }
 

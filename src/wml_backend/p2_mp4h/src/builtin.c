@@ -495,7 +495,7 @@ define_builtin (const char *name, const builtin *bp, bool traced)
 
   sym = lookup_symbol (name, SYMBOL_INSERT);
   if (SYMBOL_TYPE (sym) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (sym));
+    free ((voidstar) SYMBOL_TEXT (sym));
   SYMBOL_TYPE (sym)        = TOKEN_FUNC;
   SYMBOL_FUNC (sym)        = bp->func;
   SYMBOL_TRACED (sym)      = traced;
@@ -529,7 +529,7 @@ break_init (void) {
 
 void
 break_deallocate (void) {
-  xfree ((voidstar) SYMBOL_TEXT (&varbreak));
+  free ((voidstar) SYMBOL_TEXT (&varbreak));
   SYMBOL_TYPE (&varbreak) = TOKEN_VOID;
 }
 
@@ -548,10 +548,10 @@ define_user_macro (const char *name, char *text, symbol_lookup mode,
   int offset, bracket_level = 0;
 
   s = lookup_symbol (name, mode);
-  xfree ((voidstar) SYMBOL_HOOK_BEGIN (s));
-  xfree ((voidstar) SYMBOL_HOOK_END (s));
+  free ((voidstar) SYMBOL_HOOK_BEGIN (s));
+  free ((voidstar) SYMBOL_HOOK_END (s));
   if (SYMBOL_TYPE (s) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (s));
+    free ((voidstar) SYMBOL_TEXT (s));
 
   initialize_builtin (s);
 
@@ -631,9 +631,9 @@ define_user_entity (const char *name, char *text, symbol_lookup mode)
   s = lookup_entity (name, mode);
   if (SYMBOL_TYPE (s) == TOKEN_TEXT)
     {
-      xfree ((voidstar) SYMBOL_HOOK_BEGIN (s));
-      xfree ((voidstar) SYMBOL_HOOK_END (s));
-      xfree ((voidstar) SYMBOL_TEXT (s));
+      free ((voidstar) SYMBOL_HOOK_BEGIN (s));
+      free ((voidstar) SYMBOL_HOOK_END (s));
+      free ((voidstar) SYMBOL_TEXT (s));
     }
   initialize_builtin (s);
 
@@ -655,7 +655,7 @@ builtin_init (void)
 {
   install_builtin_table (builtin_tab);
   pcre_malloc = xmalloc;
-  pcre_free   = xfree;
+  pcre_free   = free;
 }
 
 /*-----------------------------------------------.
@@ -670,7 +670,7 @@ builtin_deallocate (void)
   for (bt = builtin_tables; bt != NULL; )
     {
       bt_next = bt->next;
-      xfree ((voidstar) bt);
+      free ((voidstar) bt);
       bt = bt_next;
     }
   varstack_check ();
@@ -828,7 +828,7 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
 
   /*  Compile this expression once  */
   re = xre_compile (name, PCRE_CASELESS);
-  xfree ((voidstar) name);
+  free ((voidstar) name);
   if (re == NULL)
     return;
 
@@ -917,7 +917,7 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
     }
   pcre_free (re);
   pcre_free (re_extra);
-  xfree ((voidstar) match_ptr);
+  free ((voidstar) match_ptr);
 }
 
 
@@ -958,7 +958,7 @@ mp4h_bp___file__ (MP4H_BUILTIN_ARGS)
     shipout_string (obs, current_file, 0);
   else
     {
-      xfree ((voidstar) current_file);
+      free ((voidstar) current_file);
       current_file = xstrdup (ARG (1));
     }
 }
@@ -1425,7 +1425,7 @@ mp4h_bp_directory_contents (MP4H_BUILTIN_ARGS)
     {
       pcre_free (re);
       pcre_free (re_extra);
-      xfree ((voidstar) match_ptr);
+      free ((voidstar) match_ptr);
     }
   closedir (dir);
 }
@@ -1514,7 +1514,7 @@ mp4h_bp_date (MP4H_BUILTIN_ARGS)
       ascii_time = (char *)xmalloc(1000);
       strftime(ascii_time, 1000, format, timeptr);
       obstack_grow (obs, ascii_time, strlen (ascii_time));
-      xfree((voidstar) ascii_time);
+      free((voidstar) ascii_time);
     }
   else
     {
@@ -1783,7 +1783,7 @@ mp4h_bp_while (MP4H_BUILTIN_ARGS)
       /*  The ``varbreak '' variable is global and modified by <break>.  */
       if (strcmp (SYMBOL_TEXT (&varbreak), "true") == 0)
         {
-          xfree ((voidstar) SYMBOL_TEXT (&varbreak));
+          free ((voidstar) SYMBOL_TEXT (&varbreak));
           SYMBOL_TEXT (&varbreak) = xstrdup ("");
           return;
         }
@@ -1926,7 +1926,7 @@ mp4h_bp_var_case (MP4H_BUILTIN_ARGS)
 static void
 mp4h_bp_break (MP4H_BUILTIN_ARGS)
 {
-  xfree ((voidstar) SYMBOL_TEXT (&varbreak));
+  free ((voidstar) SYMBOL_TEXT (&varbreak));
   SYMBOL_TEXT (&varbreak) = xstrdup ("true");
 }
 
@@ -2073,8 +2073,8 @@ mp4h_bp_define_tag (MP4H_BUILTIN_ARGS)
   if (!sym)
     return;
 
-  xfree ((voidstar) SYMBOL_HOOK_BEGIN (sym));
-  xfree ((voidstar) SYMBOL_HOOK_END (sym));
+  free ((voidstar) SYMBOL_HOOK_BEGIN (sym));
+  free ((voidstar) SYMBOL_HOOK_END (sym));
 }
 
 /*-------------------------------------.
@@ -2208,7 +2208,7 @@ generic_set_hook (MP4H_BUILTIN_ARGS, bool before, int action)
         exit (1);
     }
 
-  xfree ((voidstar) hook);
+  free ((voidstar) hook);
   if (before)
     SYMBOL_HOOK_BEGIN (sym) = text;
   else
@@ -2366,8 +2366,8 @@ mp4h_bp_define_entity (MP4H_BUILTIN_ARGS)
   if (!sym)
     return;
 
-  xfree ((voidstar) SYMBOL_HOOK_BEGIN (sym));
-  xfree ((voidstar) SYMBOL_HOOK_END (sym));
+  free ((voidstar) SYMBOL_HOOK_BEGIN (sym));
+  free ((voidstar) SYMBOL_HOOK_END (sym));
 }
 
 
@@ -2734,7 +2734,7 @@ Error:%s:%d: <include> must be invoked with one of the `file' and `command' attr
   if (verbatim && strcmp (verbatim, "true") == 0)
     read_file_verbatim (obs);
 
-  xfree ((voidstar) filename);
+  free ((voidstar) filename);
 }
 
 /*-------------------------------------------------.
@@ -2794,7 +2794,7 @@ mp4h_bp_use (MP4H_BUILTIN_ARGS)
       MP4HERROR ((warning_status, errno,
         _("Warning:%s:%d: Cannot open %s"),
              CURRENT_FILE_LINE, name));
-      xfree ((voidstar) real_filename);
+      free ((voidstar) real_filename);
       return;
     }
   else
@@ -2805,7 +2805,7 @@ mp4h_bp_use (MP4H_BUILTIN_ARGS)
 
   push_file (fp, filename);
 
-  xfree ((voidstar) filename);
+  free ((voidstar) filename);
 }
 
 /*-------------------------------------.
@@ -2832,14 +2832,14 @@ mp4h_bp_load (MP4H_BUILTIN_ARGS)
       realname = xstrdup (library);
       logical_to_physical_paths (&realname);
       library_load (realname, obs);
-      xfree ((voidstar) realname);
+      free ((voidstar) realname);
     }
   if (module)
     {
       realname = xstrdup (module);
       logical_to_physical_paths (&realname);
       module_load (realname, obs);
-      xfree ((voidstar) realname);
+      free ((voidstar) realname);
     }
 }
 
@@ -2860,7 +2860,7 @@ static void
 mp4h_bp_set_eol_comment (MP4H_BUILTIN_ARGS)
 {
   bad_argc (argv[0], argc, 0, 2);
-  xfree ((voidstar) eolcomm.string);
+  free ((voidstar) eolcomm.string);
   eolcomm.string = xstrdup (ARG (1));
   eolcomm.length = strlen (eolcomm.string);
 }
@@ -2878,8 +2878,8 @@ mp4h_bp_set_quotes (MP4H_BUILTIN_ARGS)
 
   if (argc == 1)
     {
-      xfree ((voidstar) lquote.string);
-      xfree ((voidstar) rquote.string);
+      free ((voidstar) lquote.string);
+      free ((voidstar) rquote.string);
       lquote.string = NULL;
       lquote.length = 0;
       rquote.string = NULL;
@@ -2894,8 +2894,8 @@ mp4h_bp_set_quotes (MP4H_BUILTIN_ARGS)
                  CURRENT_FILE_LINE, ARG (0), ARG (1), ARG (2)));
           return;
         }
-      xfree ((voidstar) lquote.string);
-      xfree ((voidstar) rquote.string);
+      free ((voidstar) lquote.string);
+      free ((voidstar) rquote.string);
       lquote.string = xstrdup (ARG (1));
       lquote.length = strlen (lquote.string);
 
@@ -3055,7 +3055,7 @@ updowncase (struct obstack *obs, int argc, token_data **argv, bool upcase)
             *cp = tolower (*cp);
         }
       obstack_grow (obs, text, strlen (text));
-      xfree ((voidstar) text);
+      free ((voidstar) text);
     }
 }
 
@@ -3099,7 +3099,7 @@ mp4h_bp_capitalize (MP4H_BUILTIN_ARGS)
             next = false;
         }
       obstack_grow (obs, text, strlen (text));
-      xfree ((voidstar) text);
+      free ((voidstar) text);
     }
 }
 
@@ -3571,7 +3571,7 @@ string_regexp (struct obstack *obs, int argc, token_data **argv,
     }
 
   pcre_free (re);
-  xfree ((voidstar) match_ptr);
+  free ((voidstar) match_ptr);
 }
 
 /*----------------------------------------------.
@@ -3676,7 +3676,7 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
 
   pcre_free (re);
   pcre_free (re_extra);
-  xfree ((voidstar) match_ptr);
+  free ((voidstar) match_ptr);
 }
 
 /*------------------------------------------------.
@@ -3767,7 +3767,7 @@ mp4h_bp_subst_in_var (MP4H_BUILTIN_ARGS)
   subst_in_string (&temp_obs, argc, argv, extra_re_flags);
   obstack_1grow (&temp_obs, '\0');
   text = obstack_finish (&temp_obs);
-  xfree ((voidstar) SYMBOL_TEXT (var));
+  free ((voidstar) SYMBOL_TEXT (var));
   SYMBOL_TEXT (var) = xstrdup (text);
   obstack_free (&temp_obs, NULL);
 }
@@ -3919,7 +3919,7 @@ mp4h_bp_set_var_x (MP4H_BUILTIN_ARGS)
 
   var = lookup_variable (name, SYMBOL_INSERT);
   if (SYMBOL_TYPE (var) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (var));
+    free ((voidstar) SYMBOL_TEXT (var));
   SYMBOL_TEXT (var) = xstrdup (ARGBODY);
   SYMBOL_TYPE (var) = TOKEN_TEXT;
 }
@@ -4020,7 +4020,7 @@ Warning:%s:%d: Wrong index declaration in <%s>"),
         {
           /*  single value.  */
           if (SYMBOL_TYPE (var) == TOKEN_TEXT)
-            xfree ((voidstar) SYMBOL_TEXT (var));
+            free ((voidstar) SYMBOL_TEXT (var));
           SYMBOL_TEXT (var) = xstrdup (value);
         }
       else if (array_index >= 0)
@@ -4066,7 +4066,7 @@ Warning:%s:%d: Wrong index declaration in <%s>"),
             }
 
           if (SYMBOL_TYPE (var) == TOKEN_TEXT)
-            xfree ((voidstar) SYMBOL_TEXT (var));
+            free ((voidstar) SYMBOL_TEXT (var));
           SYMBOL_TEXT (var) = new_value;
         }
 
@@ -4160,13 +4160,13 @@ Warning:%s:%d: Variable stack empty, it means <%s> already gobbled all data"),
           return;
         }
       if (SYMBOL_TYPE (var) == TOKEN_TEXT)
-        xfree ((voidstar) SYMBOL_TEXT (var));
+        free ((voidstar) SYMBOL_TEXT (var));
       SYMBOL_TEXT (var) = xstrdup (vs->text);
       SYMBOL_TYPE (var) = TOKEN_TEXT;
 
       prev = vs->prev;
-      xfree ((voidstar) vs->text);
-      xfree ((voidstar) vs);
+      free ((voidstar) vs->text);
+      free ((voidstar) vs);
       vs = prev;
     }
 }
@@ -4225,7 +4225,7 @@ mp4h_bp_increment (MP4H_BUILTIN_ARGS)
     return;
 
   if (SYMBOL_TYPE (var) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (var));
+    free ((voidstar) SYMBOL_TEXT (var));
 
   sprintf (buf, "%d", value+incr);
   SYMBOL_TEXT (var) = xstrdup(buf);
@@ -4258,7 +4258,7 @@ mp4h_bp_decrement (MP4H_BUILTIN_ARGS)
     return;
 
   if (SYMBOL_TYPE (var) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (var));
+    free ((voidstar) SYMBOL_TEXT (var));
 
   sprintf (buf, "%d", value-incr);
   SYMBOL_TEXT (var) = xstrdup(buf);
@@ -4327,7 +4327,7 @@ mp4h_bp_copy_var (MP4H_BUILTIN_ARGS)
     }
   var2 = lookup_variable (ARG (2), SYMBOL_INSERT);
   if (SYMBOL_TYPE (var2) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (var2));
+    free ((voidstar) SYMBOL_TEXT (var2));
 
   SYMBOL_TEXT (var2) = xstrdup(SYMBOL_TEXT (var1));
   SYMBOL_TYPE (var2) = TOKEN_TEXT;
@@ -4354,7 +4354,7 @@ mp4h_bp_defvar (MP4H_BUILTIN_ARGS)
     }
   else if (SYMBOL_TYPE (var) == TOKEN_TEXT && *(SYMBOL_TEXT (var)) == '\0')
     {
-      xfree ((voidstar) SYMBOL_TEXT (var));
+      free ((voidstar) SYMBOL_TEXT (var));
       SYMBOL_TEXT (var) = xstrdup(ARG (2));
     }
 }
@@ -4476,7 +4476,7 @@ array_member (const char *text, symbol *var, bool caseless)
 
       cp = next_item + 1;
     }
-  xfree ((voidstar) value);
+  free ((voidstar) value);
 
   if (found)
     return result;
@@ -4535,9 +4535,9 @@ mp4h_bp_array_add_unique (MP4H_BUILTIN_ARGS)
         {
           value = (char *) xmalloc (strlen (SYMBOL_TEXT (var)) + strlen (ARG (2)) + 2);
           sprintf (value, "%s\n%s", SYMBOL_TEXT (var), ARG (2));
-          xfree ((voidstar) SYMBOL_TEXT (var));
+          free ((voidstar) SYMBOL_TEXT (var));
           SYMBOL_TEXT (var) = xstrdup (value);
-          xfree ((voidstar) value);
+          free ((voidstar) value);
         }
     }
 }
@@ -4564,14 +4564,14 @@ mp4h_bp_array_push (MP4H_BUILTIN_ARGS)
     {
       if (*(SYMBOL_TEXT (var)) == '\0')
         {
-          xfree ((voidstar) SYMBOL_TEXT (var));
+          free ((voidstar) SYMBOL_TEXT (var));
           SYMBOL_TEXT (var) = xstrdup (ARG (2));
         }
       else
         {
           old_value = (char *) xmalloc (strlen (SYMBOL_TEXT (var)) + strlen (ARG (2)) + 2);
           sprintf (old_value, "%s\n%s", SYMBOL_TEXT (var), ARG (2));
-          xfree ((voidstar) SYMBOL_TEXT (var));
+          free ((voidstar) SYMBOL_TEXT (var));
           SYMBOL_TEXT (var) = old_value;
         }
     }
@@ -4710,7 +4710,7 @@ mp4h_bp_array_shift (MP4H_BUILTIN_ARGS)
         return;
       strcpy ((char *) cp, old_value);
     }
-  xfree ((voidstar) SYMBOL_TEXT (var));
+  free ((voidstar) SYMBOL_TEXT (var));
   SYMBOL_TEXT (var) = value;
 }
 
@@ -4745,9 +4745,9 @@ mp4h_bp_array_concat (MP4H_BUILTIN_ARGS)
       value = (char *) xmalloc (strlen (SYMBOL_TEXT (var)) +
                        strlen (SYMBOL_TEXT (varadd)) + 2);
       sprintf (value, "%s\n%s", SYMBOL_TEXT (var), SYMBOL_TEXT (varadd));
-      xfree ((voidstar) SYMBOL_TEXT (var));
+      free ((voidstar) SYMBOL_TEXT (var));
       SYMBOL_TEXT (var) = xstrdup (value);
-      xfree ((voidstar) value);
+      free ((voidstar) value);
     }
 }
 
@@ -4847,8 +4847,8 @@ mp4h_bp_sort (MP4H_BUILTIN_ARGS)
       strcat (SYMBOL_TEXT (var), "\n");
       strcat (SYMBOL_TEXT (var), array[i]);
     }
-  xfree ((voidstar) array);
-  xfree ((voidstar) value);
+  free ((voidstar) array);
+  free ((voidstar) value);
 }
 
 

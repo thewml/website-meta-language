@@ -82,6 +82,6 @@ mp4m_system_sh (MP4H_BUILTIN_ARGS)
   if (verbatim && strcmp (verbatim, "true") == 0)
     read_file_verbatim (obs);
 
-  xfree ((voidstar) script);
+  free ((voidstar) script);
 }
 

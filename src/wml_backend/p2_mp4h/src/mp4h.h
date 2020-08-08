@@ -156,10 +156,9 @@ typedef struct _token_data token_data;
 voidstar xmalloc __P ((size_t));
 voidstar xcalloc __P ((size_t, size_t));
 voidstar xrealloc __P ((voidstar , size_t));
-void xfree __P ((voidstar));
 char *xstrdup __P ((const char *));
 #define obstack_chunk_alloc     xmalloc
-#define obstack_chunk_free      xfree
+#define obstack_chunk_free      free
 
 /* Other library routines.  */
 void error __P ((int, int, const char *, ...));

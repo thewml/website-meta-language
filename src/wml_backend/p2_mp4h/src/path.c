@@ -143,8 +143,8 @@ include_deallocate (void)
   while (path)
     {
       path_next = path->next;
-      xfree ((voidstar) path->dir);
-      xfree ((voidstar) path);
+      free ((voidstar) path->dir);
+      free ((voidstar) path);
       path = path_next;
     }
 }
@@ -209,7 +209,7 @@ path_search (const char *dir, char **expanded_name)
         }
     }
 
-  xfree ((voidstar) name);
+  free ((voidstar) name);
 
   return fp;
 }

@@ -43,7 +43,6 @@ static void *fixup_null_alloc (size_t n);
 void *xmalloc (size_t n);
 void *xcalloc (size_t n, size_t s);
 void *xrealloc (void *p, size_t n);
-void xfree (void *p);
 #endif
 
 
@@ -53,44 +52,32 @@ int xmalloc_exit_failure = EXIT_FAILURE;
 
 void error (int, int, const char *, ...);
 
-static void *
-fixup_null_alloc (n)
-     size_t n;
+static void * fixup_null_alloc (const size_t n)
 {
-  void *p;
-
-  p = 0;
+  void *p = NULL;
   if (n == 0)
     p = malloc ((size_t) 1);
-  if (p == 0)
+  if (! p)
     error (xmalloc_exit_failure, 0, _("Memory exhausted"));
   return p;
 }
 
 /* Allocate N bytes of memory dynamically, with error checking.  */
 
-void *
-xmalloc (n)
-     size_t n;
+void * xmalloc (const size_t n)
 {
-  void *p;
-
-  p = malloc (n);
-  if (p == 0)
+  void *p = malloc (n);
+  if (!p)
     p = fixup_null_alloc (n);
   return p;
 }
 
 /* Allocate memory for N elements of S bytes, with error checking.  */
 
-void *
-xcalloc (n, s)
-     size_t n, s;
+void * xcalloc (size_t n, size_t s)
 {
-  void *p;
-
-  p = calloc (n, s);
-  if (p == 0)
+  void *p = calloc (n, s);
+  if (!p)
     p = fixup_null_alloc (n);
   return p;
 }
@@ -99,24 +86,12 @@ xcalloc (n, s)
    with error checking.
    If P is NULL, run xmalloc.  */
 
-void *
-xrealloc (p, n)
-     void *p;
-     size_t n;
+void * xrealloc (void *p, size_t n)
 {
-  if (p == 0)
+  if (!p)
     return xmalloc (n);
   p = realloc (p, n);
-  if (p == 0)
+  if (! p)
     p = fixup_null_alloc (n);
   return p;
-}
-
-void
-xfree (p)
-     void *p;
-{
-  if (p != 0)
-    free(p);
-  p = 0;
 }

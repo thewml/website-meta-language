@@ -203,7 +203,7 @@ add_suffix_searchdir (const char *oldpath, const char *dir)
     }
   /*   Remove trailing colon  */
   *(new_search_path+strlen (oldpath) + num * (lendir + 1)) = '\0';
-  xfree ((voidstar) path);
+  free ((voidstar) path);
   return new_search_path;
 }
 
@@ -237,9 +237,9 @@ library_load (const char *libname, struct obstack *obs)
           save_path = xstrdup(save_path);
           new_search_path = add_suffix_searchdir (save_path, dir);
           lt_dlsetsearchpath (new_search_path);
-          xfree ((voidstar) new_search_path);
+          free ((voidstar) new_search_path);
         }
-      xfree ((voidstar) dir);
+      free ((voidstar) dir);
     }
 
   /* Dynamically load the named module. */
@@ -252,7 +252,7 @@ library_load (const char *libname, struct obstack *obs)
   if (save_path)
     {
       lt_dlsetsearchpath (save_path);
-      xfree ((voidstar) save_path);
+      free ((voidstar) save_path);
     }
 
   if (library != NULL)
@@ -318,9 +318,9 @@ module_load (const char *modname, struct obstack *obs)
           save_path = xstrdup(save_path);
           new_search_path = add_suffix_searchdir (save_path, dir);
           lt_dlsetsearchpath (new_search_path);
-          xfree ((voidstar) new_search_path);
+          free ((voidstar) new_search_path);
         }
-      xfree ((voidstar) dir);
+      free ((voidstar) dir);
     }
 
   /* Dynamically load the named module. */
@@ -333,7 +333,7 @@ module_load (const char *modname, struct obstack *obs)
   if (save_path)
     {
       lt_dlsetsearchpath (save_path);
-      xfree ((voidstar) save_path);
+      free ((voidstar) save_path);
     }
 
   if (module != NULL)
@@ -442,7 +442,7 @@ module_unload_all(void)
         DEBUG_MESSAGE1("module `%s' unloaded", modules->modname);
 
       next = modules->next;
-      xfree ((voidstar) modules);
+      free ((voidstar) modules);
       modules = next;
     }
 

@@ -119,7 +119,7 @@ output_init (void)
 void
 output_deallocate (void)
 {
-  xfree ((voidstar) diversion_table);
+  free ((voidstar) diversion_table);
 }
 
 /*-----------------------------------------------------------------------.

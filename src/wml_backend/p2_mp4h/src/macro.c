@@ -580,7 +580,7 @@ expand_macro (symbol *sym, read_type expansion)
            nesting_limit));
 
   array_current_line[expansion_level] = current_line;
-  xfree((voidstar) array_current_file[expansion_level]);
+  free((voidstar) array_current_file[expansion_level]);
   array_current_file[expansion_level] = xstrdup(current_file);
 
   macro_call_id++;
@@ -721,7 +721,7 @@ expand_unknown_tag (char *name, read_type expansion)
            nesting_limit));
 
   array_current_line[expansion_level] = current_line;
-  xfree((voidstar) array_current_file[expansion_level]);
+  free((voidstar) array_current_file[expansion_level]);
   array_current_file[expansion_level] = xstrdup(current_file);
 
   symbol_name = xstrdup (name);
@@ -818,7 +818,7 @@ expand_unknown_tag (char *name, read_type expansion)
   obstack_free (&argptr, NULL);
   obstack_free (&body, NULL);
 
-  xfree ((voidstar) symbol_name);
+  free ((voidstar) symbol_name);
 }
 
 
@@ -845,7 +845,7 @@ expand_entity (symbol *sym, read_type expansion)
            nesting_limit));
 
   array_current_line[expansion_level] = current_line;
-  xfree((voidstar) array_current_file[expansion_level]);
+  free((voidstar) array_current_file[expansion_level]);
   array_current_file[expansion_level] = xstrdup(current_file);
 
   macro_call_id++;

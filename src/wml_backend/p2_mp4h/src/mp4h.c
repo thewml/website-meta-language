@@ -445,7 +445,7 @@ main (int argc, char *const *argv)
         }
 
       next = defines->next;
-      xfree ((voidstar) defines);
+      free ((voidstar) defines);
       defines = next;
     }
 
@@ -474,10 +474,10 @@ main (int argc, char *const *argv)
               }
             else
               {
-                xfree ((voidstar) current_file);
+                free ((voidstar) current_file);
                 current_file = xstrdup (filename);
                 push_file (fp, filename);
-                xfree ((voidstar) filename);
+                free ((voidstar) filename);
               }
           }
         expand_input ();
@@ -502,7 +502,7 @@ main (int argc, char *const *argv)
   builtin_deallocate ();
   pcre_deallocate ();
 
-  xfree ((voidstar) current_file);
+  free ((voidstar) current_file);
 
   exit (EXIT_SUCCESS);
 }

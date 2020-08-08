@@ -140,7 +140,7 @@ LT_GLOBAL_DATA void   (*lt_dlfree)	LT_PARAMS((lt_ptr ptr))
 #define LT_DLMALLOC(tp, n)	((tp *) xmalloc ((n) * sizeof(tp)))
 #define LT_DLREALLOC(tp, p, n)	((tp *) xrealloc ((p), (n) * sizeof(tp)))
 #define LT_DLFREE(p)						\
-	LT_STMT_START { if (p) (p) = (xfree (p), (lt_ptr) 0); } LT_STMT_END
+	LT_STMT_START { if (p) (p) = (free (p), (lt_ptr) 0); } LT_STMT_END
 
 #define LT_EMALLOC(tp, n)	((tp *) xmalloc ((n) * sizeof(tp)))
 #define LT_EREALLOC(tp, p, n)	((tp *) xrealloc ((p), (n) * sizeof(tp)))

@@ -108,12 +108,12 @@ caseless_init (int caseless)
 static void
 free_symbol (symbol *sym)
 {
-  xfree ((voidstar) SYMBOL_NAME (sym));
-  xfree ((voidstar) SYMBOL_HOOK_BEGIN (sym));
-  xfree ((voidstar) SYMBOL_HOOK_END (sym));
+  free ((voidstar) SYMBOL_NAME (sym));
+  free ((voidstar) SYMBOL_HOOK_BEGIN (sym));
+  free ((voidstar) SYMBOL_HOOK_END (sym));
   if (SYMBOL_TYPE (sym) == TOKEN_TEXT)
-    xfree ((voidstar) SYMBOL_TEXT (sym));
-  xfree ((voidstar) sym);
+    free ((voidstar) SYMBOL_TEXT (sym));
+  free ((voidstar) sym);
 }
 
 static void
@@ -132,7 +132,7 @@ hash_table_free (symbol **s)
         }
     }
 
-  xfree ((voidstar) s);
+  free ((voidstar) s);
 }
 
 void
@@ -209,7 +209,7 @@ generic_lookup (const char *name, symbol_lookup mode, bool caseless)
 
   if (mode == SYMBOL_LOOKUP)
     {
-      xfree ((voidstar) lcname);
+      free ((voidstar) lcname);
       return cmp == 0 ? sym : NULL;
     }
 
@@ -261,7 +261,7 @@ generic_lookup (const char *name, symbol_lookup mode, bool caseless)
         "INTERNAL ERROR: Illegal mode to symbol_lookup ()"));
       exit (1);
     }
-  xfree ((voidstar) lcname);
+  free ((voidstar) lcname);
   return sym;
 }
 

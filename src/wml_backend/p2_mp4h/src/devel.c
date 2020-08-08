@@ -242,8 +242,8 @@ clear_tag_attr (void)
   while (tag_attr)
     {
       pa = tag_attr->prev;
-      xfree ((voidstar) tag_attr->text);
-      xfree ((voidstar) tag_attr);
+      free ((voidstar) tag_attr->text);
+      free ((voidstar) tag_attr);
       tag_attr = pa;
     }
 }
