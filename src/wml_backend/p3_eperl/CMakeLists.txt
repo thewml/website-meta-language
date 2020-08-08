@@ -93,7 +93,6 @@ SET (SOURCES
     eperl_perl5.c
     eperl_pp.c
     eperl_sys.c
-    eperl_version.c
 )
 RUN_ASC2C("${readme_s}" "${readme_cc}" "ePerl_README")
 RUN_ASC2C("${license_s}" "${license_cc}" "ePerl_LICENSE")
@@ -146,8 +145,8 @@ ADD_CUSTOM_COMMAND(
     ARGS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl"
         "--input" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod"
         "--output" "${POD_PATH}"
-        "--versionfrom" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.c"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.c"
+        "--versionfrom" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.h"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/eperl-pod-preproc.pl" "${CMAKE_CURRENT_SOURCE_DIR}/eperl.proto.pod" "${CMAKE_CURRENT_SOURCE_DIR}/eperl_version.h"
 )
 
 ADD_CUSTOM_TARGET(

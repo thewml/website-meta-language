@@ -1,8 +1,8 @@
-/*  eperl_version.c -- Version Information for ePerl (syntax: C/C++)
- [automatically generated and maintained by GNU shtool] */
+/*  eperl_version.h -- Version Information for ePerl (syntax: C/C++)
+ [was automatically generated and maintained by GNU shtool; now tweaked manually] */
 
-#ifndef _EPERL_VERSION_C_
-#define _EPERL_VERSION_C_
+#ifndef EPERL_VERSION_H
+#define EPERL_VERSION_H
 
 #define EPERL_VERSION 0x20220E
 
@@ -17,7 +17,7 @@ typedef struct {
     const char *v_rcs;
 } eperl_version_type;
 
-static eperl_version_type eperl_version = {
+static const eperl_version_type eperl_version = {
     0x20220E,
     "2.2.14",
     "2.2.14 (02-Aug-1998)",
@@ -28,5 +28,4 @@ static eperl_version_type eperl_version = {
     "$Id: ePerl 2.2.14 (02-Aug-1998) $"
 };
 
-#endif /* _EPERL_VERSION_C_AS_HEADER_ */
-
+#endif
