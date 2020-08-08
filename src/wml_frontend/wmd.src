@@ -44,8 +44,6 @@ use TheWML::Config ();
 
 use 5.010;
 
-BEGIN { $^W = 0; }    # get rid of nasty warnings
-
 our $VERSION = TheWML::Config::_VERSION();
 
 use Getopt::Long 2.13 ();

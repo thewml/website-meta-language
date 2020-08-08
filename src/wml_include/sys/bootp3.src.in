@@ -7,8 +7,6 @@ BEGIN {
     #   don't use "use lib" here because this leads to conflict
     #   warnings from "lib.pm" when using a Perl runtime system
     #   which is different from the one used under compile time.
-    # get rid of nasty warnings
-    $^W = 0;
 }
 :>\
 ##EOF##
