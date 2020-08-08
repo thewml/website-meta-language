@@ -35,9 +35,7 @@
 #include "getopt.h"
 #include "eperl_proto.h"
 
-#define _EPERL_VERSION_C_AS_HEADER_
 #include "eperl_version.c"
-#undef  _EPERL_VERSION_C_AS_HEADER_
 
 static void myexit(const int rc)
 {
