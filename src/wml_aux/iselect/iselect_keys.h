@@ -1,10 +1,4 @@
-/*      _ ____       _           _
-**     (_) ___|  ___| | ___  ___| |_
-**    / /\___ \ / _ \ |/ _ \/ __| __|
-**   / /  ___) |  __/ |  __/ (__| |_
-**  (_(  |____/ \___|_|\___|\___|\__|
-**
-**  iSelect -- Interactive Selection Tool
+/*  iSelect -- Interactive Selection Tool
 **
 **  iSelect is a Curses-based tool for interactive line selection
 **  in an ASCII file via a full-screen terminal session.
@@ -37,5 +31,3 @@ extern void configure_custom_key(char *config);
 extern int  do_custom_key(int key);
 extern char *key2asc(int key);
 extern int asc2key(char *key);
-
-/*EOF*/

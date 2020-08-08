@@ -433,5 +433,3 @@ char *ePerl_PP(char *cpBuf, char **cppINC)
 {
     return ePerl_PP_Process(cpBuf, cppINC, 1 /*mode=buffer*/);
 }
-
-/*EOF*/

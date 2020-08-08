@@ -292,5 +292,3 @@ int Perl5_Run(int myargc, char **myargv, int mode, int fCheck, int keepcwd, char
     }
     return rc;
 }
-
-/*EOF*/

@@ -1,10 +1,4 @@
-/*      _ ____       _           _
-**     (_) ___|  ___| | ___  ___| |_
-**    / /\___ \ / _ \ |/ _ \/ __| __|
-**   / /  ___) |  __/ |  __/ (__| |_
-**  (_(  |____/ \___|_|\___|\___|\__|
-**
-**  iSelect -- Interactive Selection Tool
+/*  iSelect -- Interactive Selection Tool
 **
 **  iSelect is a Curses-based tool for interactive line selection
 **  in an ASCII file via a full-screen terminal session.
@@ -170,5 +164,3 @@
   START_WARNING (); fprintf (stderr, str, e1, e2, e3); END_WARNING ()
 #define WARNING4(str, e1, e2, e3, e4)                   \
   START_WARNING (); fprintf (stderr, str, e1, e2, e3, e4); END_WARNING ()
-
-/*EOF*/

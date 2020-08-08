@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -79,5 +73,4 @@
 #define DO_FOR_FAILED_STEP  MARK_AND_GO_ON
 
 
-#endif /* EPERL_SECURITY_H */
-/*EOF*/
+#endif

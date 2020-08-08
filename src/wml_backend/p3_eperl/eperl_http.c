@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -401,6 +395,3 @@ FILE *HTTP_openURLasFP(char *url)
     /* return the (still open) FILE pointer */
     return fp;
 }
-
-
-/*EOF*/

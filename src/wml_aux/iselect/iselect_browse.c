@@ -1,9 +1,4 @@
-/*      _ ____       _           _
-**     (_) ___|  ___| | ___  ___| |_
-**    / /\___ \ / _ \ |/ _ \/ __| __|
-**   / /  ___) |  __/ |  __/ (__| |_
-**  (_(  |____/ \___|_|\___|\___|\__|
-**
+/*
 **  iSelect -- Interactive Selection Tool
 **
 **  iSelect is a Curses-based tool for interactive line selection
@@ -918,5 +913,3 @@ int iSelect(char *caBuf, int pos, char *title, char *name,
     CUS:
     return rc;
 }
-
-/*EOF*/

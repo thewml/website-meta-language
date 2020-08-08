@@ -1,10 +1,4 @@
 /*
-**        ____           _
-**    ___|  _ \ ___ _ __| |
-**   / _ \ |_) / _ \ '__| |
-**  |  __/  __/  __/ |  | |
-**   \___|_|   \___|_|  |_|
-**
 **  ePerl -- Embedded Perl 5 Language
 **
 **  ePerl interprets an ASCII file bristled with Perl 5 program statements
@@ -92,5 +86,4 @@
 #define stringEQ(s1,s2)    (s1 != NULL && s2 != NULL && strcmp(s1,s2) == 0)
 #define stringNE(s1,s2)    (s1 != NULL && s2 != NULL && strcmp(s1,s2) != 0)
 
-#endif /* EPERL_GLOBAL_H */
-/*EOF*/
+#endif

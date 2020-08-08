@@ -91,10 +91,6 @@ extern FILE *HTTP_openURLasFP(char *url);
 extern bool fDebug;
 extern void Debug(char *str, ...);
 
-/* eperl_config.c */
-
-/* eperl_version.c */
-
 /* eperl_readme.c */
 extern char *ePerl_README;
 
@@ -110,5 +106,4 @@ extern int ePerl_POWERED_size;
 extern unsigned char ePerl_POWERED_data[];
 /*_END_PROTO_*/
 
-#endif /* EPERL_PROTO_H */
-/*EOF*/
+#endif

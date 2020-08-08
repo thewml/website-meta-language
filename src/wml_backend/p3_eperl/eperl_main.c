@@ -1184,5 +1184,3 @@ int main(int argc, char **argv, char **env)
     myexit(EXRC);
     return EXRC; /* make -Wall happy ;-) */
 }
-
-/*EOF*/
