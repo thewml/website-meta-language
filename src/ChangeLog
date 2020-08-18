@@ -7,6 +7,16 @@ i.e. changes between each patchlevel (1.x.y->1.x.(y+1) and
 information about every single change.
 ___________________________________________________________________________
 
+Changes between 2.28.0 to 2.30.0:
+
+*) Refactoring, cleanups, modernizations and (likely minor) optimizations.
+
+*) Grammar fixes ("information" in plural)
+    *) https://github.com/thewml/website-meta-language/pull/38
+    *) Thanks to @xtaran and the Debian project.
+
+*) Remove some ASCII art banners in source code (accessibility).
+
 Changes between 2.26.0 to 2.28.0:
 
 *) Refactoring, cleanups, modernizations and optimizations.
