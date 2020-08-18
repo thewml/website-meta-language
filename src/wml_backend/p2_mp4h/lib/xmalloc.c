@@ -57,7 +57,7 @@ static void * fixup_null_alloc (const size_t n)
   void *p = NULL;
   if (n == 0)
     p = malloc ((size_t) 1);
-  if (! p)
+  if (!p)
     error (xmalloc_exit_failure, 0, _("Memory exhausted"));
   return p;
 }
@@ -91,7 +91,7 @@ void * xrealloc (void *p, size_t n)
   if (!p)
     return xmalloc (n);
   p = realloc (p, n);
-  if (! p)
+  if (!p)
     p = fixup_null_alloc (n);
   return p;
 }
