@@ -55,7 +55,7 @@ sub _protect
             $passes_str = $1;
             $passes_str =~ s|,||g;
             $passes_str = "1$passes_str" if $passes_str =~ m|^-|;
-            $passes_str .= '9' if $passes_str =~ m|-$|;
+            $passes_str .= '9'           if $passes_str =~ m|-$|;
             $passes_str =~ s|([0-9])-([0-9])|expandrange($1, $2)|sge;
         }
         my $key = sprintf( "%06d", $self->_PROTECT_COUNTER );

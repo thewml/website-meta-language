@@ -377,7 +377,7 @@ sub _run_pass
     my $_pass = $_pass_mgr->pass($pass_idx);
     my $rc    = $_pass->cb()->(
         $_pass_mgr, $_pass->opt_pass() . $opt_pass,
-        $$from, $$to, $self->_tmp->[2]
+        $$from,     $$to, $self->_tmp->[2]
     );
     if ( !length($rc) )
     {

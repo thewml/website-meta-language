@@ -55,8 +55,8 @@ sub _line_Continuation_Support
 sub _line_perform_Substitutions
 {
     my ( $self, ) = @_;
-    my $l         = $self->l;
-    my $arg       = $self->arg;
+    my $l   = $self->l;
+    my $arg = $self->arg;
 
     #       Substitutions are performed from left to right and from
     #       inner to outer, all operators have same precedence.
