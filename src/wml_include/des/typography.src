@@ -15,7 +15,7 @@
 
 #
 #   typographical paragraph skip (ps)
-#   [german variant: *D*urch*S*chuß (ds)]
+#   [german variant: *D*urch*S*chuÃŸ (ds)]
 #
 <define-tag ps>
 <br />
@@ -26,7 +26,7 @@
 
 #
 #   typographical paragraph indention (pi)
-#   [german variant: *Ein*rückung (ein)]
+#   [german variant: *Ein*rÃ¼ckung (ein)]
 #
 <define-tag pi>
 <br />
@@ -112,7 +112,7 @@
 #   i.e. change all lower case letters to upper case but lower
 #   them a little bit by font size.  Optionally all words can
 #   begin with an upper case letter
-#   [german variant: "Kapitälchen"]
+#   [german variant: "KapitÃ¤lchen"]
 #
 <define-tag sc endtag=required>\
 <preserve complete />\
@@ -193,7 +193,7 @@
 
 #
 #   Headline
-#   [german variant: "Überschrift"]
+#   [german variant: "Ãœberschrift"]
 #
 <define-tag headline endtag=required>
 <if %0 "<a* name="%0">" />\
@@ -206,7 +206,7 @@
 
 #
 #   Sub Headline
-#   [german variant: "Zwischenüberschrift"]
+#   [german variant: "ZwischenÃ¼berschrift"]
 #
 <define-tag subheadline endtag=required>
 <if %0 "<a* name="%0">" />\
@@ -337,7 +337,7 @@ between them would be ugly and without any inserts the reader cannot
 distinguish between the two paragraphs. The typographical solution here is to
 indent the second paragraph by I<width> pixels. The default is 40 pixels.
 Optically C<E<lt>piE<gt>> also includes the effect of C<E<lt>psE<gt>>.  In
-german this is called `Einrückung', so you can also use the alterntive name
+german this is called `EinrÃ¼ckung', so you can also use the alterntive name
 C<E<lt>einE<gt>> for this tag.
 
 Example:
@@ -371,7 +371,7 @@ B<C<E<lt>sc >>[B<complete>]B<C<E<gt>>>...B<C<E<lt>/scE<gt>>>
 
 This container tag renders its body with small caps, i.e.
 all lower case letters are changed to upper case while lowered optically via
-font size. In german typography this is also known as `Kapitälchen'.
+font size. In german typography this is also known as `KapitÃ¤lchen'.
 Optionally when adding the attribute B<complete>, all words are forced to
 begin with an upper case letter, too.
 
@@ -402,7 +402,7 @@ whitespace above it, but the correct one below it. This way you can create the
 leading whitespace your own (which is usually different according to the
 context) but get nice trailing whitespace (which has to be chosen carefully
 to make the headline and the following paragraph one unit).  In german this is
-called `Überschrift' hence the alias C<E<lt>ueE<gt>>.
+called `Ãœberschrift' hence the alias C<E<lt>ueE<gt>>.
 
 Example:
 
@@ -422,7 +422,7 @@ create any whitespace above it, but the correct one below it. This way you can
 create the leading whitespace your own (which is usually different according
 to the context) but get nice trailing whitespace (which has to be chosen
 carefully to make the headline and the following paragraph one unit).  In
-german this is called `Zwischenüberschrift' hence the alias C<E<lt>zwueE<gt>>.
+german this is called `ZwischenÃ¼berschrift' hence the alias C<E<lt>zwueE<gt>>.
 
 Example:
 
