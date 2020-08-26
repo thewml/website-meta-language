@@ -80,7 +80,7 @@ conforming construct ``C<E<lt>DIV ALIGN=CENTERE<gt>>''.
 
 =item (B<space>) : B<Fix trailing spaces in tags>
 
-Appendix C of the XHTML Specification recommands putting a space before
+Appendix C of the XHTML Specification recommends putting a space before
 closing simple tags to help rendering by old browsers.  This space is
 automatically added when this fixup is used.  On the other hand, all
 spaces before a right-angle bracker are suppressed.
