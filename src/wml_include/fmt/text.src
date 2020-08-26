@@ -107,7 +107,7 @@ include files.
  Internal: P1, P2, P3, txt2html (WML)
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 txt2html(1)
 

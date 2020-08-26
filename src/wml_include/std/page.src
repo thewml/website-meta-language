@@ -198,7 +198,7 @@ directly or with the help of wml::std::info(3).
  Internal: P1, P2, P5
  External: --
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 HTML C<E<lt>headE<gt>>, C<E<lt>bodyE<gt>> and C<E<lt>titleE<gt>> tags;
 wml::std::info(3)

@@ -357,7 +357,7 @@ is allowed and handled correctly, but only when you interpret this as
   Copyright (c) 1997-2002 Ralf S. Engelschall.
   Copyright (c) 1999-2002 Denis Barbier.
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 Slice Home: http://www.engelschall.com/sw/slice/
 

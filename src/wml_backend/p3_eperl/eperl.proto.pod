@@ -893,7 +893,7 @@ The ``I<powered by ePerl 2.2>'' logo. Feel free to use this on your website.
   rse@engelschall.com
   www.engelschall.com
 
-=head1 SEEALSO
+=head1 SEE ALSO
 
 Parse::ePerl(3), Apache::ePerl(3).
 
