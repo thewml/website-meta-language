@@ -14,14 +14,10 @@ sub wml_fmt_text {
     local (*FP);
 
     #   read the txt2html result
-    open(FP, "txt2html $arg->{FILE}|");
+    open(FP, '-|', "txt2html $arg->{OPTIONS} --extract $arg->{FILE} < /dev/null");
     local ($/) = undef;
     $buf = <FP>;
     close(FP);
-
-    #   cut out the body
-    $buf =~ s|^.*<BODY>||is;
-    $buf =~ s|</BODY>.*$||is;
 
     #   give headlines a more typographically strong look
     if (not $arg->{NOTYPO}) {
@@ -34,14 +30,16 @@ sub wml_fmt_text {
 </protect>
 
 <define-tag text endtag=required>
-<preserve notypo />
+<preserve notypo options />
 <set-var notypo=* />
+<set-var options=''  />
 <set-var %attributes />
 <perl>
 {
     use Path::Tiny qw/ path tempdir tempfile cwd /;
     my $tmpfile     = tempfile();
     my $notypo = (qq|<get-var notypo />| eq '' ? 1 : 0);
+    my $options = q{<get-var options />};
 
     my $buf;
     <perl:assign:sq $buf>%body</perl:assign:sq>
@@ -53,12 +51,12 @@ sub wml_fmt_text {
     close(TXT);
 
     <perl:print:
-         "&wml_fmt_text({ FILE => $tmpfile, NOTYPO => $notypo })" />
+         "&wml_fmt_text({ FILE => $tmpfile, NOTYPO => $notypo, OPTIONS => $options })" />
 
     unlink($tmpfile);
 }
 </perl>
-<restore notypo />
+<restore notypo options />
 </define-tag>
 
 
@@ -73,9 +71,9 @@ wml::fmt::text - Plain ASCII with Special Formatting Semantic
 
  #use wml::fmt::text
 
- <: print &wml_fmt_text({ FILE => $file, ...}); :>
+ <: print &wml_fmt_text({ FILE => $file, OPTIONS => '--xhtml', ...}); :>
 
- <text>
+ <text notypo>
  FOO
  ===
 
@@ -90,11 +88,36 @@ wml::fmt::text - Plain ASCII with Special Formatting Semantic
 
 The usage is simple: Surround the text with the C<E<lt>textE<gt>> container
 tag and then just write plain ASCII text inside it. The corresponding HTML
-code is created via F<txt2html>(1), a filter which gives the ASCII
+code is created via F<txt2html>(3), a filter which gives the ASCII
 text nice formatting semantic which control the HTML result.
+
+If B<OPTIONS> field is specified, a newer F<txt2html>(1) filter is called
+instead of F<wml_aux_txt2html>, which is dead upstream.  This allows for
+instance generation of XGTML markup.
 
 The core conversion function is wml_fmt_text() which also can be used by other
 include files.
+
+=head1 ATTRIBUTES
+
+These attributes can be used both in the C<E<lt>textE<gt>> tag (in
+lowercase letters) and in C<wml_fmt_text> arguments, as shown in
+examples above.
+
+=over 4
+
+=item C<NOTYPO>
+
+By default, font commands are added to headings to highlight them.
+This attribute prevents alteration of F<wml_aux_txt2html> output.
+
+=item C<OPTIONS=I<str>>
+
+This attribute performs two actions: select F<txt2html> filter instead of
+F<wml_aux_txt2html>, and I<str> arguments are passed literally on the
+command line of F<txt2html>.
+
+=back
 
 =head1 AUTHOR
 
