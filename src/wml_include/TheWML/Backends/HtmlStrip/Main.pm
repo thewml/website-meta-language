@@ -8,6 +8,8 @@ use strict;
 use warnings;
 use 5.014;
 
+no feature qw(unicode_strings);
+
 use parent 'TheWML::CmdLine::Base';
 
 use Getopt::Long ();
