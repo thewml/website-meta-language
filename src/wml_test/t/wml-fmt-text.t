@@ -7,7 +7,7 @@ WmlTest::init();
 use Test::More tests => 4;
 use Path::Tiny qw/ tempfile /;
 
-my $text_in  = <<'EOT_IN';
+my $text_in = <<'EOT_IN';
 FOO
 ===
 
