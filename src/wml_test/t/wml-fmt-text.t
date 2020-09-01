@@ -6,7 +6,7 @@ WmlTest::init();
 
 use Test::More;
 use Path::Tiny qw/ tempfile /;
-use File::Which;
+use File::Which qw/ which /;
 
 unless ( which 'txt2html' )
 {
@@ -14,7 +14,6 @@ unless ( which 'txt2html' )
 }
 
 plan tests => 4;
-
 
 my $text_in = <<'EOT_IN';
 FOO
