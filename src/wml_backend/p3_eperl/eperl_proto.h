@@ -98,8 +98,8 @@ extern const char * const ePerl_README;
 extern char *ePerl_LICENSE;
 
 /* eperl_logo.c */
-extern int ePerl_LOGO_size;
-extern unsigned char ePerl_LOGO_data[];
+extern const int ePerl_LOGO_size;
+extern const unsigned char ePerl_LOGO_data[];
 
 /* eperl_powered.c */
 extern int ePerl_POWERED_size;
