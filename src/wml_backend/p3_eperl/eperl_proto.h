@@ -95,7 +95,7 @@ extern void Debug(char *str, ...);
 extern const char * const ePerl_README;
 
 /* eperl_license.c */
-extern char *ePerl_LICENSE;
+extern const char * const ePerl_LICENSE;
 
 /* eperl_logo.c */
 extern const int ePerl_LOGO_size;
