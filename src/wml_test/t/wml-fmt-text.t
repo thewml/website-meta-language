@@ -16,7 +16,7 @@ unless ( which 'txt2html' )
 plan tests => 4;
 
 
-my $text_in  = <<'EOT_IN';
+my $text_in = <<'EOT_IN';
 FOO
 ===
 
