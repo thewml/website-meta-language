@@ -97,7 +97,7 @@ SET (SOURCES
 RUN_ASC2C("${readme_s}" "${readme_cc}" "ePerl_README")
 RUN_ASC2C("${license_s}" "${license_cc}" "ePerl_LICENSE")
 ADD_CUSTOM_COMMAND(
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/bin2c ${logo_s} "${logo_cc}" "ePerl_LOGO"
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/bin2c-new.pl ${logo_s} "${logo_cc}" "ePerl_LOGO"
     OUTPUT "${logo_c}"
     DEPENDS ${logo_s}
 )
