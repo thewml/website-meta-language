@@ -28,7 +28,7 @@ install:
     - cpanm local::lib
     - eval "$(perl -Mlocal::lib=$HOME/perl_modules)"
     - cpanm --notest Net::SSLeay
-    - cpanm --notest Bit::Vector Carp::Always Class::XSAccessor Code::TidyAll::Plugin::TestCount File::Which GD Getopt::Long IO::All Image::Size Path::Tiny Perl::Critic Perl::Tidy Test::Code::TidyAll Term::ReadKey
+    - cpanm --notest Bit::Vector Carp::Always Class::XSAccessor Code::TidyAll::Plugin::TestCount File::Which GD Getopt::Long HTML::TextToHTML IO::All Image::Size Path::Tiny Perl::Critic Perl::Tidy Term::ReadKey Test::Code::TidyAll
 language: perl
 perl:
     - "5.28"
