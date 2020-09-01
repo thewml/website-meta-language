@@ -117,7 +117,7 @@ ENABLE_TESTING()
 
 FUNCTION(RUN_ASC2C src dest varname)
     ADD_CUSTOM_COMMAND(
-        COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c "${src}" "${dest}" "${varname}"
+        COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/asc2c-new.pl "${src}" "${dest}" "${varname}"
         OUTPUT "${dest}.c"
         DEPENDS "${src}"
     )
