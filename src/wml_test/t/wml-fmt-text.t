@@ -4,8 +4,17 @@ use warnings;
 use WmlTest ();
 WmlTest::init();
 
-use Test::More tests => 4;
+use Test::More;
 use Path::Tiny qw/ tempfile /;
+use File::Which;
+
+unless ( which 'txt2html' )
+{
+    plan skip_all => "Skipping because txt2html is not installed";
+}
+
+plan tests => 4;
+
 
 my $text_in  = <<'EOT_IN';
 FOO
