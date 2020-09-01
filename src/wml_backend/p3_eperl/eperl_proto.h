@@ -92,7 +92,7 @@ extern bool fDebug;
 extern void Debug(char *str, ...);
 
 /* eperl_readme.c */
-extern char *ePerl_README;
+extern const char * const ePerl_README;
 
 /* eperl_license.c */
 extern char *ePerl_LICENSE;
