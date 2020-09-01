@@ -10,14 +10,13 @@
 #   the conversion function
 sub wml_fmt_text {
     my ($arg) = @_;
-    my ($buf);
-    local (*FP);
+    my ($FP);
 
     #   read the txt2html result
-    open(FP, '-|', "txt2html $arg->{OPTIONS} --extract $arg->{FILE} < /dev/null");
-    local ($/) = undef;
-    $buf = <FP>;
-    close(FP);
+    open($FP, '-|', "txt2html $arg->{OPTIONS} --extract $arg->{FILE} < /dev/null");
+    local $/ = undef;
+    my $buf = <$FP>;
+    close($FP);
 
     #   give headlines a more typographically strong look
     if (not $arg->{NOTYPO}) {
@@ -46,9 +45,7 @@ sub wml_fmt_text {
 
     #   there is no reason to nest <text> tags, so the <perl:print>
     #   statement is unnecessary
-    open(TXT, ">", $tmpfile);
-    print TXT $buf;
-    close(TXT);
+    $tmpfile->spew_raw($buf);
 
     <perl:print:
          "&wml_fmt_text({ FILE => $tmpfile, NOTYPO => $notypo, OPTIONS => $options })" />
@@ -93,7 +90,7 @@ text nice formatting semantic which control the HTML result.
 
 If B<OPTIONS> field is specified, a newer F<txt2html>(1) filter is called
 instead of F<wml_aux_txt2html>, which is dead upstream.  This allows for
-instance generation of XGTML markup.
+instance generation of XHTML markup.
 
 The core conversion function is wml_fmt_text() which also can be used by other
 include files.
@@ -101,20 +98,20 @@ include files.
 =head1 ATTRIBUTES
 
 These attributes can be used both in the C<E<lt>textE<gt>> tag (in
-lowercase letters) and in C<wml_fmt_text> arguments, as shown in
-examples above.
+lowercase letters) and in C<wml_fmt_text>'s arguments, as shown in
+the examples above.
 
 =over 4
 
 =item C<NOTYPO>
 
 By default, font commands are added to headings to highlight them.
-This attribute prevents alteration of F<wml_aux_txt2html> output.
+This attribute prevents alteration of F<wml_aux_txt2html>'s output.
 
 =item C<OPTIONS=I<str>>
 
-This attribute performs two actions: select F<txt2html> filter instead of
-F<wml_aux_txt2html>, and I<str> arguments are passed literally on the
+This attribute performs two actions: select F<txt2html> as a filter instead of
+F<wml_aux_txt2html>, and make I<str> arguments be passed literally on the
 command line of F<txt2html>.
 
 =back
@@ -135,4 +132,3 @@ command line of F<txt2html>.
 txt2html(1)
 
 =cut
-
