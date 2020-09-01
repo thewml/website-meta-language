@@ -41,8 +41,8 @@
 #include "iselect_browse.h"
 #include "iselect_keys.h"
 
-extern char *iSelect_Help;
-extern char *iSelect_README;
+extern const char * const iSelect_Help;
+extern const char * const iSelect_README;
 
 void strip(char *string);
 void diehard(int signum);
@@ -367,7 +367,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     char *cp;
     char *cp2;
     char *cp3;
-    char **cpp;
+    const char **cpp;
     int ok;
     int bAllowEmpty;
 
@@ -703,8 +703,8 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
 
                      hField = newwin(wYSize, wXSize, wYPos, wXPos);
                      werase(hField);
-                     char *iSelect_READMEs[] = {iSelect_README, NULL};
-                     char *iSelect_Helps[] = {iSelect_Help, NULL};
+                     const char *iSelect_READMEs[] = {iSelect_README, NULL};
+                     const char *iSelect_Helps[] = {iSelect_Help, NULL};
                      if (c == 'h')
                          cpp = iSelect_Helps;
                      else
