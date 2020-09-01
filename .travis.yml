@@ -14,6 +14,7 @@ addons:
             - libperl-dev
             - lynx
             - perl
+            - txt2html
             - xz-utils
             - zip
 cache:
