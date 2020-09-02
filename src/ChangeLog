@@ -17,6 +17,10 @@ Changes between 2.28.0 to 2.30.0:
 
 *) Remove some ASCII art banners in source code (accessibility).
 
+*) Add scripts/asc2c-new.pl and scripts/bin2c-new.pl (MITLed rewrites).
+
+*) Convert some text to UTF-8 encoding.
+
 Changes between 2.26.0 to 2.28.0:
 
 *) Refactoring, cleanups, modernizations and optimizations.
