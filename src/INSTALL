@@ -82,7 +82,6 @@ This will build and install WML and its related programs.
            - Curses
            - File::Which
            - GD
-           - IO::All
            - Path::Tiny
 
     o The following libraries are also needed (listed as the Debian package names,

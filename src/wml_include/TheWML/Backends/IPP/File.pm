@@ -27,7 +27,8 @@ use Class::XSAccessor (
     },
 );
 
-use IO::All qw/ io /;
+use Path::Tiny qw/ path /;
+
 use TheWML::Frontends::Wml::Util qw/ canon_path error /;
 use TheWML::Backends::IPP::Line ();
 
@@ -39,7 +40,7 @@ sub _PatternProcess_helper
         return;
     }
     my @ls =
-        grep { /^$pattern$/ && $test->('.') } @{ io->dir("$dirname") };
+        grep { /\A$pattern\z/ && $test->('.') } path($dirname)->children();
 
     #   Sort list of files
     my $criterion = $arg->{'IPP_SORT'} || $arg->{'IPP_REVERSE'};
@@ -101,8 +102,8 @@ sub PatternProcess
     DIRS:
         foreach my $dir ( reverse @$dirs )
         {
-            my @ls = grep { /^$pattern$/ && $test->($dir) }
-                @{ io->dir("$dir/$dirname") };
+            my @ls = grep { /\A$pattern\z/ && $test->($dir) }
+                path("$dir/$dirname")->children();
             my $found = 0;
         LS:
             foreach (@ls)
@@ -242,7 +243,7 @@ sub _process_file
     $realname = $fn if $realname eq '';
     $self->_main->verbose( $self->level, "|" );
     $self->_main->verbose( $self->level, "+-- $fn" );
-    my $in       = io()->file($fn);
+    my $in       = path($fn)->openr();
     my $line_idx = 0;
     my $out      = '';
     if ( not $self->_main->opt_N and not $arg->{'IPP_NOSYNCLINES'} )
