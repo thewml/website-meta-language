@@ -49,4 +49,11 @@ ADD_CUSTOM_TARGET(
     DEPENDS ${pod_dests}
 )
 
-INSTALL_DATA ("wmd.txt")
+SET(dest_wmd_text "${CMAKE_CURRENT_BINARY_DIR}/wmd.txt")
+EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/update-wmd.pl"
+    "--output" "${dest_wmd_text}"
+    "--input" "${CMAKE_CURRENT_SOURCE_DIR}/wmd.txt"
+    "--version" "${VERSION}"
+    "--date" "03-Sep-2020"
+)
+INSTALL_DATA ("${dest_wmd_text}")
