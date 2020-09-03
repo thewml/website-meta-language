@@ -111,7 +111,7 @@ The logo is selected via attribute C<name>. The following logos are available:
   openbsd   OpenBSD Operating System       http://www.openbsd.org/
   php       PHP Hypertext Preprocessor     http://www.php.net/
   vim       Vi Improved Editor             http://www.vim.org/
-  wml       Website META Language          http://www.engelschall.com/sw/wml/
+  wml       Website META Language          https://www.shlomifish.org/open-source/projects/website-meta-language/
 
 =head1 ATTRIBUTES
 

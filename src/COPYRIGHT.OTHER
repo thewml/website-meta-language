@@ -45,13 +45,13 @@ PCRE 3.2 [wml_backend/p2_mp4h/pcre/]
     Copyright (c) University of Cambridge
     ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
 
-GetoptLong 2.23 [wml_common/getoptlong/]
+Getopt-Long 2.23 [wml_common/getoptlong/]
     Copyright (c) Johan Vromans <jvromans@squirrel.nl>
-    http://www.perl.com/CPAN/authors/id/JV/
+    https://metacpan.org/release/Getopt-Long
 
 Bit-Vector 6.0 [wml_common/bitvector/]
     Copyright (c) Steffen Beyer, <sb@engelschall.com>
-    http://www.engelschall.com/u/sb/download/
+    https://metacpan.org/release/Bit-Vector
 
 File-PathConvert 0.85 [wml_common/filepathconvert/]
     Copyright (c) Shigio Yamaguchi <shigio@wafu.netgate.net>

@@ -186,7 +186,7 @@ the installed documentation.
 
 The WML Online documentation is located at
 
-  http://www.engelschall.com/sw/wml/docs
+L<https://web.archive.org/web/20180506035731/http://thewml.org/>
 
 The webpages are the same as the ones viewed with F<wmd>.
 
@@ -231,13 +231,13 @@ of your WML installation in the bug report which (most of the time) is
 essentially for the author to be able to successfully solve your problem.
 Just run the F<wmb> program and enter your problem description. But make sure
 you have at least a workable E-mail link to the Internet, because WMb wants to
-send the bug report via E-mail to rse@engelschall.com.
+send the bug report via E-mail to shlomif@shlomifish.org .
 
 =item Bug Reporting Webpage
 
 This is the general bug report webpage on
 
-  http://www.engelschall.com/sw/bugreport/
+L<https://github.com/thewml/website-meta-language/issues>
 
 for all programs from Ralf S. Engelschall. Please include your `wml -V3'
 output, too.

@@ -66,7 +66,7 @@ $fd->tagBind(qw/man <ButtonRelease-1>/ => sub {printman $fd->index('current')});
 
 #    Header
 $fd->insert('end', "Website META Language, Version 1.7.1 (05-06-1999)\n", 'title');
-$fd->insert('end', "Copyright (c) 1996,1997,1998,1999 Ralf S. Engelschall\nOfficial homepage and distribution area:\n  http://www.engelschall.com/sw/wml/\n   ftp://ftp.engelschall.com/sw/wml/\n");
+$fd->insert('end', "Copyright (c) 1996,1997,1998,1999 Ralf S. Engelschall\nOfficial homepage and distribution area:\n  https://www.shlomifish.org/open-source/projects/website-meta-language/\n   https://github.com/thewml/website-meta-language\n");
 
 #    Sections
 sub add_doc_menu {

@@ -4,8 +4,8 @@ Copyright (c) 1996-2001 Ralf S. Engelschall
 Copyright (c) 1999-2001 Denis Barbier
 
 Official homepage and distribution area:
-http://www.engelschall.com/sw/wml/ <s>
- ftp://ftp.engelschall.com/sw/wml/ <s>
+ https://www.shlomifish.org/open-source/projects/website-meta-language/ <s>
+ https://github.com/thewml/website-meta-language <s>
 
 Keyword search the WML documentation <s:search=%[Keyword]S>
 

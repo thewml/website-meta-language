@@ -221,10 +221,8 @@ if ( $mailer eq '' )
         "** Sorry, cannot find a useable MTA on your system for E-Mail.\n";
     print STDERR
         "** Please send the bug report online via HTTP by opening the URL\n";
-    my $v = $VERSION;
-    $v =~ s|^([0-9.]+).*$|$1|;
-    print STDERR
-        "** http://www.engelschall.com/sw/bugreport/?package=WML&version=$v\n";
+    my ($v) = $VERSION =~ m#\A([0-9\.]+)#;
+    print STDERR "** https://github.com/thewml/website-meta-language/issues ";
     print STDERR "\n";
     exit(0);
 }
@@ -370,7 +368,7 @@ This is the bug reporting tool for the I<Website META Language> (WML), a free
 HTML generation toolkit for Unix.  See wml(1) for more details on WML.  Use
 this program for quickly sending a bug report to the WML author via EMail.  As
 an alternative (when this program does not work from your platform) you can
-send the bug report manually to sw-wml@engelschall.com.
+send the bug report manually to shlomif@shlomifish.org .
 
 =head1 OPTIONS
 

@@ -175,13 +175,13 @@ Let us begin with a simple example:
 
 Input:
 
-  1| <define-tag homepage>http://www.engelschall.com/sw/wml/</define-tag>
+  1| <define-tag homepage>http://thewml.org/</define-tag>
   2| <homepage/>
 
 Output:
 
   1|
-  2| http://www.engelschall.com/sw/wml/
+  2| http://thewml.org/
 
 Defining a complex tag is no more difficult, just add an
 C<endtag=required> attribute.
