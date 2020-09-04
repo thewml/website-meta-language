@@ -186,7 +186,7 @@ the installed documentation.
 
 The WML Online documentation is located at
 
-L<https://web.archive.org/web/20180506035731/http://thewml.org/>
+L<https://thewml.github.io/>
 
 The webpages are the same as the ones viewed with F<wmd>.
 
