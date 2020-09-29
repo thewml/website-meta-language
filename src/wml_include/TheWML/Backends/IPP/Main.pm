@@ -198,7 +198,7 @@ sub main
             "i|includefile=s@"   => \@opt_i,
             "m|mapfile=s@"       => \@opt_m,
             "n|inputfile=s"      => \$opt_n,
-            "o|outputfile=s" =>
+            "o|outputfile=s"     =>
                 sub { my ( undef, $v ) = @_; $self->opt_o($v); },
             "s|sysincludefile=s@" => \@opt_s,
         )
