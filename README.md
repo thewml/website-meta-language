@@ -16,10 +16,12 @@ sub-directory.
 Website Meta Language is an offline HTML preprocessor, which dates back to
 the 1990s and is written in Perl 5 and C. It can be used for
 [static site generation](https://staticsitegenerators.net/) . Note that, while
-being powerful and capable, it is somewhat slow, has a lot of legacy conventions
+being powerful and capable, it is somewhat slow, may sometimes produce
+wrong markup if extra care has not been taken (i.e: is "quirky"),
+has a lot of legacy conventions
 and practices behind it, may be somewhat hard to learn, and in general is
-not recommended for new projects, and you should probably use a different
-[static site generator](https://staticsitegenerators.net/) for new projects,
+not recommended for new projects. You should probably use a different
+[static site generator](https://staticsitegenerators.net/) for them,
 including possibly a custom home-grown one based on a build system and a
 template system or a preprocessor.
 
