@@ -93,10 +93,11 @@ ok( !system("cmp $tmpfile2 a.de.html"), "de cmp" );
 
 WmlTest::add_files("a.en.html");
 WmlTest::add_files("a.de.html");
+
 {
-    my $temp = WmlTest::new_tempdir();
-    my $old  = $temp->{orig};
-    my $new  = $temp->{new};
+    my $tempdir_ret = WmlTest::new_tempdir();
+    my $old         = $tempdir_ret->{orig};
+    my $new         = $tempdir_ret->{new};
     $new->child(".wmkrc")->spew_utf8(<<'EOF');
 -o (ALL-LANG_*)+LANG_EN:%BASE.en.html -o (ALL-LANG_*)+LANG_DE:%BASE.de.html
 -A *.wml
@@ -109,8 +110,9 @@ EOF
 
     $new->child("foo.wml")->spew_utf8("<de>deutsch</de><en>english</en>\n");
 
+    # diag($abs_wmk);
+
     # TEST
-    diag($abs_wmk);
     like(
         ( scalar `$abs_wmk 2>&1` ),
         qr#\Q$ENV{WML}\E.*?-o\s*\(ALL-LANG#ms,
@@ -120,4 +122,3 @@ EOF
 }
 
 WmlTest::cleanup();
-
