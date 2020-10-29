@@ -163,7 +163,10 @@ sub _get_opt_o_str
 
 sub _set_opt_o
 {
-    $opt_o_CUR = _get_opt_o_str;
+    if (@opt_o)
+    {
+        $opt_o_CUR = _get_opt_o_str;
+    }
     return;
 }
 

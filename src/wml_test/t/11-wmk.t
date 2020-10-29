@@ -2,11 +2,12 @@ use strict;
 use warnings;
 
 use Term::ANSIColor qw/ colored /;
+use Path::Tiny qw/ cwd path /;
 
 use WmlTest ();
 WmlTest::init();
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 #
 #   TEST 1-2: throughput
@@ -17,6 +18,7 @@ my ($rc);
 my $wmk = $ENV{WML};
 $wmk =~ s/l /k /;
 $wmk =~ s/l$/k/;
+my $abs_wmk = path($wmk)->absolute;
 
 WmlTest::tmpfile_with_name( 'a.html', "x" );
 WmlTest::tmpfile_with_name( 'a',      <<'EOT_IN');
@@ -91,5 +93,31 @@ ok( !system("cmp $tmpfile2 a.de.html"), "de cmp" );
 
 WmlTest::add_files("a.en.html");
 WmlTest::add_files("a.de.html");
+{
+    my $temp = WmlTest::new_tempdir();
+    my $old  = $temp->{orig};
+    my $new  = $temp->{new};
+    $new->child(".wmkrc")->spew_utf8(<<'EOF');
+-o (ALL-LANG_*)+LANG_EN:%BASE.en.html -o (ALL-LANG_*)+LANG_DE:%BASE.de.html
+-A *.wml
+-A *.md
+EOF
+    $new->child(".wmlrc")
+        ->spew_utf8(
+"-o (ALL-LANG_*)+LANG_EN:%BASE.en.html -o (ALL-LANG_*)+LANG_DE:%BASE.de.html\n"
+        );
+
+    $new->child("foo.wml")->spew_utf8("<de>deutsch</de><en>english</en>\n");
+
+    # TEST
+    diag($abs_wmk);
+    like(
+        ( scalar `$abs_wmk 2>&1` ),
+        qr#\Q$ENV{WML}\E.*?-o\s*\(ALL-LANG#ms,
+        "wmkrc -o",
+    );
+    chdir($old);
+}
+
 WmlTest::cleanup();
 

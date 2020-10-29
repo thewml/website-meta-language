@@ -81,6 +81,14 @@ sub add_files
     push @files_to_del, @_;
 }
 
+sub new_tempdir
+{
+    my $old = cwd()->absolute();
+    my $ret = Path::Tiny->tempdir();
+    chdir($ret);
+    return { orig => $old, new => $ret, };
+}
+
 sub cleanup
 {
     foreach my $fn (@files_to_del)
