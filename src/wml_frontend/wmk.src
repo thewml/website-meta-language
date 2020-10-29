@@ -161,9 +161,16 @@ sub _get_opt_o_str
     return join "", map { " -o$_" } @opt_o;
 }
 
+# if @opt_o is empty then $opt_o_CUR should remain the same, especially if it
+# is non-empty.
+sub _should_set__opt_o_CUR
+{
+    return ( @opt_o > 0 );
+}
+
 sub _set_opt_o
 {
-    if (@opt_o)
+    if ( _should_set__opt_o_CUR() )
     {
         $opt_o_CUR = _get_opt_o_str;
     }
