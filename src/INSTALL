@@ -1,11 +1,10 @@
-
- INSTALLATION
- ============
+INSTALLATION
+============
 
 WML was converted to use CMake ( http://www.cmake.org/ )
-starting from version 2.2.0. You'll need to install CMake version 2.6.3
+starting from version 2.2.0. You'll need to install CMake version 3.0
 or later from your distribution's repository or from its source
-distribution. *NOTE*: CMake 2.6.2 (that ships with some releases of Ubuntu)
+distribution. *NOTE*: CMake 2.6.2 (that ships with some older releases of Ubuntu)
 won't work due to a regression bug so please don't report any errors with
 it.
 
@@ -40,8 +39,8 @@ Next type:
 
 This will build and install WML and its related programs.
 
- 2. Requirements
-    ------------
+2. Requirements
+---------------
 
     The following requirements exist for building WML:
 
@@ -57,8 +56,10 @@ This will build and install WML and its related programs.
     o  ANSI-C Compiler:
        Make sure you have an ANSI-C compiler installed.  The GNU C compiler
        (GCC) from the Free Software Foundation (FSF) is recommended. You
-       can find the homepage of GNU on <URL:http://gcc.gnu.org/> and the
-       GCC distribution on <URL:ftp://gcc.gnu.org/pub/gcc/>.
+       can find the homepage of GCC on <URL:http://gcc.gnu.org/>.
+
+       clang ( <URL:https://clang.llvm.org/> ) should also be usable and
+       is supported.
 
     o  SVr4 compatible Curses library:
        Make sure you have a SVr4-like Curses library installed. If your
@@ -89,8 +90,8 @@ This will build and install WML and its related programs.
            - libgd-dev libdb5.3-dev libncurses-dev libpcre3-dev libperl-dev
            - libgdbm-dev libgdbm-compat-dev
 
- 3. Configuring the source tree
-    ---------------------------
+3. Configuring the source tree
+------------------------------
 
     [OUT OF DATE - TO UPDATE]
 
@@ -127,77 +128,76 @@ This will build and install WML and its related programs.
     independed of the underlaying system and to avoid problems when the Perl
     system is upgraded.
 
- 3. Building the toolkit
-    --------------------
+3. Building the toolkit
+-----------------------
 
-    Now you can build the programs, manpages and include files which form the
-    WML toolkit by running the command
+Now you can build the programs, manpages and include files which form the
+WML toolkit by running the command
 
-       $ make
+   $ make
 
-    Please be patient, this takes approximately 2 minutes to complete on a
-    Pentium-II/400 platform.
+Please be patient, this takes approximately 2 minutes to complete on a
+Pentium-II/400 platform.
 
- 4. Testing the toolkit
-    -------------------
+4. Testing the toolkit
+----------------------
 
-    Now you can partially test the toolkit by running a small test suite via:
+Now you can partially test the toolkit by running a small test suite via:
 
-       $ make test
+   $ make test
 
- 5. Installing the toolkit
-    ----------------------
+5. Installing the toolkit
+-------------------------
 
-    Now its time to install the toolkit's programs in $prefix/bin, the
-    manpages in $prefix/man and auxiliary, include and Perl-Module files in
-    $prefix/lib/ (or $prefix/lib/wml/ if $prefix does not already contain the
-    string `wml'!):
+Now it is time to install the toolkit's programs in $prefix/bin, the
+manpages in $prefix/man and auxiliary, include and Perl-Module files in
+$prefix/lib/ (or $prefix/lib/wml/ if $prefix does not already contain the
+string `wml'!):
 
-       $ make install
+   $ make install
 
-    For the paranoid hackers under us: The above command really installs under
-    $prefix _only_, i.e. no other stuff from your system is touched. I say
-    this explicitly here, because I hate "make install"'s which destroy parts
-    of my system, too. But the amount of installation steps is too huge to do
-    it manually, really!
+For the paranoid hackers under us: The above command really installs under
+$prefix _only_, i.e. no other stuff from your system is touched. I say
+this explicitly here, because I hate "make install"'s which destroy parts
+of my system, too. But the amount of installation steps is too huge to do
+it manually, really!
 
-    One special case for package maintainers: If you want to install the stuff
-    inside a different location than the pre-configured one (for instance when
-    creating system packages via dpkg under Debian GNU/Linux or RPM under
-    RedHat Linux, etc), you can alternatively use
+One special case for package maintainers: If you want to install the stuff
+inside a different location than the pre-configured one (for instance when
+creating system packages via dpkg under Debian GNU/Linux or RPM under
+RedHat Linux, etc), you can alternatively use
 
-       $ make install prefix=/somewhere/tmp
+   $ make install prefix=/somewhere/tmp
 
-    This will install the toolkit inside /somewhere/tmp for rolling the
-    package tarball, although the toolkit is still configured for the correct
-    prefix (specified at point 3).
+This will install the toolkit inside /somewhere/tmp for rolling the
+package tarball, although the toolkit is still configured for the correct
+prefix (specified at point 3).
 
- 6. Additional programs
-    -------------------
+6. Additional programs
+----------------------
 
-    While the WML toolkit itself is a self-contained all-in-one package which
-    comes with all parts it needs under runtime, there are some include files
-    (see wml::all(3)) which need third-party programs to be able to provide
-    their full functionality:
+While the WML toolkit itself is a self-contained all-in-one package which
+comes with all parts it needs under runtime, there are some include files
+(see wml::all(3)) which need third-party programs to be able to provide
+their full functionality:
 
-    o wml::fmt::sdf
+o wml::fmt::sdf
 
-      To use this include file you need the Simple Document Format (SDF)
-      package. You can find the package at <URL:http://www.mincom.com/mtr/sdf/>.
+To use this include file you need the Simple Document Format (SDF)
+package. You can find the package at <URL:http://www.mincom.com/mtr/sdf/>.
 
-    o wml::des::gfont
+o wml::des::gfont
 
-      To use this include file you need at least the gFONT program from
-      Ralf S. Engelschall which can be found at
-      <URL:http://www.engelschall.com/sw/gfont/>.
-      And because this program makes use of an underlaying TeX installation,
-      you should be sure that TeX is already installed on your system. If not
-      I recommend you to install teTeX which can be found at
-      <URL:http://www.tex.ac.uk/tex-archive/systems/unix/teTeX/> or any CTAN
-      mirror.
+To use this include file you need at least the gFONT program from
+Ralf S. Engelschall which can be found at
+<URL:http://www.engelschall.com/sw/gfont/>.
+And because this program makes use of an underlaying TeX installation,
+you should be sure that TeX is already installed on your system. If not
+I recommend you to install teTeX which can be found at
+<URL:http://www.tex.ac.uk/tex-archive/systems/unix/teTeX/> or any CTAN
+mirror.
 
-      Additionally when you want to use the `crop' attribute of the <gfont>
-      tag (which crops empty edges of the generated image) then you also
-      have to install the ImageMagick package which can be found at
-      <URL:http://www.wizards.dupont.com/cristy/ImageMagick.html>.
-
+Additionally when you want to use the `crop' attribute of the <gfont>
+tag (which crops empty edges of the generated image) then you also
+have to install the ImageMagick package which can be found at
+<URL:https://imagemagick.org/>.

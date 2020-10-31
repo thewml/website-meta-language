@@ -421,7 +421,7 @@ Output:  (only non-blank lines are printed)
      <head><title>Test page 1</title></head>
      <head>
      <nostrip><meta name="Author"    content="Denis Barbier, barbier@localhost">
-     <meta name="Generator" content="WML 2.0.2 (21-Jun-2000)">
+     <meta name="Generator" content="WML 2.32.0 (31-Oct-2020)">
      <meta name="Modified"  content="2000-05-09 23:57:31">
      </nostrip>
      <title>Test page 2</title></head>
