@@ -1801,7 +1801,7 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 	}
 
       /* try to open the not-installed module */
-      if (!installed && objdir)
+      if (!installed)
 	{
 	  if (tryall_dlopen_module (handle, dir, objdir, dlname) == 0)
 	    return 0;
