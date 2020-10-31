@@ -7,6 +7,23 @@ i.e. changes between each patchlevel (1.x.y->1.x.(y+1) and
 information about every single change.
 ___________________________________________________________________________
 
+Changes between 2.30.0 to 2.32.0:
+
+*) Fix for a wmk regression caused by some overzealous refactoring:
+    *) Mis-handling of "-o" flags.
+    *) https://github.com/thewml/website-meta-language/commit/a834f243ebd3e79ac58452594687cc4eaed2f0bb
+    *) Broken in https://github.com/thewml/website-meta-language/commit/4fdb169a39b1cccf33a255597a01148d2313baec
+    *) Thanks to @xtaran for the report and a test case.
+
+*) URLs / Versions updates
+    *) https://github.com/thewml/website-meta-language/issues/43
+    *) Thanks to @xtaran for the report.
+
+*) Replace some remaining uses of IO:All with Path::Tiny
+    *) https://perl-begin.org/topics/files-and-directories/
+
+*) Minor documentation updates.
+
 Changes between 2.28.0 to 2.30.0:
 
 *) Refactoring, cleanups, modernizations and (likely minor) optimizations.
