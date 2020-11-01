@@ -126,8 +126,23 @@ SET_SOURCE_FILES_PROPERTIES(${SOURCES}
     PROPERTIES COMPILE_FLAGS "${perl_optimize} ${perl_ccflags} -I${perl_archlib}/CORE -I."
 )
 
+SET(perl_lib_flags "${perl_ccdlflags} ${perl_ldflags}")
+# See:
+# https://github.com/thewml/website-meta-language/issues/44
+# and other reports - sanity check for gdbm_compat presence.
+SET(perl_match_lib_flags "${perl_lib_flags} ${perl_libs}")
+STRING(REGEX MATCH "(gdbm[_\\-]?compat)" perl_needs_gdbm "${perl_match_lib_flags}")
+IF (NOT (perl_needs_gdbm STREQUAL ""))
+    FIND_LIBRARY(found_gdbm NAMES "gdbm_compat" REQUIRED)
+ELSE ()
+    STRING(REGEX MATCH "(gdbm)" perl_needs_gdbm "${perl_match_lib_flags}")
+    IF (NOT (perl_needs_gdbm STREQUAL ""))
+        FIND_LIBRARY(found_gdbm NAMES "gdbm" REQUIRED)
+    ENDIF ()
+ENDIF ()
+
 SET_TARGET_PROPERTIES(${EXE}
-    PROPERTIES LINK_FLAGS "${perl_ccdlflags} ${perl_ldflags} -L${perl_archlib}/CORE"
+    PROPERTIES LINK_FLAGS "${perl_lib_flags} -L${perl_archlib}/CORE"
 )
 
 TARGET_LINK_LIBRARIES(${EXE}
