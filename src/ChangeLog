@@ -24,6 +24,10 @@ Changes between 2.30.0 to 2.32.0:
 
 *) Minor documentation updates.
 
+*) Detect gdbm_compat's availability earlier (in the CMake stage).
+    *) https://github.com/thewml/website-meta-language/issues/44
+    *) Thanks to @xtaran
+
 Changes between 2.28.0 to 2.30.0:
 
 *) Refactoring, cleanups, modernizations and (likely minor) optimizations.
