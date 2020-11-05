@@ -130,6 +130,17 @@ SET(perl_lib_flags "${perl_ccdlflags} ${perl_ldflags}")
 # See:
 # https://github.com/thewml/website-meta-language/issues/44
 # and other reports - sanity check for gdbm_compat presence.
+FOREACH (var "perl_libs" "perl_lib_flags")
+    STRING(REGEX REPLACE
+        "(^|\$|[ \t])[^ \t]*gdbm[^ \t]*(^|\$|[ \t])"
+        " "
+        "${var}" "${${var}}")
+    STRING(REGEX REPLACE
+        "[ \t]+\$"
+        ""
+        "${var}" "${${var}}")
+ENDFOREACH ()
+# MESSAGE(FATAL_ERROR "libs = < ${perl_libs} ${perl_lib_flags} >")
 SET(perl_match_lib_flags "${perl_lib_flags} ${perl_libs}")
 STRING(REGEX MATCH "(gdbm[_\\-]?compat)" perl_needs_gdbm "${perl_match_lib_flags}")
 IF (NOT (perl_needs_gdbm STREQUAL ""))
