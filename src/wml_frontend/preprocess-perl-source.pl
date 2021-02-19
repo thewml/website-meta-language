@@ -9,7 +9,7 @@ my @params = (
     qw(
         WML_VERSION WML_CONFIG_ARGS perlprog perlvers built_system
         built_user built_date prefix bindir libdir mandir PATH_PERL
-        )
+    )
 );
 
 my %substitutions;

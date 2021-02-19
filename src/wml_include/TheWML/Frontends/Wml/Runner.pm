@@ -96,7 +96,7 @@ sub new
             SERVER_PORT REQUEST_METHOD PATH_INFO PATH_TRANSLATED SCRIPT_NAME
             QUERY_STRING REMOTE_HOST REMOTE_ADDR AUTH_TYPE REMOTE_USER REMOTE_IDENT
             CONTENT_TYPE CONTENT_LENGTH HTTP_ACCEPT HTTP_USER_AGENT
-            )
+        )
     };
 
     my $bindir = $self->bindir( TheWML::Config::bindir() );
