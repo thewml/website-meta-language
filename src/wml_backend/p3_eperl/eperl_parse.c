@@ -107,116 +107,116 @@ char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n)
 **  fwrite for internal buffer WITH HTML entity conversion
 */
 
-struct html2char {
-    char *h;
-    char c;
-};
+typedef struct {
+    const char *h;
+    const char *replace;
+} html2char_type;
 
-static const struct html2char html2char[] = {
-    { "copy",   '©' },    /* Copyright */
-    { "die",    '¨' },    /* Diæresis / Umlaut */
-    { "laquo",  '«' },    /* Left angle quote, guillemot left */
-    { "not",    '¬' },    /* Not sign */
-    { "ordf",   'ª' },    /* Feminine ordinal */
-    { "sect",   '§' },    /* Section sign */
-    { "um",     '¨' },    /* Diæresis / Umlaut */
-    { "AElig",  'Æ' },    /* Capital AE ligature */
-    { "Aacute", 'Á' },    /* Capital A, acute accent */
-    { "Acirc",  'Â' },    /* Capital A, circumflex */
-    { "Agrave", 'À' },    /* Capital A, grave accent */
-    { "Aring",  'Å' },    /* Capital A, ring */
-    { "Atilde", 'Ã' },    /* Capital A, tilde */
-    { "Auml",   'Ä' },    /* Capital A, diæresis / umlaut */
-    { "Ccedil", 'Ç' },    /* Capital C, cedilla */
-    { "ETH",    'Ð' },    /* Capital Eth, Icelandic */
-    { "Eacute", 'É' },    /* Capital E, acute accent */
-    { "Ecirc",  'Ê' },    /* Capital E, circumflex */
-    { "Egrave", 'È' },    /* Capital E, grave accent */
-    { "Euml",   'Ë' },    /* Capital E, diæresis / umlaut */
-    { "Iacute", 'Í' },    /* Capital I, acute accent */
-    { "Icirc",  'Î' },    /* Capital I, circumflex */
-    { "Igrave", 'Ì' },    /* Capital I, grave accent */
-    { "Iuml",   'Ï' },    /* Capital I, diæresis / umlaut */
-    { "Ntilde", 'Ñ' },    /* Capital N, tilde */
-    { "Oacute", 'Ó' },    /* Capital O, acute accent */
-    { "Ocirc",  'Ô' },    /* Capital O, circumflex */
-    { "Ograve", 'Ò' },    /* Capital O, grave accent */
-    { "Oslash", 'Ø' },    /* Capital O, slash */
-    { "Otilde", 'Õ' },    /* Capital O, tilde */
-    { "Ouml",   'Ö' },    /* Capital O, diæresis / umlaut */
-    { "THORN",  'Þ' },    /* Capital Thorn, Icelandic */
-    { "Uacute", 'Ú' },    /* Capital U, acute accent */
-    { "Ucirc",  'Û' },    /* Capital U, circumflex */
-    { "Ugrave", 'Ù' },    /* Capital U, grave accent */
-    { "Uuml",   'Ü' },    /* Capital U, diæresis / umlaut */
-    { "Yacute", 'Ý' },    /* Capital Y, acute accent */
-    { "aacute", 'ß' },    /* Small a, acute accent */
-    { "acirc",  'â' },    /* Small a, circumflex */
-    { "acute",  '´' },    /* Acute accent */
-    { "aelig",  'æ' },    /* Small ae ligature */
-    { "agrave", 'à' },    /* Small a, grave accent */
-    { "amp",    '&' },    /* Ampersand */
-    { "aring",  'å' },    /* Small a, ring */
-    { "atilde", 'ã' },    /* Small a, tilde */
-    { "auml",   'ä' },    /* Small a, diæresis / umlaut */
-    { "brkbar", '¦' },    /* Broken vertical bar */
-    { "brvbar", '¦' },    /* Broken vertical bar */
-    { "ccedil", 'ç' },    /* Small c, cedilla */
-    { "cedil",  '¸' },    /* Cedilla */
-    { "cent",   '¢' },    /* Cent sign */
-    { "curren", '¤' },    /* General currency sign */
-    { "deg",    '°' },    /* Degree sign */
-    { "divide", '÷' },    /* Division sign */
-    { "eacute", 'é' },    /* Small e, acute accent */
-    { "ecirc",  'ê' },    /* Small e, circumflex */
-    { "egrave", 'è' },    /* Small e, grave accent */
-    { "eth",    'ð' },    /* Small eth, Icelandic */
-    { "euml",   'ë' },    /* Small e, diæresis / umlaut */
-    { "frac12", '½' },    /* Fraction one-half */
-    { "frac14", '¼' },    /* Fraction one-fourth */
-    { "frac34", '¾' },    /* Fraction three-fourths */
-    { "gt",     '>' },    /* Greater than */
-    { "hibar",  '¯' },    /* Macron accent */
-    { "iacute", 'í' },    /* Small i, acute accent */
-    { "icirc",  'î' },    /* Small i, circumflex */
-    { "iexcl",  '¡' },    /* Inverted exclamation */
-    { "igrave", 'ì' },    /* Small i, grave accent */
-    { "iquest", '¿' },    /* Inverted question mark */
-    { "iuml",   'ï' },    /* Small i, diæresis / umlaut */
-    { "lt",     '<' },    /* Less than */
-    { "macr",   '¯' },    /* Macron accent */
-    { "micro",  'µ' },    /* Micro sign */
-    { "middot", '·' },    /* Middle dot */
-    { "nbsp",   ' ' },    /* Non-breaking Space */
-    { "ntilde", 'ñ' },    /* Small n, tilde */
-    { "oacute", 'ó' },    /* Small o, acute accent */
-    { "ocirc",  'ô' },    /* Small o, circumflex */
-    { "ograve", 'ò' },    /* Small o, grave accent */
-    { "ordm",   'º' },    /* Masculine ordinal */
-    { "oslash", 'ø' },    /* Small o, slash */
-    { "otilde", 'õ' },    /* Small o, tilde */
-    { "ouml",   'ö' },    /* Small o, diæresis / umlaut */
-    { "para",   '¶' },    /* Paragraph sign */
-    { "plusmn", '±' },    /* Plus or minus */
-    { "pound",  '£' },    /* Pound sterling */
-    { "quot",   '"' },    /* Quotation mark */
-    { "raquo",  '»' },    /* Right angle quote, guillemot right */
-    { "reg",    '®' },    /* Registered trademark */
-    { "shy",    '­' },    /* Soft hyphen */
-    { "sup1",   '¹' },    /* Superscript one */
-    { "sup2",   '²' },    /* Superscript two */
-    { "sup3",   '³' },    /* Superscript three */
-    { "szlig",  'ß' },    /* Small sharp s, German sz */
-    { "thorn",  'þ' },    /* Small thorn, Icelandic */
-    { "times",  '×' },    /* Multiply sign */
-    { "uacute", 'ú' },    /* Small u, acute accent */
-    { "ucirc",  'û' },    /* Small u, circumflex */
-    { "ugrave", 'ù' },    /* Small u, grave accent */
-    { "uuml",   'ü' },    /* Small u, diæresis / umlaut */
-    { "yacute", 'ý' },    /* Small y, acute accent */
-    { "yen",    '¥' },    /* Yen sign */
-    { "yuml",'\255' },    /* Small y, diæresis / umlaut */
-    { NULL, NUL }
+static const html2char_type html2char[] = {
+    { "copy",   "©" },    /* Copyright */
+    { "die",    "¨" },    /* Diæresis / Umlaut */
+    { "laquo",  "«" },    /* Left angle quote, guillemot left */
+    { "not",    "¬" },    /* Not sign */
+    { "ordf",   "ª" },    /* Feminine ordinal */
+    { "sect",   "§" },    /* Section sign */
+    { "um",     "¨" },    /* Diæresis / Umlaut */
+    { "AElig",  "Æ" },    /* Capital AE ligature */
+    { "Aacute", "Á" },    /* Capital A, acute accent */
+    { "Acirc",  "Â" },    /* Capital A, circumflex */
+    { "Agrave", "À" },    /* Capital A, grave accent */
+    { "Aring",  "Å" },    /* Capital A, ring */
+    { "Atilde", "Ã" },    /* Capital A, tilde */
+    { "Auml",   "Ä" },    /* Capital A, diæresis / umlaut */
+    { "Ccedil", "Ç" },    /* Capital C, cedilla */
+    { "ETH",    "Ð" },    /* Capital Eth, Icelandic */
+    { "Eacute", "É" },    /* Capital E, acute accent */
+    { "Ecirc",  "Ê" },    /* Capital E, circumflex */
+    { "Egrave", "È" },    /* Capital E, grave accent */
+    { "Euml",   "Ë" },    /* Capital E, diæresis / umlaut */
+    { "Iacute", "Í" },    /* Capital I, acute accent */
+    { "Icirc",  "Î" },    /* Capital I, circumflex */
+    { "Igrave", "Ì" },    /* Capital I, grave accent */
+    { "Iuml",   "Ï" },    /* Capital I, diæresis / umlaut */
+    { "Ntilde", "Ñ" },    /* Capital N, tilde */
+    { "Oacute", "Ó" },    /* Capital O, acute accent */
+    { "Ocirc",  "Ô" },    /* Capital O, circumflex */
+    { "Ograve", "Ò" },    /* Capital O, grave accent */
+    { "Oslash", "Ø" },    /* Capital O, slash */
+    { "Otilde", "Õ" },    /* Capital O, tilde */
+    { "Ouml",   "Ö" },    /* Capital O, diæresis / umlaut */
+    { "THORN",  "Þ" },    /* Capital Thorn, Icelandic */
+    { "Uacute", "Ú" },    /* Capital U, acute accent */
+    { "Ucirc",  "Û" },    /* Capital U, circumflex */
+    { "Ugrave", "Ù" },    /* Capital U, grave accent */
+    { "Uuml",   "Ü" },    /* Capital U, diæresis / umlaut */
+    { "Yacute", "Ý" },    /* Capital Y, acute accent */
+    { "aacute", "ß" },    /* Small a, acute accent */
+    { "acirc",  "â" },    /* Small a, circumflex */
+    { "acute",  "´" },    /* Acute accent */
+    { "aelig",  "æ" },    /* Small ae ligature */
+    { "agrave", "à" },    /* Small a, grave accent */
+    { "amp",    "&" },    /* Ampersand */
+    { "aring",  "å" },    /* Small a, ring */
+    { "atilde", "ã" },    /* Small a, tilde */
+    { "auml",   "ä" },    /* Small a, diæresis / umlaut */
+    { "brkbar", "¦" },    /* Broken vertical bar */
+    { "brvbar", "¦" },    /* Broken vertical bar */
+    { "ccedil", "ç" },    /* Small c, cedilla */
+    { "cedil",  "¸" },    /* Cedilla */
+    { "cent",   "¢" },    /* Cent sign */
+    { "curren", "¤" },    /* General currency sign */
+    { "deg",    "°" },    /* Degree sign */
+    { "divide", "÷" },    /* Division sign */
+    { "eacute", "é" },    /* Small e, acute accent */
+    { "ecirc",  "ê" },    /* Small e, circumflex */
+    { "egrave", "è" },    /* Small e, grave accent */
+    { "eth",    "ð" },    /* Small eth, Icelandic */
+    { "euml",   "ë" },    /* Small e, diæresis / umlaut */
+    { "frac12", "½" },    /* Fraction one-half */
+    { "frac14", "¼" },    /* Fraction one-fourth */
+    { "frac34", "¾" },    /* Fraction three-fourths */
+    { "gt",     ">" },    /* Greater than */
+    { "hibar",  "¯" },    /* Macron accent */
+    { "iacute", "í" },    /* Small i, acute accent */
+    { "icirc",  "î" },    /* Small i, circumflex */
+    { "iexcl",  "¡" },    /* Inverted exclamation */
+    { "igrave", "ì" },    /* Small i, grave accent */
+    { "iquest", "¿" },    /* Inverted question mark */
+    { "iuml",   "ï" },    /* Small i, diæresis / umlaut */
+    { "lt",     "<" },    /* Less than */
+    { "macr",   "¯" },    /* Macron accent */
+    { "micro",  "µ" },    /* Micro sign */
+    { "middot", "·" },    /* Middle dot */
+    { "nbsp",   " " },    /* Non-breaking Space */
+    { "ntilde", "ñ" },    /* Small n, tilde */
+    { "oacute", "ó" },    /* Small o, acute accent */
+    { "ocirc",  "ô" },    /* Small o, circumflex */
+    { "ograve", "ò" },    /* Small o, grave accent */
+    { "ordm",   "º" },    /* Masculine ordinal */
+    { "oslash", "ø" },    /* Small o, slash */
+    { "otilde", "õ" },    /* Small o, tilde */
+    { "ouml",   "ö" },    /* Small o, diæresis / umlaut */
+    { "para",   "¶" },    /* Paragraph sign */
+    { "plusmn", "±" },    /* Plus or minus */
+    { "pound",  "£" },    /* Pound sterling */
+    { "quot",   "\"" },    /* Quotation mark */
+    { "raquo",  "»" },    /* Right angle quote, guillemot right */
+    { "reg",    "®" },    /* Registered trademark */
+    { "shy",    "­" },    /* Soft hyphen */
+    { "sup1",   "¹" },    /* Superscript one */
+    { "sup2",   "²" },    /* Superscript two */
+    { "sup3",   "³" },    /* Superscript three */
+    { "szlig",  "ß" },    /* Small sharp s, German sz */
+    { "thorn",  "þ" },    /* Small thorn, Icelandic */
+    { "times",  "×" },    /* Multiply sign */
+    { "uacute", "ú" },    /* Small u, acute accent */
+    { "ucirc",  "û" },    /* Small u, circumflex */
+    { "ugrave", "ù" },    /* Small u, grave accent */
+    { "uuml",   "ü" },    /* Small u, diæresis / umlaut */
+    { "yacute", "ý" },    /* Small y, acute accent */
+    { "yen",    "¥" },    /* Yen sign */
+    { "yuml","\255" },    /* Small y, diæresis / umlaut */
+    { NULL, NULL }
 };
 
 char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
@@ -232,8 +232,11 @@ char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen
                 if (cpI+1+n+1 < cpE) {
                     if (*(cpI+1+n) == ';') {
                         if (strncmp(cpI+1, html2char[i].h, n) == 0) {
-                            *cpO++ = html2char[i].c;
-                            if (--*cpOutLen <= 0) { abort(); }
+                            const char * p = html2char[i].replace;
+                            while (*p) {
+                                *cpO++ = *(p++);
+                                if (--*cpOutLen <= 0) { abort(); }
+                            }
                             cpI += 1+n+1;
                             continue;
                         }
