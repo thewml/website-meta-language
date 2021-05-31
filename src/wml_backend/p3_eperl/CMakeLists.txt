@@ -139,6 +139,10 @@ FOREACH (var "perl_libs" "perl_lib_flags")
         "[ \t]+\$"
         ""
         "${var}" "${${var}}")
+    STRING(REGEX REPLACE
+        "^[ \t]+"
+        ""
+        "${var}" "${${var}}")
 ENDFOREACH ()
 # MESSAGE(FATAL_ERROR "libs = < ${perl_libs} ${perl_lib_flags} >")
 SET(perl_match_lib_flags "${perl_lib_flags} ${perl_libs}")
