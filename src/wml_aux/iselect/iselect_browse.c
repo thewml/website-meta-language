@@ -361,7 +361,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
     int bQuit = false;
     int y;
     int x;
-    char msg[1024];
+    char msg[4096];
     char ca[1024];
     char ca3[1024];
     char *cp;
@@ -601,7 +601,7 @@ int iSelect_Browser(int wYSize, int wXSize, int wYPos, int wXPos, int selectpos,
                                     bAllowEmpty = false;
                                 cp++;
 
-                                sprintf(msg, "%s: ", ca3);
+                                snprintf(msg, sizeof(msg)-1, "%s: ", ca3);
                                 iSelect_Draw(wField, wYSize, wXSize, wYPos, wXPos, nAbsFirstLine, nAbsLastLine, -1, nRelFirstDraw, nRelLastDraw, nLines, sField, title, name, mField, msg, tagbegin, tagend);
                                 wrefresh(wField);
                                 cp3 = iSelect_InputField(mYSize, mXSize-strlen(msg), mYPos, mXPos+strlen(msg), bAllowEmpty);
