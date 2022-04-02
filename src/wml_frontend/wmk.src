@@ -674,8 +674,7 @@ sub skipable
     {
         my $out_fn = $_;
         ( ( not -f $out_fn ) or ( $IS >= mtime($out_fn) ) )
-    }
-    @$out_filenames;
+    } @$out_filenames;
 }
 
 #   exit gracefully

@@ -14,7 +14,7 @@ use warnings;
 use 5.014;
 use autodie;
 
-use Path::Tiny qw/ path tempdir tempfile cwd /;
+use Path::Tiny qw/ path /;
 
 my $in    = path(shift);
 my $out_c = shift;

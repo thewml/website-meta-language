@@ -405,7 +405,7 @@ sub _expand_diversion
         my $name = (
             (
                 first { $self->_BUFFER->{$_} == $loc }
-                keys( %{ $self->_BUFFER } )
+                    keys( %{ $self->_BUFFER } )
             ) // 'unknown'
         );
         $self->warning( $self->_filename, $self->_line,
