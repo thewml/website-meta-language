@@ -473,7 +473,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
             }
         }
     }
-#if 1
+#if 0
     FILE * o = fopen("/tmp/ey.pl", "wt");
     fprintf(o, "%s", cpOutBuf);
     fclose(o);
