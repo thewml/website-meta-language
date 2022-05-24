@@ -60,12 +60,12 @@ static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
 
     if (*n <= 0) { abort(); } /* hope NEVER */
     va_start(ap, str);
-    vsnprintf(cpOut, *n, str, ap);
+    const int len = vsnprintf(cpOut, *n, str, ap);
     cpOut[*n - 1] = NUL;
     va_end(ap);
-    *n -= strlen(cpOut);
+    *n -= len;
     if (*n <= 0) { abort(); } /* hope NEVER */
-    return cpOut+strlen(cpOut);
+    return cpOut + len;
 }
 
 char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
