@@ -68,6 +68,14 @@ chdir($script_dir);
 do_system( [ 'which',      'perlcritic' ] );
 do_system( [ 'bash',       '-c', q{echo "$PATH"}, ] );
 do_system( [ 'perlcritic', '--version', ] );
+foreach my $perl ( 'perl', $^X )
+{
+    foreach my $flag (qw/ -v -V /)
+    {
+        # body...
+        do_system( [ $perl, $flag, ] );
+    }
+}
 if ($is_interactive)
 {
     system("bash");
