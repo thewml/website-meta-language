@@ -32,6 +32,14 @@ sub run
         #     die "Output filename not specified! Use the -o|--output flag!";
     }
     my $dir = path("build");
+    $obj->do_system(
+        {
+            cmd => [
+
+                qq%rm -fr "$dir" || true%,
+            ]
+        }
+    );
     $dir->mkpath;
     chdir $dir;
     my $HOME = $ENV{HOME};
