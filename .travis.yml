@@ -28,11 +28,9 @@ install:
     - cpanm local::lib
     - eval "$(perl -Mlocal::lib=$HOME/perl_modules)"
     - cpanm --notest Net::SSLeay
-    - cpanm --notest Bit::Vector Carp::Always Class::XSAccessor Code::TidyAll::Plugin::TestCount File::Which GD Getopt::Long HTML::TextToHTML Image::Size Path::Tiny Perl::Critic Perl::Tidy Term::ReadKey Test::Code::TidyAll
+    - cpanm --notest Bit::Vector Carp::Always Class::XSAccessor Code::TidyAll::Plugin::TestCount Docker::CLI::Wrapper::Container File::Which GD Getopt::Long HTML::TextToHTML Image::Size Path::Tiny Perl::Critic Perl::Tidy Term::ReadKey Test::Code::TidyAll
 language: perl
 perl:
     - "5.28"
 script:
-    - mkdir build
-    - cd build
-    - WML_TEST_BUILD=1 WML_TEST_TIDY=1 TIDYALL_DATA_DIR=$HOME/tidyall.d perl ../src/wml_test/run_test.pl
+    - perl CI-testing/runtest.pl
