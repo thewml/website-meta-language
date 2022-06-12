@@ -74,15 +74,13 @@ static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
     return cpOut+strlen(cpOut);
 }
 
-static char *ePerl_fnwrite(char *cpBuf, const int n, char *cpOut, int *cpOutLen)
+static void ePerl_fnwrite(char *cpBuf, const int n, char ** const cpOut, int *cpOutLen)
 {
     if (*cpOutLen < n) { abort(); }
-    (void)strncpy(cpOut, cpBuf, n);
-    cpOut[*cpOutLen - 1] = NUL;
-    char *cp = cpOut + n;
-    *cp = NUL;
+    (void)strncpy(*cpOut, cpBuf, n);
+    (*cpOut)[*cpOutLen - 1] = NUL;
+    *((*cpOut) += n) = NUL;
     *cpOutLen -= n;
-    return cp;
 }
 
 // fwrite for internal buffer WITH character escaping
@@ -440,11 +438,12 @@ char *ePerl_Bristled2Plain(char *cpBuf)
 
             /* pass through the ePerl block without changes! */
             if (cpe2 > cps) {
-                if (ePerl_convert_entities)
+                if (ePerl_convert_entities) {
                     cpOut = ePerl_Cfnwrite(cps, cpe2-cps, 1, cpOut, &cpOutLen);
-                else
-                    cpOut = ePerl_fnwrite(cps, cpe2-cps, cpOut, &cpOutLen);
-
+                }
+                else {
+                    ePerl_fnwrite(cps, cpe2-cps, &cpOut, &cpOutLen);
+                }
                 /* be smart and automatically add a semicolon
                    if not provided at the end of the ePerl block.
                    But know the continuation indicator "_". */
