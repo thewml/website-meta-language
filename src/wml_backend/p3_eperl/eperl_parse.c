@@ -345,7 +345,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
                             cpOut = ePerl_Efnwrite(cps2, cpe2-1-cps2, 1, cpOut, &cpOutLen);
                             cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "\";");
                         }
-                        cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "\n");
+                        ePerl_writechar(&cpOut, &cpOutLen, '\n');
                     }
                     else {
                         cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "print \"");
@@ -380,7 +380,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
                             cpOut = ePerl_Efnwrite(cps2, cpe2-1-cps2, 1, cpOut, &cpOutLen);
                             cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "\";");
                         }
-                        cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "\n");
+                        ePerl_writechar(&cpOut, &cpOutLen, '\n');
                     }
                     else {
                         cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "print \"");
