@@ -54,7 +54,7 @@ char *ePerl_GetError(void)
     return ePerl_ErrorString;
 }
 
-static inline void ePerl_writechar(char **cpOut, int *n, const char c)
+static inline void ePerl_writechar(char ** const cpOut, int * const n, const char c)
 {
     *((*(cpOut))++) = c;
     --(*n);
