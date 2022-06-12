@@ -74,9 +74,8 @@ static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
     return cpOut+strlen(cpOut);
 }
 
-char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen)
+static char *ePerl_fnwrite(char *cpBuf, const int n, char *cpOut, int *cpOutLen)
 {
-    const int n = nBuf*cNum;
     if (*cpOutLen < n) { abort(); }
     (void)strncpy(cpOut, cpBuf, n);
     cpOut[*cpOutLen - 1] = NUL;
@@ -444,7 +443,7 @@ char *ePerl_Bristled2Plain(char *cpBuf)
                 if (ePerl_convert_entities)
                     cpOut = ePerl_Cfnwrite(cps, cpe2-cps, 1, cpOut, &cpOutLen);
                 else
-                    cpOut = ePerl_fnwrite(cps, cpe2-cps, 1, cpOut, &cpOutLen);
+                    cpOut = ePerl_fnwrite(cps, cpe2-cps, cpOut, &cpOutLen);
 
                 /* be smart and automatically add a semicolon
                    if not provided at the end of the ePerl block.

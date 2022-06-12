@@ -43,7 +43,6 @@ extern bool ePerl_convert_entities;
 extern bool ePerl_line_continuation;
 extern void ePerl_SetError(char *str, ...);
 extern char *ePerl_GetError(void);
-extern char *ePerl_fnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen);
 extern char *ePerl_Efnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *n);
 extern char *ePerl_Cfnwrite(char *cpBuf, int nBuf, int cNum, char *cpOut, int *cpOutLen);
 extern char *ep_strnstr(char *buf, char *str, int n);
