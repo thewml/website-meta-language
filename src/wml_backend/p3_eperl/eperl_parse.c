@@ -54,6 +54,12 @@ char *ePerl_GetError(void)
     return ePerl_ErrorString;
 }
 
+static inline void ePerl_writechar(char **cpOut, int *n, const char c)
+{
+    *((*(cpOut))++) = c;
+    --(*n);
+}
+
 static char *ePerl_fnprintf(char *cpOut, int *n, char *str, ...)
 {
     va_list ap;
@@ -392,8 +398,9 @@ char *ePerl_Bristled2Plain(char *cpBuf)
 
             /* just output a leading space to make
                the -x display more readable. */
-            if (cpOut > cpOutBuf && *(cpOut-1) != '\n')
-                cpOut = ePerl_fnprintf(cpOut, &cpOutLen, " ");
+            if (cpOut > cpOutBuf && *(cpOut-1) != '\n'){
+                ePerl_writechar(&cpOut, &cpOutLen, ' ');
+            }
 
             /* skip the start delimiter */
             cps = cpe+strlen(ePerl_begin_delimiter);
@@ -443,23 +450,26 @@ char *ePerl_Bristled2Plain(char *cpBuf)
                    if not provided at the end of the ePerl block.
                    But know the continuation indicator "_". */
                 if ((*(cpe2-1) != ';') &&
-                    (*(cpe2-1) != '_')   )
-                    cpOut = ePerl_fnprintf(cpOut, &cpOutLen, ";");
+                    (*(cpe2-1) != '_')   ) {
+                    ePerl_writechar(&cpOut, &cpOutLen, ';');
+                }
                 if (*(cpe2-1) == '_')
                     cpOut = cpOut - 1;
             }
 
             /* end preserve newlines for correct line numbers */
-            for ( ; cpe2 <= cpe; cpe2++)
-                if (*cpe2 == '\n')
-                    cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "\n");
+            for ( ; cpe2 <= cpe; cpe2++) {
+                if (*cpe2 == '\n') {
+                    ePerl_writechar(&cpOut, &cpOutLen, '\n');
+                }
+            }
 
             /* output a trailing space to make
                the -x display more readable when
                no newlines have finished the block. */
-            if (cpOut > cpOutBuf && *(cpOut-1) != '\n')
-                cpOut = ePerl_fnprintf(cpOut, &cpOutLen, " ");
-
+            if (cpOut > cpOutBuf && *(cpOut-1) != '\n') {
+                ePerl_writechar(&cpOut, &cpOutLen, ' ');
+            }
             /* and adjust the current position to the first character
                after the end delimiter */
             cps = cpe+strlen(ePerl_end_delimiter);
@@ -475,10 +485,15 @@ char *ePerl_Bristled2Plain(char *cpBuf)
                 if (cps < cpEND)
                     cps++;
                 /* but preserve the newline in the script */
-                cpOut = ePerl_fnprintf(cpOut, &cpOutLen, "\n");
+                ePerl_writechar(&cpOut, &cpOutLen, '\n');
             }
         }
     }
+#if 0
+    FILE * o = fopen("/tmp/ey.pl", "wt");
+    fprintf(o, "%s", cpOutBuf);
+    fclose(o);
+#endif
     RETURN_WVAL(cpOutBuf);
 
     CUS:
