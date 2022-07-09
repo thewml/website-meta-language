@@ -19,10 +19,10 @@ use Class::XSAccessor (
     }
 );
 
-use Cwd ();
-use File::Basename qw/ basename dirname /;
+use Cwd                              ();
+use File::Basename                   qw/ basename dirname /;
 use TheWML::Frontends::Wml::WmlRcDir ();
-use TheWML::Frontends::Wml::Util qw/ _my_cwd /;
+use TheWML::Frontends::Wml::Util     qw/ _my_cwd /;
 
 sub _process_wmlrc_dir
 {

@@ -21,8 +21,8 @@ use Class::XSAccessor (
     }
 );
 
-use List::Util qw/ max /;
-use Path::Tiny qw/ path /;
+use List::Util                   qw/ max /;
+use Path::Tiny                   qw/ path /;
 use TheWML::Frontends::Wml::Util qw/ expandrange /;
 
 sub _protect

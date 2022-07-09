@@ -58,7 +58,7 @@ use TheWML::Config                  ();
 use TheWML::Frontends::Wml::PassObj ();
 
 use TheWML::Frontends::Wml::Util qw/ _my_cwd error split_argv /;
-use File::Which qw/ which /;
+use File::Which                  qw/ which /;
 
 use Path::Tiny qw/ path /;
 

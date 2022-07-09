@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Getopt::Long qw/ GetOptions /;
-use Pod::Usage qw/ pod2usage /;
+use Pod::Usage   qw/ pod2usage /;
 
 my $INSTALLPRIVLIB = 0;
 my $help           = 0;

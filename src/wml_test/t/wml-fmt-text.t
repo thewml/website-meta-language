@@ -5,7 +5,7 @@ use WmlTest ();
 WmlTest::init();
 
 use Test::More;
-use Path::Tiny qw/ tempfile /;
+use Path::Tiny  qw/ tempfile /;
 use File::Which qw/ which /;
 
 unless ( which 'txt2html' )

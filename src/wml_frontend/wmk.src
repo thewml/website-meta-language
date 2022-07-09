@@ -46,12 +46,12 @@ use TheWML::Frontends::Wml::Util qw/ canon_path /;
 
 my $VERSION = "@WML_VERSION@";
 
-use Term::ANSIColor qw/ colored /;
+use Term::ANSIColor   qw/ colored /;
 use Getopt::Long 2.13 ();
-use File::Find ();
-use Time::HiRes qw/ stat /;
-use List::Util qw/ max none /;
-use Path::Tiny qw/ path tempdir tempfile cwd /;
+use File::Find        ();
+use Time::HiRes       qw/ stat /;
+use List::Util        qw/ max none /;
+use Path::Tiny        qw/ path tempdir tempfile cwd /;
 
 ##
 ##  INIT

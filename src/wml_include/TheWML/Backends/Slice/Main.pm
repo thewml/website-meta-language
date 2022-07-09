@@ -52,7 +52,7 @@ use Class::XSAccessor (
 
 use Getopt::Long 2.13 ();
 use Bit::Vector 5.0   ();
-use List::Util qw/ first max /;
+use List::Util        qw/ first max /;
 
 my $slice_version = {
     'v_hex'   => 0x103208,

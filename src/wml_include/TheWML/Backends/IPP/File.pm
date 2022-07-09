@@ -30,7 +30,7 @@ use Class::XSAccessor (
 use Path::Tiny qw/ path /;
 
 use TheWML::Frontends::Wml::Util qw/ canon_path error /;
-use TheWML::Backends::IPP::Line ();
+use TheWML::Backends::IPP::Line  ();
 
 sub _PatternProcess_helper
 {

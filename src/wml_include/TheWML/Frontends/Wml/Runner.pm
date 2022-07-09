@@ -60,10 +60,10 @@ use Class::XSAccessor (
 );
 
 use Getopt::Long 2.13 ();
-use File::Spec ();
-use List::Util qw/ sum /;
-use Path::Tiny qw/ path tempdir /;
-use Term::ReadKey qw/ ReadMode ReadKey /;
+use File::Spec        ();
+use List::Util        qw/ sum /;
+use Path::Tiny        qw/ path tempdir /;
+use Term::ReadKey     qw/ ReadMode ReadKey /;
 
 use TheWML::Config                        ();
 use TheWML::Frontends::Wml::OptD          ();

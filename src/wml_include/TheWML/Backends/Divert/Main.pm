@@ -12,7 +12,7 @@ use Getopt::Long ();
 
 use parent 'TheWML::CmdLine::Base';
 
-use List::Util qw(first min);
+use List::Util      qw(first min);
 use List::MoreUtils qw(any);
 
 use Class::XSAccessor (

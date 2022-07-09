@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Term::ANSIColor qw/ colored /;
-use Path::Tiny qw/ cwd path /;
+use Path::Tiny      qw/ cwd path /;
 
 use WmlTest ();
 WmlTest::init();
