@@ -23,7 +23,7 @@ cache:
         - $HOME/perl_modules
         - $HOME/tidyall.d
 os: linux
-dist: bionic
+dist: focal
 install:
     - cpanm local::lib
     - eval "$(perl -Mlocal::lib=$HOME/perl_modules)"
@@ -31,6 +31,6 @@ install:
     - cpanm --notest Bit::Vector Carp::Always Class::XSAccessor Code::TidyAll::Plugin::TestCount Docker::CLI::Wrapper::Container File::Which GD Getopt::Long HTML::TextToHTML Image::Size Path::Tiny Perl::Critic Perl::Tidy Term::ReadKey Test::Code::TidyAll
 language: perl
 perl:
-    - "5.28"
+    - "5.36"
 script:
     - perl CI-testing/runtest.pl

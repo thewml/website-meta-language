@@ -30,7 +30,8 @@ install:
     # - perl -v
     # - set CMAKE_MAKE_PROGRAM=C:\strawberry\c\bin\gmake.exe
     - echo %PATH%
-    - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -s http://cygwin.mirror.constant.com -P cmake -P gcc -P g++ -P glibc-devel -P libdb-devel -P libcrypt-devel -P libncurses-devel -P libnsl-devel -P libgd-devel -P libgdbm-devel -P libpcre-devel -P lynx -P perl -P perl-CPAN -P perl-GD -P perl-devel
+    # - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -s http://cygwin.mirror.constant.com -P cmake -P gcc -P g++ -P glibc-devel -P libdb-devel -P libcrypt-devel -P libncurses-devel -P libnsl-devel -P libgd-devel -P libgdbm-devel -P libpcre-devel -P lynx -P perl -P perl-CPAN -P perl-GD -P perl-devel
+    - C:\cygwin64\setup-x86_64.exe -qgnNdO -l C:\cygwin64\var\cache\setup -R c:\cygwin64 -P cmake -P gcc -P g++ -P glibc-devel -P libdb-devel -P libcrypt-devel -P libncurses-devel -P libnsl-devel -P libgd-devel -P libgdbm-devel -P libpcre-devel -P lynx -P perl -P perl-CPAN -P perl-GD -P perl-devel
     - "%cpanm% -n Bit::Vector Carp::Always Class::XSAccessor Code::TidyAll::Plugin::TestCount File::Which Getopt::Long HTML::TextToHTML Image::Size Path::Tiny Perl::Critic Perl::Tidy Test::Code::TidyAll Term::ReadKey"
 build: off
 test_script:
