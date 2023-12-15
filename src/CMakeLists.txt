@@ -104,7 +104,6 @@ SET (CPAN_MODULES_TO_CHECK
     "GD"
     "Getopt::Long"
     "Image::Size"
-    "List::MoreUtils"
     "Path::Tiny"
     "Term::ReadKey"
     "Time::HiRes"
