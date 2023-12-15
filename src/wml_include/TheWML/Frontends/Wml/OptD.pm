@@ -127,7 +127,7 @@ sub _adjust_opt_D
     my ( $self, $dnew ) = @_;
 
     my $reldir = $self->_main->_calc_reldir;
-    foreach my $d ( map { quotearg $_} @$dnew )
+    foreach my $d ( map { quotearg $_ } @$dnew )
     {
         if ( my ( $var, $path ) = $d =~ m|^([A-Za-z0-9_]+)~(.+)$| )
         {

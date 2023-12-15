@@ -241,7 +241,7 @@ sub pass1
         my $max = $CURRENT_LEVEL_SET->Max();
         my $i =
             ( ( first { !$CURRENT_LEVEL_SET->bit_test($_) } ( 0 .. $max ) )
-            // max( 0, $max + 1 ) );
+                // max( 0, $max + 1 ) );
         $CURRENT_LEVEL_SET->Bit_On($i);
         return $i + 1;
     };
