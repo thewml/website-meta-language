@@ -23,8 +23,8 @@ jobs:
         -   run: local_lib_shim() { eval "$(perl -Mlocal::lib=$HOME/perl_modules)";
                 } ; local_lib_shim ; cpanm --notest Bit::Vector Carp::Always Class::XSAccessor
                 Code::TidyAll::Plugin::TestCount Docker::CLI::Wrapper::Container File::Which
-                GD Getopt::Long HTML::TextToHTML Image::Size Path::Tiny Perl::Critic
-                Perl::Tidy Term::ReadKey Test::Code::TidyAll
+                GD Getopt::Long HTML::TextToHTML Image::Size List::MoreUtils Path::Tiny
+                Perl::Critic Perl::Tidy Term::ReadKey Test::Code::TidyAll
         -   run: local_lib_shim() { eval "$(perl -Mlocal::lib=$HOME/perl_modules)";
                 } ; local_lib_shim ; perl CI-testing/runtest.pl
 name: use-github-actions
