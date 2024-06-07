@@ -196,9 +196,15 @@ sub pass4
 {
     my ( $_pass_mgr, $opt, $from, $to, $tmp ) = @_;
 
+    my $gm4 = $_pass_mgr->_gnu_m4();
+
+    if ( not defined($gm4) )
+    {
+        error("Unable to find 'gm4' or 'm4' for GNU m4");
+    }
+
     return
-        scalar $_pass_mgr->dosystem(
-        $_pass_mgr->_gnu_m4() . " $opt --prefix-builtins <$from >$to" );
+        scalar $_pass_mgr->dosystem("$gm4 $opt --prefix-builtins <$from >$to");
 }
 
 sub pass5
