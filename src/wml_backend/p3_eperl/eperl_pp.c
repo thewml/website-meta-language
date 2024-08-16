@@ -398,7 +398,7 @@ static char *ePerl_PP_Process(char *cpInput, char **cppINC, int mode)
                 return NULL;
             }
             cpOutBuf = cp2;
-            strncpy(cpOutBuf+nOut, cp, nOutBuf - nOut);
+            strcpy(cpOutBuf+nOut, cp);
             *(cpOutBuf+nOutBuf-1) = NUL;
             nOut += i;
 
