@@ -83,12 +83,10 @@ then
     sed -r -i -e 's#^(deb *)[^ ]+( *buster +main.*)$#\1http://mirror.isoc.org.il/pub/debian\2#' /etc/apt/sources.list
     cat /etc/apt/sources.list
 fi
-# exit 5
 su -c "apt-get update"
 su -c "apt-get -y install eatmydata locales netselect-apt sudo"
 printf "%s\n%s\n" "en_US.UTF-8 UTF-8" "C.UTF-8 UTF-8" > /etc/locale.gen
 sudo dpkg-reconfigure --frontend=noninteractive locales
-# sudo netselect-apt -c israel -t 3 -a amd64 # -n buster
 sudo apt-get update -qq
 EOF
             setup_script_cmd    => "true",
@@ -99,13 +97,11 @@ EOF
                 qw/
                     build-essential
                     cookiecutter
-                    hunspell-en-gb
                     libdb5.3-dev
                     libexpat1-dev
                     libgd-dev
                     libgdbm-compat-dev
                     libgdbm-dev
-                    libhunspell-dev
                     libncurses-dev
                     libpcre2-dev
                     libpcre3-dev
@@ -150,7 +146,6 @@ EOF
                     gdbm-devel
                     gmp-devel
                     hostname
-                    hspell-devel
                     html401-dtds
                     libdb-devel
                     libxml2-devel
@@ -166,10 +161,6 @@ EOF
                     python3
                     python3-devel
                     python3-libsass
-                    ruby-devel
-                    rubygem-nokogiri
-                    rubygem-rexml
-                    rubygem-rspec
                     sgml-common
                     the_silver_searcher
                     vim
@@ -216,7 +207,6 @@ sub run_config
                 cmake-data
                 cpanminus
                 expat
-                hunspell
                 g++
                 gcc
                 git
@@ -229,7 +219,6 @@ sub run_config
                 python3-setuptools
                 python3-virtualenv
                 rsync
-                ruby
                 tidy
                 virtualenv
                 zip
@@ -377,8 +366,6 @@ cd ~/source
 if $install_langpack
 then
     $package_manager_install_cmd glibc-langpack-en glibc-locale-source
-    # localedef --verbose --force -i en_US -f UTF-8 en_US.UTF-8
-    # localedef --force -i en_US -f UTF-8 en_US.UTF-8
 fi
 $package_manager_install_cmd @deps
 sudo ln -sf /usr/bin/make /usr/bin/gmake
