@@ -115,10 +115,12 @@ EOF
                     libpcre3-dev
                     libperl-dev
                     libpython3-dev
+                    libssl-dev
                     libxml2-dev
                     libxml2-utils
                     libxslt1-dev
                     lynx
+                    openssl
                     perl
                     python3
                     python3-all
@@ -425,81 +427,6 @@ cpanm --notest HTML::T5
 # For wml
 cpanm --notest Bit::Vector Carp::Always Class::XSAccessor GD Getopt::Long IO::All Image::Size List::MoreUtils Path::Tiny Term::ReadKey
 @nl_trav_cmds
-if false
-then
-# For quadp
-cpanm --notest Class::XSAccessor Config::IniFiles HTML::Links::Localize
-sudo bash -c "$setup_script_cmd ; cpanm --notest @cpan_deps"
-sudo cpanm --notest https://salsa.debian.org/reproducible-builds/strip-nondeterminism.git
-cd ~/source
-pwd
-ls -l
-ls -l bin/ || true
-perl bin/my-cookiecutter.pl
-deps-app plinst --notest -i bin/common-required-deps.yml -i bin/required-modules.yml
-gem install asciidoctor compass compass-blueprint
-PATH="\$HOME/bin:\$PATH"
-( cd .. && git clone https://github.com/thewml/wml-extended-apis.git && cd wml-extended-apis/xhtml/1.x && bash Install.bash )
-( cd .. && git clone https://github.com/thewml/latemp.git && cd latemp/support-headers && perl install.pl )
-( cd .. && git clone https://github.com/shlomif/wml-affiliations.git && cd wml-affiliations/wml && bash Install.bash )
-bash -x bin/install-npm-deps.sh
-bash bin/install-git-cmakey-program-system-wide.bash 'git' 'installer' 'https://github.com/shlomif/quad-pres'
-bash bin/install-git-cmakey-program-system-wide.bash 'git' 'src' 'https://github.com/thewml/website-meta-language.git'
-bash bin/install-git-cmakey-program-system-wide.bash 'git' 'installer' 'https://github.com/thewml/latemp.git'
-echo '{"amazon_sak":"invalid"}' > "\$HOME"/.shlomifish-amazon-sak.json
-( cd "\$HOME" && git clone https://github.com/w3c/markup-validator.git )
-pwd
-echo "HOME=\$HOME"
-if false
-then
-    virtualenv -p `which pypy3` /pypyenv
-    source /pypyenv/bin/activate
-else
-    virtualenv -p `which python3` /python_3_env
-    source /python_3_env/bin/activate
-fi
-
-`which python3` -m pip install \$pydeps
-export LD_LIBRARY_PATH="/usr/local/lib:\$LD_LIBRARY_PATH"
-cmake_build_is_already_part_of_test_sh='true'
-if test "\$cmake_build_is_already_part_of_test_sh" != "true"
-then
-    true # bash -c "mkdir b ; cd b ; make && cd .. && rm -fr b"
-fi
-if true
-then
-    a="`pwd`"
-    mkdir -p \$HOME/src
-    cd \$HOME/src
-    git clone https://github.com/tdewolff/minify.git
-    cd minify
-    make install
-    cd "\$a"
-else
-    gourl="github.com/tdewolff/minify/cmd/minify"
-    # go mod init
-    go mod init shlomifish.org/golang/m
-    if ! go get -u "\$gourl"
-    then
-        go install "\$gourl\@latest"
-    fi
-fi
-find / -name minify | perl -lpE '\$_ = "find-result=(\$_)"'
-PATH="\$PATH:\$HOME/go/bin"
-_local_dbtoepubdir="`pwd`/lib/repos/xslt10-stylesheets/xsl/epub/bin"
-_local_dbtoepub="\${_local_dbtoepubdir}/dbtoepub"
-if test -e "\$_local_dbtoepub"
-then
-    export DBTOEPUB="/usr/bin/ruby \$_local_dbtoepub"
-    PATH="\$PATH:\${_local_dbtoepubdir}"
-elif test -x /usr/bin/dbtoepub
-then
-    export DBTOEPUB="/usr/bin/ruby \$(which dbtoepub)"
-fi
-which dbtoepub
-# bash bin/rebuild
-TIDYALL_DATA_DIR="\$HOME/tidyall_d" bash -x bin/run-ci-build.bash
-fi
 EOSCRIPTTTTTTT
     $obj->exe_bash_code( { code => $script, } );
 
