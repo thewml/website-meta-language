@@ -63,7 +63,7 @@ my $git_cmds = [
 ];
 my $trav_cmds = [
     ( grep { $_ ne "cpanm local::lib" } @{ $yaml_data->{install} } ),
-    @$git_cmds, @{ $yaml_data->{install} },
+    @$git_cmds, @{ $yaml_data->{script} },
 ];
 
 my $NOSYNC  = "LD_PRELOAD=/usr/lib64/nosync/nosync.so";
@@ -103,36 +103,28 @@ EOF
                     docbook-xsl-ns
                     docbook5-xml
                     graphicsmagick
-                    hspell
                     hunspell-en-gb
                     libdb5.3-dev
-                    libdbd-sqlite3-perl
                     libexpat1-dev
                     libgd-dev
                     libgdbm-compat-dev
                     libgdbm-dev
-                    libgmp-dev
                     libhunspell-dev
                     libncurses-dev
                     libpcre2-dev
                     libpcre3-dev
                     libperl-dev
-                    libprimesieve-dev
                     libpython3-dev
                     libxml2-dev
                     libxml2-utils
                     libxslt1-dev
                     lynx
                     perl
-                    pysassc
                     python3
                     python3-all
                     python3-dev
                     python3-venv
                     python3-virtualenv
-                    ruby-dev
-                    ruby-rspec
-                    silversearcher-ag
                     txt2html
                     vim
                     xsltproc
@@ -227,22 +219,13 @@ sub run_config
                 cmake
                 cmake-data
                 cpanminus
-                cppcheck
                 expat
-                fortune-mod
                 hunspell
                 g++
                 gcc
                 git
-                golang
-                inkscape
                 lynx
                 make
-                nodejs
-                npm
-                optipng
-                primesieve
-                pypy3
                 python3
                 python3-cookiecutter
                 python3-pip
