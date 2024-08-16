@@ -150,6 +150,7 @@ EOF
             sys_deps              => [
                 qw/
                     GraphicsMagick
+                    diffutils
                     docbook-dtds
                     docbook-style-xsl
                     docbook5-style-xsl
@@ -389,16 +390,6 @@ then
 fi
 $package_manager_install_cmd @deps
 sudo ln -sf /usr/bin/make /usr/bin/gmake
-if false
-then
-    git clone https://github.com/kimwalisch/primesieve
-    cd primesieve
-    cmake .
-    make -j2
-    sudo make install
-    cd ..
-    rm -fr primesieve
-fi
 EOSCRIPTTTTTTT
 
     if ($from_snap)
@@ -419,6 +410,7 @@ EOSCRIPTTTTTTT
 set -e -x
 $locale
 $setup_script_cmd
+which cmp
 pydeps="WebTest appdirs beautifulsoup4 bottle bs4 click cookiecutter cssselect lxml numpy pycotap rebookmaker scour soupsieve vnu_validator weasyprint webtest zenfilter"
 sudo -H bash -c "$setup_script_cmd ; `which python3` -m pip install $pip_options \$pydeps"
 # cpanm -vvv IO::Async
