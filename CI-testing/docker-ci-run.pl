@@ -156,6 +156,7 @@ EOF
                     gd-devel
                     gdbm-devel
                     gmp-devel
+                    hostname
                     hspell-devel
                     html401-dtds
                     libdb-devel
@@ -444,7 +445,7 @@ my $output_fn;
 my $force_load;
 my $cleanrun;
 my $cleanup;
-my $regex_filter = 'deb';
+my $regex_filter = '.';
 
 GetOptions(
     "cleanrun!"      => \$cleanrun,
