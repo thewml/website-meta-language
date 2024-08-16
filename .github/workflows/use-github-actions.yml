@@ -11,9 +11,8 @@ jobs:
         -   run: sudo apt-get -y remove libgd3 nginx
         -   run: sudo apt-get --no-install-recommends install -y eatmydata
         -   run: sudo eatmydata apt-get --no-install-recommends install -y build-essential
-                cmake cpanminus hunspell hunspell-en-gb libdb5.3-dev libgd-dev libhunspell-dev
-                libncurses-dev libpcre3-dev libperl-dev lynx perl txt2html xz-utils
-                zip
+                cmake cpanminus libdb5.3-dev libgd-dev libncurses-dev libpcre3-dev
+                libperl-dev lynx perl txt2html xz-utils zip
         -   run: local_lib_shim() { eval "$(perl -Mlocal::lib=$HOME/perl_modules)";
                 } ; local_lib_shim ; cpanm local::lib
         -   run: local_lib_shim() { eval "$(perl -Mlocal::lib=$HOME/perl_modules)";
