@@ -226,6 +226,7 @@ sub run_config
                 git
                 lynx
                 make
+                m4
                 python3
                 python3-cookiecutter
                 python3-pip
