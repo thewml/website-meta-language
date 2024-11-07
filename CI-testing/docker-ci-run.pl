@@ -128,7 +128,7 @@ EOF
             ],
         }
     ),
-    'fedora:40' => Docker::CLI::Wrapper::Container::Config->new(
+    'fedora:41' => Docker::CLI::Wrapper::Container::Config->new(
         {
             container                   => "wml_fedora",
             install_langpack            => "true",
@@ -155,6 +155,7 @@ EOF
                     pcre-devel
                     perl-DBD-SQLite
                     perl-Inline-Python
+                    perl-LWP-Protocol-https
                     perl-XML-Parser
                     perl-generators
                     primesieve-devel
