@@ -69,6 +69,52 @@ my $trav_cmds = [
 my $NOSYNC  = "LD_PRELOAD=/usr/lib64/nosync/nosync.so";
 my $EN      = "export $NOSYNC";
 my $configs = {
+    'archlinux' => Docker::CLI::Wrapper::Container::Config->new(
+        {
+            container                   => "wml_archlinux",
+            install_langpack            => "true",
+            package_manager_install_cmd => "pacman -Syu",
+
+            # pip_options                 => "--break-system-packages",
+            pip_options           => "",
+            setup_package_manager => "pacman -Syu sudo ;",
+            setup_script_cmd      => "true ;",
+            snapshot_names_base   => "wml/itself_archlinu",
+            sys_deps              => [
+                map { s/\-devel\z//mrs }
+                    qw/
+                    diffutils
+                    gd-devel
+                    gdbm-devel
+                    gmp-devel
+                    hostname
+                    html401-dtds
+                    libdb-devel
+                    libxml2-devel
+                    libxslt
+                    libxslt-devel
+                    ncurses-devel
+                    pcre-devel
+                    perl-DBD-SQLite
+                    perl-Inline-Python
+                    perl-LWP-Protocol-https
+                    perl-XML-Parser
+                    perl-generators
+                    primesieve-devel
+                    python3
+                    python3-devel
+                    python3-libsass
+                    sgml-common
+                    the_silver_searcher
+                    vim
+                    virtualenv
+                    which
+                    xhtml1-dtds
+                    xz
+                    /,
+            ],
+        }
+    ),
     'debian:12' => Docker::CLI::Wrapper::Container::Config->new(
         {
             container                   => "wml_ci_debian",
