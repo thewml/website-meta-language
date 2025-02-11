@@ -21,10 +21,10 @@ $wmk =~ s/l$/k/;
 my $abs_wmk = path($wmk)->absolute;
 
 WmlTest::tmpfile_with_name( 'a.html', "x" );
-WmlTest::tmpfile_with_name( 'a',      <<'EOT_IN');
+WmlTest::tmpfile_with_name( 'a',      <<'EOT_IN' );
 foo
 EOT_IN
-WmlTest::tmpfile_with_name( 'a.wml', <<"EOT_IN");
+WmlTest::tmpfile_with_name( 'a.wml', <<"EOT_IN" );
 #include 'a'
 bar
 EOT_IN
@@ -69,7 +69,7 @@ EOT_IN
 my $tmpfile2 = WmlTest::tmpfile(<<'EOT_IN');
 Willkommen
 EOT_IN
-WmlTest::tmpfile_with_name( 'a.wml', <<'EOT_IN');
+WmlTest::tmpfile_with_name( 'a.wml', <<'EOT_IN' );
 #!wml -o (ALL-LANG_*)+LANG_EN:%BASE.en.html \
       -o (ALL-LANG_*)+LANG_DE:%BASE.de.html
 #use wml::std::lang

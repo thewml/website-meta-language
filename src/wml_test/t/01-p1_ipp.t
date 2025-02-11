@@ -10,19 +10,19 @@ WmlTest::init();
 #
 #   TEST 1-4: throughput
 #
-my $temp_fn_1 = WmlTest::tmpfile_with_name( 'a', <<'EOT');
+my $temp_fn_1 = WmlTest::tmpfile_with_name( 'a', <<'EOT' );
 a1
 #include 'b'
 a2
 EOT
 
-WmlTest::tmpfile_with_name( 'b', <<'EOT');
+WmlTest::tmpfile_with_name( 'b', <<'EOT' );
 b1
 #include 'c'
 b2
 EOT
 
-WmlTest::tmpfile_with_name( 'c', <<'EOT');
+WmlTest::tmpfile_with_name( 'c', <<'EOT' );
 c
 EOT
 
@@ -49,7 +49,7 @@ baz=$(baz)
 # comment
 EOT
 
-WmlTest::tmpfile_with_name( 'b', <<'EOT');
+WmlTest::tmpfile_with_name( 'b', <<'EOT' );
 bar=$(bar)
 __END__
 skipped

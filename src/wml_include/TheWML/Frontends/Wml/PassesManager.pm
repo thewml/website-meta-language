@@ -344,7 +344,7 @@ sub _display_times
 
     $timestr =
         sprintf( '%4.2f | ', $at - $pt ) . $timestr . sprintf( '| %6.2f', $at );
-    $_pass_mgr->verbose( 1, <<"EOF");
+    $_pass_mgr->verbose( 1, <<"EOF" );
 Processing time (seconds):
 main |  ipp  mp4h   epl  gm4  div asub hfix hstr slic |  TOTAL
 ---- | ---- ----- ----- ---- ---- ---- ---- ---- ---- | ------

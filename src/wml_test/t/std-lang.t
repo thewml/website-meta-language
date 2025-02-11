@@ -7,7 +7,7 @@ WmlTest::init();
 
 use Test::More tests => 2;
 
-WmlTest::tmpfile_with_name( 'a.wml', <<'EOT_IN');
+WmlTest::tmpfile_with_name( 'a.wml', <<'EOT_IN' );
 #use wml::std::lang
 <lang:new id=en short>
 <lang:new id=de short>
