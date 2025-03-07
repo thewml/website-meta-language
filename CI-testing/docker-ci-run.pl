@@ -268,10 +268,8 @@ sub run_config
     );
     my @cpan_deps = (
         qw/
-            App::Deps::Verify
             Carp::Always
             File::Which
-            IO::All
             List::MoreUtils
             MooX
             MooX::late
@@ -429,12 +427,9 @@ $setup_script_cmd
 which cmp
 pydeps="WebTest appdirs beautifulsoup4 bottle bs4 click cookiecutter cssselect lxml numpy pycotap rebookmaker scour soupsieve vnu_validator weasyprint webtest zenfilter"
 sudo -H bash -c "$setup_script_cmd ; `which python3` -m pip install $pip_options \$pydeps"
-# cpanm -vvv IO::Async
-cpanm --notest IO::Async
-cpanm --notest App::Deps::Verify Pod::Xhtml
-cpanm --notest HTML::T5
+cpanm --notest Pod::Xhtml
 # For wml
-cpanm --notest Bit::Vector Carp::Always Class::XSAccessor GD Getopt::Long IO::All Image::Size List::MoreUtils Path::Tiny Term::ReadKey
+cpanm --notest Bit::Vector Carp::Always Class::XSAccessor GD Getopt::Long Image::Size List::MoreUtils Path::Tiny Term::ReadKey
 @nl_trav_cmds
 EOSCRIPTTTTTTT
     $obj->exe_bash_code( { code => $script, } );
