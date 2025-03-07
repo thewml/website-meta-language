@@ -122,17 +122,12 @@ my $configs = {
                 "sudo eatmydata apt-get --no-install-recommends install -y",
             pip_options           => "--break-system-packages",
             setup_package_manager => <<'EOF',
-if false
-then
-    cat /etc/apt/sources.list
-    sed -r -i -e 's#^(deb *)[^ ]+( *buster +main.*)$#\1http://mirror.isoc.org.il/pub/debian\2#' /etc/apt/sources.list
-    cat /etc/apt/sources.list
-fi
 su -c "apt-get update"
 su -c "apt-get -y install eatmydata locales netselect-apt sudo"
 printf "%s\n%s\n" "en_US.UTF-8 UTF-8" "C.UTF-8 UTF-8" > /etc/locale.gen
 sudo dpkg-reconfigure --frontend=noninteractive locales
 sudo apt-get update -qq
+sudo eatmydata apt-get -y full-upgrade
 EOF
             setup_script_cmd    => "true",
             snapshot_names_base => "wml/hpage_debian",
@@ -141,7 +136,6 @@ EOF
                 @$debian_sys_deps,
                 qw/
                     build-essential
-                    cookiecutter
                     libdb5.3-dev
                     libexpat1-dev
                     libgd-dev
@@ -179,10 +173,11 @@ EOF
 
             # pip_options                 => "--break-system-packages",
             pip_options           => "",
-            setup_package_manager => "sudo dnf -y install nosync ; $EN ;",
-            setup_script_cmd      => "$EN",
-            snapshot_names_base   => "wml/hpage_fedora",
-            sys_deps              => [
+            setup_package_manager =>
+"sudo dnf -y install nosync ; $EN ; sudo dnf -y update --refresh ; ",
+            setup_script_cmd    => "$EN",
+            snapshot_names_base => "wml/hpage_fedora",
+            sys_deps            => [
                 qw/
                     diffutils
                     gd-devel
@@ -425,7 +420,7 @@ set -e -x
 $locale
 $setup_script_cmd
 which cmp
-pydeps="WebTest appdirs beautifulsoup4 bottle bs4 click cookiecutter cssselect lxml numpy pycotap rebookmaker scour soupsieve vnu_validator weasyprint webtest zenfilter"
+pydeps="WebTest appdirs beautifulsoup4 bottle bs4 cssselect lxml numpy pycotap rebookmaker scour soupsieve vnu_validator weasyprint webtest zenfilter"
 sudo -H bash -c "$setup_script_cmd ; `which python3` -m pip install $pip_options \$pydeps"
 cpanm --notest Pod::Xhtml
 # For wml
