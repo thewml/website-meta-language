@@ -107,7 +107,6 @@ my $configs = {
                     sgml-common
                     the_silver_searcher
                     vim
-                    virtualenv
                     which
                     xhtml1-dtds
                     xz
@@ -163,8 +162,6 @@ EOF
                     python3
                     python3-all
                     python3-dev
-                    python3-venv
-                    python3-virtualenv
                     txt2html
                     vim
                     xsltproc
@@ -211,7 +208,6 @@ EOF
                     sgml-common
                     the_silver_searcher
                     vim
-                    virtualenv
                     which
                     xhtml1-dtds
                     xz
@@ -261,13 +257,10 @@ sub run_config
                 make
                 m4
                 python3
-                python3-cookiecutter
                 python3-pip
                 python3-setuptools
-                python3-virtualenv
                 rsync
                 tidy
-                virtualenv
                 zip
                 /,
             @$sys_deps,
@@ -280,8 +273,6 @@ sub run_config
             File::Which
             IO::All
             List::MoreUtils
-            Math::BigInt::GMP
-            Math::GMP
             MooX
             MooX::late
             Path::Tiny
@@ -291,7 +282,6 @@ sub run_config
             Test::File::IsSorted
             Test::PerlTidy
             Test::TrailingSpace
-            Tree::AVL
             /
     );
 
@@ -463,14 +453,16 @@ my $output_fn;
 my $force_load;
 my $cleanrun;
 my $cleanup;
-my $regex_filter = '.';
+my $regex_filter     = '.';
+my $regex_filter_out = '________NOTHING';
 
 GetOptions(
-    "cleanrun!"      => \$cleanrun,
-    "cleanup!"       => \$cleanup,
-    "force-load!"    => \$force_load,
-    "regex-filter=s" => \$regex_filter,
-    "output|o=s"     => \$output_fn,
+    "cleanrun!"          => \$cleanrun,
+    "cleanup!"           => \$cleanup,
+    "force-load!"        => \$force_load,
+    "output|o=s"         => \$output_fn,
+    "regex-filter=s"     => \$regex_filter,
+    "regex-filter-out=s" => \$regex_filter_out,
 ) or die $!;
 
 # enable hires wallclock timing if possible
@@ -478,8 +470,10 @@ use Benchmark ':hireswallclock';
 
 my %times;
 
-my @systems_names =
-    ( grep { /$regex_filter/ms } sort { $a cmp $b } ( keys %$configs ) );
+my @systems_names = (
+    grep { /$regex_filter/ms and ( not /$regex_filter_out/ms ) }
+    sort { $a cmp $b } ( keys %$configs )
+);
 SYSTEMS:
 foreach my $sys (@systems_names)
 {
