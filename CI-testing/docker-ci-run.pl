@@ -95,17 +95,12 @@ my $configs = {
                     libxslt-devel
                     ncurses-devel
                     pcre-devel
-                    perl-DBD-SQLite
-                    perl-Inline-Python
                     perl-LWP-Protocol-https
                     perl-XML-Parser
                     perl-generators
-                    primesieve-devel
                     python3
                     python3-devel
-                    python3-libsass
                     sgml-common
-                    the_silver_searcher
                     vim
                     which
                     xhtml1-dtds
@@ -191,17 +186,12 @@ EOF
                     libxslt-devel
                     ncurses-devel
                     pcre-devel
-                    perl-DBD-SQLite
-                    perl-Inline-Python
                     perl-LWP-Protocol-https
                     perl-XML-Parser
                     perl-generators
-                    primesieve-devel
                     python3
                     python3-devel
-                    python3-libsass
                     sgml-common
-                    the_silver_searcher
                     vim
                     which
                     xhtml1-dtds
