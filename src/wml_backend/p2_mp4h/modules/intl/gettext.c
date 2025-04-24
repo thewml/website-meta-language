@@ -29,8 +29,7 @@
 */
 
 #define MP4H_MODULE
-#include <mp4h.h>
-#undef MP4H_MODULE
+#include "mp4h.h"
 
 #include <libintl.h>
 /* For strlen() */

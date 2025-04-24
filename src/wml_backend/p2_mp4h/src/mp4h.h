@@ -68,8 +68,6 @@
 # include <unistd.h>
 #endif
 
-char *mktemp ();
-
 #ifndef __P
 # ifdef PROTOTYPES
 #  define __P(Args) Args

@@ -33,9 +33,9 @@
 
 #define MP4H_MODULE
 #include "mp4h.h"
-#undef MP4H_MODULE
 
 #include "builtin.h"
+#undef MP4H_MODULE
 
 #define CHECK_SAFETY_LEVEL(sl)                                  \
   if (safety_level > sl)                                        \
