@@ -353,7 +353,6 @@ builtin_tab[] =
 
 /*   Local functions  */
 static void push_builtin_table __P ((builtin *));
-static void set_trace __P ((symbol *, const char *));
 static void generic_set_hook __P ((MP4H_BUILTIN_PROTO, bool, int));
 static void math_relation __P ((MP4H_BUILTIN_PROTO, mathrel_type));
 static void mathop_functions __P ((MP4H_BUILTIN_PROTO, mathop_type));
