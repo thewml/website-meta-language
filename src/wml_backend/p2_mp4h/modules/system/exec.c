@@ -59,6 +59,8 @@ mp4h_finish_module(void)
 {
 }
 
+typedef void (*mp4m_func_type) (MP4H_BUILTIN_PROTO);
+
 static void
 mp4m_system_execute (MP4H_BUILTIN_ARGS)
 {
@@ -86,6 +88,6 @@ mp4m_system_execute (MP4H_BUILTIN_ARGS)
              CURRENT_FILE_LINE, type, ARG (0)));
       return;
     }
-  (*(bp->func))(MP4H_BUILTIN_RECUR);
+  (*((mp4m_func_type)(*(bp->func))))(MP4H_BUILTIN_RECUR);
 }
 
