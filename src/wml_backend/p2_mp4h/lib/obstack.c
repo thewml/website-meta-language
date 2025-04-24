@@ -82,13 +82,8 @@ union fooround {long x; double d;};
    abort gracefully or use longjump - but shouldn't return.  This
    variable by default points to the internal function
    `print_and_abort'.  */
-#if defined (__STDC__) && __STDC__
 static void print_and_abort (void);
 void (*obstack_alloc_failed_handler) (void) = print_and_abort;
-#else
-static void print_and_abort ();
-void (*obstack_alloc_failed_handler) () = print_and_abort;
-#endif
 
 /* Exit value used when `print_and_abort' is used.  */
 #if defined __GNU_LIBRARY__
@@ -152,13 +147,8 @@ _obstack_begin (h, size, alignment, chunkfun, freefun)
      struct obstack *h;
      int size;
      int alignment;
-#if defined (__STDC__) && __STDC__
      POINTER (*chunkfun) (long);
      void (*freefun) (void *);
-#else
-     POINTER (*chunkfun) ();
-     void (*freefun) ();
-#endif
 {
   register struct _obstack_chunk *chunk; /* points to new chunk */
 
@@ -181,13 +171,8 @@ _obstack_begin (h, size, alignment, chunkfun, freefun)
       size = 4096 - extra;
     }
 
-#if defined (__STDC__) && __STDC__
   h->chunkfun = (struct _obstack_chunk * (*)(void *, long)) chunkfun;
   h->freefun = (void (*) (void *, struct _obstack_chunk *)) freefun;
-#else
-  h->chunkfun = (struct _obstack_chunk * (*)()) chunkfun;
-  h->freefun = freefun;
-#endif
   h->chunk_size = size;
   h->alignment_mask = alignment - 1;
   h->use_extra_arg = 0;

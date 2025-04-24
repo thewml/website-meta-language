@@ -42,11 +42,7 @@
 /* If NULL, error will flush stdout, then print on stderr the program
    name, a colon and a space.  Otherwise, error will call this
    function without parameters instead.  */
-void (*error_print_progname) (
-#if __STDC__ - 0
-			      void
-#endif
-			      );
+void (*error_print_progname) ( void );
 
 /* This variable is incremented each time `error' is called.  */
 unsigned int error_message_count;
