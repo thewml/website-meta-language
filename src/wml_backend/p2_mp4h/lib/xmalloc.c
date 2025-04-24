@@ -38,12 +38,10 @@
 #endif
 
 /* Prototypes for functions defined here.  */
-#if defined (__STDC__) && __STDC__
 static void *fixup_null_alloc (size_t n);
 void *xmalloc (size_t n);
 void *xcalloc (size_t n, size_t s);
 void *xrealloc (void *p, size_t n);
-#endif
 
 
 /* Exit value when the requested amount of memory is not available.

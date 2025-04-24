@@ -51,11 +51,7 @@
 #ifndef ELIDE_CODE
 
 
-#if defined (__STDC__) && __STDC__
 #define POINTER void *
-#else
-#define POINTER char *
-#endif
 
 /* Determine default alignment.  */
 struct fooalign {char x; double d;};
