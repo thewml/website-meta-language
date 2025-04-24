@@ -21,12 +21,8 @@
 
 #include <string.h>
 
-#if defined (__STDC__) && __STDC__
 char *xmalloc (size_t);
 char *xstrdup (const char *string);
-#else
-char *xmalloc ();
-#endif
 
 /* Return a newly allocated copy of STRING.  */
 

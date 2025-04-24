@@ -54,13 +54,8 @@ LT_BEGIN_C_DECLS
 /* LT_PARAMS is a macro used to wrap function prototypes, so that compilers
    that don't understand ANSI C prototypes still work, and ANSI C
    compilers can issue warnings about type mismatches.  */
-#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(WIN32) || defined(__cplusplus)
 # define LT_PARAMS(protos)	protos
 # define lt_ptr		void*
-#else
-# define LT_PARAMS(protos)	()
-# define lt_ptr		char*
-#endif
 
 /* LT_STMT_START/END are used to create macros which expand to a
    a single compound statement in a portable way.  */
@@ -79,11 +74,7 @@ LT_BEGIN_C_DECLS
 
 /* LT_CONC creates a new concatenated symbol for the compiler
    in a portable way.  */
-#if defined(__STDC__) || defined(__cplusplus)
-#  define LT_CONC(s,t)	s##t
-#else
-#  define LT_CONC(s,t)	s/**/t
-#endif
+#define LT_CONC(s,t)	s##t
 
 /* LT_STRLEN can be used safely on NULL pointers.  */
 #define LT_STRLEN(s)	(((s) && (s)[0]) ? strlen (s) : 0)
