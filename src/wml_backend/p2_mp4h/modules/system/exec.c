@@ -43,9 +43,11 @@ DECLARE(mp4m_system_execute);
 
 #undef DECLARE
 
+typedef void (*myfunc_type)(void);
+
 builtin mp4h_macro_table[] =
 {
-  { "exec",              true,    true,   mp4m_system_execute },
+  { "exec",              true,    true,   ((myfunc_type)(mp4m_system_execute)) },
   { 0,                  false,    false,  0 },
 };
 
