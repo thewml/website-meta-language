@@ -105,7 +105,6 @@ struct obstack *_obstack;
    For free, do not use ?:, since some compilers, like the MIPS compilers,
    do not allow (expr) ? void : void.  */
 
-#if defined (__STDC__) && __STDC__
 #define CALL_CHUNKFUN(h, size) \
   (((h) -> use_extra_arg) \
    ? (*(h)->chunkfun) ((h)->extra_arg, (size)) \
@@ -118,20 +117,6 @@ struct obstack *_obstack;
     else \
       (*(void (*) (void *)) (h)->freefun) ((old_chunk)); \
   } while (0)
-#else
-#define CALL_CHUNKFUN(h, size) \
-  (((h) -> use_extra_arg) \
-   ? (*(h)->chunkfun) ((h)->extra_arg, (size)) \
-   : (*(struct _obstack_chunk *(*) ()) (h)->chunkfun) ((size)))
-
-#define CALL_FREEFUN(h, old_chunk) \
-  do { \
-    if ((h) -> use_extra_arg) \
-      (*(h)->freefun) ((h)->extra_arg, (old_chunk)); \
-    else \
-      (*(void (*) ()) (h)->freefun) ((old_chunk)); \
-  } while (0)
-#endif
 
 
 /* Initialize an obstack H for use.  Specify chunk size SIZE (0 means default).
@@ -195,13 +180,8 @@ _obstack_begin_1 (h, size, alignment, chunkfun, freefun, arg)
      struct obstack *h;
      int size;
      int alignment;
-#if defined (__STDC__) && __STDC__
      POINTER (*chunkfun) (POINTER, long);
      void (*freefun) (POINTER, POINTER);
-#else
-     POINTER (*chunkfun) ();
-     void (*freefun) ();
-#endif
      POINTER arg;
 {
   register struct _obstack_chunk *chunk; /* points to new chunk */
@@ -225,13 +205,8 @@ _obstack_begin_1 (h, size, alignment, chunkfun, freefun, arg)
       size = 4096 - extra;
     }
 
-#if defined(__STDC__) && __STDC__
   h->chunkfun = (struct _obstack_chunk * (*)(void *,long)) chunkfun;
   h->freefun = (void (*) (void *, struct _obstack_chunk *)) freefun;
-#else
-  h->chunkfun = (struct _obstack_chunk * (*)()) chunkfun;
-  h->freefun = freefun;
-#endif
   h->chunk_size = size;
   h->alignment_mask = alignment - 1;
   h->extra_arg = arg;
@@ -320,11 +295,9 @@ _obstack_newchunk (h, length)
    This is here for debugging.
    If you use it in a program, you are probably losing.  */
 
-#if defined (__STDC__) && __STDC__
 /* Suppress -Wmissing-prototypes warning.  We don't want to declare this in
    obstack.h because it is just for debugging.  */
 int _obstack_allocated_p (struct obstack *h, POINTER obj);
-#endif
 
 int
 _obstack_allocated_p (h, obj)
