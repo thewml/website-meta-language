@@ -54,16 +54,18 @@ DECLARE(mp4m_intl_gettext);
 
 /* The table of builtins defined by this module - just one */
 
+typedef void (*myfunc_type)(void);
+
 builtin mp4h_macro_table[] =
 {
   /* name             container   expand    function
                                 attributes                      */
 
-  { "textdomain",       false,    true,   mp4m_intl_textdomain },
-  { "bindtextdomain",   false,    true,   mp4m_intl_bindtextdomain },
+  { "textdomain",       false,    true,   ((myfunc_type)(mp4m_intl_textdomain)) },
+  { "bindtextdomain",   false,    true,   ((myfunc_type)(mp4m_intl_bindtextdomain)) },
   { "bind_textdomain_codeset",
-                        false,    true,   mp4m_intl_bind_textdomain_codeset },
-  { "gettext",           true,    true,   mp4m_intl_gettext },
+                        false,    true,   ((myfunc_type)(mp4m_intl_bind_textdomain_codeset)) },
+  { "gettext",           true,    true,   ((myfunc_type)(mp4m_intl_gettext)) },
   { 0,                  false,   false,   0 },
 };
 
