@@ -31,8 +31,6 @@
 #include "eperl_global.h"
 #include "eperl_proto.h"
 
-char * getenv ();
-
 /*
 **  own setenv() function which works with Perl
 */
