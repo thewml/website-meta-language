@@ -360,7 +360,7 @@ symtab_debug (void)
       else
         (void) lookup_symbol (text, SYMBOL_INSERT);
     }
-  hack_all_symbols ((hack_symbol)dump_symbol, "");
+  hack_all_symbols ((hack_symbol *)dump_symbol, "");
 }
 
 static void

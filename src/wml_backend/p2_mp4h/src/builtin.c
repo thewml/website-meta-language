@@ -1146,7 +1146,7 @@ mp4h_bp_debugging_on (MP4H_BUILTIN_ARGS)
   int i;
 
   if (argc == 1)
-    hack_all_symbols (set_trace, (char *) obs);
+    hack_all_symbols ((hack_symbol *)set_trace, (char *) obs);
   else
     for (i = 1; i < argc; i++)
       {
@@ -1171,7 +1171,7 @@ mp4h_bp_debugging_off (MP4H_BUILTIN_ARGS)
   int i;
 
   if (argc == 1)
-    hack_all_symbols (set_trace, NULL);
+    hack_all_symbols ((hack_symbol *)set_trace, NULL);
   else
     for (i = 1; i < argc; i++)
       {
