@@ -520,6 +520,8 @@ collect_body (char *symbol_name, read_type expansion,
 | the ARGV table.  The expansion is left on the obstack EXPANSION.  Macro |
 | tracing is also handled here.                                           |
 `------------------------------------------------------------------------*/
+typedef void (*call_macro__func_type)( struct obstack *obs, int argc, token_data **argv,
+                 read_type expansion);
 
 void
 call_macro (symbol *sym, struct obstack *obs, int argc, token_data **argv,
@@ -531,7 +533,7 @@ call_macro (symbol *sym, struct obstack *obs, int argc, token_data **argv,
   switch (SYMBOL_TYPE (sym))
     {
     case TOKEN_FUNC:
-      (*SYMBOL_FUNC (sym)) (obs, argc, argv, expansion);
+      (*((call_macro__func_type) (SYMBOL_FUNC(sym)))) (obs, argc, argv, expansion);
       break;
 
     case TOKEN_TEXT:
