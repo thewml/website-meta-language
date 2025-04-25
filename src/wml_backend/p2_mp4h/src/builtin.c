@@ -1152,7 +1152,7 @@ mp4h_bp_debugging_on (MP4H_BUILTIN_ARGS)
       {
         s = lookup_symbol (ARG (i), SYMBOL_LOOKUP);
         if (s != NULL)
-          set_trace (s, (char *) obs);
+          set_trace ((symbol *)s, (char *) obs);
         else
           MP4HERROR ((warning_status, 0,
             _("Warning:%s:%d: Undefined name %s"),
@@ -1177,7 +1177,7 @@ mp4h_bp_debugging_off (MP4H_BUILTIN_ARGS)
       {
         s = lookup_symbol (ARG (i), SYMBOL_LOOKUP);
         if (s != NULL)
-          set_trace (s, NULL);
+          set_trace ((symbol *)s, NULL);
         else
           MP4HERROR ((warning_status, 0,
             _("Warning:%s:%d: Undefined name %s"),
