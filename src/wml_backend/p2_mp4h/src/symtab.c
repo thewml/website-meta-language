@@ -301,6 +301,9 @@ lookup_file (const char *name, symbol_lookup mode)
 | pointer to the symbol, and the DATA argument.                         |
 `----------------------------------------------------------------------*/
 
+typedef void
+(*hack_all_symbols__func_type) (symbol *sym, const char *data);
+
 void
 hack_all_symbols (hack_symbol *func, const char *data)
 {
@@ -310,7 +313,9 @@ hack_all_symbols (hack_symbol *func, const char *data)
   for (h = 0; h < hash_table_size; h++)
     {
       for (sym = symtab[h]; sym != NULL; sym = SYMBOL_NEXT (sym))
-        (*func) (sym, data);
+      {
+        (*((hack_all_symbols__func_type)func ))(sym, data);
+      }
     }
 }
 
