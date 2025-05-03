@@ -1537,8 +1537,7 @@ lt_dlpreload (preloaded)
 }
 
 int
-lt_dlpreload_default (preloaded)
-     const lt_dlsymlist *preloaded;
+lt_dlpreload_default (const lt_dlsymlist *preloaded)
 {
   LT_DLMUTEX_LOCK ();
   default_preloaded_symbols = preloaded;
@@ -1619,9 +1618,7 @@ lt_dlexit ()
 }
 
 static int
-tryall_dlopen (handle, filename)
-     lt_dlhandle *handle;
-     const char *filename;
+tryall_dlopen (lt_dlhandle *handle, const char *filename)
 {
   lt_dlhandle	 cur;
   lt_dlloader   *loader;
@@ -1704,11 +1701,7 @@ tryall_dlopen (handle, filename)
 }
 
 static int
-tryall_dlopen_module (handle, prefix, dirname, dlname)
-     lt_dlhandle *handle;
-     const char *prefix;
-     const char *dirname;
-     const char *dlname;
+tryall_dlopen_module (lt_dlhandle *handle, const char *prefix, const char *dirname, const char *dlname)
 {
   int      error	= 0;
   char     *filename	= 0;
@@ -1754,13 +1747,7 @@ tryall_dlopen_module (handle, prefix, dirname, dlname)
 }
 
 static int
-find_module (handle, dir, libdir, dlname, old_name, installed)
-     lt_dlhandle *handle;
-     const char *dir;
-     const char *libdir;
-     const char *dlname;
-     const char *old_name;
-     int installed;
+find_module (lt_dlhandle *handle, const char *dir, const char *libdir, const char *dlname, const char *old_name, int installed)
 {
   /* Try to open the old library first; if it was dlpreopened,
      we want the preopened version of it, even if a dlopenable
@@ -1801,9 +1788,7 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 
 
 static int
-canonicalize_path (path, pcanonical)
-     const char *path;
-     char **pcanonical;
+canonicalize_path (const char *path, char **pcanonical)
 {
   char *canonical = 0;
 
@@ -1864,10 +1849,7 @@ canonicalize_path (path, pcanonical)
 }
 
 static int
-argzize_path (path, pargz, pargz_len)
-     const char *path;
-     char **pargz;
-     size_t *pargz_len;
+argzize_path (const char *path, char **pargz, size_t *pargz_len)
 {
   error_t error;
 
@@ -1898,12 +1880,7 @@ argzize_path (path, pargz, pargz_len)
    non-zero or all elements are exhausted.  If BASE_NAME is non-NULL,
    it is appended to each SEARCH_PATH element before FUNC is called.  */
 static int
-foreach_dirinpath (search_path, base_name, func, data1, data2)
-     const char *search_path;
-     const char *base_name;
-     foreach_callback_func *func;
-     lt_ptr data1;
-     lt_ptr data2;
+foreach_dirinpath (const char *search_path, const char *base_name, foreach_callback_func *func, lt_ptr data1, lt_ptr data2)
 {
   int	 result		= 0;
   int	 filenamesize	= 0;
@@ -1973,10 +1950,7 @@ foreach_dirinpath (search_path, base_name, func, data1, data2)
    in DATA1, and the opened FILE* structure address in DATA2.  Otherwise
    DATA1 is unchanged, but DATA2 is set to a pointer to NULL.  */
 static int
-find_file_callback (filename, data1, data2)
-     char *filename;
-     lt_ptr data1;
-     lt_ptr data2;
+find_file_callback (char *filename, lt_ptr data1, lt_ptr data2)
 {
   char	     **pdir	= (char **) data1;
   FILE	     **pfile	= (FILE **) data2;
@@ -2002,10 +1976,7 @@ find_file_callback (filename, data1, data2)
 }
 
 static FILE *
-find_file (search_path, base_name, pdir)
-     const char *search_path;
-     const char *base_name;
-     char **pdir;
+find_file (const char *search_path, const char *base_name, char **pdir)
 {
   FILE *file = 0;
 
@@ -2015,10 +1986,7 @@ find_file (search_path, base_name, pdir)
 }
 
 static int
-find_handle_callback (filename, data, ignored)
-     char *filename;
-     lt_ptr data;
-     lt_ptr ignored;
+find_handle_callback (char *filename, lt_ptr data, lt_ptr ignored)
 {
   lt_dlhandle  *handle		= (lt_dlhandle *) data;
   int		notfound	= access (filename, R_OK);
@@ -2038,10 +2006,7 @@ find_handle_callback (filename, data, ignored)
 /* If HANDLE was found return it, otherwise return 0.  If HANDLE was
    found but could not be opened, *HANDLE will be set to 0.  */
 static lt_dlhandle *
-find_handle (search_path, base_name, handle)
-     const char *search_path;
-     const char *base_name;
-     lt_dlhandle *handle;
+find_handle (const char *search_path, const char *base_name, lt_dlhandle *handle)
 {
   if (!search_path)
     return 0;
@@ -2054,9 +2019,7 @@ find_handle (search_path, base_name, handle)
 }
 
 static int
-load_deplibs (handle, deplibs)
-     lt_dlhandle handle;
-     char *deplibs;
+load_deplibs (lt_dlhandle handle, char *deplibs)
 {
 #if LTDL_DLOPEN_DEPLIBS
   char	*p, *save_search_path = 0;
