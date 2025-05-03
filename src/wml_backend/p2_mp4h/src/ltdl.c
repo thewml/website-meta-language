@@ -2774,11 +2774,7 @@ lt_dlopenext (filename)
 
 
 static int
-lt_argz_insert (pargz, pargz_len, before, entry)
-     char **pargz;
-     size_t *pargz_len;
-     char *before;
-     const char *entry;
+lt_argz_insert (char **pargz, size_t *pargz_len, char *before, const char *entry)
 {
   error_t error;
 
@@ -2800,10 +2796,7 @@ lt_argz_insert (pargz, pargz_len, before, entry)
 }
 
 static int
-lt_argz_insertinorder (pargz, pargz_len, entry)
-     char **pargz;
-     size_t *pargz_len;
-     const char *entry;
+lt_argz_insertinorder (char **pargz, size_t *pargz_len, const char *entry)
 {
   char *before = 0;
 
@@ -2824,11 +2817,7 @@ lt_argz_insertinorder (pargz, pargz_len, entry)
 }
 
 static int
-lt_argz_insertdir (pargz, pargz_len, dirnam, dp)
-     char **pargz;
-     size_t *pargz_len;
-     const char *dirnam;
-     struct dirent *dp;
+lt_argz_insertdir (char **pargz, size_t *pargz_len, const char *dirnam, struct dirent *dp)
 {
   char   *buf	    = 0;
   size_t buf_len    = 0;
@@ -2890,10 +2879,7 @@ lt_argz_insertdir (pargz, pargz_len, dirnam, dp)
 }
 
 static int
-list_files_by_dir (dirnam, pargz, pargz_len)
-     const char *dirnam;
-     char **pargz;
-     size_t *pargz_len;
+list_files_by_dir (const char *dirnam, char **pargz, size_t *pargz_len)
 {
   DIR	*dirp	  = 0;
   int    errors	  = 0;
@@ -2928,10 +2914,7 @@ list_files_by_dir (dirnam, pargz, pargz_len)
 /* If there are any files in DIRNAME, call the function passed in
    DATA1 (with the name of each file and DATA2 as arguments).  */
 static int
-foreachfile_callback (dirname, data1, data2)
-     char *dirname;
-     lt_ptr data1;
-     lt_ptr data2;
+foreachfile_callback (char *dirname, lt_ptr data1, lt_ptr data2)
 {
   int (*func) LT_PARAMS((const char *filename, lt_ptr data))
 	= (int (*) LT_PARAMS((const char *filename, lt_ptr data))) data1;
@@ -2966,10 +2949,7 @@ foreachfile_callback (dirname, data1, data2)
    libfoo.so, libfoo.so.1, libfoo.so.1.0.0).  If SEARCH_PATH is NULL,
    then the same directories that lt_dlopen would search are examined.  */
 int
-lt_dlforeachfile (search_path, func, data)
-     const char *search_path;
-     int (*func) LT_PARAMS ((const char *filename, lt_ptr data));
-     lt_ptr data;
+lt_dlforeachfile (const char *search_path, int (*func) LT_PARAMS ((const char *filename, lt_ptr data)), lt_ptr data)
 {
   int is_done = 0;
 
