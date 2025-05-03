@@ -3275,8 +3275,7 @@ lt_dlpath_insertdir (ppath, before, dir)
 }
 
 int
-lt_dladdsearchdir (search_dir)
-     const char *search_dir;
+lt_dladdsearchdir (const char *search_dir)
 {
   int errors = 0;
 
@@ -3326,8 +3325,7 @@ lt_dlinsertsearchdir (before, search_dir)
 }
 
 int
-lt_dlsetsearchpath (search_path)
-     const char *search_path;
+lt_dlsetsearchpath (const char *search_path)
 {
   int   errors	    = 0;
 
@@ -3361,8 +3359,7 @@ lt_dlgetsearchpath ()
 }
 
 int
-lt_dlmakeresident (handle)
-     lt_dlhandle handle;
+lt_dlmakeresident (lt_dlhandle handle)
 {
   int errors = 0;
 
@@ -3380,8 +3377,7 @@ lt_dlmakeresident (handle)
 }
 
 int
-lt_dlisresident	(handle)
-     lt_dlhandle handle;
+lt_dlisresident	(lt_dlhandle handle)
 {
   if (!handle)
     {
@@ -3398,8 +3394,7 @@ lt_dlisresident	(handle)
 /* --- MODULE INFORMATION --- */
 
 const lt_dlinfo *
-lt_dlgetinfo (handle)
-     lt_dlhandle handle;
+lt_dlgetinfo (lt_dlhandle handle)
 {
   if (!handle)
     {
@@ -3411,8 +3406,7 @@ lt_dlgetinfo (handle)
 }
 
 lt_dlhandle
-lt_dlhandle_next (place)
-     lt_dlhandle place;
+lt_dlhandle_next (lt_dlhandle place)
 {
   return place ? place->next : handles;
 }
