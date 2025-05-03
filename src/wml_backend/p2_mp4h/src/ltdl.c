@@ -3386,9 +3386,7 @@ lt_dlhandle_next (lt_dlhandle place)
 }
 
 int
-lt_dlforeach (func, data)
-     int (*func) LT_PARAMS((lt_dlhandle handle, lt_ptr data));
-     lt_ptr data;
+lt_dlforeach (int (*func) LT_PARAMS((lt_dlhandle handle, lt_ptr data)), lt_ptr data)
 {
   int errors = 0;
   lt_dlhandle cur;
@@ -3427,10 +3425,7 @@ lt_dlcaller_register ()
 }
 
 lt_ptr
-lt_dlcaller_set_data (key, handle, data)
-     lt_dlcaller_id key;
-     lt_dlhandle handle;
-     lt_ptr data;
+lt_dlcaller_set_data (lt_dlcaller_id key, lt_dlhandle handle, lt_ptr data)
 {
   int n_elements = 0;
   lt_ptr stale = (lt_ptr) 0;
@@ -3482,9 +3477,7 @@ lt_dlcaller_set_data (key, handle, data)
 }
 
 lt_ptr
-lt_dlcaller_get_data  (key, handle)
-     lt_dlcaller_id key;
-     lt_dlhandle handle;
+lt_dlcaller_get_data  (lt_dlcaller_id key, lt_dlhandle handle)
 {
   lt_ptr result = (lt_ptr) 0;
 
@@ -3516,10 +3509,7 @@ lt_dlcaller_get_data  (key, handle)
 
 
 int
-lt_dlloader_add (place, dlloader, loader_name)
-     lt_dlloader *place;
-     const struct lt_user_dlloader *dlloader;
-     const char *loader_name;
+lt_dlloader_add (lt_dlloader *place, const struct lt_user_dlloader *dlloader, const char *loader_name)
 {
   int errors = 0;
   lt_dlloader *node = 0, *ptr = 0;
