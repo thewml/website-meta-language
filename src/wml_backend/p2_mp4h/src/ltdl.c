@@ -3030,8 +3030,7 @@ lt_dlforeachfile (search_path, func, data)
 }
 
 int
-lt_dlclose (handle)
-     lt_dlhandle handle;
+lt_dlclose (lt_dlhandle handle)
 {
   lt_dlhandle cur, last;
   int errors = 0;
@@ -3098,9 +3097,7 @@ lt_dlclose (handle)
 }
 
 lt_ptr
-lt_dlsym (handle, symbol)
-     lt_dlhandle handle;
-     const char *symbol;
+lt_dlsym (lt_dlhandle handle, const char *symbol)
 {
   size_t lensym;
   char	lsym[LT_SYMBOL_LENGTH];
@@ -3203,10 +3200,8 @@ lt_dlerror ()
 }
 
 static int
-lt_dlpath_insertdir (ppath, before, dir)
-     char **ppath;
-     char *before;
-     const char *dir;
+lt_dlpath_insertdir (char **ppath, char *before, const char *dir)
+
 {
   int    errors		= 0;
   char  *canonical	= 0;
@@ -3291,9 +3286,7 @@ lt_dladdsearchdir (const char *search_dir)
 }
 
 int
-lt_dlinsertsearchdir (before, search_dir)
-     const char *before;
-     const char *search_dir;
+lt_dlinsertsearchdir (const char *before, const char *search_dir)
 {
   int errors = 0;
 
