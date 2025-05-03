@@ -3629,8 +3629,7 @@ lt_dlloader_add (place, dlloader, loader_name)
 }
 
 int
-lt_dlloader_remove (loader_name)
-     const char *loader_name;
+lt_dlloader_remove (const char *loader_name)
 {
   lt_dlloader *place = lt_dlloader_find (loader_name);
   lt_dlhandle handle;
@@ -3690,8 +3689,7 @@ lt_dlloader_remove (loader_name)
 }
 
 lt_dlloader *
-lt_dlloader_next (place)
-     lt_dlloader *place;
+lt_dlloader_next (lt_dlloader *place)
 {
   lt_dlloader *next;
 
@@ -3703,8 +3701,7 @@ lt_dlloader_next (place)
 }
 
 const char *
-lt_dlloader_name (place)
-     lt_dlloader *place;
+lt_dlloader_name (lt_dlloader *place)
 {
   const char *name = 0;
 
@@ -3723,8 +3720,7 @@ lt_dlloader_name (place)
 }
 
 lt_user_data *
-lt_dlloader_data (place)
-     lt_dlloader *place;
+lt_dlloader_data (lt_dlloader *place)
 {
   lt_user_data *data = 0;
 
@@ -3743,8 +3739,7 @@ lt_dlloader_data (place)
 }
 
 lt_dlloader *
-lt_dlloader_find (loader_name)
-     const char *loader_name;
+lt_dlloader_find (const char *loader_name)
 {
   lt_dlloader *place = 0;
 
