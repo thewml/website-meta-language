@@ -533,11 +533,7 @@ static	const char	    *lt_dllast_error	      = 0;
    The registered functions should be manipulating a static global lock
    from the lock() and unlock() callbacks, which needs to be reentrant.  */
 int
-lt_dlmutex_register (lock, unlock, seterror, geterror)
-     lt_dlmutex_lock *lock;
-     lt_dlmutex_unlock *unlock;
-     lt_dlmutex_seterror *seterror;
-     lt_dlmutex_geterror *geterror;
+lt_dlmutex_register (lt_dlmutex_lock *lock, lt_dlmutex_unlock *unlock, lt_dlmutex_seterror *seterror, lt_dlmutex_geterror *geterror)
 {
   lt_dlmutex_unlock *old_unlock = unlock;
   int		     errors	= 0;
@@ -578,8 +574,7 @@ static	const char    **user_error_strings	= 0;
 static	int		errorcount		= LT_ERROR_MAX;
 
 int
-lt_dladderror (diagnostic)
-     const char *diagnostic;
+lt_dladderror (const char *diagnostic)
 {
   int		errindex = 0;
   int		result	 = -1;
@@ -604,8 +599,7 @@ lt_dladderror (diagnostic)
 }
 
 int
-lt_dlseterror (errindex)
-     int errindex;
+lt_dlseterror (int errindex)
 {
   int		errors	 = 0;
 
@@ -634,8 +628,7 @@ lt_dlseterror (errindex)
 }
 
 static lt_ptr
-lt_emalloc (size)
-     size_t size;
+lt_emalloc (size_t size)
 {
   lt_ptr mem = lt_dlmalloc (size);
   if (size && !mem)
@@ -644,9 +637,7 @@ lt_emalloc (size)
 }
 
 static lt_ptr
-lt_erealloc (addr, size)
-     lt_ptr addr;
-     size_t size;
+lt_erealloc (lt_ptr addr, size_t size)
 {
   lt_ptr mem = rpl_realloc (addr, size);
   if (size && !mem)
@@ -655,8 +646,7 @@ lt_erealloc (addr, size)
 }
 
 static char *
-lt_estrdup (str)
-     const char *str;
+lt_estrdup (const char *str)
 {
   char *copy = rpl_strdup (str);
   if (LT_STRLEN (str) && !copy)
@@ -728,9 +718,7 @@ lt_estrdup (str)
 #endif
 
 static lt_module
-sys_dl_open (loader_data, filename)
-     lt_user_data loader_data;
-     const char *filename;
+sys_dl_open (lt_user_data loader_data, const char *filename)
 {
   lt_module   module   = dlopen (filename, LT_GLOBAL | LT_LAZY_OR_NOW);
 
@@ -743,9 +731,7 @@ sys_dl_open (loader_data, filename)
 }
 
 static int
-sys_dl_close (loader_data, module)
-     lt_user_data loader_data;
-     lt_module module;
+sys_dl_close (lt_user_data loader_data, lt_module module)
 {
   int errors = 0;
 
@@ -759,10 +745,7 @@ sys_dl_close (loader_data, module)
 }
 
 static lt_ptr
-sys_dl_sym (loader_data, module, symbol)
-     lt_user_data loader_data;
-     lt_module module;
-     const char *symbol;
+sys_dl_sym (lt_user_data loader_data, lt_module module, const char *symbol)
 {
 #if 0
   fprintf(stderr, "dlsym(%s)\n", symbol);
@@ -842,9 +825,7 @@ static struct lt_user_dlloader sys_dl =
 #define	LT_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | DYNAMIC_PATH)
 
 static lt_module
-sys_shl_open (loader_data, filename)
-     lt_user_data loader_data;
-     const char *filename;
+sys_shl_open (lt_user_data loader_data, const char *filename)
 {
   static shl_t self = (shl_t) 0;
   lt_module module = shl_load (filename, LT_BIND_FLAGS, 0L);
