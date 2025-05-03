@@ -1213,8 +1213,7 @@ static	const lt_dlsymlist     *default_preloaded_symbols	= 0;
 static	lt_dlsymlists_t	       *preloaded_symbols		= 0;
 
 static int
-presym_init (loader_data)
-     lt_user_data loader_data;
+presym_init (lt_user_data loader_data)
 {
   int errors = 0;
 
@@ -1254,16 +1253,14 @@ presym_free_symlists ()
 }
 
 static int
-presym_exit (loader_data)
-     lt_user_data loader_data;
+presym_exit (lt_user_data loader_data)
 {
   presym_free_symlists ();
   return 0;
 }
 
 static int
-presym_add_symlist (preloaded)
-     const lt_dlsymlist *preloaded;
+presym_add_symlist (const lt_dlsymlist *preloaded)
 {
   lt_dlsymlists_t *tmp;
   lt_dlsymlists_t *lists;
@@ -1300,9 +1297,7 @@ presym_add_symlist (preloaded)
 }
 
 static lt_module
-presym_open (loader_data, filename)
-     lt_user_data loader_data;
-     const char *filename;
+presym_open (lt_user_data loader_data, const char *filename)
 {
   lt_dlsymlists_t *lists;
   lt_module	   module = (lt_module) 0;
@@ -1350,9 +1345,7 @@ presym_open (loader_data, filename)
 }
 
 static int
-presym_close (loader_data, module)
-     lt_user_data loader_data;
-     lt_module module;
+presym_close (lt_user_data loader_data, lt_module module)
 {
   /* Just to silence gcc -Wall */
   module = 0;
@@ -1360,10 +1353,7 @@ presym_close (loader_data, module)
 }
 
 static lt_ptr
-presym_sym (loader_data, module, symbol)
-     lt_user_data loader_data;
-     lt_module module;
-     const char *symbol;
+presym_sym (lt_user_data loader_data, lt_module module, const char *symbol)
 {
   lt_dlsymlist *syms = (lt_dlsymlist*) module;
 
@@ -1512,8 +1502,7 @@ lt_dlinit ()
 }
 
 int
-lt_dlpreload (preloaded)
-     const lt_dlsymlist *preloaded;
+lt_dlpreload (const lt_dlsymlist *preloaded)
 {
   int errors = 0;
 
