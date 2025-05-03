@@ -2216,8 +2216,7 @@ load_deplibs (handle, deplibs)
 }
 
 static int
-unload_deplibs (handle)
-     lt_dlhandle handle;
+unload_deplibs (lt_dlhandle handle)
 {
   int i;
   int errors = 0;
@@ -2237,9 +2236,7 @@ unload_deplibs (handle)
 }
 
 static int
-trim (dest, str)
-     char **dest;
-     const char *str;
+trim (char **dest, const char *str)
 {
   /* remove the leading and trailing "'" from str
      and store the result in dest */
@@ -2268,11 +2265,7 @@ trim (dest, str)
 }
 
 static int
-free_vars (dlname, oldname, libdir, deplibs)
-     char *dlname;
-     char *oldname;
-     char *libdir;
-     char *deplibs;
+free_vars (char *dlname, char *oldname, char *libdir, char *deplibs)
 {
   LT_DLFREE (dlname);
   LT_DLFREE (oldname);
@@ -2283,9 +2276,7 @@ free_vars (dlname, oldname, libdir, deplibs)
 }
 
 static int
-try_dlopen (phandle, filename)
-     lt_dlhandle *phandle;
-     const char *filename;
+try_dlopen (lt_dlhandle *phandle, const char *filename)
 {
   const char *	ext		= 0;
   const char *	saved_error	= 0;
@@ -2655,8 +2646,7 @@ try_dlopen (phandle, filename)
 }
 
 lt_dlhandle
-lt_dlopen (filename)
-     const char *filename;
+lt_dlopen (const char *filename)
 {
   lt_dlhandle handle = 0;
 
@@ -2687,8 +2677,7 @@ file_not_found ()
    and if a file is still not found try again with SHLIB_EXT appended
    instead.  */
 lt_dlhandle
-lt_dlopenext (filename)
-     const char *filename;
+lt_dlopenext (const char *filename)
 {
   lt_dlhandle	handle		= 0;
   char *	tmp		= 0;
