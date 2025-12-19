@@ -154,7 +154,7 @@ DETERMINE_NESTINGS:
     }
 
     # Now process each segment
-    my $bufferN = '';
+    my $new_buffer = '';
     for ( my $i = 0 ; $i < $#segment ; )
     {
         my $s    = $segment[$i];
@@ -169,10 +169,10 @@ DETERMINE_NESTINGS:
         {
             return ( $rc, $data );
         }
-        $bufferN .= $data;
+        $new_buffer .= $data;
     }
 
-    return ( 0, $bufferN );
+    return ( 0, $new_buffer );
 }
 
 #   This subvariant operates only on a buffer which
@@ -185,10 +185,10 @@ sub _expand_block_one
         $self,     $opendel, $closedel, $buffer,  $cnvpre,
         $startdel, $cnvin,   $enddel,   $cnvpost, $level
     ) = @_;
-    my ( $openidx, $closeidx, $prefix, $postfix, $inner, $rc, $data );
+    my ( $prefix, $postfix, $inner, $rc, $data );
 
-    $openidx  = index( $buffer, $opendel );
-    $closeidx = rindex( $buffer, $closedel );
+    my $openidx  = index( $buffer, $opendel );
+    my $closeidx = rindex( $buffer, $closedel );
 
     #   either both exist or both not exist
     if ( $openidx == -1 && $closeidx == -1 )
