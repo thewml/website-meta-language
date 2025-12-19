@@ -100,16 +100,17 @@ sub _expand_block_more
         $self,  $buffer,   $cnvpre,  $opendel,
         $cnvin, $closedel, $cnvpost, $level
     ) = @_;
-    my ( $rc, $opened, $offset, @segment, $del, $openidx, $closeidx );
-    my ( $bufferN, $s, $e, $data );
+    my ( $rc,      $del, $openidx, $closeidx );
+    my ( $bufferN, $s,   $e,       $data );
 
-    #
-    #   first, check for corresponding delimiters
-    #   and determine (nested) block segment positions
-    #
-    $opened  = 0;
-    $offset  = 0;
-    @segment = (0);
+    # First, check for corresponding delimiters
+    # and determine (nested) block segment positions
+
+    my $opened  = 0;
+    my $offset  = 0;
+    my @segment = (0);
+
+DETERMINE_NESTINGS:
     while (1)
     {
         $openidx  = index( $buffer, $opendel,  $offset );
@@ -120,7 +121,7 @@ sub _expand_block_more
         {
             #   both not found, stop now
             push( @segment, length($buffer) );
-            last;
+            last DETERMINE_NESTINGS;
         }
         if ( $openidx != -1 && $closeidx != -1 )
         {
@@ -140,7 +141,7 @@ sub _expand_block_more
                 : ( $closeidx, $closedel, $opened - 1 )
             );
         }
-        $offset = $offset + length($del);
+        $offset += length($del);
 
         #   still reached a complete segment
         if ( $opened == 0 )
