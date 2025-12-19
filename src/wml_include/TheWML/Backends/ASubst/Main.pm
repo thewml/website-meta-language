@@ -100,8 +100,6 @@ sub _expand_block_more
         $self,  $buffer,   $cnvpre,  $opendel,
         $cnvin, $closedel, $cnvpost, $level
     ) = @_;
-    my ( $rc,      $del, $openidx, $closeidx );
-    my ( $bufferN, $s,   $e,       $data );
 
     # First, check for corresponding delimiters
     # and determine (nested) block segment positions
@@ -113,8 +111,8 @@ sub _expand_block_more
 DETERMINE_NESTINGS:
     while (1)
     {
-        $openidx  = index( $buffer, $opendel,  $offset );
-        $closeidx = index( $buffer, $closedel, $offset );
+        my $openidx  = index( $buffer, $opendel,  $offset );
+        my $closeidx = index( $buffer, $closedel, $offset );
         $self->_wml_back_end_asubst_debug( 1,
             "buffer=<>, off=$offset, o=$openidx, c=$closeidx\n" );
         if ( $openidx == -1 && $closeidx == -1 )
@@ -123,6 +121,7 @@ DETERMINE_NESTINGS:
             push( @segment, length($buffer) );
             last DETERMINE_NESTINGS;
         }
+        my ( $del, );
         if ( $openidx != -1 && $closeidx != -1 )
         {
             #   both found, take closer one
@@ -154,15 +153,13 @@ DETERMINE_NESTINGS:
         return ( 1, "invalid number of opening and closing delimiters" );
     }
 
-    #
-    #   now process each segment
-    #
-    $bufferN = '';
+    # Now process each segment
+    my $bufferN = '';
     for ( my $i = 0 ; $i < $#segment ; )
     {
-        $s    = $segment[$i];
-        $e    = $segment[ ++$i ];
-        $data = substr( $buffer, $s, ( $e - $s ) );
+        my $s    = $segment[$i];
+        my $e    = $segment[ ++$i ];
+        my $data = substr( $buffer, $s, ( $e - $s ) );
         my $rc;
         ( $rc, $data ) = $self->_expand_block_one(
             $opendel, $closedel, $data,    $cnvpre, $opendel,
