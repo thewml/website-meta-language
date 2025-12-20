@@ -197,16 +197,14 @@ sub _handle_enter_location
 
     if ( my ($new_loc) = $self->_location =~ m|^\!(.*)$| )
     {
-
-        #   location should be rewinded now
+        # location should be rewinded now
         $self->_location($new_loc);
         $rewind_now = 1;
     }
 
     if ( my ($new_loc) = $self->_location =~ m|^(.*)\!$| )
     {
-
-        #   location should be rewinded next time
+        # location should be rewinded next time
         $self->_location($new_loc);
         $rewind_next = 1;
     }
@@ -252,17 +250,18 @@ sub _handle_leave_location
                       q{cannot leave ``null'' location }
                     . q{-- ignoring named leave} );
         }
-        elsif ( $loc ne '' and $loc ne $self->_location )
+        elsif ( ( $loc ne '' ) and ( $loc ne $self->_location ) )
         {
             #   leave the named location and all locations
             #   on the stack above it.
             my $n = -1;
+        LOC_STACK_LOOP:
             for ( my $i = $#{ $self->_loc_stack } ; $i >= 0 ; --$i )
             {
                 if ( $self->_loc_stack->[$i] eq $loc )
                 {
                     $n = $i;
-                    last;
+                    last LOC_STACK_LOOP;
                 }
             }
             if ( $n == -1 )
@@ -291,9 +290,7 @@ sub _handle_plain_text
 {
     my ( $self, $remain_ref ) = @_;
 
-    ##
-    ##  Plain text
-    ##
+    # Plain text
 
     #   calculate the minimum amount of plain characters we can skip
     my $l  = length( ${$remain_ref} );
@@ -350,7 +347,6 @@ sub _run
         $self->_line( $self->_line + 1 );
         while ( length $remain > 0 )
         {
-
             if ( $remain =~ s|^<<([a-zA-Z][a-zA-Z0-9_]*)>>|| )
             {
                 $self->_handle_location($1);
