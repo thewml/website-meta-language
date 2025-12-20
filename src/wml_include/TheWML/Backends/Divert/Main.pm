@@ -100,9 +100,7 @@ sub _init
         $self->_opt_o($opt_o);
     }
 
-    #
-    #   open input file and read into buffer
-    #
+    # open input file and read into buffer
     {
         my $in;
 
@@ -126,11 +124,9 @@ sub _init
         $self->_in_fh($in);
     }
 
-    ##
     ##   Pass 1: Parse the input data into disjunct location buffers
     ##           Each location buffer contains plain text blocks and
     ##           location pointers.
-    ##
 
     $self->_location('main');         # currently active location
     $self->_loc_stack( ['null'] );    # stack of remembered locations
@@ -240,9 +236,7 @@ sub _handle_leave_location
 {
     my ( $self, $m1 ) = @_;
 
-    ##
     ##  Tag: leave location
-    ##
 
     if ( !@{ $self->_loc_stack } )
     {
@@ -260,7 +254,6 @@ sub _handle_leave_location
         }
         elsif ( $loc ne '' and $loc ne $self->_location )
         {
-
             #   leave the named location and all locations
             #   on the stack above it.
             my $n = -1;

@@ -273,6 +273,7 @@ sub _wml_back_end_asubst_debug
 sub main
 {
     my ($self) = @_;
+
     my $opt_o = '-';
     $Getopt::Long::bundling      = 1;
     $Getopt::Long::getopt_compat = 0;
