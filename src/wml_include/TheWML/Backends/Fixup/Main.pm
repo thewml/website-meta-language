@@ -199,10 +199,10 @@ sub _fixup_imgalt
     my ( $self, ) = @_;
 
     my $bufferN = '';
+    my $buf     = $self->_buffer;
+    if ( !defined( ${$buf} ) ) { die "CLamm oo Buffer is undef." }
 
-    if ( !defined( ${ $self->_buffer } ) ) { die "CLamm oo Buffer is undef." }
-
-    while ( ${ $self->_buffer } =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
+    while ( ${$buf} =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
     {
         my ( $pre, $tag, $attr, $end ) = ( $1, $2, $3, $4 );
         if (    $attr !~ m|ALT\s*=\s*"[^"]*"|is
@@ -213,7 +213,7 @@ sub _fixup_imgalt
         }
         $bufferN .= $pre . $tag . $attr . $end;
     }
-    ${ $self->_buffer } = $bufferN . ${ $self->_buffer };
+    ${$buf} = $bufferN . ${$buf};
 
     return;
 }
@@ -223,12 +223,13 @@ sub _fixup_imgsize
     my ( $self, ) = @_;
 
     my $bufferN = '';
-    while ( ${ $self->_buffer } =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
+    my $buf     = $self->_buffer;
+    while ( ${$buf} =~ s|^(.*?)(<[iI][mM][gG]\s+)([^>]+?)(/?>)||s )
     {
         my ( $pre, $tag, $attr, $end ) = ( $1, $2, $3, $4 );
         $bufferN .= $pre . $tag . $self->_process_img_tag($attr) . $end;
     }
-    ${ $self->_buffer } = $bufferN . ${ $self->_buffer };
+    ${$buf} = $bufferN . ${$buf};
 
     return;
 }
@@ -242,10 +243,11 @@ sub _fixup_summary
 
     my $last    = 0;
     my $bufferN = '';
-    while ( ${ $self->_buffer } =~
-        m|\G(.*?)(<[tT][aA][bB][lL][eE])([^>]*?)(/?>)|gs )
+    my $buf     = $self->_buffer;
+
+    while ( ${$buf} =~ m|\G(.*?)(<[tT][aA][bB][lL][eE])([^>]*?)(/?>)|gs )
     {
-        $last = pos( ${ $self->_buffer } );
+        $last = pos( ${$buf} );
         my ( $pre, $begin, $attr, $end ) = ( $1, $2, $3, $4 );
 
         #   add a SUMMARY="" tag to make HTML lints happy
@@ -255,7 +257,7 @@ sub _fixup_summary
         }
         $bufferN .= $pre . $begin . $attr . $end;
     }
-    ${ $self->_buffer } = $bufferN . substr( ${ $self->_buffer }, $last );
+    ${$buf} = $bufferN . substr( ${$buf}, $last );
 
     return;
 }
@@ -268,9 +270,11 @@ sub _fixup_center
     $self->verbose(
         "replacing <center>..</center> by <div align=center>..</div>");
 
-    ${ $self->_buffer } =~
+    my $buf = $self->_buffer;
+
+    ${$buf} =~
         s|<[cC][eE][nN][tT][eE][rR]((?:\s[^>ck]*)?)>|<div align="center"$1>|g;
-    ${ $self->_buffer } =~ s|</[cC][eE][nN][tT][eE][rR]>|</div>|g;
+    ${$buf} =~ s|</[cC][eE][nN][tT][eE][rR]>|</div>|g;
 
     return;
 }
@@ -282,9 +286,11 @@ sub _fixup_space
 
     $self->verbose("trailing space in tags");
 
+    my $buf = $self->_buffer;
+
     #   Only space characters are removed, neither tabs nor newlines
-    ${ $self->_buffer } =~ s| +>|>|g;
-    ${ $self->_buffer } =~ s|([^\s])/>|$1 />|g;
+    ${$buf} =~ s| +>|>|g;
+    ${$buf} =~ s|([^\s])/>|$1 />|g;
 
     return;
 }
@@ -299,15 +305,17 @@ sub _fixup_quotes
 
     my $last    = 0;
     my $bufferN = '';
-    while ( ${ $self->_buffer } =~ m|\G(.*?)(<[a-zA-Z_][^>]*>)|sg )
+    my $buf     = $self->_buffer;
+
+    while ( ${$buf} =~ m|\G(.*?)(<[a-zA-Z_][^>]*>)|sg )
     {
-        $last = pos( ${ $self->_buffer } );
+        $last = pos( ${$buf} );
         my ( $prolog, $tag ) = ( $1, $2 );
         $tag =~ s@([A-Za-z_-]+=)([^\s\"\'><\[]+)(\s|/?>)@$1"$2"$3@sg;
         $tag =~ s|([A-Za-z_-]+=")([0-9A-Fa-f]{6}"[\s/>])|$1#$2|sg;
         $bufferN .= $prolog . $tag;
     }
-    ${ $self->_buffer } = $bufferN . substr( ${ $self->_buffer }, $last );
+    ${$buf} = $bufferN . substr( ${$buf}, $last );
 
     return;
 }
@@ -346,16 +354,17 @@ sub _fixup_indent
 
     $self->verbose("paragraph indentation");
 
-    if ( ${ $self->_buffer } =~ m|<[iI][nN][dD][eE][nN][tT][\s>]| )
+    my $buf = $self->_buffer;
+
+    if ( ${$buf} =~ m|<[iI][nN][dD][eE][nN][tT][\s>]| )
     {
         my $bufferN = '';
-        while (
-            ${ $self->_buffer } =~ s|^(.*?)<indent([^>]*)>(.*?)</indent>||is )
+        while ( ${$buf} =~ s|^(.*?)<indent([^>]*)>(.*?)</indent>||is )
         {
             my ( $pre, $attr, $data ) = ( $1, $2, $3 );
             $bufferN .= $pre . _process_indent_container( $attr, $data );
         }
-        ${ $self->_buffer } = $bufferN . ${ $self->_buffer };
+        ${$buf} = $bufferN . ${$buf};
     }
 
     return;
@@ -367,8 +376,11 @@ sub _fixup_comment
     my ( $self, ) = @_;
 
     $self->verbose("remove commenting tags");
-    ${ $self->_buffer } =~ s|<[a-zA-Z_][a-zA-Z0-9-]*#.*?>||sg;
-    ${ $self->_buffer } =~ s|</[a-zA-Z_][a-zA-Z0-9-]*#>||sg;
+
+    my $buf = $self->_buffer;
+
+    ${$buf} =~ s|<[a-zA-Z_][a-zA-Z0-9-]*#.*?>||sg;
+    ${$buf} =~ s|</[a-zA-Z_][a-zA-Z0-9-]*#>||sg;
 
     return;
 }
@@ -422,16 +434,17 @@ sub _fixup_tagcase
 
     $self->verbose("tag case translation");
 
-    if ( ${ $self->_buffer } =~ m|<[tT][aA][gG][cC][oO][nN][vV][\s>]| )
+    my $buf = $self->_buffer;
+
+    if ( ${$buf} =~ m|<[tT][aA][gG][cC][oO][nN][vV][\s>]| )
     {
         my $bufferN = '';
-        while (
-            ${ $self->_buffer } =~ s|^(.*?)<tagconv([^>]*)>(.*?)</tagconv>||is )
+        while ( ${$buf} =~ s|^(.*?)<tagconv([^>]*)>(.*?)</tagconv>||is )
         {
             my ( $pre, $attr, $data ) = ( $1, $2, $3 );
             $bufferN .= $pre . _process_tag_conv( $attr, $data );
         }
-        ${ $self->_buffer } = $bufferN . ${ $self->_buffer };
+        ${$buf} = $bufferN . ${$buf};
     }
 }
 
