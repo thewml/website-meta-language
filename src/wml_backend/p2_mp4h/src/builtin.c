@@ -366,7 +366,7 @@ static void matching_attributes __P ((struct obstack *, int, token_data **, bool
 static char * utf8char_skip __P ((char *, int));
 static int utf8char_strlen __P ((char *));
 static int encoding_strlen __P ((char *));
-static void substitute __P ((struct obstack *, const char *, const char *, int *));
+static void substitute __P ((struct obstack *, const char *, const char *, size_t *));
 static void string_regexp __P ((struct obstack *, int, token_data **, int, const char *));
 static void subst_in_string __P ((struct obstack *, int, token_data **, int));
 static void generic_variable_lookup __P ((MP4H_BUILTIN_PROTO, bool));
@@ -375,6 +375,8 @@ static char *array_value __P ((symbol *, int, int *));
 static int array_member __P ((const char *, symbol *, bool));
 static int sort_function __P ((const void *, const void *));
 static void logical_to_physical_paths __P ((char **));
+static void * pcre_malloc (size_t, void *);
+static void pcre_free (void *, void *);
 
 /*  This symbol controls breakings of flow statements.  */
 static symbol varbreak;
@@ -391,7 +393,12 @@ static bool sort_numeric;
 struct lconv *my_locale;
 
 /*  Table of characters used by PCRE with non-C locales  */
-static const unsigned char *re_tableptr = NULL;
+static const uint8_t *re_tableptr = NULL;
+
+/*  PCRE contexts needed for custom memory management and adding
+    non-builtin character tables.  */
+static pcre2_general_context *gen_ctxt;
+static pcre2_compile_context *comp_ctxt;
 
 /*  Timer  */
 static struct tms elapsed_time;
@@ -651,12 +658,22 @@ define_user_entity (const char *name, char *text, symbol_lookup mode)
 | Initialise all builtin and predefined macros.  |
 `-----------------------------------------------*/
 
+static void *
+pcre_malloc (size_t size, void *ptr)
+{
+  return xmalloc (size);
+}
+
+static void
+pcre_free (void *ptr, void *tag)
+{
+  free (ptr);
+}
+
 void
 builtin_init (void)
 {
   install_builtin_table (builtin_tab);
-  pcre_malloc = xmalloc;
-  pcre_free   = free;
 }
 
 /*-----------------------------------------------.
@@ -677,18 +694,22 @@ builtin_deallocate (void)
   varstack_check ();
 }
 
-static pcre *
+static pcre2_code *
 xre_compile (const char *pattern, int cflags)
 {
-  pcre *patcomp;
-  const char *errbuf;
-  int erroffset;
+  pcre2_code *patcomp;
+  PCRE2_UCHAR errbuf[120];
+  int errcode;
+  size_t erroffset;
 
   if (document_encoding == ENCODING_UTF8)
-      cflags |= PCRE_UTF8;
-  patcomp = pcre_compile (pattern, cflags, &errbuf, &erroffset, re_tableptr);
+      cflags |= PCRE2_UTF;
+  pcre2_set_character_tables (comp_ctxt, re_tableptr);
+  patcomp = pcre2_compile ((PCRE2_SPTR) pattern, PCRE2_ZERO_TERMINATED,
+                           cflags, &errcode, &erroffset, comp_ctxt);
   if (patcomp == 0)
     {
+      pcre2_get_error_message (errcode, errbuf, sizeof (errbuf));
       MP4HERROR ((warning_status, 0,
         _("Warning:%s:%d: Bad regular expression `%s' at position %d: %s"),
              CURRENT_FILE_LINE, pattern, erroffset, errbuf));
@@ -811,11 +832,10 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
   register char *cp;
   char *name;
   int i, j, special_chars;
-  pcre *re;
-  pcre_extra *re_extra = NULL;
-  const char *errptr = NULL;
+  pcre2_code *re;
+  pcre2_match_data *md = NULL;
   int rc, max_subexps;
-  int *match_ptr = NULL;
+  size_t *match_ptr = NULL;
   bool first = true;
 
   /*  Replace comma-separated list by a regular expression  */
@@ -828,22 +848,10 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
   sprintf (name, "^%s$", list);
 
   /*  Compile this expression once  */
-  re = xre_compile (name, PCRE_CASELESS);
+  re = xre_compile (name, PCRE2_CASELESS);
   free ((voidstar) name);
   if (re == NULL)
     return;
-
-  if (argc>2)
-    {
-      re_extra = pcre_study (re, 0, &errptr);
-      if (errptr != NULL)
-        {
-          MP4HERROR ((warning_status, 0,
-            _("Error:%s:%d: Bad regular expression `%s': %s"),
-                 CURRENT_FILE_LINE, list, errptr));
-          return;
-        }
-    }
 
   for (i=1; i<argc; i++)
     {
@@ -867,17 +875,18 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
       do
         {
           max_subexps += 10;
-          match_ptr = (int *)
-             xrealloc ((voidstar) match_ptr, sizeof (int) * max_subexps * 3);
-          rc = pcre_exec (re, re_extra, ARG (i)+special_chars,
+          pcre2_match_data_free (md);
+          md = pcre2_match_data_create (max_subexps * 3, gen_ctxt);
+          rc = pcre2_match (re, (PCRE2_SPTR) ARG (i)+special_chars,
                   strlen (ARG (i)+special_chars), 0,
-                  0, match_ptr, max_subexps * 3);
+                  0, md, NULL);
         }
-      while (rc == PCRE_ERROR_NOMEMORY);
+      while (rc == PCRE2_ERROR_NOMEMORY);
       max_subexps -= 10;
 
       if (rc > 0 && match)
         {
+          match_ptr = pcre2_get_ovector_pointer (md);
           if (!first)
             obstack_1grow (obs, ' ');
           first = false;
@@ -904,7 +913,7 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
             }
           obstack_1grow (obs, CHAR_EGROUP);
         }
-      else if (rc == PCRE_ERROR_NOMATCH && !match)
+      else if (rc == PCRE2_ERROR_NOMATCH && !match)
         {
           if (cp)
             *cp  = '=';
@@ -916,9 +925,8 @@ matching_attributes (struct obstack *obs, int argc, token_data **argv,
           obstack_1grow (obs, CHAR_EGROUP);
         }
     }
-  pcre_free (re);
-  pcre_free (re_extra);
-  free ((voidstar) match_ptr);
+  pcre2_match_data_free (md);
+  pcre2_code_free (re);
 }
 
 
@@ -980,13 +988,17 @@ mp4h_bp___line__ (MP4H_BUILTIN_ARGS)
 void
 pcre_init (void)
 {
-  re_tableptr = pcre_maketables ();
+  gen_ctxt = pcre2_general_context_create (pcre_malloc, pcre_free, NULL);
+  comp_ctxt = pcre2_compile_context_create (gen_ctxt);
+  re_tableptr = pcre2_maketables (gen_ctxt);
 }
 
 void
 pcre_deallocate (void)
 {
-  pcre_free ((voidstar) re_tableptr);
+  pcre2_maketables_free (gen_ctxt, re_tableptr);
+  pcre2_compile_context_free (comp_ctxt);
+  pcre2_general_context_free (gen_ctxt);
 }
 
 /*---------------------.
@@ -1372,10 +1384,9 @@ mp4h_bp_directory_contents (MP4H_BUILTIN_ARGS)
   struct dirent *entry;
   int length;
   const char *matching;
-  pcre *re = NULL;
-  pcre_extra *re_extra = NULL;
-  const char *errptr = NULL;
-  int *match_ptr = NULL;
+  pcre2_code *re = NULL;
+  pcre2_match_data *md;
+  size_t *match_ptr = NULL;
   bool first = true;
 
   CHECK_SAFETY_LEVEL(1);
@@ -1395,24 +1406,16 @@ mp4h_bp_directory_contents (MP4H_BUILTIN_ARGS)
       re = xre_compile (matching, 0);
       if (re == NULL)
         return;
-      match_ptr = (int *)
-         xrealloc ((voidstar) match_ptr, sizeof (int) * 3);
-      re_extra = pcre_study (re, 0, &errptr);
-      if (errptr != NULL)
-        {
-          MP4HERROR ((warning_status, 0,
-            _("Error:%s:%d: Bad regular expression `%s': %s"),
-                 CURRENT_FILE_LINE, matching, errptr));
-          return;
-        }
+      md = pcre2_match_data_create (3, gen_ctxt);
     }
 
   while ((entry = readdir (dir)) != (struct dirent *)NULL)
     {
       length = strlen (entry->d_name);
       if (!matching ||
-          (pcre_exec (re, re_extra, entry->d_name, length, 0,
-                    0, match_ptr, 3) > 0
+          (pcre2_match (re, (PCRE2_SPTR) entry->d_name, length, 0,
+                    0, md, NULL) > 0
+           && (match_ptr = pcre2_get_ovector_pointer (md))
            && match_ptr[1] - match_ptr[0] == length))
         {
           if (!first)
@@ -1424,9 +1427,8 @@ mp4h_bp_directory_contents (MP4H_BUILTIN_ARGS)
 
   if (matching)
     {
-      pcre_free (re);
-      pcre_free (re_extra);
-      free ((voidstar) match_ptr);
+      pcre2_match_data_free (md);
+      pcre2_code_free (re);
     }
   closedir (dir);
 }
@@ -3439,7 +3441,7 @@ static int substitute_warned = 0;
 
 static void
 substitute (struct obstack *obs, const char *victim, const char *repl,
-            int *regs)
+            size_t *regs)
 {
   register unsigned int ch;
 
@@ -3501,8 +3503,9 @@ string_regexp (struct obstack *obs, int argc, token_data **argv,
   int startpos = -1;            /* start position of match */
   int match_length = 0;         /* length of pattern match */
 
-  pcre *re;
-  int *match_ptr = NULL;
+  pcre2_code *re;
+  pcre2_match_data *md = NULL;
+  size_t *match_ptr = NULL;
   int max_subexps = 0;
   int rc;
 
@@ -3521,15 +3524,16 @@ string_regexp (struct obstack *obs, int argc, token_data **argv,
   do
     {
       max_subexps += 10;
-      match_ptr = (int *)
-         xrealloc ((voidstar) match_ptr, sizeof (int) * max_subexps * 3);
-      rc  = pcre_exec (re, NULL, victim, length, 0,
-                          0, match_ptr, max_subexps * 3);
+      pcre2_match_data_free (md);
+      md = pcre2_match_data_create (max_subexps * 3, gen_ctxt);
+      rc  = pcre2_match (re, (PCRE2_SPTR) victim, length, 0,
+                         0, md, NULL);
     }
-  while (rc == PCRE_ERROR_NOMEMORY);
+  while (rc == PCRE2_ERROR_NOMEMORY);
 
   if (rc > 0)
     {
+      match_ptr = pcre2_get_ovector_pointer (md);
       match_length = match_ptr[1] - match_ptr[0];
       startpos = match_ptr[0];
     }
@@ -3571,8 +3575,8 @@ string_regexp (struct obstack *obs, int argc, token_data **argv,
         obstack_grow (obs, "true", 4);
     }
 
-  pcre_free (re);
-  free ((voidstar) match_ptr);
+  pcre2_match_data_free (md);
+  pcre2_code_free (re);
 }
 
 /*----------------------------------------------.
@@ -3586,11 +3590,10 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
   char *victim;                 /* first argument */
   char *regexp;                 /* regular expression */
 
-  pcre *re;
-  pcre_extra *re_extra = NULL;
-  const char *errptr;
+  pcre2_code *re;
+  pcre2_match_data *md = NULL;
 
-  int *match_ptr = NULL;
+  size_t *match_ptr = NULL;
   int max_subexps = 0;
   int options = 0;
   int rc;
@@ -3613,15 +3616,6 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
   if (re == NULL)
     return;
 
-  re_extra = pcre_study (re, 0, &errptr);
-  if (errptr != NULL)
-    {
-      MP4HERROR ((warning_status, 0,
-        _("Error:%s:%d: Bad regular expression `%s': %s"),
-             CURRENT_FILE_LINE, regexp, errptr));
-      return;
-    }
-
   offset = 0;
   matchpos = 0;
   while (offset < length)
@@ -3630,16 +3624,16 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
       do
         {
           max_subexps += 10;
-          match_ptr = (int *)
-            xrealloc ((voidstar) match_ptr, sizeof (int) * max_subexps * 3);
-          rc = pcre_exec (re, re_extra, victim+offset, length-offset, 0,
-                          options, match_ptr, max_subexps * 3);
+          pcre2_match_data_free (md);
+          md = pcre2_match_data_create (max_subexps * 3, gen_ctxt);
+          rc = pcre2_match (re, (PCRE2_SPTR) victim+offset, length-offset,
+                            0, options, md, NULL);
         }
-      while (rc == PCRE_ERROR_NOMEMORY);
+      while (rc == PCRE2_ERROR_NOMEMORY);
       max_subexps -= 10;
 
       /*  Subsequent calls to regexec do not match beginning o line */
-      options |= PCRE_NOTBOL;
+      options |= PCRE2_NOTBOL;
 
       if (rc < 0)
         {
@@ -3648,7 +3642,7 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
              rest of the string, in which case the rest of the string is
              copied verbatim.  */
 
-          if (rc != PCRE_ERROR_NOMATCH)
+          if (rc != PCRE2_ERROR_NOMATCH)
             MP4HERROR ((warning_status, 0,
               _("Warning:%s:%d: Error matching regular expression `%s'"),
                    CURRENT_FILE_LINE, regexp));
@@ -3656,6 +3650,8 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
             obstack_grow (obs, victim + offset, length - offset);
           break;
         }
+
+      match_ptr = pcre2_get_ovector_pointer (md);
 
       /* Copy the part of the string that was skipped by regex ().  */
       matchpos = match_ptr[0];
@@ -3675,9 +3671,8 @@ subst_in_string (struct obstack *obs, int argc, token_data **argv,
         obstack_1grow (obs, victim[offset++]);
     }
 
-  pcre_free (re);
-  pcre_free (re_extra);
-  free ((voidstar) match_ptr);
+  pcre2_match_data_free (md);
+  pcre2_code_free (re);
 }
 
 /*------------------------------------------------.
@@ -3694,14 +3689,14 @@ regex_attributes (int *ptr_argc, token_data **argv)
   if (singleline)
     {
       if (strcmp (singleline, "true") == 0)
-        re_flags |= PCRE_DOTALL;
+        re_flags |= PCRE2_DOTALL;
       else
-        re_flags |= PCRE_MULTILINE;
+        re_flags |= PCRE2_MULTILINE;
     }
 
   caseless = predefined_attribute ("caseless", ptr_argc, argv, true);
   if (caseless && strcmp (caseless, "true") == 0)
-    re_flags |= PCRE_CASELESS;
+    re_flags |= PCRE2_CASELESS;
 
   /*  This one overrides previous options  */
   reflags = predefined_attribute ("reflags", ptr_argc, argv, true);
@@ -3713,10 +3708,10 @@ regex_attributes (int *ptr_argc, token_data **argv)
           switch (*cp)
             {
               case '-': break;
-              case 'i': re_flags |= PCRE_CASELESS; break;
-              case 'm': re_flags |= PCRE_MULTILINE; break;
-              case 's': re_flags |= PCRE_DOTALL; break;
-              case 'x': re_flags |= PCRE_EXTENDED; break;
+              case 'i': re_flags |= PCRE2_CASELESS; break;
+              case 'm': re_flags |= PCRE2_MULTILINE; break;
+              case 's': re_flags |= PCRE2_DOTALL; break;
+              case 'x': re_flags |= PCRE2_EXTENDED; break;
               default:
                         MP4HERROR ((warning_status, 0, _("\
 Warning:%s:%d: Unknown modifier `%c' in reflags"),

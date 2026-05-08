@@ -41,7 +41,8 @@
 #undef HAVE_FILE_FUNCS
 #endif
 
-#include "pcre.h"
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 #ifdef HAVE_FILE_FUNCS
 #include <dirent.h>
