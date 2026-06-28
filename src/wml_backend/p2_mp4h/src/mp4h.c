@@ -418,7 +418,7 @@ main (int argc, char *const *argv)
       switch (defines->code)
         {
         case 'D':
-          macro_value = strchr (defines->macro, '=');
+          macro_value = (char *)strchr (defines->macro, '=');
           if (macro_value == NULL)
             macro_value = "";
           else
