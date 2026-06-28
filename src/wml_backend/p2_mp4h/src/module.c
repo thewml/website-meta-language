@@ -219,7 +219,7 @@ library_load (const char *libname, struct obstack *obs)
   char *dir;
   const char *lib_name = libname;
   const char *save_path = NULL;
-  char *cp, *new_search_path;
+  const char *cp, *new_search_path;
 
   /*  If it contains a slash, leading dir is appended to search path.  */
   cp = strrchr(libname, '/');
@@ -299,7 +299,7 @@ module_load (const char *modname, struct obstack *obs)
   char *dir;
   const char *mod_name = modname;
   const char *save_path = NULL;
-  char *cp, *new_search_path;
+  const char *cp, *new_search_path;
   builtin *bp;
 
   /*  If it contains a slash, leading dir is appended to search path.  */
