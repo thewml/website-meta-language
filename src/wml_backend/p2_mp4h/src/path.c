@@ -98,7 +98,7 @@ static void
 search_path_env_init (struct search_path_info *info, const char *path,
                 const int userdef)
 {
-  char *path_end;
+  const char *path_end;
 
   if (info == NULL || path == NULL)
     return;
